@@ -1,95 +1,127 @@
+# -*- coding: utf-8 -*-
+
+# Wrye Mash Polemos fork GPL License and Copyright Notice ==============================
+#
+# This file is part of Wrye Mash Polemos fork.
+#
+# Wrye Mash 2018 Polemos fork Copyright (C) 2017-2018 Polemos
+# * based on code by Yacoby copyright (C) 2011-2016 Wrye Mash Fork Python version
+# * based on code by Melchor copyright (C) 2009-2011 Wrye Mash WMSA
+# * based on code by Wrye copyright (C) 2005-2009 Wrye Mash
+# License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
+#
+#  Copyright on the original code 2005-2009 Wrye
+#  Copyright on any non trivial modifications or substantial additions 2009-2011 Melchor
+#  Copyright on any non trivial modifications or substantial additions 2011-2016 Yacoby
+#  Copyright on any non trivial modifications or substantial additions 2017-2018 Polemos
+#
+# ======================================================================================
+
+# Original Wrye Mash License and Copyright Notice ======================================
+#
+#  Wrye Mash is free software; you can redistribute it and/or
+#  modify it under the terms of the GNU General Public License
+#  as published by the Free Software Foundation; either version 2
+#  of the License, or (at your option) any later version.
+#
+#  Wrye Bolt is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with Wrye Mash; if not, write to the Free Software Foundation,
+#  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#  Wrye Mash copyright (C) 2005, 2006, 2007, 2008, 2009 Wrye
+#
+# ========================================================================================
+
+
 import os
 import subprocess
+from ..sfix import Popen # Polemos
 import threading
 import time
 import Queue as queue
-
 from .. import conf
 
 
-class HelperMixin:
+class HelperMixin: # Polemos fixes.
+
     def getSubprocess(self, args):
-        startupinfo = None
-
-        #hides the command promp on NT systems
         if os.name == 'nt':
+            # Hide the command prompt on NT systems
             info = subprocess.STARTUPINFO()
-            #WIN32 constant: STARTUPINFO.STARTF_USESHOWWINDOW
             info.dwFlags |= 0x00000001
+        cmd_po = 'tes3cmd.exe'
+        args_po = ''
+        try:
+            for x in args:
+                if x.lower().endswith('.esp') or x.lower().endswith('.esm') or x.lower().endswith('.ess'): x = '"%s"' % x
+                if x != 'tes3cmd.exe': args_po = '%s %s' % (args_po, x)
+        except: args_po = ''
+        command = 'cd /D "%s" & %s%s' % (getDataDir(), cmd_po, args_po) # Polemos: Tired trying to work with Popens buggy attitude. Be my guest.
+        return Popen(command, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
 
-        return subprocess.Popen(args,
-                             executable=getLocation(),
-                             cwd=getDataDir(),
-                             startupinfo=info,
-                             stderr=subprocess.PIPE,
-                             stdout=subprocess.PIPE) 
-    
     def buildFixitArgs(self, hideBackups, backupDir):
         args = ['tes3cmd.exe', 'fixit']
-        if hideBackups:
-            args.append('--hide-backups')
-        if backupDir:
-            args += ['--backup-dir', backupDir]
+        if hideBackups: args.append('--hide-backups')
+        if backupDir: args += ['--backup-dir', backupDir]
         return args
 
-    def buildCleanArgs(self, files, replace, hideBackups, backupDir,
-                       cells, dups, gmsts, instances, junk):
+    def buildMultipatchArgs(self):  # Polemos: Added Multipatch ability.
+        """Args factory"""
+        args = ['tes3cmd.exe', 'multipatch ']
+        return args
 
-        if not (cells or dups or gmsts or instances or junk):
-            raise Exception('No options selected')
-
+    def buildCleanArgs(self, files, replace, hideBackups, backupDir, cells, dups, gmsts, instances, junk):
+        """Args factory"""
+        if not (cells or dups or gmsts or instances or junk): raise Exception(u'No options selected')
         args = ['tes3cmd.exe', 'clean']
-        if replace:
-            args.append('--replace')
-        if hideBackups:
-            args.append('--hide-backups')
-        if backupDir:
-            args += ['--backup-dir', backupDir]
+        if replace: args.append('--replace')
+        if hideBackups: args.append('--hide-backups')
+        if backupDir: args += ['--backup-dir', backupDir]
 
         #if everything is true then we don't need to set any of the options
         if cells and dups and gmsts and instances and junk:
             args += files
             return args
 
-        if cells:
-            args.append('--cell-params')
-        if dups:
-            args.append('--dups')
-        if gmsts:
-            args.append('--gmsts')
-        if instances:
-            args.append('--instances')
-        if junk:
-            args.append('--junk-cells')
+        if cells: args.append('--cell-params')
+        if dups: args.append('--dups')
+        if gmsts: args.append('--gmsts')
+        if instances: args.append('--instances')
+        if junk: args.append('--junk-cells')
 
         args += files
         return args
 
-    def buildHeaderArgs(self, file, hideBackups, backupDir, sync, 
-                        updateMasters, updateRecordCount):
+    def buildHeaderArgs(self, file, hideBackups, backupDir, sync, updateMasters, updateRecordCount):
         args = ['tes3cmd.exe', 'header']
-        if hideBackups:
-            args.append('--hide-backups')
-        if backupDir:
-            args += ['--backup-dir', backupDir]
+        if hideBackups: args.append('--hide-backups')
+        if backupDir: args += ['--backup-dir', backupDir]
 
-        if sync:
-            args.append('--synchronize')
-        if updateMasters:
-            args.append('--update-masters')
-        if updateRecordCount:
-            args.append('--update-record-count')
+        if sync: args.append('--synchronize')
+        if updateMasters: args.append('--update-masters')
+        if updateRecordCount: args.append('--update-record-count')
         args.append(file)
         return args
 
 
-class Basic(HelperMixin):
-    def fixit(self, hideBackups=True, backupDir=None):
+class Basic(HelperMixin): # Polemos fixes.
+    """Basic."""
+    def fixit(self, hideBackups=True, backupDir='tes3cmdbck'):
         args = self.buildFixitArgs(hideBackups, backupDir)
         self.out, self.err = self.getSubprocess(args).communicate()
 
+    def multipatch(self): # Polemos: Added for multipatch
+        args = self.buildMultipatchArgs()
+        self.out, self.err = self.getSubprocess(args).communicate()
+
+
 class Threaded(threading.Thread, HelperMixin):
-    """ A class that manages a Threaded process in another thread """
+    """ A class that manages a Threaded process in another thread."""
 
     def __init__(self, callback=None):
         """
@@ -109,32 +141,27 @@ class Threaded(threading.Thread, HelperMixin):
         """
         self.msg.put('STOP')
 
-    def fixit(self, hideBackups=True, backupDir=None):
+    def fixit(self, hideBackups=True, backupDir='tes3cmdbck'):
         self.args = self.buildFixitArgs(hideBackups, backupDir)
         self.start()
 
-    def clean(self, files, replace=False, hideBackups=True, backupDir=None,
-              cells=True, dups=True, gmsts=True, instances=True, junk=True):
+    def clean(self, files, replace=False, hideBackups=True, backupDir='tes3cmdbck', cells=True, dups=True, gmsts=True, instances=True, junk=True):
         self.files = files
-        self.args = self.buildCleanArgs(files, replace, hideBackups, backupDir,
-                                        cells, dups, gmsts, instances, junk) 
+        self.args = self.buildCleanArgs(files, replace, hideBackups, backupDir, cells, dups, gmsts, instances, junk)
         self.start()
 
-    def header(self, file, hideBackups=True, backupDir=None, sync=True,
-               updateMasters=False, updateRecordCount=False):
+    def header(self, file, hideBackups=True, backupDir='tes3cmdbck', sync=True, updateMasters=False, updateRecordCount=False):
         self.files = [file]
-        self.args = self.buildHeaderArgs(file, hideBackups, backupDir, sync,
-                                         updateMasters, updateRecordCount)
+        self.args = self.buildHeaderArgs(file, hideBackups, backupDir, sync, updateMasters, updateRecordCount)
         self.start()
 
-    def run(self):
-        """
-        This shouldn't be called directly, use a function like clean
-        that correctly sets the state
-        """
+    def run(self): # Polemos: hackish bugfix (happens for queue to return nothing)
+        """This shouldn't be called directly, use a function like clean that correctly sets the state."""
         p = self.getSubprocess(self.args)
-
+        unfreeze = 0
         while p.poll() is None:
+            unfreeze += 1
+            if unfreeze == 500: break  # 5 sec breaker
             if not self.msg.empty():
                 msg = self.msg.get()
                 if msg == 'STOP':
@@ -142,23 +169,15 @@ class Threaded(threading.Thread, HelperMixin):
                     return
             time.sleep(0.01)
 
-        for line in iter(p.stdout.readline,''):
-            self.out += line.strip() + '\n'
+        for line in iter(p.stdout.readline,''): self.out += line.strip() + '\n'
+        for line in iter(p.stderr.readline,''): self.err += line.strip() + '\n'
+        if self.callback: self.callback()
 
-        for line in iter(p.stderr.readline,''):
-            self.err += line.strip() + '\n'
+def getDataDir(): # Polemos fix
+    data_files_dir = os.path.join(conf.settings['mwDir'], 'Data Files')
+    return data_files_dir
 
-        if self.callback:
-            self.callback()
-
-
-def getDataDir():
-    cwd = os.getcwd()
-    mwdir = os.path.dirname(cwd)
-    return os.path.join(mwdir, 'Data Files')
-
-def getLocation():
-    location = None
+def getLocation(): # Polemos fix
     cwd = os.getcwd()
     locs = [cwd,
             os.path.join(cwd, 'tes3cmd'),
@@ -166,6 +185,5 @@ def getLocation():
             os.path.join(conf.settings['mwDir'], 'Data Files')]
     for loc in locs:
         path = os.path.join(loc, 'tes3cmd.exe')
-        if os.path.exists(path):
-            return path
+        if os.path.exists(path): return path
     return None
