@@ -1,1 +1,11 @@
+This stand alone edition of Wrye Mash is based on the latest Yacoby's source. The "editing the file header" bug is fixed  and retains all the extra functionality like drag and drop which is missing from other versions. It has mlox, TES3cmd and TES3lint support and many new features like:
 
+A toolbar menu, 
+mod order snapshots,
+BSA Archives support,
+extended UNICODE support,
+Mod Enumeration,
+Custom Commands,
+Speed optimizations,
+MWSE support,
+and much more
