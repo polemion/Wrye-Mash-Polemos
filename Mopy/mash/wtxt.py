@@ -1,11 +1,53 @@
-"""This module provides a single function for converting wtxt text files to html 
-files. 
+# -*- coding: utf-8 -*-
 
+# Wrye Mash Polemos fork GPL License and Copyright Notice ==============================
+#
+# This file is part of Wrye Mash Polemos fork.
+#
+# Wrye Mash 2018 Polemos fork Copyright (C) 2017-2018 Polemos
+# * based on code by Yacoby copyright (C) 2011-2016 Wrye Mash Fork Python version
+# * based on code by Melchor copyright (C) 2009-2011 Wrye Mash WMSA
+# * based on code by Wrye copyright (C) 2005-2009 Wrye Mash
+# License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
+#
+#  Copyright on the original code 2005-2009 Wrye
+#  Copyright on any non trivial modifications or substantial additions 2009-2011 Melchor
+#  Copyright on any non trivial modifications or substantial additions 2011-2016 Yacoby
+#  Copyright on any non trivial modifications or substantial additions 2017-2018 Polemos
+#
+# ======================================================================================
+
+# Original Wrye Mash License and Copyright Notice ======================================
+#
+#  Wrye Mash is free software; you can redistribute it and/or
+#  modify it under the terms of the GNU General Public License
+#  as published by the Free Software Foundation; either version 2
+#  of the License, or (at your option) any later version.
+#
+#  Wrye Bolt is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with Wrye Mash; if not, write to the Free Software Foundation,
+#  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#  Wrye Mash copyright (C) 2005, 2006, 2007, 2008, 2009 Wrye
+#
+# ========================================================================================
+
+# Polemos: Small optimizations.
+
+# This module provides a single function for converting wtxt text files to html files.
+
+"""
 Headings:
 = XXXX >> H1 "XXX"
 == XXXX >> H2 "XXX"
 === XXXX >> H3 "XXX"
 ==== XXXX >> H4 "XXX"
+
 Notes:
 * These must start at first character of line.
 * The XXX text is compressed to form an anchor. E.g == Foo Bar gets anchored as" FooBar".
@@ -16,6 +58,7 @@ Bullet Lists:
 * Level 1
   * Level 2
     * Level 3
+
 Notes:
 * These must start at first character of line.
 * Recognized bullet characters are: - ! ? . + * o The dot (.) produces an invisible
@@ -25,6 +68,7 @@ Styles:
   __Text__
   ~~Italic~~
   **BoldItalic**
+
 Notes:
 * These can be anywhere on line, and effects can continue across lines.
 
@@ -37,12 +81,10 @@ Contents
 2 for two levels, etc.).
 """
 
-# Imports ----------------------------------------------------------------------
-#--Standard
-import os
 import re
 
-# Data ------------------------------------------------------------------------
+# Data ------------------------------------------------------------------------ #
+
 htmlHead = """
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
 <HTML>
@@ -53,6 +95,7 @@ htmlHead = """
 </HEAD>
 <BODY>
 """
+
 defaultCss = """
 H1 { margin-top: 0in; margin-bottom: 0in; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: none; border-right: none; padding: 0.02in 0in; background: #c6c63c; font-family: "Arial", serif; font-size: 12pt; page-break-before: auto; page-break-after: auto }
 H2 { margin-top: 0in; margin-bottom: 0in; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: none; border-right: none; padding: 0.02in 0in; background: #e6e64c; font-family: "Arial", serif; font-size: 10pt; page-break-before: auto; page-break-after: auto }
@@ -71,7 +114,6 @@ CODE { background-color: #FDF5E6;}
 BODY { background-color: #ffffcc; }
 """
 
-# Conversion ------------------------------------------------------------------
 def genHtml(srcFile,outFile=None,cssDir=''):
     """Generates an html file from a wtxt file. CssDir specifies a directory to search for css files."""
     if not outFile:
@@ -119,14 +161,13 @@ def genHtml(srcFile,outFile=None,cssDir=''):
         if '|' in text:
             (address,text) = [chunk.strip() for chunk in text.split('|',1)]
             if address == '#': address += reWd.sub('',text) 
-        if not reFullLink.search(address):
-            address = address+'.html'
+        if not reFullLink.search(address): address = address+'.html'
         return '<a href="%s">%s</a>' % (address,text)
     #--Tags
     reAnchorTag = re.compile('{{A:(.+?)}}')
     reContentsTag = re.compile(r'\s*{{CONTENTS=?(\d+)}}\s*$')
     reCssTag = re.compile('\s*{{CSS:(.+?)}}\s*$')
-    #--Defaults ----------------------------------------------------------
+    #--Defaults ---------------------------------------------------------- #
     title = ''
     level = 1
     spaces = ''
@@ -139,116 +180,101 @@ def genHtml(srcFile,outFile=None,cssDir=''):
     addContents = 0
     inPre = False
     isInParagraph = False
-    #--Read source file --------------------------------------------------
-    ins = file(srcFile)
-    for line in ins:
-        isInParagraph,wasInParagraph = False,isInParagraph
-        #--Preformatted? -----------------------------
-        maPreBegin = rePreBegin.search(line)
-        maPreEnd = rePreEnd.search(line)
-        if inPre or maPreBegin or maPreEnd:
-            inPre = maPreBegin or (inPre and not maPreEnd)
+    #--Read source file -------------------------------------------------- #
+    with open (srcFile) as ins:
+        for line in ins:
+            isInParagraph,wasInParagraph = False,isInParagraph
+            #--Preformatted? ----------------------------- #
+            maPreBegin = rePreBegin.search(line)
+            maPreEnd = rePreEnd.search(line)
+            if inPre or maPreBegin or maPreEnd:
+                inPre = maPreBegin or (inPre and not maPreEnd)
+                outLines.append(line)
+                continue
+            #--Re Matches ------------------------------- #
+            maContents = reContentsTag.match(line)
+            maCss = reCssTag.match(line)
+            maHead = reHead.match(line)
+            maList  = reList.match(line)
+            maPar   = rePar.match(line)
+            maHRule  = reHRule.match(line)
+            maEmpty = reEmpty.match(line)
+            #--Contents ---------------------------------- #
+            if maContents:
+                if maContents.group(1):
+                    addContents = int(maContents.group(1))
+                else: addContents = 100
+                inPar = False
+            #--CSS
+            elif maCss:
+                cssFile = maCss.group(1).strip()
+                continue
+            #--Headers
+            elif maHead:
+                lead,text = maHead.group(1,2)
+                text = re.sub(' *=*#?$','',text.strip())
+                anchor = reWd.sub('',text)
+                level = len(lead)
+                line = headFormat % (level,anchor,text,level)
+                if addContents: contents.append((level,anchor,text))
+                #--Title?
+                if not title and level <= 2: title = text
+            #--List item
+            elif maList:
+                spaces = maList.group(1)
+                bullet = maList.group(2)
+                text = maList.group(3)
+                if bullet == '.': bullet = '&nbsp;'
+                elif bullet == '*': bullet = '&bull;'
+                level = len(spaces)/2 + 1
+                line = spaces+'<p class=list-'+`level`+'>'+bullet+'&nbsp; '
+                line = line + text + '\n'
+            #--HRule
+            elif maHRule: line = '<hr>\n'
+            #--Paragraph
+            elif maPar:
+                if not wasInParagraph: line = '<p>'+line
+                isInParagraph = True
+            #--Empty line
+            elif maEmpty: line = spaces+'<p class=empty>&nbsp;</p>\n'
+            #--Misc. Text changes -------------------- #
+            line = reMDash.sub('&#150',line)
+            line = reMDash.sub('&#150',line)
+            #--Bold/Italic subs
+            line = reBold.sub(boldReplace,line)
+            line = reItalic.sub(italicReplace,line)
+            line = reBoldItalic.sub(boldItalicReplace,line)
+            #--Wtxt Tags
+            line = reAnchorTag.sub(anchorReplace,line)
+            #--Hyperlinks
+            line = reLink.sub(linkReplace,line)
+            line = reHttp.sub(r' <a href="\1">\1</a>',line)
+            line = reWww.sub(r' <a href="http://\1">\1</a>',line)
+            #--Save line ------------------ #
             outLines.append(line)
-            continue
-        #--Re Matches -------------------------------
-        maContents = reContentsTag.match(line)
-        maCss = reCssTag.match(line)
-        maHead = reHead.match(line)
-        maList  = reList.match(line)
-        maPar   = rePar.match(line)
-        maHRule  = reHRule.match(line)
-        maEmpty = reEmpty.match(line)
-        #--Contents ----------------------------------
-        if maContents:
-            if maContents.group(1):
-                addContents = int(maContents.group(1))
-            else:
-                addContents = 100
-            inPar = False
-        #--CSS 
-        elif maCss:
-            cssFile = maCss.group(1).strip()
-            continue
-        #--Headers
-        elif maHead:
-            lead,text = maHead.group(1,2)
-            text = re.sub(' *=*#?$','',text.strip())
-            anchor = reWd.sub('',text)
-            level = len(lead)
-            line = headFormat % (level,anchor,text,level)
-            if addContents: contents.append((level,anchor,text))
-            #--Title?
-            if not title and level <= 2: title = text
-        #--List item
-        elif maList:
-            spaces = maList.group(1)
-            bullet = maList.group(2)
-            text = maList.group(3)
-            if bullet == '.': bullet = '&nbsp;'
-            elif bullet == '*': bullet = '&bull;'
-            level = len(spaces)/2 + 1
-            line = spaces+'<p class=list-'+`level`+'>'+bullet+'&nbsp; '
-            line = line + text + '\n'
-        #--HRule
-        elif maHRule:
-            line = '<hr>\n'
-        #--Paragraph
-        elif maPar:
-            if not wasInParagraph: line = '<p>'+line
-            isInParagraph = True
-        #--Empty line
-        elif maEmpty:
-            line = spaces+'<p class=empty>&nbsp;</p>\n'
-        #--Misc. Text changes --------------------
-        line = reMDash.sub('&#150',line)
-        line = reMDash.sub('&#150',line)
-        #--Bold/Italic subs
-        line = reBold.sub(boldReplace,line)
-        line = reItalic.sub(italicReplace,line)
-        line = reBoldItalic.sub(boldItalicReplace,line)
-        #--Wtxt Tags
-        line = reAnchorTag.sub(anchorReplace,line)
-        #--Hyperlinks
-        line = reLink.sub(linkReplace,line)
-        line = reHttp.sub(r' <a href="\1">\1</a>',line)
-        line = reWww.sub(r' <a href="http://\1">\1</a>',line)
-        #--Save line ------------------
-        #print line,
-        outLines.append(line)
-    ins.close()
-    #--Get Css -----------------------------------------------------------
-    if not cssFile:
-        css = defaultCss
+    #--Get Css ----------------------------------------------------------- #
+    if not cssFile: css = defaultCss
     else:
         cssBaseName = os.path.basename(cssFile) #--Dir spec not allowed.
         cssSrcFile  = os.path.join(os.path.dirname(srcFile),cssBaseName)
         cssDirFile  = os.path.join(cssDir,cssBaseName)
-        if os.path.splitext(cssBaseName)[-1].lower() != '.css':
-            raise "Invalid Css file: "+cssFile
-        elif os.path.exists(cssSrcFile):
-            cssFile = cssSrcFile
-        elif os.path.exists(cssDirFile):
-            cssFile = cssDirFile
-        else:
-            raise 'Css file not found: '+cssFile
+        if os.path.splitext(cssBaseName)[-1].lower() != '.css': raise u"Invalid css file: "+cssFile
+        elif os.path.exists(cssSrcFile): cssFile = cssSrcFile
+        elif os.path.exists(cssDirFile): cssFile = cssDirFile
+        else: raise u'Css file not found: '+cssFile
         css = ''.join(open(cssFile).readlines())
-        if '<' in css:
-            raise "Non css tag in css file: "+cssFile
-    #--Write Output ------------------------------------------------------
-    out = file(outFile,'w')
-    out.write(htmlHead % (title,css))
-    didContents = False
-    for line in outLines:
-        if reContentsTag.match(line):
-            if not didContents:
-                baseLevel = min([level for (level,name,text) in contents])
-                for (level,name,text) in contents:
-                    level = level - baseLevel + 1
-                    if level <= addContents:
-                        out.write('<p class=list-%d>&bull;&nbsp; <a href="#%s">%s</a></p>\n' % (level,name,text))
-                didContents = True
-        else:
-            out.write(line)
-    out.write('</body>\n</html>\n')
-    out.close()
-
+        if '<' in css: raise u"Non css tag in css file: "+cssFile
+    #--Write Output ------------------------------------------------------ #
+    with open(outFile,'w') as out:
+        out.write(htmlHead % (title,css))
+        didContents = False
+        for line in outLines:
+            if reContentsTag.match(line):
+                if not didContents:
+                    baseLevel = min([level for (level,name,text) in contents])
+                    for (level,name,text) in contents:
+                        level = level - baseLevel + 1
+                        if level <= addContents: out.write('<p class=list-%d>&bull;&nbsp; <a href="#%s">%s</a></p>\n' % (level,name,text))
+                    didContents = True
+            else: out.write(line)
+        out.write('</body>\n</html>\n')

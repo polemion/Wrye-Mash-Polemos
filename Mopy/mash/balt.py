@@ -1,3 +1,20 @@
+# -*- coding: utf-8 -*-
+
+# Wrye Mash Polemos fork GPL License and Copyright Notice ==============================
+#
+# Wrye Mash 2018 Polemos fork Copyright (C) 2017-2018 Polemos
+# * based on code by Yacoby copyright (C) 2011-2016 Wrye Mash Fork Python version
+# * based on code by Melchor copyright (C) 2009-2011 Wrye Mash WMSA
+# * based on code by Wrye copyright (C) 2005-2009 Wrye Mash
+# License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
+#
+#  Copyright on the original code 2005-2009 Wrye
+#  Copyright on any non trivial modifications or substantial additions 2009-2011 Melchor
+#  Copyright on any non trivial modifications or substantial additions 2011-2016 Yacoby
+#  Copyright on any non trivial modifications or substantial additions 2017-2018 Polemos
+#
+# ======================================================================================
+
 # GPL License and Copyright Notice ============================================
 #  This file is part of Wrye Bolt.
 #
@@ -23,13 +40,13 @@
 #--Localization
 #..Handled by bolt, so import that.
 import bolt
-from bolt import _, GPath, deprint, delist
-from bolt import BoltError, AbstractError, ArgumentError, StateError, UncodedError
+from bolt import _, GPath
+from bolt import AbstractError, ArgumentError, StateError, UncodedError
+import conf  # Polemos
 
 #--Python
 import cStringIO
 import string
-import struct
 import sys
 import textwrap
 import time
@@ -60,7 +77,7 @@ class IdList:
 
     def __iter__(self):
         """Return iterator."""
-        for id in range(self.BASE,self.MAX+1):
+        for id in xrange(self.BASE,self.MAX+1):
             yield id
 
 # Constants -------------------------------------------------------------------
@@ -129,7 +146,7 @@ class Image:
         self.bitmap = None
         self.icon = None
         if not GPath(self.file).exists():
-            raise ArgumentError(_("Missing resource file: %s.") % (self.file,))
+            raise ArgumentError(_(u'Missing resource file: %s.') % (self.file,))
 
     def GetBitmap(self):
         if not self.bitmap:
@@ -201,21 +218,25 @@ def ensureDisplayed(frame,x=100,y=100):
         topLeft = wx.Display(0).GetGeometry().GetTopLeft()
         frame.MoveXY(topLeft.x+x,topLeft.y+y)
 
-def setCheckListItems(gList,names,values):
+def setCheckListItems(gList,names,values):  # Polemos - Installers: break if not read.
     """Convenience method for setting a bunch of wxCheckListBox items. The main advantage 
     of this is that it doesn't clear the list unless it needs to. Which is good if you want
     to preserve the scroll position of the list."""
-    if not names:
-        gList.Clear()
+    if not names: gList.Clear()
     else:
         for index,(name,value) in enumerate(zip(names,values)):
             if index >= gList.GetCount():
-                gList.Append(name)
+                try: gList.Append(name)
+                except:
+                    gList.Clear()
+                    break
             else:
-                gList.SetString(index,name)
+                try: gList.SetString(index,name)
+                except:
+                    gList.Clear()
+                    break
             gList.Check(index,value)
-        for index in range(gList.GetCount(),len(names),-1):
-            gList.Delete(index-1)
+        for index in xrange(gList.GetCount(),len(names),-1): gList.Delete(index-1)
 
 # Elements --------------------------------------------------------------------
 def bell(arg=None):
@@ -304,9 +325,9 @@ def aSizer(sizer,*elements):
     """Adds elements to a sizer."""
     for element in elements:
         if isinstance(element,tuple):
-            if element[0] != None:
+            if element[0] is not None:
                 sizer.Add(*element)
-        elif element != None:
+        elif element is not None:
             sizer.Add(element)
     return sizer
 
@@ -434,11 +455,11 @@ def showError(parent,message,title=_('Error')):
     """Shows a modal error message."""
     return askStyled(parent,message,title,wx.OK|wx.ICON_HAND)
 
-def showWarning(parent,message,title=_('Warning')):
+def showWarning(parent,message,title=_(u'Warning')):
     """Shows a modal warning message."""
     return askStyled(parent,message,title,wx.OK|wx.ICON_EXCLAMATION)
     
-def showInfo(parent,message,title=_('Information')):
+def showInfo(parent,message,title=_(u'Information')):
     """Shows a modal information message."""
     return askStyled(parent,message,title,wx.OK|wx.ICON_INFORMATION)
 
@@ -521,7 +542,7 @@ def showWryeLog(parent,logText,title='',style=0,asDialog=True,icons=None):
     window.SetSizeHints(200,200)
     window.Bind(wx.EVT_CLOSE,showLogClose)
     #--Text
-    textCtrl = wx.lib.iewin.IEHtmlWindow(window, defId, style = wx.NO_FULL_REPAINT_ON_RESIZE)
+    textCtrl = wx.lib.iewin.IEHtmlWindow(window, defId, style = wx.NO_FULL_REPAINT_ON_RESIZE)  #  iewin
     if not isinstance(logText,bolt.Path):
         logPath = _settings.get('balt.WryeLog.temp', bolt.Path.getcwd().join('WryeLogTemp.html'))
         cssDir = _settings.get('balt.WryeLog.cssDir', GPath(''))
@@ -757,7 +778,7 @@ class ListEditor(wx.Dialog):
         if not newName or newName == curName:
             return
         elif newName in self.items:
-            showError(self,_('Name must be unique.'))
+            showError(self,_(u'Name must be unique.'))
         elif self.data.rename(curName,newName):
             self.items[itemDex] = newName
             self.list.SetString(itemDex,newName)
@@ -853,7 +874,7 @@ class Picture(wx.Window):
     def OnPaint(self, event=None):
         """Draw bitmap or clear drawing area."""
         dc = wx.PaintDC(self)
-        dc.SetBackground(wx.MEDIUM_GREY_BRUSH)
+        dc.SetBackground(wx.WHITE_BRUSH)
         if self.scaled:
             if self.GetSizeTuple() != self.oldSize:
                 self.Rescale()
@@ -875,7 +896,7 @@ class Picture(wx.Window):
 #------------------------------------------------------------------------------
 class Progress(bolt.Progress):
     """Progress as progress dialog."""
-    def __init__(self,title=_('Progress'),message=' '*60,parent=None,
+    def __init__(self,title=_(u'Progress'),message=' '*60,parent=None,
         style=wx.PD_APP_MODAL|wx.PD_ELAPSED_TIME|wx.PD_AUTO_HIDE):
         if sys.version[:3] != '2.4': style |= wx.PD_SMOOTH 
         self.dialog = wx.ProgressDialog(title,message,100,parent,style)
@@ -886,15 +907,13 @@ class Progress(bolt.Progress):
         self.prevState = -1
         self.prevTime = 0
 
-    def doProgress(self,state,message):
-        if not self.dialog:
-            raise StateError(_('Dialog already destroyed.'))
+    def doProgress(self,state,message): # Polemos: bug fix.
+        if not self.dialog: raise StateError(_(u'Dialog already destroyed.'))
         elif (state == 0 or state == 1 or (message != self.prevMessage) or 
             (state - self.prevState) > 0.05 or (time.time() - self.prevTime) > 0.5):
-            if message != self.prevMessage:
-                self.dialog.Update(int(state*100),message)
-            else:
-                self.dialog.Update(int(state*100))
+            if message != self.prevMessage: self.dialog.Update(int(state*100),message)
+            else: self.dialog.Update(int(state*100))
+            wx.Yield()
             self.prevMessage = message
             self.prevState = state
             self.prevTime = time.time()
@@ -905,26 +924,27 @@ class Progress(bolt.Progress):
             self.dialog = None
 
 #------------------------------------------------------------------------------
-class Tank(wx.Panel):
-    """'Tank' format table. Takes the form of a wxListCtrl in Report mode, with 
-    multiple columns and (optionally) column an item menus."""
+
+class Tank(wx.Panel):  # Polemos: Edits
+    """'Tank' format table. Takes the form of a wxListCtrl in Report mode, with multiple columns and (optionally) column an item menus."""
 
     class ListCtrl(wx.ListCtrl, ListCtrlAutoWidthMixin):
         """List control extended with the wxPython auto-width mixin class."""
+
         def __init__(self, parent, id, pos=defPos, size=defSize, style=0):
+            """Init."""
             wx.ListCtrl.__init__(self, parent, id, pos, size, style=style)
             ListCtrlAutoWidthMixin.__init__(self)
 
-    #--Class-------------------------------------------------------------------
     mainMenu = None
     itemMenu = None
+    prev_item = None
 
-    #--Instance ---------------------------------------------------------------
-    def __init__(self,parent,data,icons=None,mainMenu=None,itemMenu=None,
-            details=None,id=-1,style=(wx.LC_REPORT | wx.LC_SINGLE_SEL)):
+    def __init__(self, parent, data, icons=None, mainMenu=None, itemMenu=None, details=None, id=-1, style=(wx.LC_REPORT|wx.LC_SINGLE_SEL)):
+        """Init."""
         wx.Panel.__init__(self,parent,id,style=wx.WANTS_CHARS)
         #--Data
-        if icons == None: icons = {}
+        if icons is None: icons = {}
         self.data = data
         self.icons = icons #--Default to balt image collection.
         self.mainMenu = mainMenu or self.__class__.mainMenu
@@ -940,8 +960,7 @@ class Tank(wx.Panel):
         self.SetSizeHints(50,50)
         #--ListCtrl
         self.gList = gList = Tank.ListCtrl(self, -1, style=style)
-        if self.icons: 
-            gList.SetImageList(icons.GetImageList(),wx.IMAGE_LIST_SMALL)
+        if self.icons: gList.SetImageList(icons.GetImageList(),wx.IMAGE_LIST_SMALL)
         #--State info
         self.mouseItem = None
         self.mouseTexts = {}
@@ -972,7 +991,6 @@ class Tank(wx.Panel):
         #--Hack: Default text item background color
         self.defaultTextBackground = wx.SystemSettings.GetColour(wx.SYS_COLOUR_WINDOW)
 
-    #--Item/Id/Index Translation ----------------------------------------------
     def GetItem(self,index):
         """Returns item for specified list index."""
         return self.itemId_item[self.gList.GetItemData(index)]
@@ -1000,7 +1018,6 @@ class Tank(wx.Panel):
             del self.item_itemId[item]
             del self.itemId_item[itemId]
 
-    #--Updating/Sorting/Refresh -----------------------------------------------
     def UpdateColumns(self):
         """Create/name columns in ListCtrl."""
         data = self.data
@@ -1012,11 +1029,15 @@ class Tank(wx.Panel):
             name  = col_name.get(column,_(column))
             width = col_width.get(column,30)
             align = wxListAligns[col_align.get(column,'LEFT')]
+            if conf.settings['mash.large.fonts']:
+                import gui.interface
+                self.gList.SetFont(wx.Font(*gui.interface.internalStyle['big.font']))
             self.gList.InsertColumn(index,name,align)
             self.gList.SetColumnWidth(index, width)
 
     def UpdateItem(self,index,item=None,selected=tuple()):
         """Populate Item for specified item."""
+        import gui.interface
         if index < 0: return
         data,gList = self.data,self.gList
         item = item or self.GetItem(index)
@@ -1025,8 +1046,14 @@ class Tank(wx.Panel):
         gItem = gList.GetItem(index)
         iconKey,textKey,backKey = data.getGuiKeys(item)
         if iconKey and self.icons: gItem.SetImage(self.icons[iconKey])
-        if textKey: gItem.SetTextColour(colors[textKey])
-        else: gItem.SetTextColour(gList.GetTextColour())
+        if textKey:  # Polemos: Theme engine
+            if textKey == 'BLACK' and gui.interface.style['lists.font.color'] is not None:
+                gItem.SetTextColour(gui.interface.style['lists.font.color'])
+            else: gItem.SetTextColour(colors[textKey])
+        else:
+            if gui.interface.style['lists.font.color'] is None:
+                gItem.SetTextColour(gList.GetTextColour())
+            else: gItem.SetTextColour(gui.interface.style['lists.font.color'])
         if backKey: gItem.SetBackgroundColour(colors[backKey])
         else: gItem.SetBackgroundColour(self.defaultTextBackground)
         gItem.SetState((0,wx.LIST_STATE_SELECTED)[item in selected])
@@ -1043,8 +1070,7 @@ class Tank(wx.Panel):
         #--Update existing items.
         while index < gList.GetItemCount():
             item = self.GetItem(index)
-            if item not in items:
-                gList.DeleteItem(index)
+            if item not in items: gList.DeleteItem(index)
             else:
                 self.UpdateItem(index,item,selected)
                 items.remove(item)
@@ -1079,11 +1105,10 @@ class Tank(wx.Panel):
         curColumn = data.defaultParam('colSort',data.tankColumns[0])
         column = column or curColumn
         curReverse = data.defaultParam('colReverse',{}).get(column,False)
-        if reverse == 'INVERT' and column == curColumn:
-            reverse = not curReverse
-        elif reverse in ('INVERT','CURRENT'):
-            reverse = curReverse
+        if reverse == 'INVERT' and column == curColumn: reverse = not curReverse
+        elif reverse in ('INVERT','CURRENT'): reverse = curReverse
         data.updateParam('colReverse')[column] = reverse
+        self.isReversed = reverse  # Polemos: Get reverse flag.
         data.setParam('colSort',column)
         #--Sort
         items = self.data.getSorted(column,reverse)
@@ -1113,13 +1138,12 @@ class Tank(wx.Panel):
         elif items in self.data:
             self.UpdateItem(self.GetIndex(items),items,selected=selected)
         else: #--Iterable
-            for index in range(self.gList.GetItemCount()):
+            for index in xrange(self.gList.GetItemCount()):
                 if self.GetItem(index) in set(items):
                     self.UpdateItem(index,None,selected=selected)
         self.RefreshDetails(details)
 
-    #--Details view (if it exists)
-    def GetDetailsItem(self):
+    def GetDetailsItem(self): #--Details view (if it exists)
         """Returns item currently being shown in details view."""
         if self.details: return self.details.GetDetailsItem()
         return None
@@ -1130,43 +1154,54 @@ class Tank(wx.Panel):
         item = item or self.GetDetailsItem()
         if item not in self.data: item = None
 
-    #--Selected items
     def GetSelected(self):
-        """Return list of items selected (hilighted) in the interface."""
+        """Return list of items selected (highlighted) in the interface."""
         gList = self.gList
-        return [self.GetItem(x) for x in range(gList.GetItemCount())
+        return [self.GetItem(x) for x in xrange(gList.GetItemCount())
             if gList.GetItemState(x,wx.LIST_STATE_SELECTED)]
 
     def ClearSelected(self):
         """Unselect all items."""
         gList = self.gList
-        for index in range(gList.GetItemCount()):
+        for index in xrange(gList.GetItemCount()):
             if gList.GetItemState(index,wx.LIST_STATE_SELECTED):
                 gList.SetItemState(index, 0, wx.LIST_STATE_SELECTED)
 
-    #--Event Handlers -------------------------------------
-    def OnMouse(self,event):
+    def OnMouse(self,event):  # Polemos: Added a small effect.
         """Check mouse motion to detect right click event."""
         if event.Moving():
-            (mouseItem,mouseHitFlag) = self.gList.HitTest(event.GetPosition())
-            if mouseItem != self.mouseItem:
+            (mouseItem, mouseHitFlag) = self.gList.HitTest(event.GetPosition())
+            if mouseItem == -1: pass
+            elif mouseItem != self.mouseItem:
                 self.mouseItem = mouseItem
-                self.MouseOverItem(mouseItem)
-        elif event.Leaving() and self.mouseItem != None:
+                self.lastItemColor = (mouseItem, self.gList.GetItemTextColour(mouseItem))
+                self.MouseEffect(mouseItem)
+        elif event.Leaving() and self.mouseItem is not None or self.mouseItem != -1:
+            try:
+                if conf.settings['interface.lists.color']:
+                    self.gList.SetItemTextColour(self.lastItemColor[0], self.lastItemColor[1])
+            except: pass
             self.mouseItem = None
-            self.MouseOverItem(None)
+            self.MouseEffect(None)
         event.Skip()
 
-    def MouseOverItem(self,item):
+    def MouseEffect(self, item):  # Polemos: Added a small effect.
         """Handle mouse over item by showing tip or similar."""
-        pass
+        if conf.settings['interface.lists.color']:
+            import gui.interface
+            try:
+                self.gList.SetItemTextColour(item, gui.interface.style['mouse.hover'])
+                self.gList.SetItemTextColour(self.prev_item[0], self.prev_item[1])
+            except: pass
+            try: self.prev_item = self.lastItemColor
+            except: pass  # Happens
 
-    def OnItemSelected(self,event):
+    def OnItemSelected(self,event):  # Polemos: a small hook for the main menu.
         """Item Selected: Refresh details."""
         self.RefreshDetails(self.GetItem(event.m_itemIndex))
 
     def OnStartLabelEdit(self, event):
-        ''' We don't supported renaming labels, so don't let anyone start '''
+        """ We don't support renaming labels, so don't let anyone start """
         event.Veto()
 
     def OnSize(self, event):
@@ -1186,11 +1221,10 @@ class Tank(wx.Panel):
         column = self.data.getParam('columns')[iColumn]
         self.data.updateParam('colWidths')[column] = self.gList.GetColumnWidth(iColumn)
 
-    def OnLeftDown(self,event):
+    def OnLeftDown(self, event):
         """Left mouse button was pressed."""
-        #self.hitTest = self.gList.HitTest((event.GetX(),event.GetY()))
         event.Skip()
-    
+
     def OnColumnClick(self, event):
         """Column header was left clicked on. Sort on that column."""
         columns = self.data.getParam('columns')
@@ -1217,20 +1251,19 @@ class Tank(wx.Panel):
         self.PopupMenu(menu)
         menu.Destroy()
 
-    #--Standard data commands -------------------------------------------------
-    def DeleteSelected(self):
+    def DeleteSelected(self):  #--Standard data commands
         """Deletes selected items."""
         items = self.GetSelected()
         if not items: return
-        message = _(r'Delete these items? This operation cannot be undone.')
+        message = _(ur'Delete these items? This operation cannot be undone.')
         message += '\n* ' + '\n* '.join([self.data.getName(x) for x in items])
-        if not askYes(self,message,_('Delete Items')): return
+        if not askYes(self,message,_(u'Delete Items')): return
         for item in items: del self.data[item]
         self.RefreshUI()
         self.data.setChanged()
 
 # Links -----------------------------------------------------------------------
-#------------------------------------------------------------------------------
+
 class Links(list):
     """List of menu or button links."""
     class LinksPoint:
@@ -1249,19 +1282,20 @@ class Links(list):
             self._list.insert(self._index+1,item)
             self._index += 1
 
-    #--Access functions:
-    def getClassPoint(self,classObj):
+    def getClassPoint(self,classObj):  #--Access functions:
         """Returns index"""
         for index,item in enumerate(self):
             if isinstance(item,classObj):
                 return Links.LinksPoint(self,index)
-        else:
-            return None
+        else: return None
 
 #------------------------------------------------------------------------------
+
 class Link:
     """Link is a command to be encapsulated in a graphic element (menu item, button, etc.)"""
+
     def __init__(self):
+        """Init."""
         self.id = None
 
     def AppendToMenu(self,menu,window,data):
@@ -1283,6 +1317,7 @@ class Link:
         raise AbstractError
 
 #------------------------------------------------------------------------------
+
 class SeparatorLink(Link):
     """Link that acts as a separator item in menus."""
 
@@ -1291,6 +1326,7 @@ class SeparatorLink(Link):
         menu.AppendSeparator()
 
 #------------------------------------------------------------------------------
+
 class MenuLink(Link):
     """Defines a submenu. Generally used for submenus of large menus."""
 
@@ -1312,12 +1348,13 @@ class MenuLink(Link):
             menu.Enable(id,False)
 
 # Tanks Links -----------------------------------------------------------------
-#------------------------------------------------------------------------------
+
 class Tanks_Open(Link):
     """Opens data directory in explorer."""
+
     def AppendToMenu(self,menu,window,data):
         Link.AppendToMenu(self,menu,window,data)
-        menuItem = wx.MenuItem(menu,self.id,_('Open...'))
+        menuItem = wx.MenuItem(menu,self.id,_(u'Open...'))
         menu.AppendItem(menuItem)
 
     def Execute(self,event):
@@ -1327,12 +1364,13 @@ class Tanks_Open(Link):
         dir.start()
 
 # Tank Links ------------------------------------------------------------------
-#------------------------------------------------------------------------------
+
 class Tank_Delete(Link):
     """Deletes selected file from tank."""
+
     def AppendToMenu(self,menu,window,data):
         Link.AppendToMenu(self,menu,window,data)
-        menu.AppendItem(wx.MenuItem(menu,self.id,_('Delete')))
+        menu.AppendItem(wx.MenuItem(menu,self.id,_(u'Delete')))
 
     def Execute(self,event):
         try:
@@ -1342,11 +1380,13 @@ class Tank_Delete(Link):
             wx.EndBusyCursor()
 
 #------------------------------------------------------------------------------
+
 class Tank_Open(Link):
     """Open selected file(s)."""
+
     def AppendToMenu(self,menu,window,data):
         Link.AppendToMenu(self,menu,window,data)
-        menuItem = wx.MenuItem(menu,self.id,_('Open...'))
+        menuItem = wx.MenuItem(menu,self.id,_(u'Open...'))
         menu.AppendItem(menuItem)
         menuItem.Enable(bool(self.selected))
 
@@ -1357,13 +1397,13 @@ class Tank_Open(Link):
             dir.join(file).start()
 
 #------------------------------------------------------------------------------
-class Tank_Duplicate(Link):
-    """Create a duplicate of a tank item, assuming that tank item is a file, 
-    and using a SaveAs dialog."""
+
+class Tank_Duplicate(Link):  # Polemos fixes
+    """Create a duplicate of a tank item, assuming that tank item is a file, and using a SaveAs dialog."""
 
     def AppendToMenu(self,menu,window,data):
         Link.AppendToMenu(self,menu,window,data)
-        menuItem = wx.MenuItem(menu,self.id,_('Duplicate...'))
+        menuItem = wx.MenuItem(menu,self.id,_(u'Duplicate...'))
         menu.AppendItem(menuItem)
         menuItem.Enable(len(self.selected) == 1)
 
@@ -1372,12 +1412,11 @@ class Tank_Duplicate(Link):
         srcName = self.selected[0]
         (root,ext) = srcName.rootExt
         (destDir,destName,wildcard) = (srcDir, root+' Copy'+ext,'*'+ext)
-        destPath = askSave(self.gTank,_('Duplicate as:'),destDir,destName,wildcard)
+        destPath = askSave(self.gTank,_(u'Duplicate as:'),destDir,destName,wildcard)
         if not destPath: return
         destDir,destName = destPath.headTail
         if (destDir == srcDir) and (destName == srcName):
-            balt.showError(self.window,_("Files cannot be duplicated to themselves!"))
+            showError(self.window,_(u"Files cannot be duplicated to themselves!"))
             return
         self.data.copy(srcName,destName,destDir)
-        if destDir == srcDir:
-            self.gTank.RefreshUI()
+        if destDir == srcDir: self.gTank.RefreshUI()

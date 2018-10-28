@@ -1,19 +1,54 @@
-# Imports ----------------------------------------------------------------------
-#--Standard
+# -*- coding: utf-8 -*-
+
+# Wrye Mash Polemos fork GPL License and Copyright Notice ==============================
+#
+# This file is part of Wrye Mash Polemos fork.
+#
+# Wrye Mash 2018 Polemos fork Copyright (C) 2017-2018 Polemos
+# * based on code by Yacoby copyright (C) 2011-2016 Wrye Mash Fork Python version
+# * based on code by Melchor copyright (C) 2009-2011 Wrye Mash WMSA
+# * based on code by Wrye copyright (C) 2005-2009 Wrye Mash
+# License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
+#
+#  Copyright on the original code 2005-2009 Wrye
+#  Copyright on any non trivial modifications or substantial additions 2009-2011 Melchor
+#  Copyright on any non trivial modifications or substantial additions 2011-2016 Yacoby
+#  Copyright on any non trivial modifications or substantial additions 2017-2018 Polemos
+#
+# ======================================================================================
+
+# Original Wrye Mash License and Copyright Notice ======================================
+#
+#  Wrye Mash is free software; you can redistribute it and/or
+#  modify it under the terms of the GNU General Public License
+#  as published by the Free Software Foundation; either version 2
+#  of the License, or (at your option) any later version.
+#
+#  Wrye Bolt is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with Wrye Mash; if not, write to the Free Software Foundation,
+#  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#  Wrye Mash copyright (C) 2005, 2006, 2007, 2008, 2009 Wrye
+#
+# ========================================================================================
+
+# Polemos: Small optimizations.
+
 import os
 import re
 import string
-import struct
-import StringIO
 import sys
 import types
-
-#--Local
 import mosh
 from mosh import _
 import mush
 
-#------------------------------------------------------------------------------
+
 class Callables:
     """A singleton set of objects (typically functions or class instances) that 
     can be called as functions from the command line. 
@@ -23,13 +58,11 @@ class Callables:
     * bish afunction arg1 arg2 arg3
     * bish anInstance.aMethod arg1 arg2 arg3"""
 
-    #--Ctor
-    def __init__(self):
+    def __init__(self): #--Ctor
         """Initialization."""
         self.callObjs = {}
 
-    #--Add a callable
-    def add(self,callObj,callKey=None):
+    def add(self,callObj,callKey=None): #--Add a callable
         """Add a callable object. 
         
         callObj:
@@ -40,13 +73,11 @@ class Callables:
         callKey = callKey or callObj.__name__
         self.callObjs[callKey] = callObj
 
-    #--Help
-    def help(self,callKey):
+    def help(self,callKey): #--Help
         """Print help for specified callKey."""
-        help(self.callObjs[callKey])
+        help(self.callObjs[callKey]) # Polemos: cool hack man (not mine).
 
-    #--Main
-    def main(self):
+    def main(self): #--Main
         callObjs = self.callObjs
         #--Call key, tail
         callParts  = string.split(sys.argv[1],'.',1)
@@ -62,10 +93,8 @@ class Callables:
             return
         #--Callable
         callObj = callObjs[callKey]
-        if type(callObj) == types.StringType:
-            callObj = eval(callObj)
-        if callTail:
-            callObj = eval('callObj.'+callTail)
+        if type(callObj) == types.StringType: callObj = eval(callObj)
+        if callTail: callObj = eval('callObj.'+callTail)
         #--Args
         args = sys.argv[2:]
         #--Keywords?
@@ -84,10 +113,9 @@ class Callables:
                 keyword = reKeyBool.match(arg).group(1)
                 keywords[keyword] = 1
                 del args[argDex]
-            else:
-                argDex = argDex + 1
+            else: argDex = argDex + 1
         #--Apply
-        apply(callObj,args,keywords)
+        callObj(*args, **keywords)
 #--Callables Singleton
 callables = Callables()
 
@@ -96,7 +124,7 @@ def mainFunction(func):
     callables.add(func)
     return func
 
-#ETXT =========================================================================
+# ETXT
 etxtHeader = """
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
 <HTML>
@@ -163,10 +191,8 @@ def etxtToHtml(inFileName):
         return '<span class=date%d>%s</span>' % (age,maDate.group(1))
     def linkReplace(maLink):
         address = text = maLink.group(1).strip()
-        if '|' in text:
-            (address,text) = [chunk.strip() for chunk in text.split('|',1)]
-        if not reFullLink.search(address):
-            address = address+'.html'
+        if '|' in text: (address,text) = [chunk.strip() for chunk in text.split('|',1)]
+        if not reFullLink.search(address): address = address+'.html'
         return '<a href="%s">%s</a>' % (address,text)
     #--Defaults
     title = ''
@@ -175,129 +201,118 @@ def etxtToHtml(inFileName):
     headForm = "<h%d><a name='%s'>%s</a></h%d>\n"
     #--Open files
     inFileRoot = re.sub('\.[a-zA-Z]+$','',inFileName)
-    inFile = open(inFileName)
-    #--Init
-    outLines = []
-    contents = []
-    addContents = 0
-    #--Read through inFile
-    for line in inFile.readlines():
-        maHead2 = reHead2.match(line)
-        maHead3 = reHead3.match(line)
-        maHead4 = reHead4.match(line)
-        maHead5 = reHead5.match(line)
-        maPar   = rePar.match(line)
-        maList  = reList.match(line)
-        maBlank = reBlank.match(line)
-        maContents = reContents.match(line)
-        #--Contents
-        if maContents:
-            if maContents.group(1):
-                addContents = int(maContents.group(1))
-            else:
-                addContents = 100
-        #--Header 2?
-        if maHead2:
-            text = maHead2.group(1)
-            name = reWd.sub('',text)
-            line = headForm % (2,name,text,3)
-            if addContents: contents.append((2,name,text))
-            #--Title?
-            if not title: title = text
-        #--Header 3?
-        elif maHead3:
-            text = maHead3.group(1)
-            name = reWd.sub('',text)
-            line = headForm % (3,name,text,3)
-            if addContents: contents.append((3,name,text))
-            #--Title?
-            if not title: title = text
-        #--Header 4?
-        elif maHead4:
-            text = maHead4.group(1)
-            name = reWd.sub('',text)
-            line = headForm % (4,name,text,4)
-            if addContents: contents.append((4,name,text))
-        #--Header 5?
-        elif maHead5:
-            text = maHead5.group(1)
-            name = reWd.sub('',text)
-            line = headForm % (5,name,text,5)
-            if addContents: contents.append((5,name,text))
-        #--List item
-        elif maList:
-            spaces = maList.group(1)
-            bullet = maList.group(2)
-            text = maList.group(3)
-            if bullet == '.': bullet = '&nbsp;'
-            elif bullet == '*': bullet = '&bull;'
-            level = len(spaces)/2 + 1
-            line = spaces+'<p class=list-'+`level`+'>'+bullet+'&nbsp; '
-            line = line + text + '\n'
-        #--Paragraph
-        elif maPar:
-            line = '<p>'+maPar.group(1)
-        #--Blank line
-        elif maBlank:
-            line = spaces+'<p class=list'+`level`+'>&nbsp;</p>'
-        #--Misc. Text changes
-        line = reMDash.sub('&#150',line)
-        line = reMDash.sub('&#150',line)
-        #--New bold/italic subs
-        line = reBoldOpen.sub(' <B>',line)
-        line = reItalicOpen.sub(' <I>',line)
-        line = reBoldicOpen.sub(' <I><B>',line)
-        line = reBoldClose.sub('</B> ',line)
-        line = reBoldEsc.sub('_',line)
-        line = reItalicClose.sub('</I> ',line)
-        line = reBoldicClose.sub('</B></I> ',line)
-        #--Old style bold/italic subs
-        line = reBold.sub(r'<B><I>\1</I></B>',line)
-        line = reItalic.sub(r'<I>\1</I>',line)
-        #--Date
-        line = reDate.sub(dateReplace,line)
-        #--Local links
-        line = reLink.sub(linkReplace,line)
-        #--Hyperlink
-        line = reHttp.sub(r' <a href="\1">\1</a>',line)
-        line = reWww.sub(r' <a href="http://\1">\1</a>',line)
-        #--Write it
-        #print line
-        outLines.append(line)
-    inFile.close()
+    with open(inFileName) as inFile:
+        #--Init
+        outLines = []
+        contents = []
+        addContents = 0
+        #--Read through inFile
+        for line in inFile.readlines():
+            maHead2 = reHead2.match(line)
+            maHead3 = reHead3.match(line)
+            maHead4 = reHead4.match(line)
+            maHead5 = reHead5.match(line)
+            maPar   = rePar.match(line)
+            maList  = reList.match(line)
+            maBlank = reBlank.match(line)
+            maContents = reContents.match(line)
+            #--Contents
+            if maContents:
+                if maContents.group(1): addContents = int(maContents.group(1))
+                else: addContents = 100
+            #--Header 2?
+            if maHead2:
+                text = maHead2.group(1)
+                name = reWd.sub('',text)
+                line = headForm % (2,name,text,3)
+                if addContents: contents.append((2,name,text))
+                #--Title?
+                if not title: title = text
+            #--Header 3?
+            elif maHead3:
+                text = maHead3.group(1)
+                name = reWd.sub('',text)
+                line = headForm % (3,name,text,3)
+                if addContents: contents.append((3,name,text))
+                #--Title?
+                if not title: title = text
+            #--Header 4?
+            elif maHead4:
+                text = maHead4.group(1)
+                name = reWd.sub('',text)
+                line = headForm % (4,name,text,4)
+                if addContents: contents.append((4,name,text))
+            #--Header 5?
+            elif maHead5:
+                text = maHead5.group(1)
+                name = reWd.sub('',text)
+                line = headForm % (5,name,text,5)
+                if addContents: contents.append((5,name,text))
+            #--List item
+            elif maList:
+                spaces = maList.group(1)
+                bullet = maList.group(2)
+                text = maList.group(3)
+                if bullet == '.': bullet = '&nbsp;'
+                elif bullet == '*': bullet = '&bull;'
+                level = len(spaces)/2 + 1
+                line = spaces+'<p class=list-'+`level`+'>'+bullet+'&nbsp; '
+                line = line + text + '\n'
+            #--Paragraph
+            elif maPar: line = '<p>'+maPar.group(1)
+            #--Blank line
+            elif maBlank: line = spaces+'<p class=list'+`level`+'>&nbsp;</p>'
+            #--Misc. Text changes
+            line = reMDash.sub('&#150',line)
+            line = reMDash.sub('&#150',line)
+            #--New bold/italic subs
+            line = reBoldOpen.sub(' <B>',line)
+            line = reItalicOpen.sub(' <I>',line)
+            line = reBoldicOpen.sub(' <I><B>',line)
+            line = reBoldClose.sub('</B> ',line)
+            line = reBoldEsc.sub('_',line)
+            line = reItalicClose.sub('</I> ',line)
+            line = reBoldicClose.sub('</B></I> ',line)
+            #--Old style bold/italic subs
+            line = reBold.sub(r'<B><I>\1</I></B>',line)
+            line = reItalic.sub(r'<I>\1</I>',line)
+            #--Date
+            line = reDate.sub(dateReplace,line)
+            #--Local links
+            line = reLink.sub(linkReplace,line)
+            #--Hyperlink
+            line = reHttp.sub(r' <a href="\1">\1</a>',line)
+            line = reWww.sub(r' <a href="http://\1">\1</a>',line)
+            #--Write it
+            outLines.append(line)
     #--Output file
-    outFile = open(inFileRoot+'.html','w')
-    outFile.write(etxtHeader % (title,))
-    didContents = False
-    for line in outLines:
-        if reContents.match(line):
-            if not didContents:
-                baseLevel = min([level for (level,name,text) in contents])
-                for (level,name,text) in contents:
-                    level = level - baseLevel + 1
-                    if level <= addContents:
-                        outFile.write('<p class=list-%d>&bull;&nbsp; <a href="#%s">%s</a></p>\n' % (level,name,text))
-                didContents = True
-        else:
-            outFile.write(line)
-    outFile.write('</body>\n</html>\n')
-    outFile.close()
-    #--Done
+    with open(inFileRoot+'.html','w') as outFile:
+        outFile.write(etxtHeader % (title,))
+        didContents = False
+        for line in outLines:
+            if reContents.match(line):
+                if not didContents:
+                    baseLevel = min([level for (level,name,text) in contents])
+                    for (level,name,text) in contents:
+                        level = level - baseLevel + 1
+                        if level <= addContents:
+                            outFile.write('<p class=list-%d>&bull;&nbsp; <a href="#%s">%s</a></p>\n' % (level,name,text))
+                    didContents = True
+            else: outFile.write(line)
+        outFile.write('</body>\n</html>\n') #--Done
 
 @mainFunction
 def genHtml(fileName):
     """Generate html from old style etxt file or from new style wtxt file."""
     ext = os.path.splitext(fileName)[1].lower()
-    if  ext == '.etxt':
-        etxtToHtml(fileName)
+    if  ext == '.etxt': etxtToHtml(fileName)
     elif ext == '.txt':
         import wtxt
         docsDir = r'c:\program files\bethesda softworks\morrowind\data files\docs'
         wtxt.genHtml(fileName,cssDir=docsDir)
-    else:
-        raise "Unrecognized file type: "+ ext
+    else: raise "Unrecognized file type: "+ ext
 
-# Translation -----------------------------------------------------------------
+# Translation
 @mainFunction
 def getTranslatorName():
     """Prints locale."""
@@ -312,31 +327,28 @@ def dumpTranslator():
     import locale
     language = locale.getlocale()[0].split('_',1)[0]
     outPath = 'locale\\NEW%s.txt' % (language,)
-    outFile = open(outPath,'w')
-    #--Scan for keys and dump to 
-    keyCount = 0
-    dumpedKeys = set()
-    reKey = re.compile(r'_\([\'\"](.+?)[\'\"]\)')
-    for pyFile in ('mush.py','mosh.py','mash.py','masher.py'):
-        pyText = open(pyFile)
-        for lineNum,line in enumerate(pyText):
-            line = re.sub('#.*','',line)
-            for key in reKey.findall(line):
-                if key in dumpedKeys: continue
-                outFile.write('=== %s, %d\n' % (pyFile,lineNum+1))
-                outFile.write(key+'\n>>>>\n')
-                value = _(re.sub(r'\\n','\n',key))
-                value = re.sub('\n',r'\\n',value)
-                if value != key:
-                    outFile.write(value)
-                outFile.write('\n')
-                dumpedKeys.add(key)
-                keyCount += 1
-        pyText.close()
-    outFile.close()
+    with open(outPath,'w') as outFile:
+        #--Scan for keys and dump to
+        keyCount = 0
+        dumpedKeys = set()
+        reKey = re.compile(r'_\([\'\"](.+?)[\'\"]\)')
+        for pyFile in ('mush.py','mosh.py','mash.py','masher.py'):
+            with open(pyFile) as pyText:
+                for lineNum,line in enumerate(pyText):
+                    line = re.sub('#.*','',line)
+                    for key in reKey.findall(line):
+                        if key in dumpedKeys: continue
+                        outFile.write('=== %s, %d\n' % (pyFile,lineNum+1))
+                        outFile.write(key+'\n>>>>\n')
+                        value = _(re.sub(r'\\n','\n',key))
+                        value = re.sub('\n',r'\\n',value)
+                        if value != key: outFile.write(value)
+                        outFile.write('\n')
+                        dumpedKeys.add(key)
+                        keyCount += 1
     print keyCount,'translation keys written to',outPath
 
-# Testing ---------------------------------------------------------------------
+# Testing
 def init(initLevel):
     """Initializes mosh environment to specified level.
     initLevels:
@@ -363,10 +375,8 @@ def init(initLevel):
 def tes3Hedr_testWrite(fileName):
     """Does a read write test on TES3 records."""
     init(3)
-    if fileName in mosh.modInfos:
-        fileInfo = mosh.modInfos[fileName]
-    else:
-        fileInfo = mosh.saveInfos[fileName]
+    if fileName in mosh.modInfos: fileInfo = mosh.modInfos[fileName]
+    else: fileInfo = mosh.saveInfos[fileName]
     #--Mark as changed
     oldData = fileInfo.tes3.hedr.data
     fileInfo.tes3.hedr.changed = True
@@ -382,13 +392,10 @@ def fileRefs_testWrite(fileName):
         oldData = cell.data
         cell.changed = True
         cell.getSize()
-        if cell.data != oldData:
-            print cellId, 'BAD'
-        else:
-            #print cellId, "GOOD"
-            pass
+        if cell.data != oldData: print cellId, 'BAD'
+        else: pass
 
-# Information -----------------------------------------------------------------
+# Information
 @mainFunction
 def refInfo(fileName,forMods=-1,forCellId=None):
     """Prints reference info for specified file."""
@@ -412,10 +419,9 @@ def refInfo(fileName,forMods=-1,forCellId=None):
             master = object[0] and masters[object[0]-1][0]
             print ' ', object[:3], master
 
-# Misc. -----------------------------------------------------------------------
-#--Library Generator
+# Misc.
 @mainFunction
-def genLibrary(modName,textName):
+def genLibrary(modName,textName): #--Library Generator
     init(2)
     fileInfo = mosh.modInfos[modName]
     fileLib = mosh.FileLibrary(fileInfo)
@@ -423,9 +429,8 @@ def genLibrary(modName,textName):
     fileLib.doImport(textName)
     fileLib.safeSave()
 
-#--Schedule Generator
 @mainFunction
-def genSchedule(fileName,espName=None):
+def genSchedule(fileName,espName=None): #--Schedule Generator
     generator = mosh.ScheduleGenerator()
     generator.loadText(fileName)
     #--Write to text file?
@@ -439,9 +444,8 @@ def genSchedule(fileName,espName=None):
         if not fileInfo: raise _('No such file: ')+espName
         generator.save(fileInfo)
 
-#--Fix fix operator.
 @mainFunction
-def fixFix(fileName):
+def fixFix(fileName): #--Fix fix operator.
     """Search and replace change on scripts and dialog scripts.
     Strips spaces from around fix (->) operator."""
     rePointer = re.compile(r' -> ?',re.M)
@@ -476,27 +480,27 @@ def fixFix(fileName):
                         break
         fileDials.safeSave()
 
-# Edit Plus Text Editors ------------------------------------------------------
-def lcvNightSort():
+def lcvNightSort(): # Edit Plus Text Editors
     """TextMunch: Sort LCV evening/night schedule cells, ignoring sleep state setting."""
-    import sys
     lines = sys.stdin.readlines()
     for line in lines:
         line = re.sub('@ night','@ evening',line)
         line = re.sub(r'[\*\+] \.','^ .',line)
         print line,
-    for line in lines:
-        print line,
+    for line in lines: print line,
 
 @mainFunction
 def pcLeveler(fileName):
     """TextMunch: Reads in 0/30 level settings and spits out a level setting script."""
     #--Constants
-    import sys
     reSpace = re.compile(r'\s+')
     charSet0 = string.Template(mush.charSet0)
     charSet1 = string.Template(mush.charSet1)
-    statNames = ('Agility', 'Block', 'Light Armor', 'Marksman', 'Sneak', 'Endurance', 'Heavy Armor', 'Medium Armor', 'Spear', 'Intelligence', 'Alchemy', 'Conjuration', 'Enchant', 'Security', 'Personality', 'Illusion', 'Mercantile', 'Speechcraft', 'Speed', 'Athletics', 'Hand To Hand', 'Short Blade', 'Unarmored', 'Strength', 'Acrobatics', 'Armorer', 'Axe', 'Blunt Weapon', 'Long Blade', 'Willpower', 'Alteration', 'Destruction', 'Mysticism', 'Restoration', 'Luck',)
+    statNames = ('Agility', 'Block', 'Light Armor', 'Marksman', 'Sneak', 'Endurance', 'Heavy Armor', 'Medium Armor',
+                 'Spear', 'Intelligence', 'Alchemy', 'Conjuration', 'Enchant', 'Security', 'Personality', 'Illusion',
+                 'Mercantile', 'Speechcraft', 'Speed', 'Athletics', 'Hand To Hand', 'Short Blade', 'Unarmored', 'Strength',
+                 'Acrobatics', 'Armorer', 'Axe', 'Blunt Weapon', 'Long Blade', 'Willpower', 'Alteration', 'Destruction',
+                 'Mysticism', 'Restoration', 'Luck',)
     statGroups = (
         ('Primary',mush.primaryAttributes),
         ('Secondary',('Health',)),
@@ -504,17 +508,14 @@ def pcLeveler(fileName):
         ('Magic Skills',mush.magicSkills),
         ('Stealth Skills',mush.stealthSkills))
     #--Read file/stdin
-    if fileName:
-        inFile = open(fileName)
-    else:
-        inFile = sys.stdin
+    if fileName: inFile = open(fileName)
+    else: inFile = sys.stdin
     #--Read file
     stats = {}
     className = inFile.readline().strip()
     for statName, line in zip(statNames,inFile.readlines()[:35]):
         v00,v30 = re.match('(\d+)\s+(\d+)',line).groups()
         stats[statName] = (int(v00),int(v30))
-        #print statName, stats[statName]
     inFile.close()
     #--Health
     str00,str30 = stats['Strength']
@@ -529,8 +530,7 @@ def pcLeveler(fileName):
         for statName in statNames:
             compName = reSpace.sub('',statName)
             v00,v30 = stats[statName]
-            if v00 == v30:
-                print 'set%s %d' % (compName,v00,)
+            if v00 == v30: print 'set%s %d' % (compName,v00,)
             else:
                 print '  set stemp to %d + ((%d - %d)*level/30)' % (v00,v30,v00)
                 print 'set%s stemp' % (compName,)
@@ -540,11 +540,8 @@ def pcLeveler(fileName):
 @mainFunction
 def etxtToWtxt(fileName=None):
     """TextMunch: Converts etxt files to wtxt formatting."""
-    if fileName:
-        ins = open(fileName)
-    else:
-        import sys
-        ins = sys.stdin
+    if fileName: ins = open(fileName)
+    else: ins = sys.stdin
     for line in ins:
         line = re.sub(r'^\^ ?','',line)
         line = re.sub(r'^## ([^=]+) =',r'= \1 ==',line)
@@ -562,11 +559,9 @@ def textMunch(fileName=None):
     """TextMunch: This is a standin for EditPlus Text munching. It should just 
     call whatever text muncher is currently being used."""
     etxtToWtxt(fileName)
- 
-# Temp ------------------------------------------------------------------------
-#--Temp
+
 @mainFunction
-def temp(fileName):
+def temp(fileName): #--Temp
     init(2)
     fileInfo = mosh.modInfos[fileName]
     fileDials = mosh.FileDials(fileInfo)
@@ -581,8 +576,7 @@ def temp(fileName):
     replKeys = set(repls.keys())
     reRepls = re.compile(r'\b('+('|'.join(replKeys))+r')\b')
     reStartScript = re.compile('^startScript',re.I+re.M)
-    def doRepl(mo):
-        return repls[mo.group(0)]
+    def doRepl(mo): return repls[mo.group(0)]
     #--Loop over dials
     for dial in fileDials.dials:
         print dial.id
@@ -598,8 +592,7 @@ def temp(fileName):
             if info.spId in ('wr_mysCre','wr_bookCre'): 
                 #--Test vars
                 for index,test in enumerate(info.tests):
-                    if not test:
-                        pass
+                    if not test: pass
                     elif test.text.lower() == 'modder':
                         if test.value == 0 and test.oper == 0:
                             test.text = 'menu'
@@ -621,16 +614,13 @@ def temp(fileName):
                 info.setChanged()
     fileDials.safeSave()
 
-#--Temp 2
 @mainFunction
-def temp2(fileName=None):
+def temp2(fileName=None): #--Temp 2
     init(2)
     fileName = fileName or 'Wrye CharSet.esp'
     csi = mosh.CharSetImporter()
     csi.loadText("Wrye CharSets.etxt")
     csi.printMajors()
-    #csi.save(mosh.modInfos[fileName])
 
-# Main -------------------------------------------------------------------------
-if __name__ == '__main__':
-    callables.main()
+# Main
+if __name__ == '__main__': callables.main()
