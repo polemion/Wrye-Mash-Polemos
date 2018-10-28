@@ -1,0 +1,18 @@
+Credits
+
+"Every modder and utility developer in the Morrowind community stands on the collective shoulders of everyone who preceded them, contributing time, talent, and inspiration. So, thanks to all the past developers and folks in the forums!", Wrye.
+
+Wrye: the original creator of Wrye everything,
+Melchor: New help interface, Utilities tab and settings window,
+Yacoby: drag and drop functionality, mlox TES3cmd support, fixes, refactoring and more,
+Polemos: Toolbar menu, mod snapshots, better Unicode support, fixes, BSA Archives implementation, OpenMW/TES3mp compability, TES3lint support, Custom Commands support, new dialogs, functionalities and more.
+
+ManaUser: Coding (a lot).
+Argent: Java code and technical insights into Morrowind files.
+FallenWizard: Key shortcut for deletion in mods and saves tabs from Bash.
+Beryllium: EE templates, bug reports and feedback.
+Abot: Translations.
+Dragon32, Shasta Thorne: Ref Removers.
+Oooiii, Stahpk, Abot, calemcc, Zikerocks, Valascon and Pherim: Vital bug reports and ideas.
+StaticNation: The Wrye Mash bug finder champion.
+KOYK_GR: New icon and Bug testing.
