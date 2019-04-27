@@ -13,6 +13,6 @@ FallenWizard: Key shortcut for deletion in mods and saves tabs from Bash.
 Beryllium: EE templates, bug reports and feedback.
 Abot: Translations.
 Dragon32, Shasta Thorne: Ref Removers.
-Oooiii, Stahpk, Abot, calemcc, Zikerocks, Valascon and Pherim: Vital bug reports and ideas.
+Oooiii, Stahpk, Abot, calemcc, Zikerocks, Valascon, KarmicKid and Pherim: Vital bug reports and ideas.
 StaticNation: The Wrye Mash bug finder champion.
 KOYK_GR: New icon and Bug testing.
