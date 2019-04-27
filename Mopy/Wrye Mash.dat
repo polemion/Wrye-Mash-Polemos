@@ -6,14 +6,15 @@
   </head>
   <body style="                        background-color: rgb(255, 242, 204);">
     <hr style="color: white; margin-left: auto; margin-right: auto;">
-    <h1><span style="color: rgb(0, 51, 51);"> <b>Polemos's Wrye Mash Fork v99</b>
-      </span> </h1>
+    <h1><span style="color: rgb(0, 51, 51);"> <b>Polemos's Wrye Mash Fork v100
+          beta</b> </span> </h1>
     <p><b>Latest Version: <a href="https://www.nexusmods.com/morrowind/mods/45439">Nexus
           </a><br> Discussion: <a href="https://www.nexusmods.com/morrowind/mods/45439?tab=posts">Comments
           section</a></b></p>
     <hr style="color: white; margin-left: auto; margin-right: auto;">
     <p>Tested mainly in Win7 x64. It is also lightly tested and running in Win
-      XP and Win 10 x64 (tested with various encodings).</p>
+      XP* and Win 10 x64 (tested with various encodings).</p>
+    <p>*Only the x86 version is tested in Win XP.</p>
     <p><br>
     </p>
     <p> <i> </i></p>
@@ -2419,6 +2420,73 @@
             Versions</b></a> </span>
       <hr></h2>
     <p><a name="Versions" style="color: rgb(204, 102, 0);"></a></p>
+    <p><b>100 Polemos [4/7/2018]</b></p>
+    <p>Mainly a bugfix and optimization version<br>
+      Fixed the toolbar not refreshing when editing mlox in the settings.<br>
+      Mash will now try to revert to the backup settings configuration if
+      settings.pkl is missing.<br>
+      Structure refactoring.<br>
+      Fixed a bug in Tes3lint implementation which was preventing to exit the
+      output dialog.<br>
+      Added a new Tab in the Settings dialog named "Defaults". In there you can
+      enable/disable Mash warning prompts and also reset the column widths of
+      Mash lists (e.g. Mods list) into their default widths).<br>
+      Optimized and refactored the query dialogs for high resolutions.<br>
+      Optimized conf backup (morrowind.ini or openmw.cfg) fail-safe
+      auto-restoration.<br>
+      Improved conf file saving for better compatibility with Morrowind/OpenMW.<br>
+      Added a filename detection for possible problems with filename encodings.
+      It warns the user when a filename might cause problems with
+      Morrowind/OpenMW or Wrye Mash.<br>
+      Refactored Menubar to wxpython Phoenix standards.<br>
+      Added chardet support for the mod/plugin description field.<br>
+      The High Contrast theme applies to the Help File contents list color now.<br>
+      Added a warning when changing Morrowind directory in settings for the need
+      to restart Wrye Mash.<br>
+      Added encoding options in the settings dialog.<br>
+      Mash first time use Wizard is now allowed to be resized.<br>
+      Some code refactoring in the Mash Wizard also added encoding choices (for
+      translated version of Morrowind).<br>
+      Added a warning when changing a master into a file with unknown encodings.
+      The action is cancelled before any changes are made.<br>
+      Added a warning when a master is automatically deselected in the masters
+      list (when missing or of wrong encoding).<br>
+      Fixed problem in masters list when a file contains unknown characters. It
+      will not bug out but it will deselect the problematic master. (Thanks
+      KarmicKid)<br>
+      Fixed a mistake which was preventing rearranging the mods order in the
+      mods tab. (Thanks KarmicKid)<br>
+      Fixed a fail-safe in morrowind.ini and openmw.cfg parsing<br>
+      Added an extra safety check for unrecognized characters in morrowind.ini
+      and openmw.cfg.<br>
+      Added marker checkups in the installers tab.<br>
+      Added ability to rename markers in Installers. (thanks MOB2).<br>
+      Fixed positioning on renaming in Installers.<br>
+      Small speed improvement in package installations. =&gt; OpenMW/TES3mp<br>
+      Added a check on open if there is already an instance of Wrye Mash
+      running.<br>
+      First 64bit release.<br>
+      Code updates preparing transition to wxpython Phoenix.<br>
+      Fixed another Unicode bug, (thanks movomo!).<br>
+      Optimized "Full Refresh" speed in Installers by around 75%!! You got to
+      see to believe it! It went from 23" to 5" in my system.<br>
+      Added option to force close Wrye Mash if it is stuck ad infinitum in the
+      debug log.<br>
+      Optimized author, description, mod name fields dialog code and datetime
+      dialog (thanks Valascon).<br>
+      Fixed an attribute overload bug in mod/bsa enumeration, (thanks Stahpk).<br>
+      Added existence check on "Rename", "Duplicate", "Delete", "Repack",
+      "Refresh"... actions on installers. This fixes throwing an error in case
+      there was a deletion Mash hasn't detected.<br>
+      "Repack" option in installers tab now repacks rar archives (into .7z).<br>
+      Fixed a bug in Masters mini tab column ordering when clicking a column to
+      reorder (sorry, late night mistakes...).<br>
+      Optimized the way Wrye Mash finds itself. Safer and fixes problems when
+      having multiple Mash installations.<br>
+      Fixed a bug in Installers highlight color.<br>
+      Added animation package support. Wrye Mash will recognize animation
+      packages now.<b><br>
+      </b></p>
     <p><b>99&nbsp; Polemos [10/16/2018]</b></p>
     <p>Added a notification when changing paths in settings to restart Wrye
       Mash.<br>

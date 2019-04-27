@@ -4,7 +4,7 @@
 #
 # This file is part of Wrye Mash Polemos fork.
 #
-# Wrye Mash 2018 Polemos fork Copyright (C) 2017-2018 Polemos
+# Wrye Mash 2018 Polemos fork Copyright (C) 2017-2019 Polemos
 # * based on code by Yacoby copyright (C) 2011-2016 Wrye Mash Fork Python version
 # * based on code by Melchor copyright (C) 2009-2011 Wrye Mash WMSA
 # * based on code by Wrye copyright (C) 2005-2009 Wrye Mash
@@ -13,7 +13,7 @@
 #  Copyright on the original code 2005-2009 Wrye
 #  Copyright on any non trivial modifications or substantial additions 2009-2011 Melchor
 #  Copyright on any non trivial modifications or substantial additions 2011-2016 Yacoby
-#  Copyright on any non trivial modifications or substantial additions 2017-2018 Polemos
+#  Copyright on any non trivial modifications or substantial additions 2017-2019 Polemos
 #
 # ======================================================================================
 
@@ -48,7 +48,7 @@ import scandir, py2exe, os, sys, imp, glob
 verraw = [x.strip() for x in raw()[2].replace('-',',').replace('/',',').split(',')]
 version = '0.%s.%s.%s' % (raw()[0], verraw[1], verraw[2])
 company_name = "Polemos"
-copyright = "Polemos 2017-8 (see 'license.txt' for full credits)"
+copyright = "Polemos 2017-%s (see 'license.txt' for full credits)" % verraw[2]
 mashname = "Wrye Mash v%s %s" % (raw()[0], raw()[3])
 
 # Retrieving wx install dir for getting gdiplus.dll
@@ -62,7 +62,7 @@ wxDlls = [os.path.join(wxDir, a) for a in wxDlls]
 msvcppath = os.path.join(os.path.expandvars('%WINDIR%'), 'winsxs', '*', 'msvcp90.dll')
 msvcrpath = os.path.join(os.path.expandvars('%WINDIR%'), 'winsxs', '*', 'msvcr90.dll')
 msvcDlls = glob.glob(msvcppath) + glob.glob(msvcrpath)
-dest_folder = "..\\bin\\Mopy"
+dest_folder = '..\\bin\\Mopy'
 
 # If you are building this you may need to change the public key for the dll files.
 # It can be found in the manifest files in %windir%\winsxs\
@@ -111,8 +111,8 @@ if "py2exe" not in sys.argv: sys.argv.append("py2exe")
 # Files/Folders Includes
 help_f = 'Wrye Mash.dat'
 if os.path.exists('openmw.dat'): help_f = 'openmw.dat'
-prog_resources = ['7z.exe',
-                  '7z.dll',
+prog_resources = ['.\\7zip\\x86\\7z.exe',
+                  '.\\7zip\\x86\\7z.dll',
                    help_f,
                   'Credits.txt',
                   'License.txt',
@@ -143,7 +143,7 @@ excludes = ["Tkconstants", "Tkinter", "tcl", "doctest", "pdb", "unittest",
             "difflib", '_gtkagg', '_tkagg', 'bsddb', 'curses', #'email',
             'pywin.debugger', 'pywin.debugger.dbgcon', 'pywin.dialogs']
 # dll Excludes
-dll_excludes = ['libgdk-win32-2.0-0.dll', 'libgobject-2.0-0.dll', 'tcl84.dll', 'tk84.dll', 'msvcp90.dll', 'msvcr71.dll']
+dll_excludes = ['libgdk-win32-2.0-0.dll', 'libgobject-2.0-0.dll', 'tcl84.dll', 'tk84.dll', 'msvcp90.dll', 'msvcr71.dll', 'UxTheme.dll']
 
 # py2exe options
 opts = {'py2exe': {'includes': includes,
@@ -178,11 +178,18 @@ dir_util.copy_tree('..\\Data Files', '..\\bin\\Data Files')
 folds = ['Data', 'Extras', 'images', 'locale', 'snapshots', 'themes']
 [dir_util.copy_tree(fold, '%s\\%s' % (dest_folder, fold)) for fold in folds]
 
-# Compress with UPX (Antivirus programs don't like that).
-'''if os.path.exists('upx.exe'):
+# Delete unheeded files in bin dir.
+toDel = ('w9xpopen.exe', 'gdiplus.dll', 'msvcp90.dll', 'msvcr90.dll')
+for x in toDel:
+    targ = os.path.join(dest_folder, x)
+    if os.path.exists(targ):
+        os.remove(targ)
+
+# Compress with UPX (Antivirus programs often don't like that).
+if os.path.exists('upx.exe'):
     files = ( glob.glob(os.path.join(dest_folder, '*.dll'))
             + glob.glob(os.path.join(dest_folder, '*.exe')) )
     #note, --ultra-brute takes ages.
     #If you want a fast build change it to --best
     args = ['upx.exe', '--best'] + files
-    os.spawnv(os.P_WAIT, 'upx.exe', args)'''
+    os.spawnv(os.P_WAIT, 'upx.exe', args)
