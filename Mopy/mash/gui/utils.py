@@ -4,7 +4,7 @@
 #
 # This file is part of Wrye Mash Polemos fork.
 #
-# Wrye Mash 2018 Polemos fork Copyright (C) 2017-2018 Polemos
+# Wrye Mash 2018 Polemos fork Copyright (C) 2017-2019 Polemos
 # * based on code by Yacoby copyright (C) 2011-2016 Wrye Mash Fork Python version
 # * based on code by Melchor copyright (C) 2009-2011 Wrye Mash WMSA
 # * based on code by Wrye copyright (C) 2005-2009 Wrye Mash
@@ -13,7 +13,7 @@
 #  Copyright on the original code 2005-2009 Wrye
 #  Copyright on any non trivial modifications or substantial additions 2009-2011 Melchor
 #  Copyright on any non trivial modifications or substantial additions 2011-2016 Yacoby
-#  Copyright on any non trivial modifications or substantial additions 2017-2018 Polemos
+#  Copyright on any non trivial modifications or substantial additions 2017-2019 Polemos
 #
 # ======================================================================================
 
@@ -40,7 +40,7 @@
 
 import os
 import wx
-from .. import globals
+from .. import singletons
 from .. import conf
 from .. import mosh
 from ..balt import Links, leftSash, hSizer, vSizer
@@ -75,16 +75,16 @@ class UtilsPanel(gui.NotebookPanel):  # Polemos: changes and fixes.
         left = self.left = leftSash(self,defaultSize=(sashPos,100),onSashDrag=self.OnSashDrag)
         right = self.right = wx.Panel(self,style=wx.NO_BORDER)
         #--Contents
-        globals.utilsList = UtilsList(left)
-        globals.utilsList.SetSizeHints(100,100)
+        singletons.utilsList = UtilsList(left)
+        singletons.utilsList.SetSizeHints(100, 100)
         #--Layout
-        left.SetSizer(hSizer((globals.utilsList,1,wx.GROW),((10,0),0)))
+        left.SetSizer(hSizer((singletons.utilsList, 1, wx.GROW), ((10, 0), 0)))
         self.gCommandLine = wx.TextCtrl(right,-1,style=wx.TE_READONLY)
         self.gArguments = wx.TextCtrl(right,-1,style=wx.TE_READONLY)
         self.gDescription = wx.TextCtrl(right,-1,style=wx.TE_MULTILINE|wx.TE_READONLY)
-        globals.utilsList.commandLine = self.gCommandLine
-        globals.utilsList.arguments = self.gArguments
-        globals.utilsList.description = self.gDescription
+        singletons.utilsList.commandLine = self.gCommandLine
+        singletons.utilsList.arguments = self.gArguments
+        singletons.utilsList.description = self.gDescription
         right.SetSizer(vSizer((self.gCommandLine,0,wx.GROW), (self.gArguments,0,wx.GROW), (self.gDescription,1,wx.GROW)))
         wx.LayoutAlgorithm().LayoutWindow(self, right)
         # --Events
@@ -92,8 +92,8 @@ class UtilsPanel(gui.NotebookPanel):  # Polemos: changes and fixes.
 
     def SetStatusCount(self):  # Polemos: fix
         """Sets status bar count field."""
-        text = _(u'Utilities: %d') % (len(globals.utilsList.data.data),)
-        globals.statusBar.SetStatusField(text,2)
+        text = _(u'Utilities: %d') % (len(singletons.utilsList.data.data),)
+        singletons.statusBar.SetStatusField(text, 2)
 
     def OnSashDrag(self,event):
         """Handle sash moved."""
@@ -108,16 +108,16 @@ class UtilsPanel(gui.NotebookPanel):  # Polemos: changes and fixes.
 
     def OnShow(self):
         """Panel is shown. Update self.data."""
-        if mosh.UtilsData.refresh(): globals.utilsList.RefreshUI()  # Leave self out.
+        if mosh.UtilsData.refresh(): singletons.utilsList.RefreshUI()  # This is selfless, don't self it.
         self.SetStatusCount()
 
 
-class UtilsList(gui.List): # Polemos: Changes and optimizations.
+class UtilsList(gui.List):  # Polemos: Changes and optimizations.
     """Class Data"""
     mainMenu = Links() #--Column menu
     itemMenu = Links() #--Single item menu
 
-    def __init__(self,parent):
+    def __init__(self, parent):
         #--Columns
         self.cols = conf.settings['mash.utils.cols']
         self.colAligns = conf.settings['mash.utils.colAligns']
@@ -149,11 +149,11 @@ class UtilsList(gui.List): # Polemos: Changes and optimizations.
             self.PopulateItem(files,selected=selected)
         else: #--Iterable
             for file in files: self.PopulateItem(file,selected=selected)
-        globals.mashFrame.SetStatusCount()
+        singletons.mashFrame.SetStatusCount()
 
     def PopulateItem(self,itemDex,mode=0,selected=set()):  # Polemos: Donkey patching.
         """Populate Item"""
-        if not isinstance(itemDex,int): itemDex = self.items.index(itemDex)
+        if not type(itemDex) is int: itemDex = self.items.index(itemDex)
         item = self.items[itemDex].strip()
         fileInfo = self.data[item]
         show_fileName = os.path.splitext((os.path.basename(fileInfo[0])))[0]
@@ -193,7 +193,7 @@ class UtilsList(gui.List): # Polemos: Changes and optimizations.
         elif col == 'ID': pass
         elif col == 'Flag':   # Polemos: Not enabled, todo: remove?
             pass
-        else: raise mosh.SortKeyError(_(u'Unrecognized sort key: %s' % col)) #  Polemos: fix
+        else: raise mosh.SortKeyError(_(u'Unrecognized sort key: %s' % col))  # Polemos: fix
         #--Ascending
         if reverse: self.items.reverse()
 

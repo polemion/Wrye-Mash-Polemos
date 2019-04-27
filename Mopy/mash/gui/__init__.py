@@ -4,7 +4,7 @@
 #
 # This file is part of Wrye Mash Polemos fork.
 #
-# Wrye Mash 2018 Polemos fork Copyright (C) 2017-2018 Polemos
+# Wrye Mash 2018 Polemos fork Copyright (C) 2017-2019 Polemos
 # * based on code by Yacoby copyright (C) 2011-2016 Wrye Mash Fork Python version
 # * based on code by Melchor copyright (C) 2009-2011 Wrye Mash WMSA
 # * based on code by Wrye copyright (C) 2005-2009 Wrye Mash
@@ -13,7 +13,7 @@
 #  Copyright on the original code 2005-2009 Wrye
 #  Copyright on any non trivial modifications or substantial additions 2009-2011 Melchor
 #  Copyright on any non trivial modifications or substantial additions 2011-2016 Yacoby
-#  Copyright on any non trivial modifications or substantial additions 2017-2018 Polemos
+#  Copyright on any non trivial modifications or substantial additions 2017-2019 Polemos
 #
 # ======================================================================================
 
@@ -41,7 +41,7 @@
 import cPickle  #  Polemos: Used to be pickle, changed obviously.
 import wx
 from wx.lib.mixins.listctrl import ListCtrlAutoWidthMixin
-from .. import globals
+from .. import singletons
 from .. import exception
 from .. import balt
 from .. import mosh
@@ -150,7 +150,7 @@ class ListCtrl(wx.ListCtrl, ListCtrlAutoWidthMixin):
         ListCtrlAutoWidthMixin.__init__(self)
 
 
-class List(wx.Panel):  # Polemos: Edits.
+class List(wx.Panel):  # Polemos: Additions.
     """The listctrl control of all Mash lists (but the installers)."""
     prev_item = None
 
@@ -163,7 +163,7 @@ class List(wx.Panel):  # Polemos: Edits.
         #--ListCtrl
         listId = self.listId = wx.NewId()
         self.list = ListCtrl(self, listId, style=ctrlStyle)
-        self.checkboxes = globals.images['mash.checkboxes']
+        self.checkboxes = singletons.images['mash.checkboxes']
         #--Columns
         self.PopulateColumns()
         #--Items
@@ -305,7 +305,7 @@ class List(wx.Panel):  # Polemos: Edits.
             message += '\n* ' + '\n* '.join(x for x in sorted(items))
             if balt.askYes(self,message,_(u'Delete Items')):
                 for item in items: self.data.delete(item)
-            globals.modList.Refresh() #$#
+            singletons.modList.Refresh() #$#
 
     def GetSortSettings(self,col,reverse):
         """Return parsed col, reverse arguments. Used by SortSettings.
@@ -381,7 +381,7 @@ class NotebookPanel(wx.Panel):
 
     def SetStatusCount(self):
         """Sets status bar count field."""
-        globals.statusBar.SetStatusField('',2)
+        singletons.statusBar.SetStatusField('', 2)
 
     def OnShow(self):
         """To be called when particular panel is changed to and/or shown for first time.

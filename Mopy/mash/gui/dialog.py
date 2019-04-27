@@ -4,7 +4,7 @@
 #
 # This file is part of Wrye Mash Polemos fork.
 #
-# Wrye Mash 2018 Polemos fork Copyright (C) 2017-2018 Polemos
+# Wrye Mash 2018 Polemos fork Copyright (C) 2017-2019 Polemos
 # * based on code by Yacoby copyright (C) 2011-2016 Wrye Mash Fork Python version
 # * based on code by Melchor copyright (C) 2009-2011 Wrye Mash WMSA
 # * based on code by Wrye copyright (C) 2005-2009 Wrye Mash
@@ -13,7 +13,7 @@
 #  Copyright on the original code 2005-2009 Wrye
 #  Copyright on any non trivial modifications or substantial additions 2009-2011 Melchor
 #  Copyright on any non trivial modifications or substantial additions 2011-2016 Yacoby
-#  Copyright on any non trivial modifications or substantial additions 2017-2018 Polemos
+#  Copyright on any non trivial modifications or substantial additions 2017-2019 Polemos
 #
 # ======================================================================================
 
@@ -40,11 +40,12 @@
 
 import wx, os, codecs
 from .. import conf
-from .. import globals
+from .. import singletons
 from ..mosh import _
 from .. import mosh
 import wx.lib.dialogs as wx_dialogs_po  # Polemos
 import wx.html  # Polemos
+import interface  # Polemos
 
 
 dPos = wx.DefaultPosition
@@ -64,7 +65,7 @@ def chkChars(text_val, strict=False):
 class ProgressDialog(mosh.Progress):  # Polemos: fix for newer wxpythons.
     """Prints progress to file (stdout by default)."""
 
-    def __init__(self,title=_(u'Progress'),message='',parent=None, style=wx.PD_ELAPSED_TIME|wx.PD_AUTO_HIDE,interval=0.1):
+    def __init__(self,title=_(u'Progress'),message='',parent=None, style=wx.PD_ELAPSED_TIME|wx.PD_AUTO_HIDE|wx.STAY_ON_TOP,interval=0.1):
         """Init."""
         self.dialog = wx.ProgressDialog(title,message,100,parent,style)
         mosh.Progress.__init__(self,interval)
@@ -275,33 +276,44 @@ def FileDialog(parent,message=_(u'Choose a directory.'),defaultPath='', defaultf
         return path
 
 
-def ContinueQuery(parent, message, continueKey, title=_(u'Warning'), reverse=False):
+def ContinueQuery(parent, tmessage, message, continueKey, title=_(u'Warning'), cBtn=True):  # Polemos
     """Shows a modal continue query if value of continueKey is false. Returns True to continue.
-    Also provides checkbox "Don't show this in future." to set continueKey to true."""
-    #--ContinueKey set?
-    if not reverse:
-        if conf.settings.get(continueKey): return wx.ID_OK
-    if reverse:
-        if not conf.settings.get(continueKey): return wx.ID_OK
-
-    if True:  # Content
-        dialog = wx.Dialog(parent,-1,title,size=(330,180),style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER)
-        staticText = wx.StaticText(dialog,-1,message,style=wx.ST_NO_AUTORESIZE)
-        checkBox = wx.CheckBox(dialog, -1, _(u'Don\'t show this in the future.'))
-
-    if True:  # Layout
-        sizer_h1 = wx.BoxSizer(wx.HORIZONTAL)
-        sizer_h1.AddMany([((0,0),1),(wx.Button(dialog,wx.ID_OK)),(wx.Button(dialog,wx.ID_CANCEL),0,wx.LEFT,4)])
-        sizer = wx.BoxSizer(wx.VERTICAL)
-        sizer.AddMany([(staticText,1,wx.EXPAND|wx.ALL,6),
-            (checkBox,0,wx.EXPAND|wx.LEFT|wx.RIGHT|wx.BOTTOM,6),(sizer_h1,0,wx.EXPAND|wx.LEFT|wx.RIGHT|wx.BOTTOM,6)])
-        dialog.SetSizer(sizer)
-
-    #--Get continue key setting and return
+        Also provides checkbox "Don't show this in future." to set continueKey to true."""
+    # Init actions
+    if conf.settings.get(continueKey): return wx.ID_OK
+    # Init Dialog
+    style = wx.CAPTION|wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.STAY_ON_TOP
+    dialog = wx.Dialog(parent, id=wx.ID_ANY, title=title, pos=dPos, size=wx.Size(-1, -1), style=style)
+    dialog.SetSizeHints(-1, -1)
+    # Content
+    cntBox = wx.StaticBox(dialog, wx.ID_ANY, '')
+    title = wx.StaticText(cntBox, wx.ID_ANY, tmessage, dPos, dSize, 0)
+    main = wx.StaticText(cntBox, wx.ID_ANY, message, dPos, dSize, 0)
+    okBtn = wx.Button(dialog, wx.ID_OK, _(u'OK'), dPos, dSize, 0)
+    show = wx.CheckBox(dialog, wx.ID_ANY, _(u' Don\'t show this in the future.'), dPos, dSize, 0)
+    cnlBtn = wx.Button(dialog, wx.ID_CANCEL, _(u'Cancel'), dPos, dSize, 0)
+    # Theming
+    dialog.SetForegroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_WINDOWTEXT))
+    dialog.SetBackgroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_WINDOW))
+    bold = wx.Font(wx.NORMAL_FONT.GetPointSize(), wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, '')
+    title.SetFont(bold)
+    # Layout
+    cnlBtn.Hide()
+    main.SetMinSize(wx.Size(-1, 100))
+    [x.SetMaxSize(wx.Size(380, -1)) for x in (title, main)]
+    [x.Wrap(-1) for x in (title, main)]
+    cntSizer = wx.StaticBoxSizer(cntBox, wx.VERTICAL)
+    cntSizer.AddMany([(title,0,wx.ALL|wx.EXPAND|wx.ALIGN_CENTER_HORIZONTAL,5),(main,1,wx.EXPAND|wx.ALIGN_CENTER_HORIZONTAL|wx.RIGHT|wx.LEFT,5)])
+    btnSizer = wx.BoxSizer(wx.HORIZONTAL)
+    btnSizer.AddMany([(okBtn, 0, wx.ALL, 5), (show, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5), (cnlBtn, 0, wx.ALL, 5)])
+    mainSizer = wx.BoxSizer(wx.VERTICAL)
+    mainSizer.AddMany([(cntSizer, 1, wx.EXPAND|wx.RIGHT|wx.LEFT, 5),(btnSizer, 0, wx.ALIGN_CENTER_HORIZONTAL, 5)])
+    dialog.SetSizer(mainSizer)
+    dialog.Layout()
+    mainSizer.Fit(dialog)
+    # --Get continue key setting and return
     result = dialog.ShowModal()
-    if checkBox.GetValue():
-        if not reverse: conf.settings[continueKey] = 1
-        if reverse: conf.settings[continueKey] = 0
+    if result: conf.settings[continueKey] = show.GetValue()
     return result
 
 
@@ -312,7 +324,7 @@ def LogMessage(parent,message, logText,title=u'', style=0, asDialog=True):
     if asDialog: window = wx.Dialog(parent,-1,title, pos=pos,size=size,style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER)
     else:
         window = wx.Frame(parent,-1,title,pos=pos,size=(200,300), style=wx.RESIZE_BORDER|wx.CAPTION|wx.SYSTEM_MENU|wx.CLOSE_BOX|wx.CLIP_CHILDREN)
-        window.SetIcons(globals.images['mash.main.ico'].GetIconBundle())
+        window.SetIcons(singletons.images['mash.main.ico'].GetIconBundle())
     window.SetSizeHints(200,200)
     sizer = wx.BoxSizer(wx.VERTICAL)
     if message: sizer.Add(wx.StaticText(window,-1,message),0,wx.EXPAND|wx.LEFT|wx.RIGHT|wx.TOP,6)
@@ -553,46 +565,32 @@ class ScrolledtextMessage(wx.Dialog):  # Polemos
 
 class MaxCharDialog(wx.Dialog):  # Polemos
     """A modal dialog with max characters check."""
-
     init = True
-    def __init__(self, title, maxchar, current, caption, parent=None, id=wx.ID_ANY, size=(350,185), pos = dPos, style=wx.STAY_ON_TOP|wx.DEFAULT_DIALOG_STYLE):
-        """Init."""
-        wx.Dialog.__init__(self, parent=parent, id=id, size=size, pos=pos, style=style)
 
-        self.Panel = wx.Panel(self)
+    def __init__(self, title, maxchar, current, caption, parent=None, size=(400, 200), pos=dPos, style=wx.STAY_ON_TOP|wx.DEFAULT_DIALOG_STYLE):
+        """Init."""
+        wx.Dialog.__init__(self, parent=parent, id=wx.ID_ANY, size=size, pos=pos, style=style)
+
         self.maxchar = maxchar
-        self.SetTitle(_(title))
+        self.SetTitle(title)
         self.current = current
-        self.char_id = wx.ID_ANY
 
         if True:  # Contents
-            self.fld_po = wx.TextCtrl(self.Panel, id, size=(200, 110), style=wx.TE_MULTILINE, name='fld_po')
-            self.fld_po.SetValue(self.current)
-            self.fldchars = wx.TextCtrl(self.Panel, self.char_id, style=wx.TE_READONLY, name='fldchars')
-            self.fldchars.SetValue(self.char_remain())
-            self.btnOK = wx.Button(self.Panel, wx.ID_OK, _(u'OK'), size=(-1,22), name='btnOK')
-            btnCancel = wx.Button(self.Panel, wx.ID_CANCEL, _(u'Cancel'), size=(-1,22), name='btnCancel')
-
+            captionBox = wx.StaticBox(self, wx.ID_ANY, caption)
+            self.fld_po = wx.TextCtrl(captionBox, wx.ID_ANY, current, dPos, dSize, wx.TE_MULTILINE)
+            self.fldchars = wx.TextCtrl(captionBox, wx.ID_ANY, self.char_remain(), dPos, dSize, wx.TE_READONLY)
+            self.btnOK = wx.Button(captionBox, wx.ID_OK, _(u'OK'), dPos, (-1,22), 0)
+            btnCancel = wx.Button(captionBox, wx.ID_CANCEL, _(u'Cancel'), dPos, (-1,22), 0)
         if True:  # Layout
-            box_po = wx.StaticBox(self.Panel, id, _(caption))
-            sizerbox_po = wx.StaticBoxSizer(box_po, wx.HORIZONTAL)
-            sizerbox_po.Add(self.fld_po, 1, wx.EXPAND)
-            sizerFields_po = wx.BoxSizer(wx.VERTICAL)
-            sizerFields_po.Add(sizerbox_po, 0, wx.EXPAND)
-            sizerBtn = wx.BoxSizer(wx.HORIZONTAL)
-            sizerBtn.AddMany([(self.btnOK),((1,0),1,wx.EXPAND),(self.fldchars,1,wx.EXPAND),((1,0),1,wx.EXPAND),(btnCancel)])
-            sizerWin = wx.BoxSizer(wx.VERTICAL)
-            sizerWin.AddMany([(sizerFields_po,0,wx.EXPAND),((0,2)),(sizerBtn)])
-            self.Panel.SetSizer(sizerWin)
-            sizer = wx.BoxSizer()
-            sizer.Add(self.Panel, 1, wx.EXPAND)
-            self.SetSizer(sizer)
-            sizer.Fit(self.Panel)
-            self.SetSizeHints(self.GetSize()[0], sizerWin.Size[1])
-
+            btnSizer = wx.BoxSizer(wx.HORIZONTAL)
+            btnSizer.AddMany([(self.btnOK, 0, 0, 5),((0, 0), 1, 0, 5),(self.fldchars, 0, 0, 5),((0, 0), 1, 0, 5),(btnCancel, 0, 0, 5)])
+            mainSizer = wx.StaticBoxSizer(captionBox, wx.VERTICAL)
+            mainSizer.AddMany([(self.fld_po, 1, wx.EXPAND, 5),(btnSizer, 0, wx.EXPAND|wx.TOP, 5)])
+            self.SetSizer(mainSizer)
+            self.Layout()
         if True:  # Events
-            wx.EVT_TEXT(self, self.char_id, self.char_update)
             wx.EVT_CLOSE(self, self.OnCancel)
+            self.fld_po.Bind(wx.EVT_TEXT, self.char_update)
             wx.EVT_BUTTON(self, wx.ID_CANCEL, self.OnCancel)
             wx.EVT_BUTTON(self, wx.ID_OK, self.OnOk)
             wx.EVT_SIZE(self, self.OnSize)
@@ -618,7 +616,7 @@ class MaxCharDialog(wx.Dialog):  # Polemos
 
     def OnSize(self, event):
         self.Layout()
-        if self.init == True:
+        if self.init:
             self.SetSizeHints(*self.GetSize())
             self.init = False
 
@@ -639,42 +637,38 @@ class MaxCharDialog(wx.Dialog):  # Polemos
 class date_time_dialog(wx.Dialog):  # Polemos
     """Shows a Date/Time multi field spinner Dialog."""
 
-    def __init__(self, parent, title, caption, datetime, id=wx.ID_ANY, size=(350, 185), pos=dPos):
+    def __init__(self, parent, title, caption, datetime, id=wx.ID_ANY, size=(400, 200), pos=dPos):
         """Init."""
         wx.Dialog.__init__(self, parent=parent, id=id, title=title, pos=pos, size=size, style=wx.CAPTION|wx.DEFAULT_DIALOG_STYLE|wx.STAY_ON_TOP)
 
         import time
         self.datetime = datetime
-        newTimeTup = time.strptime(datetime, '%m-%d-%Y %H:%M:%S')
-        year = newTimeTup[0]
-        month = newTimeTup[1]
-        day = newTimeTup[2]
-        hour = newTimeTup[3]
-        min = newTimeTup[4]
-        sec = newTimeTup[5]
+        year, month, day, hour, min, sec = time.strptime(datetime, '%m-%d-%Y %H:%M:%S')[0:6]
 
         if True:  # Contents
             # Title
-            self.title_staticText = wx.StaticText(self, wx.ID_ANY, caption, dPos, dSize, 0)
+            self.info = wx.StaticText(self, wx.ID_ANY, caption, dPos, dSize, 0)
             # Date
-            date_sizer = wx.StaticBoxSizer(wx.StaticBox(self, wx.ID_ANY, _(u'Date:')), wx.HORIZONTAL)
-            self.month_static = wx.StaticText(date_sizer.GetStaticBox(), wx.ID_ANY, _(u'Month:'), dPos, dSize, 0)
-            self.month = wx.SpinCtrl(date_sizer.GetStaticBox(),wx.ID_ANY,u'',dPos,Size(65,-1),wx.SP_ARROW_KEYS|wx.SP_WRAP|wx.ALIGN_CENTER_HORIZONTAL,1,12,month)
-            self.day_static = wx.StaticText(date_sizer.GetStaticBox(),wx.ID_ANY,_(u'Day:'),dPos,dSize,0)
-            self.day = wx.SpinCtrl(date_sizer.GetStaticBox(),wx.ID_ANY,u'',dPos,Size(65,-1),wx.SP_ARROW_KEYS|wx.SP_WRAP|wx.ALIGN_CENTER_HORIZONTAL,1,31,day)
-            self.year_static = wx.StaticText(date_sizer.GetStaticBox(),wx.ID_ANY,_(u'Year:'),dPos, dSize,0)
-            self.year = wx.SpinCtrl(date_sizer.GetStaticBox(),wx.ID_ANY,u'',dPos,Size(85,-1),wx.SP_ARROW_KEYS|wx.SP_WRAP|wx.ALIGN_CENTER_HORIZONTAL,1970,2038,year)
+            dateBox = wx.StaticBox(self, wx.ID_ANY, _(u'Date:'))
+            dateSizer = wx.StaticBoxSizer(dateBox, wx.HORIZONTAL)
+            self.month_static = wx.StaticText(dateBox, wx.ID_ANY, _(u'Month:'), dPos, dSize, 0)
+            self.month = wx.SpinCtrl(dateBox,wx.ID_ANY,u'',dPos,Size(65,-1),wx.SP_ARROW_KEYS|wx.SP_WRAP|wx.ALIGN_CENTER_HORIZONTAL,1,12,month)
+            self.day_static = wx.StaticText(dateBox,wx.ID_ANY,_(u'Day:'),dPos,dSize,0)
+            self.day = wx.SpinCtrl(dateBox,wx.ID_ANY,u'',dPos,Size(65,-1),wx.SP_ARROW_KEYS|wx.SP_WRAP|wx.ALIGN_CENTER_HORIZONTAL,1,31,day)
+            self.year_static = wx.StaticText(dateBox,wx.ID_ANY,_(u'Year:'),dPos, dSize,0)
+            self.year = wx.SpinCtrl(dateBox,wx.ID_ANY,u'',dPos,Size(85,-1),wx.SP_ARROW_KEYS|wx.SP_WRAP|wx.ALIGN_CENTER_HORIZONTAL,1970,2038,year)
             # Time
-            time_sizer = wx.StaticBoxSizer(wx.StaticBox(self, wx.ID_ANY, _(u'Time:')), wx.HORIZONTAL)
-            self.hour_static = wx.StaticText(time_sizer.GetStaticBox(),wx.ID_ANY,_(u'Hour:'),dPos,dSize,0)
-            self.hour = wx.SpinCtrl(time_sizer.GetStaticBox(),wx.ID_ANY,u'',dPos,Size(65,-1),wx.SP_ARROW_KEYS|wx.SP_WRAP|wx.ALIGN_CENTER_HORIZONTAL,0,23,hour)
-            self.min_static = wx.StaticText(time_sizer.GetStaticBox(),wx.ID_ANY, _(u'Min:'),dPos,dSize,0)
-            self.min = wx.SpinCtrl(time_sizer.GetStaticBox(),wx.ID_ANY,u'',dPos,Size(65,-1),wx.SP_ARROW_KEYS|wx.SP_WRAP|wx.ALIGN_CENTER_HORIZONTAL,0,59,min)
-            self.sec_static = wx.StaticText(time_sizer.GetStaticBox(),wx.ID_ANY, _(u'Sec:'),dPos,dSize,0)
-            self.sec = wx.SpinCtrl(time_sizer.GetStaticBox(),wx.ID_ANY,u'',dPos,Size(65,-1),wx.SP_ARROW_KEYS|wx.SP_WRAP|wx.ALIGN_CENTER_HORIZONTAL,0,59,sec)
+            timeBox = wx.StaticBox(self, wx.ID_ANY, _(u'Time:'))
+            timeSizer = wx.StaticBoxSizer(timeBox, wx.HORIZONTAL)
+            self.hour_static = wx.StaticText(timeBox,wx.ID_ANY,_(u'Hour:'),dPos,dSize,0)
+            self.hour = wx.SpinCtrl(timeBox,wx.ID_ANY,u'',dPos,Size(65,-1),wx.SP_ARROW_KEYS|wx.SP_WRAP|wx.ALIGN_CENTER_HORIZONTAL,0,23,hour)
+            self.min_static = wx.StaticText(timeBox,wx.ID_ANY, _(u'Min:'),dPos,dSize,0)
+            self.min = wx.SpinCtrl(timeBox,wx.ID_ANY,u'',dPos,Size(65,-1),wx.SP_ARROW_KEYS|wx.SP_WRAP|wx.ALIGN_CENTER_HORIZONTAL,0,59,min)
+            self.sec_static = wx.StaticText(timeBox,wx.ID_ANY, _(u'Sec:'),dPos,dSize,0)
+            self.sec = wx.SpinCtrl(timeBox,wx.ID_ANY,u'',dPos,Size(65,-1),wx.SP_ARROW_KEYS|wx.SP_WRAP|wx.ALIGN_CENTER_HORIZONTAL,0,59,sec)
             # Buttons
-            self.ok_button = wx.Button(self, wx.ID_OK, _(u'OK'), dPos, (-1,22), 0)
-            self.cancel_button = wx.Button(self, wx.ID_CANCEL, _(u'Cancel'), dPos, (-1,22), 0)
+            self.ok_button = wx.Button(self, wx.ID_OK, _(u'OK'), dPos, (-1, 22), 0)
+            self.cancel_button = wx.Button(self, wx.ID_CANCEL, _(u'Cancel'), dPos, (-1, 22), 0)
 
         if True:  # Theming
             self.SetForegroundColour(wx.Colour(255, 255, 255))
@@ -685,21 +679,21 @@ class date_time_dialog(wx.Dialog):  # Polemos
 
         if True:  # Layout
             # Date
-            date_sizer.AddMany([(self.month_static,0,wx.ALIGN_CENTER_VERTICAL|wx.RIGHT|wx.LEFT,5),(self.month,0,wx.RIGHT|wx.LEFT,5),
+            dateSizer.AddMany([(self.month_static,0,wx.ALIGN_CENTER_VERTICAL|wx.RIGHT|wx.LEFT,5),(self.month,0,wx.RIGHT|wx.LEFT,5),
                     ((0,0),1,wx.EXPAND,5),(self.day_static,0,wx.ALIGN_CENTER_VERTICAL|wx.RIGHT|wx.LEFT,5),(self.day,0,wx.RIGHT|wx.LEFT,5),
                     ((0,0),1,wx.EXPAND,5),(self.year_static,0,wx.ALIGN_CENTER_VERTICAL|wx.RIGHT|wx.LEFT,5),(self.year,0,wx.RIGHT|wx.LEFT,5)])
             # Time
-            time_sizer.AddMany([(self.hour_static,0,wx.ALIGN_CENTER_VERTICAL|wx.LEFT|wx.RIGHT,5),(self.hour,0,wx.RIGHT|wx.LEFT,5),
+            timeSizer.AddMany([(self.hour_static,0,wx.ALIGN_CENTER_VERTICAL|wx.LEFT|wx.RIGHT,5),(self.hour,0,wx.RIGHT|wx.LEFT,5),
                     ((0,0),1,wx.EXPAND,5),(self.min_static,0,wx.ALIGN_CENTER_VERTICAL|wx.LEFT|wx.RIGHT,5),(self.min,0,wx.RIGHT|wx.LEFT,5),
                     ((0,0),1,wx.EXPAND,5),(self.sec_static,0,wx.ALIGN_CENTER_VERTICAL|wx.LEFT|wx.RIGHT,5),(self.sec,0,wx.RIGHT|wx.LEFT,5)])
             # Buttons
-            button_sizer = wx.BoxSizer(wx.HORIZONTAL)
-            button_sizer.AddMany([(self.ok_button,0,wx.ALL,5),((0,0),1,wx.EXPAND,5),(self.cancel_button,0,wx.ALL,5)])
+            btnSizer = wx.BoxSizer(wx.HORIZONTAL)
+            btnSizer.AddMany([(self.ok_button,0,wx.ALL,5),((0,0),1,wx.EXPAND,5),(self.cancel_button,0,wx.ALL,5)])
             # Main
-            main_sizer = wx.BoxSizer(wx.VERTICAL)
-            main_sizer.AddMany([(self.title_staticText,0,wx.ALL|wx.EXPAND,5),(date_sizer,0,wx.EXPAND,5),(time_sizer,0,wx.EXPAND,5),
-                                (button_sizer,0,wx.EXPAND|wx.TOP,5)])
-            self.SetSizer(main_sizer)
+            mainSizer = wx.BoxSizer(wx.VERTICAL)
+            mainSizer.AddMany([(self.info,0,wx.ALL|wx.EXPAND,5),(dateSizer,-1,wx.EXPAND,5),(timeSizer,-1,wx.EXPAND,5),(btnSizer,0,wx.EXPAND,5)])
+            self.SetSizer(mainSizer)
+            self.Layout()
 
         if True:  # Events
             wx.EVT_CLOSE(self, self.OnCancel)
@@ -707,17 +701,16 @@ class date_time_dialog(wx.Dialog):  # Polemos
             wx.EVT_BUTTON(self, wx.ID_CANCEL, self.OnCancel)
 
         self.cancel_button.SetFocus()
-        self.Layout()
         self.ShowModal()
 
     def export_date(self):
         user_date = '%s-%s-%s %s:%s:%s'%(
-            self.month.GetValue(),
-            self.day.GetValue(),
-            self.year.GetValue(),
-            self.hour.GetValue(),
-            self.min.GetValue(),
-            self.sec.GetValue())
+                        self.month.GetValue(),
+                        self.day.GetValue(),
+                        self.year.GetValue(),
+                        self.hour.GetValue(),
+                        self.min.GetValue(),
+                        self.sec.GetValue())
         return user_date
 
     def GetValue(self):
@@ -740,7 +733,7 @@ class SimpleListDialog(wx.Dialog):  # Polemos
         """Init."""
         wx.Dialog.__init__(self, parent, id=wx.ID_ANY, title=title, pos=dPos, size=size, style=wx.DEFAULT_DIALOG_STYLE|wx.STAY_ON_TOP)
         self.SetSizeHints(-1, -1)
-        if not type(choices) == list: choices = [choices]
+        if not type(choices) is list: choices = [choices]
         self.choices = choices
 
         if True: # Content
@@ -1061,7 +1054,7 @@ class UtilsDialog(wx.Dialog):  # Polemos: so many things here... also moved from
 
     def OpenFile(self, event):  # Polemos fix
         """Opens the file dialog to set the utility program."""
-        dialog = wx.FileDialog(self,_(u'Choose the new utility.'), '', '', '*.*', wx.OPEN)
+        dialog = wx.FileDialog(self,_(u'Choose the new utility.'), '', '', '*.*', wx.FD_OPEN)
         if dialog.ShowModal() != wx.ID_OK:
             dialog.Destroy()
             return
@@ -1083,17 +1076,18 @@ class UtilsDialog(wx.Dialog):  # Polemos: so many things here... also moved from
 class AdvLog(wx.Dialog):  # Polemos
     """A log dialog with a save button."""
     lineok = ''
+    log_done = False
 
     def __init__(self, parent, title, logname='Output.log', ruleset='Default'):
         """Init."""
         wx.Dialog.__init__(self, parent, id=wx.ID_ANY, title=title, pos=dPos, size=dSize, style=wx.CAPTION|wx.STAY_ON_TOP)
         self.logname = logname
-        self.log_done = False
         self.title = title
         self.ruleset = ruleset
 
         if True:  # Content
-            self.text_log = wx.TextCtrl(self, wx.ID_ANY, u'', dPos, dSize, wx.TE_MULTILINE|wx.TE_READONLY|wx.TE_RICH)  # Polemos: TE_RICH mainly for stdout of > 64k
+            # Polemos: TE_RICH mainly for stdout of > 64k
+            self.text_log = wx.TextCtrl(self, wx.ID_ANY, u'', dPos, dSize, wx.TE_MULTILINE|wx.TE_READONLY|wx.TE_RICH)
             self.text_log.SetBackgroundColour((255, 255, 255))
             self.OK_btn = wx.Button(self, wx.ID_OK, _(u'OK'), dPos, dSize, 0)
             self.savelog_btn = wx.Button(self, wx.ID_ANY, _(u'Save Log'), dPos, dSize, 0)
@@ -1171,7 +1165,7 @@ class AdvLog(wx.Dialog):  # Polemos
 
     def savelog(self, event):
         """Option to save log."""
-        dialog = wx.FileDialog(self, _(u'Save log'), os.getcwd(), self.logname, '*.log', wx.SAVE|wx.OVERWRITE_PROMPT)
+        dialog = wx.FileDialog(self, _(u'Save log'), singletons.MashDir, self.logname, '*.log', wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT)
         if dialog.ShowModal() == wx.ID_OK:
             fileName = os.path.join(dialog.GetDirectory(), dialog.GetFilename())
             with codecs.open(fileName, 'w', encoding='utf-8', errors='replace') as file:
@@ -1194,8 +1188,8 @@ class AdvLog(wx.Dialog):  # Polemos
             if self.OK_btn.IsEnabled: self.OK_btn.Disable()
             if self.savelog_btn.IsEnabled: self.savelog_btn.Disable()
         else:
-            if not self.OK_btn.IsEnabled: self.OK_btn.Enable()
-            if not self.savelog_btn.IsEnabled: self.savelog_btn.Enable()
+            self.OK_btn.Enable()
+            self.savelog_btn.Enable()
 
 
 class ArchiveExplorer(wx.Dialog):  # Polemos
@@ -1392,7 +1386,7 @@ class HelpDialog(wx.Dialog):  # Polemos
         """Init."""
         wx.Dialog.__init__(self, parent, id=wx.ID_ANY, title=_(u'Wrye Mash Help.'), pos=pos, size=size, style=style)
         self.openmw = conf.settings['openmw']
-        globals.helpBrowser = self
+        singletons.helpBrowser = self
         self.SetIcons(images['mash.main.ico'].GetIconBundle())
         self.SetSizeHints(-1, -1)
         if True: # Content
@@ -1406,12 +1400,14 @@ class HelpDialog(wx.Dialog):  # Polemos
             self.search.Hide()
             self.index = wx.TreeCtrl(self.indexPanel, wx.ID_ANY, dPos, dSize, wx.TR_HIDE_ROOT|wx.TR_NO_LINES)
             self.help = wx.html.HtmlWindow(self.contentPanel, wx.ID_ANY, dPos, dSize, wx.html.HW_SCROLLBAR_AUTO)
-        if True: # Theming
+        if True: # Theme
             self.SetBackgroundColour(wx.Colour(192, 192, 192))
             self.main.SetBackgroundColour(wx.Colour(192, 192, 192))
             self.indexPanel.SetBackgroundColour(wx.Colour(192, 192, 192))
             self.search.SetBackgroundColour(wx.Colour(192, 192, 192))
             self.index.SetBackgroundColour(wx.Colour(224, 224, 224))
+            if interface.style['lists.font.color'] is not None:  # Todo: Theme
+                self.index.SetForegroundColour(interface.style['lists.font.color'])
             self.contentPanel.SetBackgroundColour(wx.Colour(192, 192, 192))
             self.help.SetBackgroundColour(wx.Colour(255, 255, 255))
         if True: # Layout
@@ -1519,7 +1515,7 @@ class HelpDialog(wx.Dialog):  # Polemos
         """Load help file."""
         # Morrowind - OpenMW/TES3mp support
         helpFile ='Wrye Mash.dat' if not self.openmw else 'openmw.dat'
-        path = os.path.join(os.getcwd(), helpFile)
+        path = os.path.join(singletons.MashDir, helpFile)
         with codecs.open(path, 'r') as hlpData:
             self.helpData = hlpData.read()
         self.help.SetPage(self.helpData)

@@ -2,7 +2,7 @@
 
 # Wrye Mash Polemos fork GPL License and Copyright Notice ==============================
 #
-# Wrye Mash 2018 Polemos fork Copyright (C) 2017-2018 Polemos
+# Wrye Mash 2018 Polemos fork Copyright (C) 2017-2019 Polemos
 # * based on code by Yacoby copyright (C) 2011-2016 Wrye Mash Fork Python version
 # * based on code by Melchor copyright (C) 2009-2011 Wrye Mash WMSA
 # * based on code by Wrye copyright (C) 2005-2009 Wrye Mash
@@ -11,7 +11,7 @@
 #  Copyright on the original code 2005-2009 Wrye
 #  Copyright on any non trivial modifications or substantial additions 2009-2011 Melchor
 #  Copyright on any non trivial modifications or substantial additions 2011-2016 Yacoby
-#  Copyright on any non trivial modifications or substantial additions 2017-2018 Polemos
+#  Copyright on any non trivial modifications or substantial additions 2017-2019 Polemos
 #
 # ======================================================================================
 
@@ -28,6 +28,7 @@
 
 import wx, os, json
 from ..mosh import _
+from .. import singletons
 
 # Default Style
 style = {
@@ -41,7 +42,7 @@ internalStyle = {
     'list.background':(220,220,255)
 }
 
-def setIcon(parent, icon=None, text='', type=wx.wx.BITMAP_TYPE_ANY):
+def setIcon(parent, icon=None, text='', type=wx.BITMAP_TYPE_ANY):
     """Set icon of caller window."""
     if icon is not None:
         try:
@@ -67,8 +68,7 @@ class ThemeEngine:
 
     def checkThemeDir(self):
         """Check if it exists and recreate if needed the theme dir."""
-        cwd = os.getcwd()
-        self.themedir = os.path.join(cwd, 'themes')
+        self.themedir = os.path.join(singletons.MashDir, 'themes')
         if not os.path.isdir(self.themedir): os.makedirs(self.themedir)
 
     def importTheme(self, theme):
@@ -80,8 +80,8 @@ class ThemeEngine:
     def exportTheme(self, theme, rawTheme):
         """Export theme."""
         themePath = os.path.join(self.themedir, theme)
-        themeData = ('{\r\n\r\n', (',\r\n'.join(('"%s": %s' if type(rawTheme[x]) == tuple else '"%s": "%s"') %
-            (x, list(rawTheme[x]) if type(rawTheme[x]) == tuple else rawTheme[x]) for x in rawTheme)), '\r\n\r\n}')
+        themeData = ('{\r\n\r\n', (',\r\n'.join(('"%s": %s' if type(rawTheme[x]) is tuple else '"%s": "%s"') %
+            (x, list(rawTheme[x]) if type(rawTheme[x]) is tuple else rawTheme[x]) for x in rawTheme)), '\r\n\r\n}')
         with open(themePath, 'w') as themeFile: themeFile.writelines(themeData)
 
 

@@ -2,7 +2,7 @@
 
 # Wrye Mash Polemos fork GPL License and Copyright Notice ==============================
 #
-# Wrye Mash 2018 Polemos fork Copyright (C) 2017-2018 Polemos
+# Wrye Mash 2018 Polemos fork Copyright (C) 2017-2019 Polemos
 # * based on code by Yacoby copyright (C) 2011-2016 Wrye Mash Fork Python version
 # * based on code by Melchor copyright (C) 2009-2011 Wrye Mash WMSA
 # * based on code by Wrye copyright (C) 2005-2009 Wrye Mash
@@ -11,7 +11,7 @@
 #  Copyright on the original code 2005-2009 Wrye
 #  Copyright on any non trivial modifications or substantial additions 2009-2011 Melchor
 #  Copyright on any non trivial modifications or substantial additions 2011-2016 Yacoby
-#  Copyright on any non trivial modifications or substantial additions 2017-2018 Polemos
+#  Copyright on any non trivial modifications or substantial additions 2017-2019 Polemos
 #
 # ======================================================================================
 
@@ -27,7 +27,10 @@
 
 
 from ..nash import wrye_download_site
+from .. import bitver
 
+# Determine if mash is x64 or x86 bit ver.
+bit = bitver.wryeMashBitVer if hasattr(bitver, 'wryeMashBitVer') else ''
 
 # Note:
 # 'b' => bold,
@@ -37,21 +40,31 @@ from ..nash import wrye_download_site
 
 def Current_Version():
     """The Data here feeds all of Wrye Mash."""
-    # Setup.py imports version info (for compiling) from the line below. Keep the formatting.
-    return (99, u'99 - Polemos fork - 10/2018', u'99 - 10/2018', u'2018', u'Polemos fork')
+    ver = 100
+    extraVerInfo = u'Beta'
+    date = u'4/2019'
+    author = u'Polemos fork'
+
+    # Credit Factory Below
+    if extraVerInfo: extraVerInfo = u' ' + extraVerInfo
+    # Setup.py or setupx64.py imports version info (for compiling) from the line below. It is brutal so keep the formatting.
+    return (ver, u'%sv%s%s - %s - %s' % (bit, ver, extraVerInfo, author, date), u'%s - %s'%(ver, date), u'%s'%date[-4:], u'%s'%author)
 
 class About: # Polemos: a much needed "About".
     """About Data. It is called by Settings Dialog (About Tab)."""
 
     def __init__(self, mode):
+        """Init."""
         self.name = u'Wrye Mash %s' % (Current_Version()[4])
         self.version = u'Version: %s' % (Current_Version()[2])
         self.website = [u'Nexus Homepage', wrye_download_site('home', mode)]
 
     def getData(self):
+        """Return the credits data to the caller."""
         return self.name, self.version, self.website, self.developers(), self.license()
 
     def developers(self):
+        """Dev factory."""
         source = [(u'"Every modder and utility developer in the Morrowind community stands on the collective'
                    u' shoulders of everyone who preceded them, contributing time, talent, and inspiration.\r\n'
                    u'So, thanks to all the past developers and folks in the forums!", Wrye.\r\n', 'b'), ('\r\n','')]
@@ -83,7 +96,7 @@ class About: # Polemos: a much needed "About".
                        (u'Translations.\r\n', 'i'),
                        (u'Dragon32, Shasta Thorne: ', 'b'),
                        (u'Ref Removers.\r\n', 'i'),
-                       (u'Oooiii, Stahpk, Abot, calemcc, Zikerocks, Valascon and Pherim: ', 'b'),
+                       (u'Oooiii, Stahpk, Abot, calemcc, Zikerocks, Valascon, KarmicKid and Pherim: ', 'b'),
                        (u'Vital bug reports and ideas.\r\n', 'i'),
                        (u'StaticNation: ', 'b'),
                        (u'The Wrye Mash bug finder champion.\r\n', 'i'),
@@ -92,6 +105,7 @@ class About: # Polemos: a much needed "About".
         return source
 
     def license(self):
+        """License factory."""
         return [
                 (u'Wrye Mash Polemos fork\r\n', 'b'),
                 (u'Copyright (C) 2017-2018 Polemos\r\n', 'b'),
