@@ -1,6 +1,6 @@
 # Wrye Mash Polemos fork GPL License and Copyright Notice ==============================
 #
-# Wrye Mash 2018 Polemos fork Copyright (C) 2017-2018 Polemos
+# Wrye Mash 2018 Polemos fork Copyright (C) 2017-2019 Polemos
 # * based on code by Yacoby copyright (C) 2011-2016 Wrye Mash Fork Python version
 # * based on code by Melchor copyright (C) 2009-2011 Wrye Mash WMSA
 # * based on code by Wrye copyright (C) 2005-2009 Wrye Mash
@@ -9,7 +9,7 @@
 #  Copyright on the original code 2005-2009 Wrye
 #  Copyright on any non trivial modifications or substantial additions 2009-2011 Melchor
 #  Copyright on any non trivial modifications or substantial additions 2011-2016 Yacoby
-#  Copyright on any non trivial modifications or substantial additions 2017-2018 Polemos
+#  Copyright on any non trivial modifications or substantial additions 2017-2019 Polemos
 #
 # ======================================================================================
 
@@ -43,7 +43,8 @@ The startup code redirects stdin/stderr to a file, so this class allows provides
 
 import sys, wx, os, codecs
 from mosh import _
-import conf
+import conf, singletons
+import gui.dialog as gui
 
 class WxOutputRedirect:
     """Redirect output."""
@@ -67,30 +68,42 @@ class ErrorLog(wx.Dialog):  # Polemos
 
     def __init__(self, parent, style=wx.DEFAULT_DIALOG_STYLE|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX|wx.RESIZE_BORDER|wx.STAY_ON_TOP):
         """Init."""
+        self.parent=parent
         if not conf.settings['show.debug.log']: return
         wx.Dialog.__init__(self, parent, id=wx.ID_ANY, title=_(u'Debug Log'), pos=wx.DefaultPosition, size=(415, 249), style=style)
         # Contents:
         self.text_log = wx.TextCtrl(self, wx.ID_ANY, '', wx.DefaultPosition, wx.DefaultSize, wx.TE_MULTILINE|wx.TE_READONLY|wx.TE_RICH)
-        self.save_button = wx.Button(self, wx.ID_ANY, _(u'Save Log'), wx.DefaultPosition, wx.DefaultSize, 0)
+        self.saveBtn = wx.Button(self, wx.ID_ANY, _(u'Save Log'), wx.DefaultPosition, (-1,22), 0)
+        self.fcloseBtn = wx.Button(self, wx.ID_ANY, _(u'Force Close Wrye Mash...'), wx.DefaultPosition, (-1,22), 0)
         # Theming:
         self.SetForegroundColour(wx.Colour(255, 255, 255))
         self.SetBackgroundColour(wx.Colour(240, 240, 240))
         # Sizer:
-        main_sizer = wx.BoxSizer(wx.VERTICAL)
-        main_sizer.AddMany([(self.text_log, 1, wx.EXPAND, 5),(self.save_button, 0, wx.EXPAND, 5)])
-        self.SetSizer(main_sizer)
+        btnSizer = wx.BoxSizer(wx.HORIZONTAL)
+        btnSizer.AddMany([(self.saveBtn, 1, wx.EXPAND|wx.RIGHT, 5), (self.fcloseBtn, 0, wx.EXPAND, 5)])
+        mainSizer = wx.BoxSizer(wx.VERTICAL)
+        mainSizer.AddMany([(self.text_log, 1, wx.EXPAND, 5), (btnSizer, 0, wx.EXPAND, 5)])
+        self.SetSizer(mainSizer)
         # Events:
         self.Bind(wx.EVT_CLOSE, self.OnClose)
-        self.save_button.Bind(wx.EVT_BUTTON, self.savelog)
+        self.saveBtn.Bind(wx.EVT_BUTTON, self.savelog)
+        self.fcloseBtn.Bind(wx.EVT_BUTTON, self.forceClose)
         # Functions:
         sys.stdout = WxOutputRedirect(sys.stdout, self, self.text_log)
         sys.stderr = WxOutputRedirect(sys.stderr, self, self.text_log)
         self.Layout()
         self.Centre(wx.BOTH)
 
+    def forceClose(self, event):
+        """Force close Wrye Mash."""
+        warning = _(u'Really force Wrye Mash to quit?\n\nDo this only if Wrye Mash is stuck ad infinitum in the debug log!!!')
+        if gui.WarningQuery(self, warning, _(u'Are you sure?')) == wx.ID_NO: return
+        self.parent.Destroy()
+        sys.exit(0)
+
     def savelog(self, event):
         """Save the log."""
-        dialog = wx.FileDialog(self, _(u'Save log'), os.getcwd(), "Debug", '*.log', wx.SAVE|wx.OVERWRITE_PROMPT)
+        dialog = wx.FileDialog(self, _(u'Save log'), singletons.MashDir, "Debug", '*.log', wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT)
         if dialog.ShowModal() == wx.ID_OK:
             fileName = os.path.join(dialog.GetDirectory(), dialog.GetFilename())
             with codecs.open(fileName, 'w', encoding='utf-8', errors='replace') as file:

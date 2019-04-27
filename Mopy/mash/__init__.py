@@ -1,6 +1,6 @@
 # Wrye Mash Polemos fork GPL License and Copyright Notice ==============================
 #
-# Wrye Mash 2018 Polemos fork Copyright (C) 2017-2018 Polemos
+# Wrye Mash 2018 Polemos fork Copyright (C) 2017-2019 Polemos
 # * based on code by Yacoby copyright (C) 2011-2016 Wrye Mash Fork Python version
 # * based on code by Melchor copyright (C) 2009-2011 Wrye Mash WMSA
 # * based on code by Wrye copyright (C) 2005-2009 Wrye Mash
@@ -9,7 +9,7 @@
 #  Copyright on the original code 2005-2009 Wrye
 #  Copyright on any non trivial modifications or substantial additions 2009-2011 Melchor
 #  Copyright on any non trivial modifications or substantial additions 2011-2016 Yacoby
-#  Copyright on any non trivial modifications or substantial additions 2017-2018 Polemos
+#  Copyright on any non trivial modifications or substantial additions 2017-2019 Polemos
 #
 # ======================================================================================
 
@@ -33,5 +33,3 @@
 #  Wrye Mash copyright (C) 2005, 2006, 2007, 2008, 2009 Wrye
 #
 # ======================================================================================
-
-""" This is an ugly hack to get the unit tests relative imports to work """

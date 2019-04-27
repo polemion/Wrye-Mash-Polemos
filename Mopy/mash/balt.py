@@ -2,7 +2,7 @@
 
 # Wrye Mash Polemos fork GPL License and Copyright Notice ==============================
 #
-# Wrye Mash 2018 Polemos fork Copyright (C) 2017-2018 Polemos
+# Wrye Mash 2018 Polemos fork Copyright (C) 2017-2019 Polemos
 # * based on code by Yacoby copyright (C) 2011-2016 Wrye Mash Fork Python version
 # * based on code by Melchor copyright (C) 2009-2011 Wrye Mash WMSA
 # * based on code by Wrye copyright (C) 2005-2009 Wrye Mash
@@ -11,7 +11,7 @@
 #  Copyright on the original code 2005-2009 Wrye
 #  Copyright on any non trivial modifications or substantial additions 2009-2011 Melchor
 #  Copyright on any non trivial modifications or substantial additions 2011-2016 Yacoby
-#  Copyright on any non trivial modifications or substantial additions 2017-2018 Polemos
+#  Copyright on any non trivial modifications or substantial additions 2017-2019 Polemos
 #
 # ======================================================================================
 
@@ -110,24 +110,20 @@ class Colors:
         if not self.database:
             self.data[key] = value
         #--Else add it to the database
-        elif isinstance(value,str):
+        elif type(value) is str:
             self.data[key] = self.database.Find(value)
-        else:
-            self.data[key] = wx.Colour(*value)
+        else: self.data[key] = wx.Colour(*value)
 
     def __getitem__(self,key):
         """Dictionary syntax: color = colours[key]."""
         if not self.database:
             self.database = wx.TheColourDatabase
             for key,value in self.data.items():
-                if isinstance(value,str):
+                if type(value) is str:
                     self.data[key] = self.database.Find(value)
-                else:
-                    self.data[key] = wx.Colour(*value)
-        if key in self.data:
-            return self.data[key]
-        else:
-            return self.database.Find(key)
+                else: self.data[key] = wx.Colour(*value)
+        if key in self.data: return self.data[key]
+        else: return self.database.Find(key)
     
 #--Singleton
 colors = Colors()
@@ -324,7 +320,7 @@ spacer = ((0,0),1) #--Used to space elements apart.
 def aSizer(sizer,*elements):
     """Adds elements to a sizer."""
     for element in elements:
-        if isinstance(element,tuple):
+        if type(element) is tuple:
             if element[0] is not None:
                 sizer.Add(*element)
         elif element is not None:
@@ -392,7 +388,7 @@ def askContinue(parent,message,continueKey,title=_('Warning')):
     return result in (wx.ID_OK,wx.ID_YES)
 
 #------------------------------------------------------------------------------
-def askOpen(parent,title='',defaultDir='',defaultFile='',wildcard='',style=wx.OPEN):
+def askOpen(parent,title='',defaultDir='',defaultFile='',wildcard='',style=wx.FD_OPEN):
     """Show as file dialog and return selected path(s)."""
     defaultDir,defaultFile = [GPath(x).s for x in (defaultDir,defaultFile)]
     dialog = wx.FileDialog(parent,title,defaultDir,defaultFile,wildcard, style )
@@ -405,13 +401,13 @@ def askOpen(parent,title='',defaultDir='',defaultFile='',wildcard='',style=wx.OP
     dialog.Destroy()
     return result
 
-def askOpenMulti(parent,title='',defaultDir='',defaultFile='',wildcard='',style=wx.OPEN|wx.MULTIPLE):
+def askOpenMulti(parent,title='',defaultDir='',defaultFile='',wildcard='',style=wx.FD_OPEN|wx.FD_MULTIPLE):
     """Show as save dialog and return selected path(s)."""
     return askOpen(parent,title,defaultDir,defaultFile,wildcard,style )
 
-def askSave(parent,title='',defaultDir='',defaultFile='',wildcard='',style=wx.OVERWRITE_PROMPT):
+def askSave(parent,title='',defaultDir='',defaultFile='',wildcard='',style=wx.FD_OVERWRITE_PROMPT):
     """Show as save dialog and return selected path(s)."""
-    return askOpen(parent,title,defaultDir,defaultFile,wildcard,wx.SAVE|style )
+    return askOpen(parent,title,defaultDir,defaultFile,wildcard,wx.FD_SAVE|style )
 
 #------------------------------------------------------------------------------
 def askText(parent,message,title='',default=''):
@@ -532,18 +528,15 @@ def showWryeLog(parent,logText,title='',style=0,asDialog=True,icons=None):
     pos = _settings.get('balt.WryeLog.pos',defPos)
     size = _settings.get('balt.WryeLog.size',(400,400))
     #--Dialog or Frame
-    if asDialog:
-        window = wx.Dialog(parent,defId,title,pos=pos,size=size,
-            style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER)
+    if asDialog: window = wx.Dialog(parent,defId,title,pos=pos,size=size,style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER)
     else:
-        window = wx.Frame(parent,defId,title,pos=pos,size=size,
-            style= (wx.RESIZE_BORDER | wx.CAPTION | wx.SYSTEM_MENU | wx.CLOSE_BOX | wx.CLIP_CHILDREN))
+        window = wx.Frame(parent,defId,title,pos=pos,size=size,style= (wx.RESIZE_BORDER|wx.CAPTION|wx.SYSTEM_MENU|wx.CLOSE_BOX|wx.CLIP_CHILDREN))
         if icons: window.SetIcons(icons)
     window.SetSizeHints(200,200)
     window.Bind(wx.EVT_CLOSE,showLogClose)
     #--Text
     textCtrl = wx.lib.iewin.IEHtmlWindow(window, defId, style = wx.NO_FULL_REPAINT_ON_RESIZE)  #  iewin
-    if not isinstance(logText,bolt.Path):
+    if not isinstance(logText, bolt.Path):
         logPath = _settings.get('balt.WryeLog.temp', bolt.Path.getcwd().join('WryeLogTemp.html'))
         cssDir = _settings.get('balt.WryeLog.cssDir', GPath(''))
         ins = cStringIO.StringIO(logText+'\n{{CSS:wtxt_sand_small.css}}')
@@ -1285,7 +1278,7 @@ class Links(list):
     def getClassPoint(self,classObj):  #--Access functions:
         """Returns index"""
         for index,item in enumerate(self):
-            if isinstance(item,classObj):
+            if isinstance(item, classObj):
                 return Links.LinksPoint(self,index)
         else: return None
 
@@ -1300,7 +1293,7 @@ class Link:
 
     def AppendToMenu(self,menu,window,data):
         """Append self to menu as menu item."""
-        if isinstance(window,Tank):
+        if isinstance(window, Tank):
             self.gTank = window
             self.selected = window.GetSelected()
             self.data = window.data

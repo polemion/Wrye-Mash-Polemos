@@ -4,7 +4,7 @@
 #
 # This file is part of Wrye Mash Polemos fork.
 #
-# Wrye Mash 2018 Polemos fork Copyright (C) 2017-2018 Polemos
+# Wrye Mash 2018 Polemos fork Copyright (C) 2017-2019 Polemos
 # * based on code by Yacoby copyright (C) 2011-2016 Wrye Mash Fork Python version
 # * based on code by Melchor copyright (C) 2009-2011 Wrye Mash WMSA
 # * based on code by Wrye copyright (C) 2005-2009 Wrye Mash
@@ -13,7 +13,7 @@
 #  Copyright on the original code 2005-2009 Wrye
 #  Copyright on any non trivial modifications or substantial additions 2009-2011 Melchor
 #  Copyright on any non trivial modifications or substantial additions 2011-2016 Yacoby
-#  Copyright on any non trivial modifications or substantial additions 2017-2018 Polemos
+#  Copyright on any non trivial modifications or substantial additions 2017-2019 Polemos
 #
 # ======================================================================================
 
@@ -75,7 +75,7 @@ class Callables:
 
     def help(self,callKey): #--Help
         """Print help for specified callKey."""
-        help(self.callObjs[callKey]) # Polemos: cool hack man (not mine).
+        help(self.callObjs[callKey])
 
     def main(self): #--Main
         callObjs = self.callObjs
@@ -116,6 +116,7 @@ class Callables:
             else: argDex = argDex + 1
         #--Apply
         callObj(*args, **keywords)
+
 #--Callables Singleton
 callables = Callables()
 
@@ -154,8 +155,8 @@ P.list-6 { margin-left: 1.00in; text-indent: -0.15in }
 
 @mainFunction
 def etxtToHtml(inFileName):
-    import time
     """Generates an html file from an etxt file."""
+    import time
     #--Re's
     reHead2 = re.compile(r'## *([^=]*) ?=*')
     reHead3 = re.compile(r'# *([^=]*) ?=*')
@@ -421,7 +422,8 @@ def refInfo(fileName,forMods=-1,forCellId=None):
 
 # Misc.
 @mainFunction
-def genLibrary(modName,textName): #--Library Generator
+def genLibrary(modName,textName):
+    """Library Generator."""
     init(2)
     fileInfo = mosh.modInfos[modName]
     fileLib = mosh.FileLibrary(fileInfo)
@@ -430,7 +432,8 @@ def genLibrary(modName,textName): #--Library Generator
     fileLib.safeSave()
 
 @mainFunction
-def genSchedule(fileName,espName=None): #--Schedule Generator
+def genSchedule(fileName,espName=None):
+    """Schedule Generator."""
     generator = mosh.ScheduleGenerator()
     generator.loadText(fileName)
     #--Write to text file?
@@ -441,7 +444,7 @@ def genSchedule(fileName,espName=None): #--Schedule Generator
     else:
         init(2)
         fileInfo = mosh.modInfos.data.get(espName)
-        if not fileInfo: raise _('No such file: ')+espName
+        if not fileInfo: raise _(u'No such file: ')+espName
         generator.save(fileInfo)
 
 @mainFunction
@@ -561,7 +564,8 @@ def textMunch(fileName=None):
     etxtToWtxt(fileName)
 
 @mainFunction
-def temp(fileName): #--Temp
+def temp(fileName):
+    """"Temp."""
     init(2)
     fileInfo = mosh.modInfos[fileName]
     fileDials = mosh.FileDials(fileInfo)
@@ -615,7 +619,8 @@ def temp(fileName): #--Temp
     fileDials.safeSave()
 
 @mainFunction
-def temp2(fileName=None): #--Temp 2
+def temp2(fileName=None):
+    """Temp 2."""
     init(2)
     fileName = fileName or 'Wrye CharSet.esp'
     csi = mosh.CharSetImporter()

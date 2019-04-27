@@ -1,6 +1,6 @@
 # Wrye Mash Polemos fork GPL License and Copyright Notice ==============================
 #
-# Wrye Mash 2018 Polemos fork Copyright (C) 2017-2018 Polemos
+# Wrye Mash 2018 Polemos fork Copyright (C) 2017-2019 Polemos
 # * based on code by Yacoby copyright (C) 2011-2016 Wrye Mash Fork Python version
 # * based on code by Melchor copyright (C) 2009-2011 Wrye Mash WMSA
 # * based on code by Wrye copyright (C) 2005-2009 Wrye Mash
@@ -9,7 +9,7 @@
 #  Copyright on the original code 2005-2009 Wrye
 #  Copyright on any non trivial modifications or substantial additions 2009-2011 Melchor
 #  Copyright on any non trivial modifications or substantial additions 2011-2016 Yacoby
-#  Copyright on any non trivial modifications or substantial additions 2017-2018 Polemos
+#  Copyright on any non trivial modifications or substantial additions 2017-2019 Polemos
 #
 # ======================================================================================
 
@@ -34,26 +34,37 @@
 #
 # ======================================================================================
 
-images = {}
-screensList = None
+# Main Interface
+mashFrame = None
+MenuBar = None
+statusBar = None
+# Utilities Panel
 utilsList = None
+# Installers Panel
+gInstList = None
 gInstallers = None
+# OpenMW Datamods Panel
+ModdataList = None
+ModPackageList = None
+# Mods/Plugins Panel
+modList = None
+modDetails = None
+ArchivesList = None
+BSArchives = None
+modsMastersList = None
+# Saves Panel
+saveList = None
+saveDetails = None
+savesMastersList = None
+# Screenshots Panel
+screensList = None
+# Dialogs
 helpBrowser = None
 journalBrowser = None
 docBrowser = None
-mashFrame = None
-saveDetails = None
-saveList = None
-modDetails = None
-modList = None
-statusBar = None
 settingsWindow = None
-downloads = None
-ModdataList = None
-ModPackageList = None
-user_profile = None
-BSArchives = None
-ArchivesList = None
-Profile = None
-MenuBar = None
+# Misc
 MashDir = None
+user_profile = None
+Profile = None
+images = {}

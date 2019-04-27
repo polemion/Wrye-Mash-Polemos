@@ -2,7 +2,7 @@
 
 # Wrye Mash Polemos fork GPL License and Copyright Notice ==============================
 #
-# Wrye Mash 2018 Polemos fork Copyright (C) 2017-2018 Polemos
+# Wrye Mash 2018 Polemos fork Copyright (C) 2017-2019 Polemos
 # * based on code by Yacoby copyright (C) 2011-2016 Wrye Mash Fork Python version
 # * based on code by Melchor copyright (C) 2009-2011 Wrye Mash WMSA
 # * based on code by Wrye copyright (C) 2005-2009 Wrye Mash
@@ -11,7 +11,7 @@
 #  Copyright on the original code 2005-2009 Wrye
 #  Copyright on any non trivial modifications or substantial additions 2009-2011 Melchor
 #  Copyright on any non trivial modifications or substantial additions 2011-2016 Yacoby
-#  Copyright on any non trivial modifications or substantial additions 2017-2018 Polemos
+#  Copyright on any non trivial modifications or substantial additions 2017-2019 Polemos
 #
 # ======================================================================================
 
@@ -42,18 +42,23 @@ from mosh import _
 
 
 settings = None
-dataMap = {"Inst":"installers",
-           "Mw":"Morrowind",
-           "mlox":"mlox.exe",
-           "OpenMWloc":"OpenMW/TES3mp",
-           "OpenMWConf":"OpenMW.cfg",
-           "datamods":"mods",
-           "Downloads":"downloads",
-           "mlox64":"mlox64.exe",
-           "DataFiles":"Data Files",
-           "TES3mpConf":"pluginlist.json"}
 
+dataMap = {
 
+    # Morrowind
+    'Inst': 'installers',
+    'Mw': 'Morrowind',
+    'mlox': 'mlox.exe',
+
+    # OpenMW/TES3MP
+    'OpenMWloc': 'OpenMW/TES3mp',
+    'OpenMWConf': 'OpenMW.cfg',
+    'datamods': 'mods',
+    'Downloads': 'downloads',
+    'mlox64': 'mlox64.exe',
+    'DataFiles': 'Data Files',
+    'TES3mpConf': 'pluginlist.json'
+}
 
 settingDefaults = {
 
@@ -69,8 +74,19 @@ settingDefaults = {
     'sInstallersDir':None,
 
     # Dialog Queries
-    'mash.masters.update': False,
-    'tes3cmd.fixit.order': False,
+    'query.masters.update2': False,
+    'query.fixit.order': False,
+    'query.file.risk': False,
+    'query.masters.update': False,
+    'query.hideFiles.continue': False,
+    'query.sortMods.continue': False,
+    'query.refRemovers.continue': False,
+    'query.refReplacers.continue': False,
+    'query.sortRecords.continue': False,
+    'query.iniTweaks.continue': False,
+    'query.schedules.import.continue': False,
+    'query.renumberRefs.continue': False,
+    'query.removeDebrisCells.continue': False,
 
     #--Wrye Mash
     'all.ok': True,
@@ -84,8 +100,16 @@ settingDefaults = {
     'mash.frameSize.min': (400,500),
     'mash.page': 2,
     'mash.window.sizes': {},
+    'mash.bit.ver': '',
     #-Polemos: Profile
     'profile.active':'Default',
+    'profile.encoding': 'utf-8',
+    'mash.encodings': {
+        'utf-8': 'Wrye Mash Default.',
+        'cp1252': 'Western Latin, Morrowind default.',
+        'cp1250': 'Central European Latin',
+        'cp1251': 'Cyrillic alphabets'
+        },
     #-Polemos: Date scheme for version checking
     'last.check': None,
     'timeframe.check': 15,
@@ -191,6 +215,7 @@ settingDefaults = {
     'mash.installers.conflictsReport.showInactive':False,
     'mash.installers.show.progress.info':False,
 
+    'mash.installers.markers': [],
     'mash.installers.sort': 'Order',
     'mash.installers.colReverse': {},
     'mash.installers.colWidths': {
@@ -368,7 +393,7 @@ settingDefaults = {
     'mash.mods.renames': {},
     'mash.mods.sashPos': 655,
 
-    #--Wrye Mash: Plugins (OpenMW)
+    #--Polemos: Plugins (OpenMW)
     'openmw.mods.cols': ['File','#','Rating','Group','Size','Author'],
     'openmw.mods.esmsFirst': 1,
     'openmw.mods.selectedFirst': 0,
@@ -452,3 +477,5 @@ settingDefaults = {
         }
 
     }
+
+settingsOrig = settingDefaults.copy()

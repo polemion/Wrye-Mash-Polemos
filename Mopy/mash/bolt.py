@@ -2,7 +2,7 @@
 
 # Wrye Mash Polemos fork GPL License and Copyright Notice ==============================
 #
-# Wrye Mash 2018 Polemos fork Copyright (C) 2017-2018 Polemos
+# Wrye Mash 2018 Polemos fork Copyright (C) 2017-2019 Polemos
 # * based on code by Yacoby copyright (C) 2011-2016 Wrye Mash Fork Python version
 # * based on code by Melchor copyright (C) 2009-2011 Wrye Mash WMSA
 # * based on code by Wrye copyright (C) 2005-2009 Wrye Mash
@@ -11,7 +11,7 @@
 #  Copyright on the original code 2005-2009 Wrye
 #  Copyright on any non trivial modifications or substantial additions 2009-2011 Melchor
 #  Copyright on any non trivial modifications or substantial additions 2011-2016 Yacoby
-#  Copyright on any non trivial modifications or substantial additions 2017-2018 Polemos
+#  Copyright on any non trivial modifications or substantial additions 2017-2019 Polemos
 #
 # ======================================================================================
 
@@ -45,13 +45,13 @@ import struct
 import sys
 import time
 from types import *
-from binascii import crc32
-import codecs, stat, scandir, ushlex, thread  # Polemos
+from zlib import crc32
+import codecs, stat, scandir, ushlex, thread, xxhash  # Polemos
 from subprocess import PIPE, check_call  # Polemos: KEEP => check_call <= !!
 from sfix import Popen  # Polemos
 import compat
-from unimash import norm_path_po as su
 
+MashDir = os.path.dirname(sys.argv[0])
 reTrans = re.compile(r'^([ :=\.]*)(.+?)([ :=\.]*$)')  # Localization
 DETACHED_PROCESS = 0x00000008  # Polemos: No console window.
 
@@ -105,10 +105,9 @@ if os.path.exists(languageTxt) and (not os.path.exists(languagePkl) or (os.path.
     compileTranslator(languageTxt,languagePkl)
 #--Use dictionary from pickle as translator
 if os.path.exists(languagePkl):
-    pklFile = open(languagePkl)
-    reEscQuote = re.compile(r"\\'")
-    _translator = cPickle.load(pklFile)
-    pklFile.close()
+    with open(languagePkl) as pklFile:
+        reEscQuote = re.compile(r"\\'")
+        _translator = cPickle.load(pklFile)
     def _(text,encode=True):
         if encode: text = reEscQuote.sub("'",text.encode('string_escape'))
         head,core,tail = reTrans.match(text).groups()
@@ -234,7 +233,7 @@ class Path(object): # Polemos: Unicode fixes.
 
     def setcwd(self):
         """Set cwd. Works as either instance or class method."""
-        if isinstance(self,Path): dir = self._s.encode('utf-8')
+        if isinstance(self, Path): dir = self._s.encode('utf-8')
         else: dir = self
         os.chdir(dir)
 
@@ -244,8 +243,8 @@ class Path(object): # Polemos: Unicode fixes.
 
     def __init__(self, name):
         """Initialize."""
-        if isinstance(name,Path): self.__setstate__(name._s)
-        elif isinstance(name,unicode): self.__setstate__(name)
+        if isinstance(name, Path): self.__setstate__(name._s)
+        elif type(name) is unicode: self.__setstate__(name)
         else: self.__setstate__(str(name))
 
     def __getstate__(self):
@@ -347,9 +346,9 @@ class Path(object): # Polemos: Unicode fixes.
 
     #--size, atim, ctime
     @property
-    def size(self):
+    def size(self): # Polemos: os.path.getsize -> os.stat().st_size
         """Size of file."""
-        return os.path.getsize(self._s)
+        return os.stat(self._s).st_size
 
     @property
     def atime(self):
@@ -375,16 +374,27 @@ class Path(object): # Polemos: Unicode fixes.
     mtime = property(getmtime,setmtime,doc="Time file was last modified.")
 
     @property
-    def crc(self):
+    def xxh(self):  # Polemos
+        """Calculates and returns xxhash value for self."""
+        xxhs = xxhash.xxh32()
+        with self.open('rb', 65536) as ins:
+            for x in range((self.size / 65536) + 1):
+                xxhs.update(ins.read(65536))
+        return xxhs.intdigest()
+
+    @property
+    def crc(self):  # Polemos: Optimized. It went from 23 sec to 6 sec in a 6700k system.
         """Calculates and returns crc value for self."""
-        size = self.size
-        crc = 0L
-        ins = self.open('rb')
-        while ins.tell() < size:
-            crc = crc32(ins.read(512),crc)
-        ins.close()
-        if crc < 0: crc = 4294967296L + crc
-        return crc
+        if self.size <= 16777216:
+            crc = 0L
+            with self.open('rb', 65536) as ins:
+                for x in xrange((self.size / 65536) + 1):
+                    crc = crc32(ins.read(65536), crc)
+            return crc if crc > 0 else 4294967296L + crc
+        #  7z is faster on big files
+        args = ushlex.split('7z.exe h "%s"' % self.s)
+        ins = Popen(args, bufsize=-1, stdout=PIPE, creationflags=DETACHED_PROCESS)
+        return int([x for x in ins.stdout][14].split(':')[1], 16)
 
     #--Path stuff -------------------------------------------------------
     #--New Paths, subpaths
@@ -405,10 +415,10 @@ class Path(object): # Polemos: Unicode fixes.
         if relative:
             start = len(self._s)
             return ((GPath(x[start:]),[GPath(u) for u in y],[GPath(u) for u in z])
-                for x,y,z in scandir.walk(topdown,onerror)) # Polemos: replaced os.walk which is slow in Python 2.7 and below.
+                for x,y,z in scandir.walk(topdown,onerror))  # Polemos: replaced os.walk which is slow in Python 2.7 and below.
         else:
             return ((GPath(x),[GPath(u) for u in y],[GPath(u) for u in z])
-                for x,y,z in scandir.walk(topdown,onerror)) # See above man.
+                for x,y,z in scandir.walk(topdown,onerror))  # See above man.
 
     #--File system info
     #--THESE REALLY OUGHT TO BE PROPERTIES.
@@ -607,7 +617,7 @@ class Flags(object):
         E.g., Flags.getNames('isQuest','isHidden',None,(4,'isDark'),(7,'hasWater'))"""
         namesDict = {}
         for index,name in enumerate(names):
-            if isinstance(name,tuple):
+            if type(name) is tuple:
                 namesDict[name[1]] = name[0]
             elif name: #--skip if "name" is 0 or None
                 namesDict[name] = index
@@ -673,19 +683,19 @@ class Flags(object):
     #--Native operations
     def __eq__( self, other):
         """Logical equals."""
-        if isinstance(other,Flags):
+        if isinstance(other, Flags):
             return self._field == other._field
         else: return self._field == other
 
     def __ne__( self, other):
         """Logical not equals."""
-        if isinstance(other,Flags):
+        if isinstance(other, Flags):
             return self._field != other._field
         else: return self._field != other
 
     def __and__(self,other):
         """Bitwise and."""
-        if isinstance(other,Flags): other = other._field
+        if isinstance(other, Flags): other = other._field
         return self(self._field & other)
 
     def __invert__(self):
@@ -699,7 +709,7 @@ class Flags(object):
 
     def __xor__(self,other):
         """Bitwise exclusive or."""
-        if isinstance(other,Flags): other = other._field
+        if isinstance(other, Flags): other = other._field
         return self(self._field ^ other)
 
     def getTrueAttrs(self):
@@ -750,7 +760,7 @@ class RemoveTree:  # Polemos
 
     def __init__(self, tree):
         """Init."""
-        if any([type(tree) == str, type(tree) == unicode]): tree = (tree,)
+        if any([type(tree) is str, type(tree) is unicode]): tree = (tree,)
         self.rmTree(tree)
 
     def undeny(self, func, path, _):
@@ -924,7 +934,7 @@ class ModInstall:  # Polemos
         target_dir = self.target_dir
         if not os.path.isdir(self.target_dir): os.makedirs(self.target_dir)
         num = 0
-        for root, dirs, files in os.walk(source_dir, topdown=False):
+        for root, dirs, files in scandir.walk(source_dir, topdown=False):
             for fname in files:
                 num += 1
                 self.dialog.update(num)
@@ -1058,7 +1068,7 @@ class DataFilesDetect:  # Polemos
 
     def TreeFactory(self, data_files):
         """Create path from data."""
-        if data_files == []: return ('',('root', '\\', -1))
+        if not data_files: return ('',('root', '\\', -1))
         if data_files[0][2] == 0: return (data_files[0][1], ('\\', data_files[0][1], 0))
         result = [data_files[0][1]]
         for x in self.package_paths:
@@ -1111,8 +1121,8 @@ class DataFilesDetect:  # Polemos
 class CleanJunkTemp:  # Polemos
     """Simple junk files cleaning."""
     junklist = ('thumbs.db', 'desktop.ini')
-    try: tempdir = os.path.join(os.getcwd(), u'Temp')
-    except: tempdir = os.path.join(os.getcwd(), 'Temp')
+    try: tempdir = os.path.join(MashDir, u'Temp')
+    except: tempdir = os.path.join(MashDird, 'Temp')
     junk_files = []
 
     def __init__(self):
@@ -1225,8 +1235,11 @@ class MultiThreadGauge:  # Polemos
             self.getmodlen(ur'7z.exe l "%s" %s' % (package_path, data_files))
         if mode == 'pack':
             pack_source, pack_target = packData
+            #print pack_target
+            if pack_target.endswith('.rar'): pack_target = '%s.7z' % pack_target[:-4]
             title = _(u'Packing...')
             cmd = ur'7z.exe -bb -bsp1 a "%s" "%s\*"' % (pack_target, pack_source)
+            cmd = cmd.replace('\\','/')
         self.cmd = cmd
         import gui.dialog as gui
         self.dialog = gui.GaugeDialog(window, title=title)

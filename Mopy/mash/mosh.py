@@ -4,7 +4,7 @@
 #
 # This file is part of Wrye Mash Polemos fork.
 #
-# Wrye Mash 2018 Polemos fork Copyright (C) 2017-2018 Polemos
+# Wrye Mash 2018 Polemos fork Copyright (C) 2017-2019 Polemos
 # * based on code by Yacoby copyright (C) 2011-2016 Wrye Mash Fork Python version
 # * based on code by Melchor copyright (C) 2009-2011 Wrye Mash WMSA
 # * based on code by Wrye copyright (C) 2005-2009 Wrye Mash
@@ -13,7 +13,7 @@
 #  Copyright on the original code 2005-2009 Wrye
 #  Copyright on any non trivial modifications or substantial additions 2009-2011 Melchor
 #  Copyright on any non trivial modifications or substantial additions 2011-2016 Yacoby
-#  Copyright on any non trivial modifications or substantial additions 2017-2018 Polemos
+#  Copyright on any non trivial modifications or substantial additions 2017-2019 Polemos
 #
 # ======================================================================================
 
@@ -38,14 +38,19 @@
 # ========================================================================================
 
 # Modified by D.C.-G. < 16:35 2010-06-11 > for UtilsPanel extension.
-# Modified by Polemos in 2,000,000 places, early 2018~.
+# Modified by Polemos in 2,000,000 places, 2018~.
 
-# Localization
-import locale; locale.setlocale(locale.LC_ALL,'')
+
+import locale  # Localization
+try:  # Polemos: Possible fix for "locale.Error: unsupported locale setting"
+    locale.setlocale(locale.LC_ALL,'')  # Todo: Pos for Phoenix
+except: locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')  # Statistics...
+
 import time
 from subprocess import PIPE, check_call  # Polemos
 from sfix import Popen  # Polemos
 import codecs, ushlex, scandir  # Polemos
+from unimash import uniChk as uniChk, encChk as encChk  # Polemos
 import array
 import cPickle
 import cStringIO
@@ -63,16 +68,17 @@ from bolt import LString, GPath, DataDict, SubProgress
 import compat
 import mush
 
+MashDir = os.path.dirname(sys.argv[0])  # Polemos
 DETACHED_PROCESS = 0x00000008  # Polemos
 
 def formatInteger(value):
     """Convert integer to string formatted to locale."""
     return locale.format('%d',int(value),1)
 
-def formatDate(value):
+def formatDate(value):   # Polemos
     """Convert time to string formatted to locale's default date/time."""
     try: return time.strftime('%c', time.localtime(value))
-    except: return time.strftime('%c', time.localtime(0))  # Polemos: Needed when installers are outside Unix Epoch
+    except: return time.strftime('%c', time.localtime(0))  # Needed when installers are outside Unix Epoch
 
 def megethos(num):  # Polemos
         """Convert byte sizes to KBs, MBs or GBs."""
@@ -148,9 +154,8 @@ if os.path.exists(languageTxt) and (not os.path.exists(languagePkl) or (
     os.path.getmtime(languageTxt) > os.path.getmtime(languagePkl))): compileTranslator(languageTxt,languagePkl)
 #--Use dictionary from pickle as translator
 if os.path.exists(languagePkl):
-    pklFile = open(languagePkl)
-    _translator = cPickle.load(pklFile)
-    pklFile.close()
+    with open(languagePkl) as pklFile:
+        _translator = cPickle.load(pklFile)
     def _(text): return _translator.get(text,text)
 else:
     def _(text): return text
@@ -189,6 +194,12 @@ class UncodedError(MoshError):
 
     def __init__(self,message=_(u'Section is not coded yet.')):
         MoshError.__init__(self,message)
+
+class ConfError(MoshError):  # Polemos
+    """Config file errors. Same as abstract."""
+
+    def __init__(self, message):
+        MoshError.__init__(self, message)
 
 # TES3 File Errors ------------------------------------------------------------
 
@@ -256,15 +267,19 @@ class SortKeyError(MoshError):
 
 # Data Dictionaries -----------------------------------------------------------
 
-class Settings:
+class Settings:  # Polemos: Added revert to backup configuration.
     """Settings dictionary. Changes are saved to pickle file."""
-    def __init__(self,path='settings.pkl'):
+
+    def __init__(self, path='settings.pkl'):
         """Initialize. Read settings from pickle file."""
         self.path = path.encode('utf-8')
         self.changed = []
         self.deleted = []
         self.data = {}
-        #--Load
+        # Check if the settings file is missing and if there is an available backup to restore.
+        if not os.path.exists(self.path) and os.path.exists(self.path + '.bak'):
+            shutil.copyfile(os.path.join(MashDir, self.path + '.bak'), os.path.join(MashDir, self.path))
+        # --Load
         if os.path.exists(self.path):
             inData = compat.uncpickle(open(self.path.encode('utf-8')))
             self.data.update(inData)
@@ -380,7 +395,7 @@ class Table:
             inData = compat.uncpickle(ins)
             self.data.update(inData)
 
-    def save(self): # Polemos: Unicode fix. Strange one. Was it mine? Questions, questions, questions... (a)
+    def save(self):  # Polemos: Unicode fix. Strange one. Was it mine? Questions, questions, questions... (a)
         """Saves to pickle file."""
         if self.hasChanged:
             filePath = self.path#.encode('utf-8')
@@ -479,9 +494,8 @@ class PickleDict(bolt.PickleDict):
         if not result and self.oldPath.exists():
             ins = None
             try:
-                ins = self.oldPath.open('r')
-                self.data.update(compat.uncpickle(ins))
-                ins.close()
+                with self.oldPath.open('r') as ins:
+                    self.data.update(compat.uncpickle(ins))
                 result = 1
             except EOFError:
                 if ins: ins.close()
@@ -520,7 +534,7 @@ def cstrip(inString):
 
 def dictFromLines(lines,sep=None):
     """Generate a dictionary from a string with lines, stripping comments and skipping empty strings."""
-    reComment = re.compile('#.*').encode('utf-8')
+    reComment = re.compile('#.*')
     temp = [reComment.sub('',x).strip() for x in lines.split('\n')]
     if sep is None or type(sep) == type(''):
         temp = dict([x.split(sep,1) for x in temp if x])
@@ -1328,7 +1342,7 @@ class Cell(Record):
             (iMod,iObj,objId,objRecords) = object
             for record in objRecords:
                 #--FRMR/NAME placeholder?
-                if isinstance(record,Cell_Frmr):
+                if isinstance(record, Cell_Frmr):
                     out.pack('4si','FRMR',4)
                     out.write(struct.pack('i',iObj)[:3])
                     out.pack('B',iMod)
@@ -1636,14 +1650,12 @@ class Info_Test:
     def dumpData(self,out,index):
         """Dumps self into specified out stream with specified SCVR index value."""
         #--SCVR
-        out.pack('4siBB2sB',
-            'SCVR', 5+len(self.text), index+48, self.type, self.func, self.oper)
+        out.pack('4siBB2sB', 'SCVR', 5+len(self.text), index+48, self.type, self.func, self.oper)
         if self.text: out.write(self.text)
         #--Value
-        if isinstance(self.value,int):
+        if type(self.value) is int:
             out.packSub('INTV','i', self.value)
-        else:
-            out.packSub('FLTV','f', self.value)
+        else: out.packSub('FLTV','f', self.value)
 
 #------------------------------------------------------------------------------
 
@@ -2140,6 +2152,7 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
         """Init."""
         self.dir = dir
         self.openmw = settings['openmw']
+        self.encod = settings['profile.encoding']
         if not self.openmw:  # Morrowind
             self.path = os.path.join(self.dir, 'Morrowind.ini')
         elif self.openmw:  # OpenMW/TES3mp
@@ -2160,6 +2173,8 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
         self.doubleTime = {}
         self.exOverLoaded = set()
         self.loadOrder = tuple()
+        self.filesRisk = []
+        self.skip = True
         
     def getSetting(self,section,key,default=None):
         """Gets a single setting from the file."""
@@ -2218,7 +2233,7 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
             elif maSetting and LString(maSetting.group(1)) in sectionSettings:
                 key = LString(maSetting.group(1))
                 value = sectionSettings[key] 
-                if isinstance(value,str) and value[-1] == '\n':
+                if type(value) is str and value[-1] == '\n':
                     line = value
                 else: line = '%s=%s\n' % (key,value)
             tmpFile.write(line)
@@ -2233,7 +2248,7 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
         reSection = re.compile(r'^\[\s*(.+?)\s*\]$')
         reSetting = re.compile(r'(.+?)\s*=')
         #--Read MIT file
-        with codecs.open(mitPath, 'r', encoding='utf-8', errors='replace') as mitFile:
+        with codecs.open(mitPath, 'r', encoding=self.encod, errors='replace') as mitFile:
             sectionSettings = None
             settings = {}
             for line in mitFile:
@@ -2247,8 +2262,8 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
             if section.lower() in ('game files','archives','mit'): del settings[section]
         #--Apply it
         tmpPath = '%s.tmp' % self.path
-        with codecs.open(self.path, 'r', encoding='utf-8', errors='replace') as iniFile:
-            with codecs.open(tmpPath, 'w', encoding='utf-8', errors='replace') as tmpFile:
+        with codecs.open(self.path, 'r', encoding=self.encod, errors='replace') as iniFile:
+            with codecs.open(tmpPath, 'w', encoding=self.encod, errors='replace') as tmpFile:
                 section = None
                 sectionSettings = {}
                 for line in iniFile:
@@ -2317,7 +2332,7 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
         #self.StructureChk(datafiles_po) todo: check for cfg abnormalities...
         # Save, nice and cozy.
         datafiles_po = ''.join(datafiles_po)
-        with codecs.open(self.path, 'w', encoding='utf-8') as file:
+        with codecs.open(self.path, 'w', encoding=self.encod) as file:
             file.write(datafiles_po)
         self.loadConf()
 
@@ -2369,7 +2384,7 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
 
     def open_conf_file(self): # Polemos
         """Return Morrowind.ini or OpenMW.cfg file."""
-        with codecs.open(self.path, 'r', encoding='utf-8', errors='replace') as conf_file:
+        with codecs.open(self.path, 'r', encoding=self.encod, errors='replace') as conf_file:
             return conf_file.readlines()
 
     def loadConf(self):  # Polemos
@@ -2504,14 +2519,10 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
         if self.bsaFiles: self.openmw_apply_order(self.bsaFiles, self.datafiles_po)
         if self.loadFiles: self.openmw_apply_order(self.loadFiles, self.datafiles_po)
 
-    def get_active_bsa(self, num=False):  # Polemos
+    def get_active_bsa(self):  # Polemos
         """Called to return BSA entries from conf files."""
-        if not num:
-            if not self.hasChanged(): return self.bsaFiles
-            else:
-                self.loadConf()
-                return self.bsaFiles
-        else: return len(self.bsaFiles)
+        if self.hasChanged(): self.loadConf()
+        return self.bsaFiles
 
     def data_files_factory(self, filenames, paths):  # Polemos OpenMW/TES3mp
         """Constructs the data file paths for OpenMW"""
@@ -2563,63 +2574,123 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
         archives_order = [x for x in archives_order if not (x in the_set or the_set_add(x))]  ##
         return [x for x in archives_order if x.endswith('.bsa')]
 
-    def save(self):  # Polemos fixes, optimizations, + OpenMW/TES3mp support, BSA support.
-        """Prepare data to write to morrowind.ini or openmw.cfg file."""
-        if not self.openmw: error_ini_po = _(u'Morrowind.ini has changed')
-        elif self.openmw: error_ini_po = _(u'Openmw.cfg has changed')
-        if self.hasChanged(): raise StateError(error_ini_po)
-        writeCache = []
+    def fileNamChk(self, flist):
+        """Check for irregular file namings."""
+        probs = []
+        for x in flist:
+            try: x.decode(encChk(x))
+            except: probs.append(x)
+        return probs
 
-        with codecs.open(self.path, 'w', encoding='utf-8') as conf_File:
+    def save(self):  # Polemos fixes, optimizations, OpenMW/TES3mp support, BSA support, speed up massive lists.
+        """Prepare data to write to morrowind.ini or openmw.cfg file."""
+        writeCache, failed = [], {}
+
+        if self.hasChanged():  # Has the config file changed?
+            if not self.openmw: error_ini_po = _(u'Morrowind.ini has changed')
+            elif self.openmw: error_ini_po = _(u'Openmw.cfg has changed')
+            raise StateError(error_ini_po)
+
+        with open(self.path, 'w') as conf_File:
 
             if not self.openmw:  # Morrowind
+                # Check for irregular file namings.
+                if not settings['query.file.risk']:
+                    self.filesRisk = self.fileNamChk(self.loadFiles+self.bsaFiles)
+                # Create output entries.
                 for line in self.confLoadLines:
                     if line == self.ArchiveSection:
-                        writeCache.append('%s\r\n' % self.ArchiveSection)
-                        for ArchiveNum in xrange(len(self.bsaFiles)):
-                            Archive = self.bsaFiles[ArchiveNum]
-                            writeCache.append('Archive %d=%s\r\n' % (ArchiveNum, Archive))
+                        writeCache.append('%s' % self.ArchiveSection)
+                        for aNum in xrange(len(self.bsaFiles)):
+                            Archive = self.bsaFiles[aNum]
+                            writeCache.append('Archive %d=%s' % (aNum, Archive))
                     elif line == self.PluginSection:
-                        writeCache.append('%s\r\n' % self.PluginSection)
-                        for PluginNum in xrange(len(self.loadFiles)):
-                            PluginName = self.loadFiles[PluginNum]
-                            writeCache.append('GameFile%d=%s\r\n' % (PluginNum, PluginName))
-                    else: writeCache.append('%s\r\n' % line)
+                        writeCache.append('%s' % self.PluginSection)
+                        for pNum in xrange(len(self.loadFiles)):
+                            Plugin = self.loadFiles[pNum]
+                            writeCache.append('GameFile%d=%s' % (pNum, Plugin))
+                    else: writeCache.append('%s' % line)
 
             elif self.openmw:  # OpenMW/TES3mp
+                # Call file factories.
                 archives_order = self.save_openmw_archive_factory()
                 plugins_order = self.save_openmw_plugin_factory()
+                # Check for irregular file namings.
+                if not settings['query.file.risk']:
+                    self.filesRisk = self.fileNamChk(archives_order+plugins_order)
+                # Create output entries.
                 for line in self.confLoadLines:
                     if line == 'ArchiveMark':
                         for Archive in archives_order:
-                            writeCache.append('fallback-archive=%s\r\n' % Archive)
+                            writeCache.append('fallback-archive=%s' % Archive)
                     elif line == 'PluginMark':
                         for Plugin in plugins_order:
-                            writeCache.append('content=%s\r\n' % Plugin)
-                    else: writeCache.append('%s\r\n' % line)
+                            writeCache.append('content=%s' % Plugin)
+                    else: writeCache.append('%s' % line)
 
-            try: # Try to join all and save once.
-                writeCache = ''.join(writeCache)
-                conf_File.write(writeCache)
-            except: # On fail, save by line.
-                for x in writeCache:
-                    try: conf_File.write(x.encode('utf-8'))
-                    except: conf_File.write(x)
+            try:  # Try to join all and save once.
+                tmpwriteCache = '\n'.join(writeCache)
+                conf_File.write(tmpwriteCache+'\n')
+            except:  # On fail, save by line.
+                for num, x in enumerate(writeCache):
+                    x = '%s\n'%x
+                    try: conf_File.write(x)
+                    except:
+                        try: conf_File.write(x.encode(encChk(x)))
+                        except: failed[num]=x.rstrip()
 
         self.mtime = getmtime(self.path)
         self.size = os.path.getsize(self.path)
         del self.loadFilesBad[:]
         del self.loadFilesExtra[:]
+        # Notify user for any errors.
+        if failed: self.charFailed(failed)
+
+    def fRisk(self):  # Polemos
+        """Show filenames that may cause problems to the user."""
+        if settings['query.file.risk']: return
+        import gui.dialog as gui, wx
+        engine = u'Morrowind' if not self.openmw else u'OpenMW'
+        # Notify user
+        tmessage = _(u'Some of your mod filenames seem to have problematic encodings.')
+        message = _(u'There is a possibility that they might cause problems/bugs with Wrye Mash or %s functionality.\n'
+                    u'Please consider renaming them.\n\nWould you like to see a list of the affected filenames?') % engine
+        if gui.ContinueQuery(None, tmessage, message, 'query.file.risk', _(u'Problematic Filenames Detected')) != wx.ID_OK: return
+        else:
+            riskItms = '\n'.join(self.filesRisk)
+            gui.WarningMessage(None, _(u'The affected filenames are:\n\n%s' % riskItms), _(u'Affected Filenames List'))
+        del self.filesRisk[:]
+
+    def charFailed(self, items):  # Polemos
+        """Show failed entries to the user."""
+        # Set data
+        conf = u'Morrowind.ini' if not self.openmw else u'Openmw.cfg'
+        confItms = ('Archive', 'GameFile') if not self.openmw else ('fallback-archive=', 'content')
+        l = _(u'Line')
+        # Extract mod errors
+        mods = [(u'%s %s: %s'%(l, x, items[x])) for x in items if any([y in items[x] for y in confItms])]
+        # Reload the config file
+        self.loadConf()
+        # If the errors are only for mod entries, skip them, keep the changes in the configuration file and notify user
+        if len(items) == len(mods):
+            import gui.dialog as gui
+            errors = '\n'.join(mods)
+            gui.ErrorMessage(None, _(u'Problems encountered while updating %s. The following entries were not added:\n\n%s' % (conf, errors)))
+        # If there are also errors on lines without mod entries, notify user and raise error to revert to backup
+        if len(items) > len(mods):
+            errors = '\n'.join([(u'%s %s: %s...'%(l, x, items[x][:35])) if len(items[x]) > 35 else (u'%s %s: %s'%(l, x, items[x])) for x in items])
+            raise ConfError(_(u'Problems encountered while updating %s. Reverted to backup, no changes were saved:\n\n%s' % (conf, errors)))
 
     def restoreBackup(self):  # Polemos: Good to have a safety switch.
         """Restores the latest morrowind.ini/openmw.cfg backup file on save failure."""
+        # Does last backup file exists?
         if os.path.isfile('%s.bak' % self.path): conf_bck = '%s.bak' % self.path
+        # If missing does the first backup ever taken exist?
         elif os.path.isfile('%s.baf' % self.path): conf_bck = '%s.baf' % self.path
-        else: return u'Fatal: No backup file is found to restore.'
-        with codecs.open(conf_bck, 'r', encoding='utf-8', errors='replace') as conf_File_bck:
-            with codecs.open(self.path, 'w', encoding='utf-8', errors='replace') as conf_File:
-                data = conf_File_bck.read()
-                conf_File.write(data)
+        # Shit happens. Notify user and abort.
+        else: return u'Fatal: No backup file was found to restore configuration!'
+        # Restore ops
+        shutil.copy(conf_bck, self.path)
         self.loadConf()
 
     def makeBackup(self):
@@ -2634,11 +2705,19 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
         if not os.path.exists(firstBackup):
             shutil.copy(original,firstBackup)
     
-    def safeSave(self):
+    def safeSave(self):  # Polemos
         """Safe save conf file."""
         self.makeBackup()
+        self.save()
         try: self.save()
+        except ConfError as err:
+            import gui.dialog as gui
+            gui.ErrorMessage(None, err.message)
+            self.restoreBackup()
         except: self.restoreBackup()
+        # If allowed check filename risk
+        if not self.skip and self.filesRisk: self.fRisk()
+        self.skip = False  # Skip first check
 
     def hasChanged(self):
         """True if morrowind.ini/openmw.cfg file has changed."""
@@ -2698,7 +2777,6 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
         self.loadFiles.sort()
         self.loadFiles.sort(lambda a, b: cmp(a[-3:].lower(), b[-3:].lower()))
     
-    #--Loading
     def isMaxLoaded(self):
         """True if load list is full."""
         return len(self.loadFiles) >= 255
@@ -3047,6 +3125,7 @@ class FileInfo: # Polemos: OpenMW/TES3mp support
 #------------------------------------------------------------------------------
 
 class FileInfos: # + OpenMW/TES3mp support
+
     def __init__(self,dir,factory=FileInfo):
         """Init with specified directory and specified factory type."""
         self.OpenMW = settings['openmw']
@@ -3056,8 +3135,7 @@ class FileInfos: # + OpenMW/TES3mp support
         if not self.OpenMW: # Morrowind support
             self.table = Table(os.path.join(self.dir,'Mash','Table.pkl'))
         if self.OpenMW: # OpenMW/TES3mp support
-            cwd = os.getcwd()
-            self.table = Table(os.path.join(cwd, 'openmw', 'Table.pkl'))
+            self.table = Table(os.path.join(MashDir, 'openmw', 'Table.pkl'))
         self.corrupted = {} #--errorMessage = corrupted[fileName]
 
     #--Dictionary Emulation
@@ -3388,8 +3466,9 @@ class ResourceReplacer:
 #------------------------------------------------------------------------------
 
 class ModInfos(FileInfos):
-    #--Init
+
     def __init__(self,dir,factory=ModInfo):
+        """Init."""
         FileInfos.__init__(self,dir,factory)
         self.OpenMW = settings['openmw']
         self.resetMTimes = settings['mosh.modInfos.resetMTimes']
@@ -3398,13 +3477,13 @@ class ModInfos(FileInfos):
         self.doubleTime = {}
         self.objectMaps = None
 
-    #--Refresh File
     def refreshFile(self,fileName):
+        """Refresh File."""
         try: FileInfos.refreshFile(self,fileName)
         finally: self.refreshDoubleTime()
 
-    #--Refresh
     def refresh(self):
+        """Refresh."""
         hasChanged = FileInfos.refresh(self)
         if hasChanged:
             #--Reset MTimes?
@@ -3477,7 +3556,7 @@ class ModInfos(FileInfos):
         modNames.sort(key=lambda a: (a in data) and data[a].mtime) #--Sort on modified
         if not self.OpenMW:
             # Polemos: Not really needed for OpenMW implementation. Even though the Timsort algorithm (used in
-            # Python) is efficient with already sorted lists, we lose the advantage due to the complexity needed.
+            # Python) is efficient with pre-sorted lists, we lose the advantage due to the added complexity.
             modNames.sort(key=lambda a: a[-1].lower()) #--Sort on esm/esp
         #--Match Bethesda's esm sort order
         #  - Start with masters in chronological order.
@@ -3895,7 +3974,7 @@ class UtilsData(DataDict): # Polemos: Many changes here.
 class CommandsData:
     """Create Custom Commands."""
     def __init__(self, window):
-        self.config_file_path = os.path.join(os.getcwd(), 'custom.dcg')
+        self.config_file_path = os.path.join(MashDir, 'custom.dcg')
         import gui.dialog as gui
         self.gui = gui
         self.window = window
@@ -3992,10 +4071,11 @@ class datamod_order:   # Polemos: OpenMW/TES3mp support
 
     def __init__(self):
         """Initialize."""
+        self.encod = settings['profile.encoding']
         self.mwfiles = settings['openmw.datafiles'] if os.path.isdir(settings['openmw.datafiles']) else None
         self.conf_file = settings['openmwprofile']
-        self.mods = os.path.join(os.getcwd(), 'Profiles', settings['profile.active'], 'mods.dat')
-        self.modsorder_path = os.path.join(os.getcwd(), 'Profiles', settings['profile.active'], 'modsorder.dat')
+        self.mods = os.path.join(MashDir, 'Profiles', settings['profile.active'], 'mods.dat')
+        self.modsorder_path = os.path.join(MashDir, 'Profiles', settings['profile.active'], 'modsorder.dat')
         self.order = []
         self.datafiles = []
         self.SetModOrder()
@@ -4144,12 +4224,12 @@ class datamod_order:   # Polemos: OpenMW/TES3mp support
 
     def create(self, file, text=u''):
         """Create a file and save text."""
-        with codecs.open(file, 'w', 'utf-8') as f:
+        with codecs.open(file, 'w', self.encod) as f:
             f.write(text)
 
     def read(self, file):
         """Read file contents from a file in a chosen dir."""
-        with codecs.open(file, 'r', 'utf-8') as f:
+        with codecs.open(file, 'r', self.encod) as f:
             return f.readlines()
 
 #------------------------------------------------------------------------------
@@ -4199,11 +4279,9 @@ class BSA_order:  # Polemos
         if self.openmw:
             bsas = []
             bsadir = self.bsa_dir()[:]
-            # The comprehension below is faster (timed) than the loop it is based on.
-            # This is beyond me though, because I thought List Comprehensions were n faster
-            # than simple loops only because they were not using append(), which is
-            # strange in our case since we are using append() inside the comprehension...
-            # Be my guest and change it.
+            # The comprehension below is faster (timed) than the loop it is based on,
+            # even though we are using append() inside the comprehension (which defeats
+            # the purpose)... Be my guest and change it.
             [[bsas.append(os.path.join(moddir, bsafile)) for bsafile in scandir.listdir(moddir)
                     if bsafile.endswith('.bsa')] for moddir in bsadir if os.path.exists(moddir)]
         return bsas
@@ -4327,7 +4405,7 @@ class GetBckList:  # Polemos
         """Init."""
         self.bckList = []
         self.max = settings['backup.slots']
-        self.snapdir = os.path.join(os.getcwd(), 'snapshots')
+        self.snapdir = os.path.join(MashDir, 'snapshots')
         self.bckfiles = [os.path.join(self.snapdir, 'datasnap%s.txt' % x) for x in range(self.max)]
         self.listFactory()
 
@@ -4350,7 +4428,8 @@ class LoadModOrder:  # Polemos
 
     def __init__(self, num):
         """Init."""
-        bckfile = os.path.join(os.getcwd(), 'snapshots', 'datasnap%s.txt' % num)
+        self.encod = settings['profile.encoding']
+        bckfile = os.path.join(MashDir, 'snapshots', 'datasnap%s.txt' % num)
         self.parseBck(bckfile)
 
     def dataFactory(self, rawData):
@@ -4362,7 +4441,7 @@ class LoadModOrder:  # Polemos
 
     def parseBck(self, bckFile):
         """Save backup file."""
-        with codecs.open(bckFile, 'r', 'utf-8') as bck:
+        with codecs.open(bckFile, 'r', self.encod) as bck:
             self.dataFactory(bck.readlines())
 
 # -----------------------------------------------------------------------------
@@ -4373,10 +4452,11 @@ class SaveModOrder:  # Polemos
 
     def __init__(self, modData, mode='advanced'):
         """Init."""
+        self.encod = settings['profile.encoding']
         self.mode = mode
         self.modData = modData
         self.max = settings['backup.slots']
-        self.snapdir = os.path.join(os.getcwd(), 'snapshots')
+        self.snapdir = os.path.join(MashDir, 'snapshots')
         self.bckfiles = [os.path.join(self.snapdir, 'datasnap%s.txt' % x) for x in range(self.max)]
         if not os.path.isdir(self.snapdir):
             try: os.makedirs(self.snapdir)
@@ -4405,20 +4485,20 @@ class SaveModOrder:  # Polemos
 
     def saveBck(self, bckFile):
         """Save backup file."""
-        with codecs.open(bckFile, 'w', 'utf-8') as bck:
+        with codecs.open(bckFile, 'w', self.encod) as bck:
             if self.mode == 'advanced':
                 for x in ['%s,%s\n'%(x[5],x[6]) for x in self.modData]: bck.write(x)
             else:
                 try: bck.write(self.modData)
-                except: bck.write(self.modData.decode('utf-8'))
+                except: bck.write(self.modData.decode(self.encod))
         self.status = True
 
 # -----------------------------------------------------------------------------
 
 class ResetTempDir:  # Polemos
     """Reset/clear Mash Temp dir."""
-    try: tempdir = (os.path.join(os.getcwd(), 'Temp'))
-    except: tempdir = os.path.join(os.getcwd(), u'Temp')
+    try: tempdir = (os.path.join(MashDir, 'Temp'))
+    except: tempdir = os.path.join(MashDir, u'Temp')
     status = True
 
     def __init__(self, window):
@@ -4495,7 +4575,7 @@ class Installer(object):  # Polemos: added MWSE compatibility, optimised, bug fi
         return sorted(files,key=lambda x: sortKeys[x])
 
     @staticmethod
-    def refreshSizeCrcDate(apRoot,old_sizeCrcDate,progress=None,removeEmpties=False,fullRefresh=False): # Polemos, fixed a bug in crc scan and more.
+    def refreshSizeCrcDate(apRoot,old_sizeCrcDate,progress=None,removeEmpties=False,fullRefresh=False):  # Polemos: fixed crc scan bug, optimized speed, more.
         """Update old_sizeCrcDate for root directory. This is used both by InstallerProject's and by InstallersData."""
         progress_info = settings['mash.installers.show.progress.info']
         rootIsMods = (apRoot == dirs['mods']) #--Filtered scanning for mods directory.
@@ -4514,7 +4594,7 @@ class Installer(object):  # Polemos: added MWSE compatibility, optimised, bug fi
         progress.setFull(1)
         dirDirsFiles = []
         emptyDirs = set()
-        for asDir,sDirs,sFiles in scandir.walk(asRoot): # Polemos: replaced os.walk which is slow in Python 2.7 and below.
+        for asDir, sDirs, sFiles in scandir.walk(asRoot): # Polemos: replaced os.walk which is slow in Python 2.7 and below.
             progress(0.05,_(u"%s: Pre-Scanning:\n%s") % (rootName,asDir[relPos:]))
             if rootIsMods and asDir == asRoot: sDirs[:] = [x for x in sDirs if x.lower() not in Installer.dataDirsMinus]
             dirDirsFiles.append((asDir,sDirs,sFiles))
@@ -4553,13 +4633,21 @@ class Installer(object):  # Polemos: added MWSE compatibility, optimised, bug fi
         if pending:
             progress(0,_(u"%s: Calculating CRCs...\n ") % rootName)
             progress.setFull(3+len(pending))
+            numndex = 0
             for index,rpFile in enumerate(sorted(pending)):  # Polemos: Bugfix and also added some extra info...
                 if progress_info:
                     try: string = (_(u"%s: Calculating CRCs...\n%s\nCRC: %s\nSize:  %sKB") %
-                                (rootName, unicode(rpFile.s, sys.getfilesystemencoding()), apFile.crc, (apFile.size/1024)))
-                    except: string = (_(u"%s: Calculating CRCs...\n%s\nCRC:  %s\nSize:  %sKB") % (rootName, rpFile.s, apFile.crc, (apFile.size/1024)))
+                            (rootName, unicode(rpFile.s, sys.getfilesystemencoding()), apFile.crc, (apFile.size/1024)))
+                    except: string = (_(u"%s: Calculating CRCs...\n%s\nCRC:  %s\nSize:  %sKB") %
+                            (rootName, rpFile.s, apFile.crc, (apFile.size/1024)))
                 if progress_info: progress(index, string)
-                else: progress(index)
+                # Polemos: Progress dialogs crawl if they have to show many items continuously. The same seems to
+                # happen also on native windows progress dialogs (if you wonder why the show more is not on by
+                # default) and it is the main reason, in my opinion, of the extreme slowness in Windows 10 progress
+                # dialogs. We mitigate this here by updating the progress dialog by steps of 10 until reaching the
+                # final 9 items which are shown by steps of 1.
+                elif numndex == 10: progress(index)
+                numndex = numndex + 1 if numndex < 10 else 0
                 apFile = apRoot.join(norm_ghost.get(rpFile,rpFile))
                 crc = apFile.crc
                 size = apFile.size
@@ -4644,7 +4732,7 @@ class Installer(object):  # Polemos: added MWSE compatibility, optimised, bug fi
 
     def refreshDataSizeCrc(self):
         """Updates self.data_sizeCr and related variables. Also, returns dest_src map for install operation."""
-        if isinstance(self,InstallerArchive): archiveRoot = GPath(self.archive).sroot
+        if isinstance(self, InstallerArchive): archiveRoot = GPath(self.archive).sroot
         else: archiveRoot = self.archive
         reReadMe = self.reReadMe
         docExts = self.docExts
@@ -4854,8 +4942,7 @@ class Installer(object):  # Polemos: added MWSE compatibility, optimised, bug fi
 
 
 class InstallerMarker(Installer):
-    """Represents a marker installer entry. 
-    Currently only used for the '==Last==' marker"""
+    """Represents a marker installer entry. Currently only used for the '==Last==' marker"""
     __slots__ = tuple() #--No new slots
 
     def __init__(self,archive):
@@ -4882,61 +4969,33 @@ class InstallerArchive(Installer):
     __slots__ = tuple() #--No new slots
 
     #--File Operations --------------------------------------------------------
-    def refreshSource(self,archive,progress=None,fullRefresh=False): # Polemos fixes, speed improvements.
+    def refreshSource(self,archive,progress=None,fullRefresh=False):  # Polemos fixes, speed improvements.
         """Refreshes fileSizeCrcs, size, date and modified from source archive/directory."""
-        #--Basic file info
+        # Basic file info
         self.modified = archive.mtime
         self.size = archive.size
-        self.crc = archive.crc
-        #--Get fileSizeCrcs
-
-        if True: # old (improved) method, timed: 0.626683646945 (19 archives totaling 1,5GB)
-            fileSizeCrcs = self.fileSizeCrcs = []
-            reList = re.compile(u'(Path|Folder|Size|CRC) = (.+)')
-            file = size = crc = isdir = 0
-            command = ur'7z.exe l -slt -sccUTF-8 "%s"' % archive.s
-            args = ushlex.split(command)
-            ins = Popen(args, stdout=PIPE, creationflags=DETACHED_PROCESS)
-            for line in ins.stdout:
-                maList = reList.match(line)
-                if maList:
-                    key,value = maList.groups()
-                    if key == u'Path':
-                        file = (value.decode('utf-8')).strip()
-                    elif key == u'Folder':
-                        isdir = (value[0] == '+')
-                    elif key == u'Size':
-                        size = int(value)
-                    elif key == u'CRC':
-                        try:
-                            crc = int(value,16)
-                            if file and not isdir: fileSizeCrcs.append((file,size,crc))
-                        except:
-                            crc = 0
-                            continue
-                        file = size = crc = isdir = 0
-
-        if False: # New experimental method, timed: 0.565993544259 (19 archives totaling 1,5GB)
-            fileSizeCrcs = self.fileSizeCrcs = []
-            file = size = crc = 0
-            command = ur'7z.exe l -slt -sccUTF-8 "%s" -ir!*.*' % archive.s
-            args = ushlex.split(command)
-            ins = Popen(args, stdout=PIPE, creationflags=DETACHED_PROCESS)
-            for line in ins.stdout:
-                if 'Path = ' in line:
-                    file = line.decode('utf-8').rstrip().replace('Path = ', '')
-                elif 'Size = ' in line:
-                    try: size = int(line.rstrip().replace('Size = ', ''))
-                    except: continue
-                elif 'CRC = ' in line:
+        self.crc = archive.xxh
+        # Get fileSizeCrcs
+        fileSizeCrcs = self.fileSizeCrcs = []
+        reList = re.compile(u'(Path|Folder|Size|CRC) = (.+)')
+        file = size = crc = isdir = 0
+        command = ur'7z.exe l -slt -sccUTF-8 "%s"' % archive.s
+        args = ushlex.split(command)
+        ins = Popen(args, bufsize=32768, stdout=PIPE, creationflags=DETACHED_PROCESS)
+        memload = [x for x in ins.stdout]
+        for line in memload:
+            maList = reList.match(line)
+            if maList:
+                key,value = maList.groups()
+                if key == u'Path': file = (value.decode('utf-8')).strip()
+                elif key == u'Folder': isdir = (value[0] == '+')
+                elif key == u'Size': size = int(value)
+                elif key == u'CRC':
                     try:
-                        crc = int(line.rstrip().replace('CRC = ', ''), 16)
-                        fileSizeCrcs.append((file, size, crc))
-                    except:
-                        crc = 0
-                        continue
-                    file = size = crc = 0
-
+                        crc = int(value,16)
+                        if file and not isdir: fileSizeCrcs.append((file,size,crc))
+                    except: pass
+                    file = size = crc = isdir = 0
         if not fileSizeCrcs:
             import gui.dialog
             gui.dialog.ErrorMessage(None, _(u'7z module is'
@@ -4978,7 +5037,7 @@ class InstallerArchive(Installer):
             if maExtracting:
                 extracted.append(maExtracting.group(1).strip())
                 progress.plus()
-        try: check = result  # Polemos: Excepting is fast.
+        try: check = result  # Polemos: Excepting is fast sometimes.
         except:
             import gui.dialog  # Polemos: In case of errors.
             gui.dialog.ErrorMessage(None,_(u"Errors occurred during extraction and/or Extraction failed."))
@@ -4995,7 +5054,6 @@ class InstallerArchive(Installer):
     def install(self,archive,destFiles,data_sizeCrcDate,progress=None):  # Polemos fixes.
         """Install specified files to Morrowind directory."""
         # Note: Installs "directly" from the archive here.
-
         progress = progress or bolt.Progress()
         destDir = dirs['mods']
         destFiles = set(destFiles)
@@ -5178,7 +5236,7 @@ class InstallersData(bolt.TankData, DataDict):  # Polemos fixes
         changed = False
         self.refreshRenamed()
         if not self.loaded: 
-            progress(0,_(u"Loading Data..."))
+            progress(0,_(u'Loading Data...\n'))
             self.dictFile.load()
             data = self.dictFile.data
             self.data = data.get('installers',{})
@@ -5209,7 +5267,7 @@ class InstallersData(bolt.TankData, DataDict):  # Polemos fixes
         #--Update to version 1
         for name in self.data.keys():
             installer = self.data[name]
-            if isinstance(installer,Installer):
+            if isinstance(installer, Installer):
                 self.data[name] = installer.__copy__(InstallerArchive)
         self.dictFile.vdata['version'] = 1
 
@@ -5223,7 +5281,7 @@ class InstallersData(bolt.TankData, DataDict):  # Polemos fixes
 
     def saveCfgFile(self):  #-# D.C.-G.,  Polemos: fixes, change mash.ini into an override.
         """Save the installers path to mash.ini."""
-        mashini_loc = os.path.join(os.getcwd(), 'mash.ini')
+        mashini_loc = os.path.join(MashDir, 'mash.ini')
         if not os.path.exists(mashini_loc) or self.openmw: return
         import ConfigParser
         mash_ini = False
@@ -5239,7 +5297,7 @@ class InstallersData(bolt.TankData, DataDict):  # Polemos fixes
         else: instPath = ""
         if instPath != dirs["installers"].s:
             if not mash_ini:
-                if os.path.exists(os.path.join(os.getcwd(), "mash_default.ini")):
+                if os.path.exists(os.path.join(MashDir, "mash_default.ini")):
                     with codecs.open('mash_default.ini', 'r', encoding='utf-8') as f: d = f.read()
                 else: d = "[General]\n"
                 with codecs.open('mash.ini', 'w', encoding='utf-8') as f: f.write(d)
@@ -5271,7 +5329,7 @@ class InstallersData(bolt.TankData, DataDict):  # Polemos fixes
         #--Special sorters
         if settings['mash.installers.sortStructure']: items.sort(key=lambda x: data[x].type)
         if settings['mash.installers.sortActive']: items.sort(key=lambda x: not data[x].isActive)
-        if settings['mash.installers.sortProjects']: items.sort(key=lambda x: not isinstance(data[x],InstallerProject))
+        if settings['mash.installers.sortProjects']: items.sort(key=lambda x: not isinstance(data[x], InstallerProject))
         return items
 
     def getColumns(self,item=None): #--Item Info
@@ -5307,7 +5365,7 @@ class InstallersData(bolt.TankData, DataDict):  # Polemos fixes
         #--Icon
         iconKey = ('off','on')[installer.isActive]+'.'+self.status_color[installer.status]
         if installer.type < 0: iconKey = 'corrupt'
-        elif isinstance(installer,InstallerProject): iconKey += '.dir'
+        elif isinstance(installer, InstallerProject): iconKey += '.dir'
         return (iconKey,textKey,backKey)
 
     def getName(self,item): 
@@ -5328,7 +5386,7 @@ class InstallersData(bolt.TankData, DataDict):  # Polemos fixes
         if item == self.lastKey: return
         installer = self.data[item]
         apath = self.dir.join(item)
-        if isinstance(installer,InstallerProject):
+        if isinstance(installer, InstallerProject):
             apath.rmtree(safety='Installers')
         else: apath.remove()
         del self.data[item]
@@ -5355,7 +5413,7 @@ class InstallersData(bolt.TankData, DataDict):  # Polemos fixes
             self.data[destName] = installer = copy.copy(self.data[item])
             installer.isActive = False
             self.refreshOrder()
-            self.moveArchives([destName],self.data[item].order+1)
+            self.moveArchives([destName],self.data[item].order)
             del self.data[item]
             return True
 
@@ -5398,7 +5456,7 @@ class InstallersData(bolt.TankData, DataDict):  # Polemos fixes
         newData = {}
         if not self.openmw:  # Polemos: Regular Morrowind support
             for i in self.data.keys():
-                if isinstance(self.data[i],InstallerMarker):
+                if isinstance(self.data[i], InstallerMarker):
                     newData[i] = self.data[i]
         for archive in dirs['installers'].list():
             apath = dirs['installers'].join(archive)
@@ -5842,8 +5900,7 @@ class FileRep:
             self.records.append(record)
             typeIds[idLower] = record
             return record
-        else:
-            return None
+        else: return None
 
     def setRecord(self,record):
         """Adds record to record list and indexed."""
@@ -5854,8 +5911,7 @@ class FileRep:
             oldRecord = typeIds[idLower]
             index = self.records.index(oldRecord)
             self.records[index] = record
-        else:
-            self.records.append(record)
+        else: self.records.append(record)
         typeIds[idLower] = record
 
     def safeSave(self):
@@ -5872,21 +5928,20 @@ class FileRep:
         """Save data to file. 
         outPath -- Path of the output file to write to. Defaults to original file path."""
         if (not self.canSave): raise StateError(_(u"Insufficient data to write file."))
-        if not outPath:
+        if outPath is None:
             fileInfo = self.fileInfo
             outPath = os.path.join(fileInfo.dir,fileInfo.name)
-        out = file(outPath,'wb')
-        #--Tes3 Record
-        self.tes3.setChanged()
-        self.tes3.hedr.setChanged()
-        self.tes3.hedr.numRecords = len(self.records) #--numRecords AFTER TES3 record
-        self.tes3.getSize()
-        self.tes3.dump(out)
-        #--Other Records
-        for record in self.records:
-            record.getSize()
-            record.dump(out)
-        out.close()
+        with file(outPath,'wb') as out:
+            #--Tes3 Record
+            self.tes3.setChanged()
+            self.tes3.hedr.setChanged()
+            self.tes3.hedr.numRecords = len(self.records) #--numRecords AFTER TES3 record
+            self.tes3.getSize()
+            self.tes3.dump(out)
+            #--Other Records
+            for record in self.records:
+                record.getSize()
+                record.dump(out)
 
     def sortRecords(self):
         #--Get record type order.
@@ -6836,33 +6891,31 @@ class FileDials(FileRep):
         if groupBy == 'spId':
             infoKeys.sort(key=lambda a: self.infos[a].spId and self.infos[a].spId.lower())
         #--Text File
-        textFile = file(textFileName,'wb')
-        prevSpId = prevTopic = -1
-        for infoKey in infoKeys:
-            info = self.infos[infoKey]
-            #--Filter by spId?
-            if spId and info.spId != spId: continue
-            #--Empty text?
-            if not info.text: continue
-            #--NPC Header?
-            if groupBy == 'spId' and info.spId != prevSpId:
-                prevSpId = info.spId
-                header = prevSpId or ''
-                textFile.write('# "%s" %s\r\n' % (header,'-'*(75-len(header))))
-            #--Topic header?
-            elif groupBy == 'topic' and infoKey[1] != prevTopic:
-                prevTopic = infoKey[1]
-                header = prevTopic or ''
-                textFile.write('# "%s" %s\r\n' % (header,'-'*(75-len(header))))
-            textFile.write('@ %d "%s" %s' % infoKey)
-            if info.spId:
-                textFile.write(' "'+info.spId+'"')
-            textFile.write('\r\n')
-            textFile.write(info.text)
-            textFile.write('\r\n')
-            textFile.write('\r\n')
-        #--Done
-        textFile.close()
+        with file(textFileName,'wb') as textFile:
+            prevSpId = prevTopic = -1
+            for infoKey in infoKeys:
+                info = self.infos[infoKey]
+                #--Filter by spId?
+                if spId and info.spId != spId: continue
+                #--Empty text?
+                if not info.text: continue
+                #--NPC Header?
+                if groupBy == 'spId' and info.spId != prevSpId:
+                    prevSpId = info.spId
+                    header = prevSpId or ''
+                    textFile.write('# "%s" %s\r\n' % (header,'-'*(75-len(header))))
+                #--Topic header?
+                elif groupBy == 'topic' and infoKey[1] != prevTopic:
+                    prevTopic = infoKey[1]
+                    header = prevTopic or ''
+                    textFile.write('# "%s" %s\r\n' % (header,'-'*(75-len(header))))
+                textFile.write('@ %d "%s" %s' % infoKey)
+                if info.spId:
+                    textFile.write(' "'+info.spId+'"')
+                textFile.write('\r\n')
+                textFile.write(info.text)
+                textFile.write('\r\n')
+                textFile.write('\r\n')
 
 
 class FileLibrary(FileRep):
@@ -7133,35 +7186,33 @@ class FileScripts(FileRep):
 
     def loadText(self,textFileName):
         """Replaces dialog text with text read from file."""
-        textFile = file(textFileName,'rb')
-        reHeader = re.compile('^# ([a-zA-Z_0-9]+)')
-        id,lines,changed = None,[],[]
-        id_records = dict((record.id.lower(),record) for record in self.scripts)
-        def unBuffer():
-            record = id and id_records.get(id.lower())
-            if record:
-                code = (''.join(lines)).strip()
-                if code.lower() != record.sctx.data.strip().lower():
-                    record.setCode(code)
-                    changed.append(id)
-        for line in textFile:
-            maHeader = reHeader.match(line)
-            if maHeader:
-                unBuffer()
-                id,lines = maHeader.group(1),[]
-            elif id:  lines.append(line)
-        textFile.close()
+        with file(textFileName,'rb') as textFile:
+            reHeader = re.compile('^# ([a-zA-Z_0-9]+)')
+            id,lines,changed = None,[],[]
+            id_records = dict((record.id.lower(),record) for record in self.scripts)
+            def unBuffer():
+                record = id and id_records.get(id.lower())
+                if record:
+                    code = (''.join(lines)).strip()
+                    if code.lower() != record.sctx.data.strip().lower():
+                        record.setCode(code)
+                        changed.append(id)
+            for line in textFile:
+                maHeader = reHeader.match(line)
+                if maHeader:
+                    unBuffer()
+                    id,lines = maHeader.group(1),[]
+                elif id:  lines.append(line)
         unBuffer()
         return sorted(changed,key=string.lower)
 
     def dumpText(self,textFileName):
         """Dumps dialogs to file."""
-        textFile = file(textFileName,'wb')
-        for script in sorted(self.scripts, key=lambda a: a.id.lower()):
-            textFile.write('# %s %s\r\n' % (script.id,'='*(76 - len(script.id))))
-            textFile.write(script.sctx.data.strip())
-            textFile.write('\r\n\r\n')
-        textFile.close()
+        with file(textFileName,'wb') as textFile:
+            for script in sorted(self.scripts, key=lambda a: a.id.lower()):
+                textFile.write('# %s %s\r\n' % (script.id,'='*(76 - len(script.id))))
+                textFile.write(script.sctx.data.strip())
+                textFile.write('\r\n\r\n')
 
 # Processing Functions, Classes -----------------------------------------------
 
@@ -7183,21 +7234,20 @@ class CharSetImporter:
                      'Armorer', 'Axe', 'Blunt Weapon', 'Long Blade', 'Willpower', 'Alteration', 'Destruction', 'Mysticism',
                      'Restoration', 'Luck',)
         #--Read file
-        inn = open(fileName)
-        curStats = className = None
-        for line in inn:
-            stripped = reComment.sub('',line).strip()
-            maClassName = reClassName.match(stripped)
-            maStats = reStats.match(stripped)
-            if not stripped: pass
-            elif maClassName:
-                className = maClassName.group(1)
-                curStats = self.classStats[className] = []
-            elif maStats:
-                v00,v30 = [int(stat) for stat in maStats.groups()]
-                curStats.append((v00,v30))
-            else: raise MoshError(_(u'Bad line in CharSet class file.')+line.strip()+' >> '+stripped)
-        inn.close()
+        with open(fileName) as inn:
+            curStats = className = None
+            for line in inn:
+                stripped = reComment.sub('',line).strip()
+                maClassName = reClassName.match(stripped)
+                maStats = reStats.match(stripped)
+                if not stripped: pass
+                elif maClassName:
+                    className = maClassName.group(1)
+                    curStats = self.classStats[className] = []
+                elif maStats:
+                    v00,v30 = [int(stat) for stat in maStats.groups()]
+                    curStats.append((v00,v30))
+                else: raise MoshError(_(u'Bad line in CharSet class file.')+line.strip()+' >> '+stripped)
         #--Post Parse
         for className,stats in self.classStats.items():
             if len(stats) != 35: raise MoshError(_(u'Bad number of stats for class ')+className)
@@ -7339,148 +7389,146 @@ class ScheduleGenerator:
         npcSchedule = None
         codeCycles = [0]
         #--Parse input file
-        ins = file(fileName)
-        for line in ins:
-            #--Strip spaces and comments
-            line = reComment.sub('',line)
-            line = line.rstrip()
-            #--Skip empty/comment lines
-            if not line: continue
-            #--Section header?
-            if line[0] == '@':
-                # (town|defs|night|code|npcName)[: npcCondition]
-                parsed = line[1:].split(':',1)
-                id = parsed[0].strip()
-                #--Non-npc?
-                if id in {'town', 'defs', 'night', 'evening', 'code', 'import', 'project'}:
-                    section = id
-                    if section in ('evening','night'): townSleep = self.sleep[town]
-                    elif section == 'code':
-                        cycles = [0]
-                        townCode = self.code[town] = [[],[],[],[],[]]
-                else:
-                    section = 'npc'
-                    npc = id
-                    #--Any town,npc combination will overwrite any town,npc 
-                    #  combination from an imported file.
-                    if (town,npc) not in townNpcs:
-                        townNpcs.add((town,npc))
-                        townSchedule[npc] = []
-                    npcSchedule = [0,0,0,0]
-                    condition = (len(parsed) == 2 and parsed[1].strip())
-                    townSchedule[npc].append((condition,npcSchedule))
-                if section not in {'town', 'import', 'project'}: log('  '+line[1:])
-            #--Data
-            else:
-                #--Import
-                if section == 'import':
-                    newPath = line.strip()
-                    log(_(u'IMPORT: ')+newPath)
-                    if not os.path.exists(newPath) and pickScheduleFile:
-                        caption = "Find sub-import file %s:" % (newPath,)
-                        newPath = pickScheduleFile(caption,newPath)
-                    if not (newPath and os.path.exists(newPath)):
-                        raise StateError(u"Unable to import schedule file: "+line.strip())
-                    if newPath.lower() in [dir.lower() for dir in imported]:
-                        log(_(u'  [%s already imported.]') % (newPath,))
+        with file(fileName) as ins:
+            for line in ins:
+                #--Strip spaces and comments
+                line = reComment.sub('',line)
+                line = line.rstrip()
+                #--Skip empty/comment lines
+                if not line: continue
+                #--Section header?
+                if line[0] == '@':
+                    # (town|defs|night|code|npcName)[: npcCondition]
+                    parsed = line[1:].split(':',1)
+                    id = parsed[0].strip()
+                    #--Non-npc?
+                    if id in {'town', 'defs', 'night', 'evening', 'code', 'import', 'project'}:
+                        section = id
+                        if section in ('evening','night'): townSleep = self.sleep[town]
+                        elif section == 'code':
+                            cycles = [0]
+                            townCode = self.code[town] = [[],[],[],[],[]]
                     else:
-                        log.indent += '> '
-                        imported.append(newPath)
-                        self.loadText(newPath,pickScheduleFile,imported)
-                        log.indent = log.indent[:-2]
-                #--Project
-                elif section == 'project' and isTopFile:
-                    self.project = line.strip()
-                    log(_('PROJECT: ')+self.project)
-                #--Defs 
-                elif section == 'defs':
-                    (key,value) = line.strip().split(':',1)
-                    defs[key] = value.strip()
-                #--Town
-                elif section == 'town':
-                    town = line.strip()
-                    log.setHeader(town)
-                    if isTopFile: self.newTowns.add(town)
-                    if town not in self.schedule:
-                        self.schedule[town] = {}
-                        self.sleep[town] =  {3:{},4:{}} 
-                    townSchedule = self.schedule[town]
-                    npcSchedule = None
-                    codeCycles = []
-                #--Code
-                elif section == 'code':
-                    line = reDef.sub(replDef,line)
-                    maCodeCycle = reCodeCycle.match(line)
-                    if maCodeCycle:
-                        codeCycles = [int(x) for x in maCodeCycle.group(1).split(',')]
-                        continue
-                    for cycle in codeCycles: townCode[cycle].append(line)
-                #--Evening/Night
-                elif section in ('evening','night'):
-                    cycle = {'evening':3,'night':4}[section]
-                    line = reDef.sub(replDef,line)
-                    chunks = [chunk.strip() for chunk in line.split(';')]
-                    maSleep = reSleep.match(chunks[0])
-                    if not maSleep: continue
-                    (cell,defaultState) = (maSleep.group(2), sleepStates[maSleep.group(1)])
-                    cellStates = (defaultState,)
-                    for chunk in chunks[1:]:
-                        chunk = chunk.strip()
-                        maSleep = reSleep.match(chunk)
-                        if not maSleep or maSleep.group(1) == '=': 
-                            raise MoshError(_(u'Bad sleep condition state for %s in %s: %s') % (section,town,line))
-                        condition,state = maSleep.group(2), sleepStates[maSleep.group(1)]
-                        condition = reIsMember.sub(r'getPCRank \1 >= 0',condition)
-                        cellStates += ((condition,state),)
-                    townSleep[cycle][cell] = cellStates
-                #--NPC
-                elif section == 'npc':
-                    #--Get Cycle
-                    cycle = int(line[0])
-                    rem = line[2:]
-                    #--Repeater?
-                    maRepeat = reRepeat.match(rem)
-                    if maRepeat:
-                        oldCycle = int(maRepeat.group(1))
-                        npcSchedule[cycle-1] = npcSchedule[oldCycle-1]
-                        continue
-                    #--Replace defs
-                    rem = reDef.sub(replDef,rem)
-                    #--Cell
-                    maCell = reCell.match(rem)
-                    if not maCell: raise MoshError(_(u'Pos cell not defined for %s %s %d') % (town,npc,cycle))
-                    cell = maCell.group(1)
-                    rem = rem[len(cell):].strip()
-                    #--Pos
-                    maPos = rePos.match(rem)
-                    coords = maPos.group(0).strip().split()
-                    coords[-1] = `int(coords[-1])*57` #--Workaround interior rotation bug
-                    pos = 'positionCell %s %s' % (' '.join(coords),cell)
-                    rem = rem[len(maPos.group(0)):].strip()
-                    #--Wander/Travel
-                    ai = reWander.sub(r'wander \1 5 10  ',rem)
-                    #--Save
-                    npcSchedule[cycle-1] = (pos,ai)
-        ins.close()
+                        section = 'npc'
+                        npc = id
+                        #--Any town,npc combination will overwrite any town,npc
+                        #  combination from an imported file.
+                        if (town,npc) not in townNpcs:
+                            townNpcs.add((town,npc))
+                            townSchedule[npc] = []
+                        npcSchedule = [0,0,0,0]
+                        condition = (len(parsed) == 2 and parsed[1].strip())
+                        townSchedule[npc].append((condition,npcSchedule))
+                    if section not in {'town', 'import', 'project'}: log('  '+line[1:])
+                #--Data
+                else:
+                    #--Import
+                    if section == 'import':
+                        newPath = line.strip()
+                        log(_(u'IMPORT: ')+newPath)
+                        if not os.path.exists(newPath) and pickScheduleFile:
+                            caption = "Find sub-import file %s:" % (newPath,)
+                            newPath = pickScheduleFile(caption,newPath)
+                        if not (newPath and os.path.exists(newPath)):
+                            raise StateError(u"Unable to import schedule file: "+line.strip())
+                        if newPath.lower() in [dir.lower() for dir in imported]:
+                            log(_(u'  [%s already imported.]') % (newPath,))
+                        else:
+                            log.indent += '> '
+                            imported.append(newPath)
+                            self.loadText(newPath,pickScheduleFile,imported)
+                            log.indent = log.indent[:-2]
+                    #--Project
+                    elif section == 'project' and isTopFile:
+                        self.project = line.strip()
+                        log(_('PROJECT: ')+self.project)
+                    #--Defs
+                    elif section == 'defs':
+                        (key,value) = line.strip().split(':',1)
+                        defs[key] = value.strip()
+                    #--Town
+                    elif section == 'town':
+                        town = line.strip()
+                        log.setHeader(town)
+                        if isTopFile: self.newTowns.add(town)
+                        if town not in self.schedule:
+                            self.schedule[town] = {}
+                            self.sleep[town] =  {3:{},4:{}}
+                        townSchedule = self.schedule[town]
+                        npcSchedule = None
+                        codeCycles = []
+                    #--Code
+                    elif section == 'code':
+                        line = reDef.sub(replDef,line)
+                        maCodeCycle = reCodeCycle.match(line)
+                        if maCodeCycle:
+                            codeCycles = [int(x) for x in maCodeCycle.group(1).split(',')]
+                            continue
+                        for cycle in codeCycles: townCode[cycle].append(line)
+                    #--Evening/Night
+                    elif section in ('evening','night'):
+                        cycle = {'evening':3,'night':4}[section]
+                        line = reDef.sub(replDef,line)
+                        chunks = [chunk.strip() for chunk in line.split(';')]
+                        maSleep = reSleep.match(chunks[0])
+                        if not maSleep: continue
+                        (cell,defaultState) = (maSleep.group(2), sleepStates[maSleep.group(1)])
+                        cellStates = (defaultState,)
+                        for chunk in chunks[1:]:
+                            chunk = chunk.strip()
+                            maSleep = reSleep.match(chunk)
+                            if not maSleep or maSleep.group(1) == '=':
+                                raise MoshError(_(u'Bad sleep condition state for %s in %s: %s') % (section,town,line))
+                            condition,state = maSleep.group(2), sleepStates[maSleep.group(1)]
+                            condition = reIsMember.sub(r'getPCRank \1 >= 0',condition)
+                            cellStates += ((condition,state),)
+                        townSleep[cycle][cell] = cellStates
+                    #--NPC
+                    elif section == 'npc':
+                        #--Get Cycle
+                        cycle = int(line[0])
+                        rem = line[2:]
+                        #--Repeater?
+                        maRepeat = reRepeat.match(rem)
+                        if maRepeat:
+                            oldCycle = int(maRepeat.group(1))
+                            npcSchedule[cycle-1] = npcSchedule[oldCycle-1]
+                            continue
+                        #--Replace defs
+                        rem = reDef.sub(replDef,rem)
+                        #--Cell
+                        maCell = reCell.match(rem)
+                        if not maCell: raise MoshError(_(u'Pos cell not defined for %s %s %d') % (town,npc,cycle))
+                        cell = maCell.group(1)
+                        rem = rem[len(cell):].strip()
+                        #--Pos
+                        maPos = rePos.match(rem)
+                        coords = maPos.group(0).strip().split()
+                        coords[-1] = `int(coords[-1])*57` #--Workaround interior rotation bug
+                        pos = 'positionCell %s %s' % (' '.join(coords),cell)
+                        rem = rem[len(maPos.group(0)):].strip()
+                        #--Wander/Travel
+                        ai = reWander.sub(r'wander \1 5 10  ',rem)
+                        #--Save
+                        npcSchedule[cycle-1] = (pos,ai)
 
     def dumpText(self,fileName):
         """Write schedule to file."""
-        out = file(fileName,'w')
-        for town in sorted(self.towns):
-            #--Header
-            out.write('; '+town+' '+'='*(76-len(town))+'\n')
-            #--Cycle Scripts
-            for cycle in [1,2,3,4]:
-                out.write(self.getCycleScript(town,cycle))
+        with file(fileName,'w') as out:
+            for town in sorted(self.towns):
+                #--Header
+                out.write('; '+town+' '+'='*(76-len(town))+'\n')
+                #--Cycle Scripts
+                for cycle in [1,2,3,4]:
+                    out.write(self.getCycleScript(town,cycle))
+                    out.write('\n')
+                #--Master, cells scripts
+                out.write(self.getSleepScript(town,3))
                 out.write('\n')
-            #--Master, cells scripts
-            out.write(self.getSleepScript(town,3))
-            out.write('\n')
-            out.write(self.getSleepScript(town,4))
-            out.write('\n')
-            out.write(self.getMasterScript(town))
-            out.write('\n')
-        out.close()
+                out.write(self.getSleepScript(town,4))
+                out.write('\n')
+                out.write(self.getMasterScript(town))
+                out.write('\n')
 
     def save(self,fileInfo):
         """Add schedule scripts to esp."""
@@ -7509,7 +7557,7 @@ class ScheduleGenerator:
         while recIndex < len(records):
             record = records[recIndex]
             recIndex += 1
-            if isinstance(record,Dial):
+            if isinstance(record, Dial):
                 record.load(unpack=True)
                 if record.type == 1 and record.id == 'Hello': break
         #--Sub scripts into hello entries
@@ -7606,7 +7654,7 @@ class ScheduleGenerator:
             out.write('if ( "%s"->getDisabled )\n' % (npc,))
             out.write('elseif ( "%s"->getItemCount SC_offSchedule != 0 )\n' % (npc,))
             for (condition,npcSchedule) in townSchedule[npc]:
-                if condition == False: out.write('else\n')
+                if not condition: out.write('else\n')
                 else: out.write('elseif ( %s )\n' % (condition,))
                 (pos,ai) = npcSchedule[cycle-1]
                 out.write('\tif ( action < 20 )\n')
@@ -7655,7 +7703,7 @@ def defaultini():  # Polemos: The default ini.
 
 def DCGremote():  # Polemos just optimised to avoid code repeats.
     """Remote drive error skipping."""
-    if sys.platform.lower().startswith("win") == True:
+    if sys.platform.lower().startswith("win"):
         drv, pth = os.path.splitdrive(dirs['installers'].s)
         if os.access(drv, os.R_OK):
             dirs['installers'].makedirs()
@@ -7686,11 +7734,10 @@ def mashini_read():  # Polemos: Make mash.ini an override.
     # Polemos: Mash.ini produces more problems than benefits. Deactivated for now.
     defaultini()
 
-    cwd = os.getcwd()
     installers_set = settings['sInstallersDir']
     mashIni = None
 
-    if os.path.exists(os.path.join(cwd, 'mash.ini')):
+    if os.path.exists(os.path.join(MashDir, 'mash.ini')):
         import ConfigParser
         mashIni = ConfigParser.ConfigParser()
         try:
