@@ -77,7 +77,7 @@ class CleanOp(tes3cmdgui.cleanop):  # Polemos: todo: Implement this???
 
 DONE_HEADER, DONE_CLEAN = range(2)  # One range to rule them all.
 
-#the thread that manages the threaded process uses wx events to post messsages to the main thread
+# the thread that manages the threaded process uses wx events to post messsages to the main thread
 EVT_DONE_ID = wx.NewId()
 def EVT_DONE(win, func): win.Connect(-1, -1, EVT_DONE_ID, func)
 
@@ -143,12 +143,12 @@ class Cleaner(tes3cmdgui.cleaner, OutputParserMixin):
         self.currentFile = filename = self.remainingFiles.pop()
         lowerFname = filename.lower()
 
-        #we don't want to clean morrowind.esm
+        # we don't want to clean morrowind.esm
         if lowerFname == 'morrowind.esm':
             self.StartNext()
             return
 
-        #if we copy expansions, don't clean gmsts (I think)
+        # if we copy expansions, don't clean gmsts (I think)
         args = copy(self.args)
         if lowerFname == 'tribunal.esm' or lowerFname == 'bloodmoon.esm':  # Polemos fix
             args['gmsts'] = False
@@ -156,7 +156,7 @@ class Cleaner(tes3cmdgui.cleaner, OutputParserMixin):
 
         self.clean_mod_info_text.SetLabel(_(u'Cleaning: %s' % filename))  # Polemos: cosmetic fix
 
-        #start cleaning the current file
+        # start cleaning the current file
         func = lambda: wx.PostEvent(self, DoneEvent(DONE_CLEAN))
         self.cleaner = tes3cmd.Threaded(callback=func)
         self.cleaner.clean([filename], **args)

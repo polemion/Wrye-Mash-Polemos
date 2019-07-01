@@ -145,6 +145,10 @@ class SettingsWindow(wx.Dialog):  # Polemos: Total reconstruction.
                 self.fldInst = wx.TextCtrl(MainPathsBox, wx.ID_ANY, u'', dPos, name='fldInst', size=(-1, 20), style=wx.TE_RICH)
                 self.btnBrowseInst = wx.Button(MainPathsBox, wx.ID_OPEN, u'...', dPos, size=(30, 24), name='btnBrowseInst')
                 # ===== Optional Paths ==== #
+                # MGE XE
+                self.MGEXE_static = wx.StaticText(OptionalPathsBox, wx.ID_ANY, u'MGE XE:', dPos, dSize, 0)
+                self.fldMGEXE = wx.TextCtrl(OptionalPathsBox, wx.ID_ANY, u'', dPos, name='fldMGEXE', size=(-1, 20), style=wx.TE_RICH)
+                self.btnBrowseMGEXE = wx.Button(OptionalPathsBox, wx.ID_OPEN, u'...', dPos, size=(30, 24), name='btnBrowseMGEXE')
                 # Mlox
                 self.Mlox_static = wx.StaticText(OptionalPathsBox, wx.ID_ANY, u'Mlox:', dPos, dSize, 0)
                 self.fldmlox = wx.TextCtrl(OptionalPathsBox, wx.ID_ANY, u'', dPos, name='fldmlox', size=(-1, 20), style=wx.TE_RICH)
@@ -153,11 +157,17 @@ class SettingsWindow(wx.Dialog):  # Polemos: Total reconstruction.
                 Morrowind_Sizer = wx.BoxSizer(wx.HORIZONTAL)
                 Installers_Sizer = wx.BoxSizer(wx.HORIZONTAL)
                 Mlox_Sizer = wx.BoxSizer(wx.HORIZONTAL)
-                Morrowind_Sizer.AddMany([(self.Morrowind_static,0,wx.TOP|wx.RIGHT,5),((1,0),0,0,5),(uns,0,0,0),(self.fldMw,1,wx.ALIGN_CENTER,5),(self.btnBrowseMw,0,wx.LEFT,5)])
-                Installers_Sizer.AddMany([(self.Installers_static,0,wx.TOP|wx.RIGHT,5),((16,0),0,0,5),(self.fldInst,1,wx.ALIGN_CENTER,5),(self.btnBrowseInst,0,wx.LEFT,5)])
-                Mlox_Sizer.AddMany([(self.Mlox_static,0,wx.TOP|wx.RIGHT,5),((35,0),0,0,5),(self.fldmlox,1,wx.ALIGN_CENTER,5),(self.btnBrowsemlox,0,wx.LEFT,5)])
+                MGEXE_Sizer = wx.BoxSizer(wx.HORIZONTAL)
+                Morrowind_Sizer.AddMany([(self.Morrowind_static,0,wx.TOP|wx.RIGHT,5),
+                        ((2,0),0,0,5),(uns,0,0,0),(self.fldMw,1,wx.ALIGN_CENTER,5),(self.btnBrowseMw,0,wx.LEFT,5)])
+                Installers_Sizer.AddMany([(self.Installers_static,0,wx.TOP|wx.RIGHT,5),
+                        ((16,0),0,0,5),(self.fldInst,1,wx.ALIGN_CENTER,5),(self.btnBrowseInst,0,wx.LEFT,5)])
+                Mlox_Sizer.AddMany([(self.Mlox_static,0,wx.TOP|wx.RIGHT,5),
+                        ((35,0),0,0,5),(self.fldmlox,1,wx.ALIGN_CENTER,5),(self.btnBrowsemlox,0,wx.LEFT,5)])
+                MGEXE_Sizer.AddMany([(self.MGEXE_static,0,wx.TOP|wx.RIGHT,5),
+                        ((20,0),0,0,5),(self.fldMGEXE,1,wx.ALIGN_CENTER,5),(self.btnBrowseMGEXE,0,wx.LEFT,5)])
                 MainPaths_Sizer.AddMany([(Morrowind_Sizer,0,wx.EXPAND,5),(Installers_Sizer,0,wx.EXPAND,5)])
-                OptionalPaths_Sizer.AddMany([(Mlox_Sizer,0,wx.EXPAND,5)])  # Thinking ahead.
+                OptionalPaths_Sizer.AddMany([(Mlox_Sizer,0,wx.EXPAND,5),(MGEXE_Sizer,0,wx.EXPAND,5)])
                 Paths_Sizer.AddMany([(MainPaths_Sizer,0,wx.EXPAND|wx.ALL,5),((0,0),1,0,5),(OptionalPaths_Sizer,0,wx.EXPAND|wx.ALL,5)])
 
             if self.openmw:  #  OpenMW/TES3mp support
@@ -217,7 +227,7 @@ class SettingsWindow(wx.Dialog):  # Polemos: Total reconstruction.
                 MainPaths_Sizer.AddMany([(OpenMWTES3mp_Sizer,0,wx.EXPAND,5),(Downloads_Sizer,0,wx.EXPAND,5),
                                 (Mods_Sizer,0,wx.EXPAND,5),(OpenMWconf_Sizer,0,wx.EXPAND,5)])
                 OptionalPaths_Sizer.AddMany([(DataFiles_Sizer,0,wx.EXPAND,5),(TES3mpconf_Sizer,0,wx.EXPAND,5),(Mlox64_Sizer,0,wx.EXPAND,5)])
-                Paths_Sizer.AddMany([(MainPaths_Sizer,0,wx.EXPAND|wx.ALL,5),(OptionalPaths_Sizer,0,wx.EXPAND|wx.ALL,5)])
+                Paths_Sizer.AddMany([(MainPaths_Sizer,0,wx.EXPAND|wx.ALL,5),((0,0),1,0,5),(OptionalPaths_Sizer,0,wx.EXPAND|wx.ALL,5)])
 
         if True:  # Defaults Panel
             # Warnings Settings
@@ -542,8 +552,9 @@ class SettingsWindow(wx.Dialog):  # Polemos: Total reconstruction.
     def chkSpecialPaths(self):
         """Check for changes in paths which need Wrye restart."""
         if not self.openmw:  # Polemos: Regular Morrowind Settings:
-            if conf.settings['sInstallersDir'] != self.fldInst.GetValue(): return True
+            if conf.settings['mwDir'] != self.fldMw.GetValue(): return True
             elif conf.settings['sInstallersDir'] != self.fldInst.GetValue(): return True
+
         elif self.openmw:  # Polemos: OpenMW/Tes3MP Settings:
             if conf.settings['openmwDir'] != self.fldOpenMWloc.GetValue(): return True
             elif conf.settings['datamods'] != self.flddatamods.GetValue(): return True
@@ -556,20 +567,14 @@ class SettingsWindow(wx.Dialog):  # Polemos: Total reconstruction.
     def OnOk(self, event):
         """Ok button handler."""
         self.pathsRestart = self.chkSpecialPaths()
-        mlox_changed_po = False
 
         if not self.openmw:  # Regular Morrowind Settings:
-            if conf.settings['mloxbit']:          # Polemos: Mloxbit is set to True when auto...
-                conf.settings['mloxbit'] = False  # ...detection is successful on program start.
-            if self.fldmlox.GetValue() != conf.settings['mloxpath']: mlox_changed_po = True
-
-            conf.settings['mwDir'] = self.MwDirExNew = self.fldMw.GetValue()
+            conf.settings['mwDir'] = self.fldMw.GetValue()
             conf.settings['mloxpath'] = self.fldmlox.GetValue()
             conf.settings['sInstallersDir'] = self.fldInst.GetValue()
+            conf.settings['mgexe.dir'] = self.fldMGEXE.GetValue()
 
         if self.openmw:  # OpenMW/Tes3MP Settings:
-            if conf.settings['mlox64path'] != self.fldmlox64.GetValue(): mlox_changed_po = True
-
             conf.settings['openmwDir'] = self.fldOpenMWloc.GetValue()
             conf.settings['datamods'] = self.flddatamods.GetValue()
             conf.settings['downloads'] = self.fldDownloads.GetValue()
@@ -583,21 +588,20 @@ class SettingsWindow(wx.Dialog):  # Polemos: Total reconstruction.
             if item.Name.startswith("fld") and item.Name[3:] in conf.dataMap:
                 name = conf.dataMap[item.Name[3:]]
                 if name in dirs: dirs[name] = GPath(item.GetValue())
-        self.set_settings()
-        self.OnClose(None, mlox_changed_po)
 
-    def OnClose(self, event, mlox_changed_po=False):
+        self.set_settings()
+        self.OnClose(None)
+
+    def OnClose(self, event):
         """Notifications on settings close."""
         self.OnCancel(None)
-        if mlox_changed_po: conf.settings['mash.toolbar.refresh'] = True
-        if any([self.menu_config_po(),
+        if any((self.menu_config_po(),
                 self.LrgFontEx != self.LrgFont.GetValue(),
                 self.ShowErrEx != self.ShowErr.GetValue(),
                 self.ThemeChoiceEx != self.ThemeChoiceNew,
                 self.EncChoiceEx != self.EncodChoiceNew,
-                self.MwDirEx != self.MwDirExNew,
                 self.pathsRestart
-               ]): gui.InfoMessage(self, _(u'Please restart Wrye Mash for changes to take effect.'))
+                )): gui.InfoMessage(self, _(u'Please restart Wrye Mash for changes to take effect.'))
 
     def InitCommon(self):
         """Init Common Settings."""
@@ -621,13 +625,13 @@ class SettingsWindow(wx.Dialog):  # Polemos: Total reconstruction.
     def InitSettings(self):
         """Init settings.."""
         self.InitCommon()
+
         if not self.openmw:  # Polemos: Regular Morrowind Settings:
-            for x, y in zip((self.fldMw, self.fldmlox, self.fldInst),
-                            (conf.settings['mwDir'], conf.settings['mloxpath'], conf.settings['sInstallersDir'])):
+            for x, y in zip((self.fldMw, self.fldmlox, self.fldInst, self.fldMGEXE),
+                            (conf.settings['mwDir'], conf.settings['mloxpath'],
+                             conf.settings['sInstallersDir'], conf.settings['mgexe.dir'])):
                 try: x.SetValue(y)
                 except: pass
-                # Items that need Wrye Mash to restart
-                self.MwDirEx = conf.settings['mwDir']
 
         if self.openmw:  # Polemos: OpenMW/Tes3MP Settings
             for x, y in zip((self.fldOpenMWloc,self.flddatamods,self.fldDownloads,self.fldOpenMWConf,self.fldDataFiles,self.fldTES3mpConf,self.fldmlox64),

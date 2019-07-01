@@ -49,6 +49,7 @@ dataMap = {
     'Inst': 'installers',
     'Mw': 'Morrowind',
     'mlox': 'mlox.exe',
+    'MGEXE': 'MGEXegui.exe',
 
     # OpenMW/TES3MP
     'OpenMWloc': 'OpenMW/TES3mp',
@@ -92,7 +93,6 @@ settingDefaults = {
     'all.ok': True,
     'mash.version': 0,  # Set later in MashApp()
     'mash.virgin': True,
-    'mash.toolbar.refresh': False,
     'mash.menubar.enabled': True,
     'mash.col.menu.enabled': True,
     'mash.framePos': wx.DefaultPosition,
@@ -129,10 +129,10 @@ settingDefaults = {
 
     #-Polemos: MGE XE
     'mgexe.detected': False,
+    'mgexe.dir': '',
 
     #-Polemos: mlox dir
     'mloxpath':'',
-    'mloxbit': False,
 
     #-Polemos: OpenMW/TES3mp settings
     'openmw': False,
@@ -143,7 +143,6 @@ settingDefaults = {
     'datamods': None,
     'downloads': None,
     'mlox64path': '',
-    'mlox64bit': False,
     'openmw.datafiles': '',
     'mashdir': None,
 
@@ -320,8 +319,8 @@ settingDefaults = {
     'mash.Packages.sort': 'Package',
     'mash.Packages.colReverse': {},
     'mash.Packages.colWidths': {
-        'Package':210,
-        'Size':27,
+        'Package':200,
+        'Size':37,
         },
     'mash.Packages.colAligns': {
         '#':1,

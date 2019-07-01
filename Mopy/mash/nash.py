@@ -18,7 +18,7 @@
 # ======================================================================================
 
 
-# Extension for Wrye Mash Polemos fork ======================================================
+# Extension for Wrye Mash Polemos fork =======================================================
 #
 # Wrye Nash, Copyright (C) 2018-, Polemos
 #
@@ -27,7 +27,7 @@
 #
 # License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher.
 #
-# ===========================================================================================
+# ============================================================================================
 
 
 from lxml import html
@@ -46,12 +46,12 @@ def wrye_download_site(url, mode):
         if not mode:  # Regular Morrowind
             return 'https://www.nexusmods.com/morrowind/mods/45439'
         else:  # OpenMW/TES3mp
-            return 'https://www.nexusmods.com/morrowind/mods/45439'
+            return 'https://www.nexusmods.com/morrowind/mods/46935'
     if url == 'download':
         if not mode:  # Regular Morrowind
             return 'https://www.nexusmods.com/morrowind/mods/45439?tab=files'
         else:  # OpenMW/TES3mp
-            return 'https://www.nexusmods.com/morrowind/mods/45439?tab=files'
+            return 'https://www.nexusmods.com/morrowind/mods/46935?tab=files'
 
 
 class WryeWeb:

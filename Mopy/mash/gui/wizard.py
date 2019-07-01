@@ -59,7 +59,7 @@ class WizardDialog(wx.Dialog):
     disabled = []
 
     def __init__(self, title=u'Wrye Mash Polemos fork', pos=dPos, style=wx.DEFAULT_DIALOG_STYLE|wx.STAY_ON_TOP|wx.RESIZE_BORDER):
-        wx.Dialog.__init__(self, parent=None, id=wx.ID_ANY, title=title, pos=pos, size=Size(340, 500), style=style)
+        wx.Dialog.__init__(self, parent=None, id=wx.ID_ANY, title=title, pos=pos, size=Size(415, 500), style=style)
         self.Interface_Themes = [x[0] for x in self.importThemeList()]
         self.Encoding_Ch = [('%s, %s' % (x, conf.settings['mash.encodings'][x])) for x in conf.settings['mash.encodings']]
         self.MashDate = conf.settings['mash.version']
@@ -81,9 +81,8 @@ class WizardDialog(wx.Dialog):
             # Sizers ========================================= #
             introPanSizer = wx.BoxSizer(wx.VERTICAL)
             introPanSizer.AddMany([(self.welcome_Text,0,EXP|wx.ALL,5),(self.introText1,0,EXP|wx.ALL,5),
-                            (self.line_1,0,EXP,5),(self.introText2,0,wx.ALL,5),
-                (self.line_2,0,EXP|BOT,5),(self.introText3,0,EXP|wx.ALL,5),((0,0),1,EXP,5),(self.introText4,0,EXP|wx.ALL,5),
-                            (self.introText5,0,wx.ALL|EXP,5)])
+                (self.line_1,0,EXP,5), (self.introText2,0,wx.ALL,5), (self.line_2,0,EXP|BOT,5), (self.introText3,0,EXP|wx.ALL,5),
+                        ((0,0),1,EXP,5),(self.introText4,0,EXP|wx.ALL,5), (self.introText5,0,wx.ALL|EXP,5)])
             self.intro_panel.SetSizer(introPanSizer)
             self.intro_panel.Layout()
             introPanSizer.Fit(self.intro_panel)
@@ -252,7 +251,7 @@ class WizardDialog(wx.Dialog):
             UpdateSizer = wx.StaticBoxSizer(Updatebox, wx.VERTICAL)
             self.UpdateText1 = wx.StaticText(Updatebox, wx.ID_ANY,_(u'Would you like to be notified when '
                         u'the next Wrye Mash version is released?'),dPos, Size(-1, 30), 0)
-            self.Update_checkBox = wx.CheckBox(Updatebox, wx.ID_ANY, _(u'Enable Notifications:'+(' '*30)),dPos, dSize, wx.ALIGN_RIGHT)
+            self.Update_checkBox = wx.CheckBox(Updatebox, wx.ID_ANY, _(u'Enable Notifications:'+(' '*62)),dPos, dSize, wx.ALIGN_RIGHT)
             self.UpdateSpnText = wx.StaticText(Updatebox, wx.ID_ANY, _(u'Frequency in Days (0=Everyday):'),dPos, dSize, 0)
             self.Update_spinCtrl = wx.SpinCtrl(Updatebox, wx.ID_ANY, u'', dPos,Size(45, -1), wx.SP_ARROW_KEYS|wx.SP_WRAP, 0, 365, 15)
             # Interface Settings
@@ -330,7 +329,7 @@ class WizardDialog(wx.Dialog):
 
         if True:  # Sizers
             panelsSizer = wx.BoxSizer(wx.VERTICAL)
-            panelsSizer.Add(self.intro_panel, 1, EXP|TOP|BOT, 5)
+            panelsSizer.Add(self.intro_panel, 1, EXP|TOP|BOT|RIG, 5)
             if not conf.settings['openmw']:  # Regular Morrowind support
                 panelsSizer.AddMany([(self.mw_1_panel,1,EXP|TOP,5)])  # If in need of more panels.
             if conf.settings['openmw']:  # OpenMW/TES3mp support
@@ -404,8 +403,8 @@ class WizardDialog(wx.Dialog):
         if conf.settings['openmw']:  # OpenMW/TES3mp
             t1 = _(u'Welcome to Wrye Mash %s OpenMW/TES3mp Configuration Wizard.' % self.MashDate[3])
             t2 = _(u'This wizard will help you configure all the settings needed to use Wrye Mash with OpenMW and/or TES3mp. ')
-            t3 = _(u'NOTE: This a Alpha/"Work in progress" version.')
-            t4 = _(u'Since this is a Alpha/"Work in Progress" many features are not implemented and bugs may roam in every corner.  Use at your own risk.')
+            t3 = _(u'NOTE: This an Alpha/"Work in progress" version.')
+            t4 = _(u'Since this is an Alpha/"Work in Progress" many features are not implemented and bugs may roam in every corner.  Use at your own risk.')
         #  Display
         self.welcome_Text.SetLabel(t1)
         self.introText1.SetLabel(t2)
@@ -545,7 +544,7 @@ class WizardDialog(wx.Dialog):
         if folder == 'fldOpenMWloc':  # OpenMW Path Check
             try:
                 if all([os.path.isfile(os.path.join(self.fldOpenMWloc.GetValue(), 'openmw-launcher.exe'))]):
-                    return show([self.Openmw_te3mpText, wx.BLUE, _(u'Success: OpenMW Launcher (openmw-launcher.exe) found.'), True])
+                    return show([self.Openmw_te3mpText, wx.BLUE, _(u'Success: OpenMW Launcher found (openmw-launcher.exe).'), True])
             except: pass
             return show([self.Openmw_te3mpText, wx.RED, _(u'Are you sure this is OpeMW/TES3mp directory? (Ignore if you are sure).'), False])
         if folder == 'fldOpenMWConf':  # OpenMW Path Check
@@ -585,7 +584,6 @@ class WizardDialog(wx.Dialog):
         try:
             result = Mlox_The_Path('mlox.exe', avoid, MWdir)
             if os.path.isfile(result):
-                conf.settings['mloxbit'] = True
                 self.fldmlox.SetValue(result)
                 self.detect_Mlox_button.SetLabel(_(u'Success!'))
                 self.detect_Mlox_button.SetForegroundColour(wx.BLUE)

@@ -34,6 +34,8 @@
 #
 # ======================================================================================
 
+# Polemos: Not a pure singleton pattern yet.
+
 # Main Interface
 mashFrame = None
 MenuBar = None

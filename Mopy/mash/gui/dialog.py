@@ -65,8 +65,9 @@ def chkChars(text_val, strict=False):
 class ProgressDialog(mosh.Progress):  # Polemos: fix for newer wxpythons.
     """Prints progress to file (stdout by default)."""
 
-    def __init__(self,title=_(u'Progress'),message='',parent=None, style=wx.PD_ELAPSED_TIME|wx.PD_AUTO_HIDE|wx.STAY_ON_TOP,interval=0.1):
+    def __init__(self,title=_(u'Progress'),message='',parent=None, interval=0.1):
         """Init."""
+        style = wx.PD_ELAPSED_TIME|wx.PD_AUTO_HIDE|wx.STAY_ON_TOP
         self.dialog = wx.ProgressDialog(title,message,100,parent,style)
         mosh.Progress.__init__(self,interval)
         self.isDestroyed = False
@@ -101,6 +102,7 @@ class GaugeDialog(wx.Dialog):  # Polemos
         """Init."""
         wx.Dialog.__init__(self, parent, id=wx.ID_ANY, title=title, pos=dPos, size=(382, 96), style=wx.CAPTION|wx.STAY_ON_TOP)
         self.SetSizeHints(-1, -1)
+        self.max = max
 
         if True: # Contents
             self.mainPanel = wx.Panel(self, wx.ID_ANY, dPos, dSize, wx.TAB_TRAVERSAL)
@@ -128,7 +130,7 @@ class GaugeDialog(wx.Dialog):  # Polemos
 
     def OnClose(self, event): pass
     def set_msg(self, msg): self.message.SetLabel(msg)
-    def update(self, num): self.gauge.SetValue(num)
+    def update(self, num): self.gauge.SetValue(num) if self.max else self.gauge.Pulse()
 
 
 class netProgressDialog:  # Polemos
@@ -276,7 +278,7 @@ def FileDialog(parent,message=_(u'Choose a directory.'),defaultPath='', defaultf
         return path
 
 
-def ContinueQuery(parent, tmessage, message, continueKey, title=_(u'Warning'), cBtn=True):  # Polemos
+def ContinueQuery(parent, tmessage, message, continueKey, title=_(u'Warning'), nBtn=True):  # Polemos
     """Shows a modal continue query if value of continueKey is false. Returns True to continue.
         Also provides checkbox "Don't show this in future." to set continueKey to true."""
     # Init actions
@@ -289,16 +291,16 @@ def ContinueQuery(parent, tmessage, message, continueKey, title=_(u'Warning'), c
     cntBox = wx.StaticBox(dialog, wx.ID_ANY, '')
     title = wx.StaticText(cntBox, wx.ID_ANY, tmessage, dPos, dSize, 0)
     main = wx.StaticText(cntBox, wx.ID_ANY, message, dPos, dSize, 0)
-    okBtn = wx.Button(dialog, wx.ID_OK, _(u'OK'), dPos, dSize, 0)
+    okBtn = wx.Button(dialog, wx.ID_OK, _(u'OK' if not nBtn else u'Yes'), dPos, dSize, 0)
     show = wx.CheckBox(dialog, wx.ID_ANY, _(u' Don\'t show this in the future.'), dPos, dSize, 0)
-    cnlBtn = wx.Button(dialog, wx.ID_CANCEL, _(u'Cancel'), dPos, dSize, 0)
+    cnlBtn = wx.Button(dialog, wx.ID_CANCEL, _(u'No'), dPos, dSize, 0)
     # Theming
     dialog.SetForegroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_WINDOWTEXT))
     dialog.SetBackgroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_WINDOW))
     bold = wx.Font(wx.NORMAL_FONT.GetPointSize(), wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, '')
     title.SetFont(bold)
     # Layout
-    cnlBtn.Hide()
+    if not nBtn: cnlBtn.Hide()
     main.SetMinSize(wx.Size(-1, 100))
     [x.SetMaxSize(wx.Size(380, -1)) for x in (title, main)]
     [x.Wrap(-1) for x in (title, main)]

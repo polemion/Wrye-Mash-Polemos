@@ -39,7 +39,7 @@
 
 
 # Polemos: I guess the original was made by Yakoby?
-# Polemos: Refactored, optimised, unicode/cosmetic/regular fixes.
+# Polemos: Refactored, optimised, unicode/cosmetic/regular fixes/changes.
 
 
 import wx

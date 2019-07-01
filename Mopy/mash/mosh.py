@@ -77,8 +77,10 @@ def formatInteger(value):
 
 def formatDate(value):   # Polemos
     """Convert time to string formatted to locale's default date/time."""
-    try: return time.strftime('%c', time.localtime(value))
-    except: return time.strftime('%c', time.localtime(0))  # Needed when installers are outside Unix Epoch
+    form = '%x, %H:%M:%S'
+    try: return time.strftime(form, time.localtime(value))
+    except:  # Needed when installers are outside Unix Epoch
+        return time.strftime(form, time.localtime(0))
 
 def megethos(num):  # Polemos
         """Convert byte sizes to KBs, MBs or GBs."""
@@ -2648,7 +2650,7 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
 
     def fRisk(self):  # Polemos
         """Show filenames that may cause problems to the user."""
-        if settings['query.file.risk']: return
+        if settings['query.file.risk'] or self.openmw: return  # Todo: Enable for OpenMW
         import gui.dialog as gui, wx
         engine = u'Morrowind' if not self.openmw else u'OpenMW'
         # Notify user
@@ -4401,12 +4403,13 @@ class GetBckList:  # Polemos
     """Formulate backup files list."""
     bckList = []
 
-    def __init__(self):
+    def __init__(self, dirmod=False):
         """Init."""
         self.bckList = []
         self.max = settings['backup.slots']
         self.snapdir = os.path.join(MashDir, 'snapshots')
-        self.bckfiles = [os.path.join(self.snapdir, 'datasnap%s.txt' % x) for x in range(self.max)]
+        self.bckfiles = [os.path.join(self.snapdir, 'datasnap%s.txt' % x) for x in range(self.max)] if not dirmod else [
+                os.path.join(self.snapdir, 'modsnap%s.txt' % x) for x in range(self.max)]
         self.listFactory()
 
     def dtFactory(self, DateTime):
@@ -4426,10 +4429,10 @@ class LoadModOrder:  # Polemos
     """Restore Datamods order and status."""
     modData = []
 
-    def __init__(self, num):
+    def __init__(self, num, dirmod=False):
         """Init."""
         self.encod = settings['profile.encoding']
-        bckfile = os.path.join(MashDir, 'snapshots', 'datasnap%s.txt' % num)
+        bckfile = os.path.join(MashDir, 'snapshots', 'datasnap%s.txt' % num) if not dirmod else os.path.join(MashDir, 'snapshots', 'modsnap%s.txt' % num)
         self.parseBck(bckfile)
 
     def dataFactory(self, rawData):
@@ -4450,14 +4453,15 @@ class SaveModOrder:  # Polemos
     """Backup of Datamods order and status."""
     status = False
 
-    def __init__(self, modData, mode='advanced'):
+    def __init__(self, modData, mode='advanced', dirmod=False):
         """Init."""
         self.encod = settings['profile.encoding']
         self.mode = mode
         self.modData = modData
         self.max = settings['backup.slots']
         self.snapdir = os.path.join(MashDir, 'snapshots')
-        self.bckfiles = [os.path.join(self.snapdir, 'datasnap%s.txt' % x) for x in range(self.max)]
+        self.bckfiles = [os.path.join(self.snapdir, 'datasnap%s.txt' % x) for x in range(self.max)] if not dirmod else [
+            os.path.join(self.snapdir, 'modsnap%s.txt' % x) for x in range(self.max)]
         if not os.path.isdir(self.snapdir):
             try: os.makedirs(self.snapdir)
             except: return

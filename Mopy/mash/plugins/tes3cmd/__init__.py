@@ -108,19 +108,20 @@ class HelperMixin: # Polemos fixes.
         return args
 
 
-class Basic(HelperMixin): # Polemos fixes.
+class Basic(HelperMixin):  # Polemos fixes.
     """Basic."""
+
     def fixit(self, hideBackups=True, backupDir='tes3cmdbck'):
         args = self.buildFixitArgs(hideBackups, backupDir)
         self.out, self.err = self.getSubprocess(args).communicate()
 
-    def multipatch(self): # Polemos: Added for multipatch
+    def multipatch(self):  # Polemos: Added for multipatch
         args = self.buildMultipatchArgs()
         self.out, self.err = self.getSubprocess(args).communicate()
 
 
 class Threaded(threading.Thread, HelperMixin):
-    """ A class that manages a Threaded process in another thread."""
+    """A class that manages a Threaded process in another thread."""
 
     def __init__(self, callback=None):
         """

@@ -26,42 +26,44 @@
 # ===========================================================================================
 
 
+import os, sys
 from ..nash import wrye_download_site
 from .. import bitver
 
 # Determine if mash is x64 or x86 bit ver.
 bit = bitver.wryeMashBitVer if hasattr(bitver, 'wryeMashBitVer') else ''
+# OpenMW/TES3mp or Morrowind functionality.
+openmw = os.path.exists(os.path.join(os.path.dirname(sys.argv[0]), 'openmw.dat'))
 
-# Note:
-# 'b' => bold,
-# 'i' => italic and
-# '' => None
-
+# Version details
+ver = 100
+extraVerInfo = u'Beta2' if not openmw else u'Alpha for OpenMW'
+date = u'6/2019'
+author = u'Polemos fork'
 
 def Current_Version():
     """The Data here feeds all of Wrye Mash."""
-    ver = 100
-    extraVerInfo = u'Beta'
-    date = u'4/2019'
-    author = u'Polemos fork'
-
-    # Credit Factory Below
-    if extraVerInfo: extraVerInfo = u' ' + extraVerInfo
+    extraVerInf = u' ' + extraVerInfo
     # Setup.py or setupx64.py imports version info (for compiling) from the line below. It is brutal so keep the formatting.
-    return (ver, u'%sv%s%s - %s - %s' % (bit, ver, extraVerInfo, author, date), u'%s - %s'%(ver, date), u'%s'%date[-4:], u'%s'%author)
+    return (ver, u'%sv%s%s - %s - %s' % (bit, ver, extraVerInf, author, date), u'%s - %s'%(ver, date), u'%s'%date[-4:], u'%s'%author)
 
-class About: # Polemos: a much needed "About".
+class About:  # Polemos: a much needed "About".
     """About Data. It is called by Settings Dialog (About Tab)."""
 
     def __init__(self, mode):
         """Init."""
-        self.name = u'Wrye Mash %s' % (Current_Version()[4])
+        self.name = u'Wrye Mash %s %s' % (Current_Version()[4], u'for OpenMW' if openmw else u'')
         self.version = u'Version: %s' % (Current_Version()[2])
-        self.website = [u'Nexus Homepage', wrye_download_site('home', mode)]
+        self.website = (u'Nexus Homepage', wrye_download_site('home', mode))
 
     def getData(self):
         """Return the credits data to the caller."""
         return self.name, self.version, self.website, self.developers(), self.license()
+
+    # Note:
+    # 'b' => bold,
+    # 'i' => italic and
+    # '' => None
 
     def developers(self):
         """Dev factory."""
@@ -69,7 +71,7 @@ class About: # Polemos: a much needed "About".
                    u' shoulders of everyone who preceded them, contributing time, talent, and inspiration.\r\n'
                    u'So, thanks to all the past developers and folks in the forums!", Wrye.\r\n', 'b'), ('\r\n','')]
 
-        source.extend([(u'Wrye: ', 'b'),
+        source.extend(((u'Wrye: ', 'b'),
                        (u'the original creator of Wrye everything,\r\n', 'i'),
                        (u'Melchor: ', 'b'),
                        (u'New help interface, Utilities tab and settings window,\r\n', 'i'),
@@ -80,17 +82,17 @@ class About: # Polemos: a much needed "About".
                         u' TES3lint support, Custom Commands support, new dialogs, theming options, store/restore mod order buttons, interface'
                         u' modernization and streamlining, speed improvements, update notifications, support for people with weak vision, higher'
                         u' icon res for the status bar, extra functionalities and more.\r\n', 'i'),
-                       (u'\r\n', '')])
+                       (u'\r\n', '')))
 
-        source.extend([(u'ManaUser: ', 'b'),
+        source.extend(((u'ManaUser: ', 'b'),
                        (u'Coding (a lot).\r\n', 'i'),
                        (u'Argent: ', 'b'),
                        (u'Java code and technical insights into Morrowind files.\r\n', 'i'),
                        (u'FallenWizard: ', 'b'),
                        (u'Key shortcut for deletion in mods and saves tabs from Mash.\r\n', 'i'),
-                       (u'\r\n', '')])
+                       (u'\r\n', '')))
 
-        source.extend([(u'Beryllium: ', 'b'),
+        source.extend(((u'Beryllium: ', 'b'),
                        (u'EE templates, bug reports and feedback.\r\n', 'i'),
                        (u'Abot: ', 'b'),
                        (u'Translations.\r\n', 'i'),
@@ -101,14 +103,14 @@ class About: # Polemos: a much needed "About".
                        (u'StaticNation: ', 'b'),
                        (u'The Wrye Mash bug finder champion.\r\n', 'i'),
                        (u'KOYK_GR: ', 'b'),
-                       (u'New icon and Bug testing.', 'i')])
+                       (u'New icon and Bug testing.', 'i')))
         return source
 
     def license(self):
         """License factory."""
-        return [
+        return (
                 (u'Wrye Mash Polemos fork\r\n', 'b'),
-                (u'Copyright (C) 2017-2018 Polemos\r\n', 'b'),
+                (u'Copyright (C) 2017-2019 Polemos\r\n', 'b'),
                 (u'* based on code by Yacoby copyright (C) 2011-2016 Wrye Mash Fork Python version\r\n', 'i'),
                 (u'* based on code by Melchor copyright (C) 2009-2011 Wrye Mash WMSA\r\n', 'i'),
                 (u'* based on code by Wrye copyright (C) 2005-2009 Wrye Mash\r\n', 'i'),
@@ -122,7 +124,7 @@ class About: # Polemos: a much needed "About".
                 (u'Copyright on any non trivial code modifications or substantial code additions:\r\n', 'b'),
                 (u'2009-2011 Melchor\r\n', 'i'),
                 (u'2011-2016 Yacoby\r\n', 'i'),
-                (u'2017-2018 Polemos\r\n', 'i'),
+                (u'2017-2019 Polemos\r\n', 'i'),
                 (u'\r\n', ''),
 
                 (u'Original Wrye Mash License and Copyright:\r\n', 'b'),
@@ -154,4 +156,4 @@ class About: # Polemos: a much needed "About".
                 (u'Freeware, http://www.iconarchive.com/show/blogger-icons-by-rafiqul-hassan.html\r\n', 'i'),
                 (u'bobsobol for TES3 - Morrowind icon on DeviantArt:\r\n', 'b'),
                 (u'CC Share Alike 3.0 License, https://www.deviantart.com/bobsobol/art/TES3-Morrowind-209901409\r\n', 'i')
-            ]
+        )

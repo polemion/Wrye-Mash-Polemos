@@ -919,14 +919,14 @@ class ModInstall:  # Polemos
         except: self.error('install')
 
     def copyMod(self, source_dir=None, target_dir=None):
-        """Multithread Copy/Progress ops."""
+        """Multithread Copy ops."""
         import gui.dialog as gui
         if source_dir is not None: self.source_dir = source_dir
         if target_dir is not None:  self.target_dir = target_dir
         self.dialog = gui.GaugeDialog(self.parent, title=_(u'Installing...'), max=self.filesLen)
         self.dialog.set_msg(_(u'Installing...'))
-        thread.start_new_thread(self.progress, ('Thread 1',))
-        thread.start_new_thread(self.treeOp, ('Thread 2',))
+        self.progress()  # todo: make modal
+        thread.start_new_thread(self.treeOp, ('treeOpThread',))
 
     def treeOp(self, id):
         """Files/Folders operations."""
@@ -958,9 +958,9 @@ class ModInstall:  # Polemos
         time.sleep(2)  # Give some time for system file caching.
         self.dialog.Destroy()
 
-    def progress(self, id):
+    def progress(self):
         """Progress indicator."""
-        self.dialog.ShowModal()
+        self.dialog.Show()
 
     def overwrite(self):
         """Merge folders."""
@@ -1235,7 +1235,6 @@ class MultiThreadGauge:  # Polemos
             self.getmodlen(ur'7z.exe l "%s" %s' % (package_path, data_files))
         if mode == 'pack':
             pack_source, pack_target = packData
-            #print pack_target
             if pack_target.endswith('.rar'): pack_target = '%s.7z' % pack_target[:-4]
             title = _(u'Packing...')
             cmd = ur'7z.exe -bb -bsp1 a "%s" "%s\*"' % (pack_target, pack_source)
@@ -1243,7 +1242,7 @@ class MultiThreadGauge:  # Polemos
         self.cmd = cmd
         import gui.dialog as gui
         self.dialog = gui.GaugeDialog(window, title=title)
-        thread.start_new_thread(self.process, ('Thread 1',))
+        thread.start_new_thread(self.process, ('ProcThr',))
         self.dialog.ShowModal()
 
     def getmodlen(self, cmd):
@@ -1251,7 +1250,8 @@ class MultiThreadGauge:  # Polemos
         args = ushlex.split(cmd)
         ins = Popen(args, stdout=PIPE, creationflags=DETACHED_PROCESS)
         for entry in ins.stdout: lendata = entry
-        self.getInstallLen = int(lendata.split()[4])
+        lendata = lendata.split()
+        self.getInstallLen = int(lendata[4]) if len(lendata) >= 5 else 0
 
     def process(self, id):
         """Main process thread."""

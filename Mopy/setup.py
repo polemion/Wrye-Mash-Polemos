@@ -108,7 +108,7 @@ RT_MANIFEST = 24
 if "-q" not in sys.argv: sys.argv.append("-q")
 if "py2exe" not in sys.argv: sys.argv.append("py2exe")
 
-# Files/Folders Includes
+# Files/Folders Includes (supply 7z dir in here)
 help_f = 'Wrye Mash.dat'
 if os.path.exists('openmw.dat'): help_f = 'openmw.dat'
 prog_resources = ['.\\7zip\\x86\\7z.exe',
@@ -186,6 +186,7 @@ for x in toDel:
         os.remove(targ)
 
 # Compress with UPX (Antivirus programs often don't like that).
+# Put upx executable in the same dir as the source.
 if os.path.exists('upx.exe'):
     files = ( glob.glob(os.path.join(dest_folder, '*.dll'))
             + glob.glob(os.path.join(dest_folder, '*.exe')) )

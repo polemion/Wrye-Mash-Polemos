@@ -42,10 +42,10 @@ class TES3lint_Settings(wx.Dialog):  # Polemos: a new settings window for TES3li
         wx.Dialog.__init__(self, parent, id=wx.ID_ANY, title=_(u'TES3lint Settings'), pos=pos, size=(331, 494), style=wx.DEFAULT_DIALOG_STYLE)
 
         if True:  # Box Sizers
-            perl_sizer = wx.StaticBoxSizer(wx.StaticBox(self, wx.ID_ANY, _(u'Perl Directory:')), wx.HORIZONTAL)
+            perl_sizer = wx.StaticBoxSizer(wx.StaticBox(self, wx.ID_ANY, _(u'Perl Executable:')), wx.HORIZONTAL)
             tesl3int_sizer = wx.StaticBoxSizer(wx.StaticBox(self, wx.ID_ANY, _(u'TES3lint Script Location:')), wx.HORIZONTAL)
             custom_flags_teslint_sizer = wx.StaticBoxSizer(wx.StaticBox(self, wx.ID_ANY, _(u'Custom Flags:')), wx.VERTICAL)
-            extras_teslint_sizer = wx.StaticBoxSizer(wx.StaticBox(self, wx.ID_ANY, _(u'Extra Options (Can create program freezes):')), wx.VERTICAL)
+            extras_teslint_sizer = wx.StaticBoxSizer(wx.StaticBox(self, wx.ID_ANY, _(u'Extra Options (May cause freezes):')), wx.VERTICAL)
             result_sizer = wx.StaticBoxSizer(wx.StaticBox(self, wx.ID_ANY, _(u'Final Command:')), wx.HORIZONTAL)
 
         if True:  # Content

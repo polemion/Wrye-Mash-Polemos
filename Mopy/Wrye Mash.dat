@@ -7,7 +7,7 @@
   <body style="                        background-color: rgb(255, 242, 204);">
     <hr style="color: white; margin-left: auto; margin-right: auto;">
     <h1><span style="color: rgb(0, 51, 51);"> <b>Polemos's Wrye Mash Fork v100
-          beta</b> </span> </h1>
+          pre-release beta 3</b> </span> </h1>
     <p><b>Latest Version: <a href="https://www.nexusmods.com/morrowind/mods/45439">Nexus
           </a><br> Discussion: <a href="https://www.nexusmods.com/morrowind/mods/45439?tab=posts">Comments
           section</a></b></p>
@@ -290,23 +290,35 @@
         notification frequency. Enter 0 for checking daily.</li>
       <li>On the interface settings you may also select a theme, a highlight
         effect list effect and some more (self explained) options.</li>
+      <li>You need to have enabled at least one type of menu (Menubar or
+        Columns) before you are allowed to save your settings.</li>
     </ul>
     <p><img src="images/settings2.jpg" alt=""></p>
     <ul>
-      <li> On the paths tab some of the available settings are: the Morrowind
-        install directory, the installers directory and the mlox directory.</li>
+      <li> On the paths tab the two main options are the Morrowind install
+        directory and the installers directory.</li>
+      <li>The optional paths can be skipped and they are not necessary.</li>
       <li> Enter a new path in the text field or click the button on the right
         of the field to change the defined directory.</li>
     </ul>
-    <span style="color: rgb(0, 51, 51);"><span style="color: rgb(51, 0, 153);">Notes:</span></span>
+    <p><img src="images%5Csettings3.jpg" alt="" title="Defaults"></p>
     <ul>
-      <li><span style="color: rgb(51, 0, 153);">You need to have enabled at
-          least one menu before you are allowed to save your settings.</span></li>
-      <li><span style="color: rgb(51, 0, 153);"> The changes are not saved,
-          unless you click on the 'OK' button.</span></li>
+      <li>On the defaults tab you may enable/disable various Mash warnings (by
+        default they are all enabled).</li>
+      <li>Reset the columns widths of all the displayed lists in Wrye Mash to
+        their default settings.</li>
     </ul>
-    <span style=" color: rgb(51, 0, 153);"><br>
-    </span>
+    <ul>
+    </ul>
+    <span style="color: rgb(0, 51, 51);"><span style="color: rgb(51, 0, 153);">Note:
+        </span></span><span style="color: rgb(51, 0, 153);">The changes are not
+      saved, unless you click on the 'OK' button.</span>
+    <ul>
+    </ul>
+    <br>
+    <ul>
+    </ul>
+    <span style=" color: rgb(51, 0, 153);"> </span>
     <ul>
     </ul>
     <p><span style="color: rgb(204, 102, 0);"><b> </b></span></p>
@@ -377,8 +389,11 @@
     </ul>
     <p><span style="color: rgb(51, 0, 153);">Note: That, only in this case, you
         don't have to write the full path to mish.py, because this file is
-        embeded in mash.exe, and is unaccessible for your file system. This also
-        true for New/Modify window Program field.</span></p>
+        embedded in mash.exe, and is inaccessible for your file system. This
+        also true for New/Modify window Program field.</span></p>
+    <p><span style="color: rgb(51, 0, 153);"><span style="color: rgb(0, 0, 0);">Double
+          click your utilities to run them.</span>..<br>
+      </span></p>
     <p><span style="color: rgb(51, 0, 153);"><br>
       </span></p>
     <p><b style="color: rgb(204, 102, 0);"> </b></p>
@@ -780,7 +795,8 @@
         change mods one at a time. You can do a bunch at once and then save the
         file, then return to Mash/Bain.</span></p>
     <p><span style="color: rgb(51, 51, 255);"><b> Package Commands</b></span></p>
-    <p><i>The following commands are available from context menu of packages.</i></p>
+    <p><i>The following commands are available from the </i><i><i>packages </i>context
+        menu.</i></p>
     <ul>
       <li><b>Open</b>: Open package(s) in the file system.</li>
       <li> <b>Duplicate</b>: Duplicate package.</li>
@@ -795,6 +811,9 @@
           the repack process will begin. When it finishes a new package prefixed
           by "repack" and followed by the source package name will appear at the
           bottom of the Installers list.</i></li>
+      <li><i></i><img src="images/repack.jpg" alt="" title="Repack"></li>
+    </ul>
+    <ul>
       <li><b>Refresh</b>: Refreshes all info for selected packages. Useful for
         updating info when package has been modified outside of Mash.</li>
       <li> <b>Move To...</b>: Moves selected packages(s) to specified position.
@@ -1007,11 +1026,11 @@
     <ul>
       <li><b>Using Load Lists</b>
         <ul>
-          <li><i> Aside from using checkboxes to select and unselect mods, you
+          <li><i> Aside from using checkboxes to select and un-select mods, you
               can also use load lists. These are accessed through the "Actions"
               menu.</i>
             <ul>
-              <li>None: Unselects all files.</li>
+              <li>None: Un-selects all files.</li>
               <li> Save List... Saves your currently selected files to a new
                 load list.</li>
               <li> Edit Lists... Allows you to delete and rename previously
@@ -1026,7 +1045,7 @@
       </li>
     </ul>
     <ul>
-      <li> <b>Snapshots</b>: By selecting the "Snapshots" submenu in "Actions"
+      <li> <b>Snapshots</b>: By selecting the "Snapshots" sub-menu in "Actions"
         you may save/restore your active mod order. You may also open a saved
         mod order, import a saved mod order or export it to a custom location.
         The "Take fast snapshot" and "Restore fast snapshot" are best used when
@@ -1110,7 +1129,7 @@
         <b>Duplicate: </b>Creates a duplicate of the file in the mods
         directory.<br>
         <b>Snapshot</b>...: Creates a snapshot copy of the current mod in a
-        subdirectory (Mash\Snapshots).&nbsp; Snapshots are indicated by
+        sub-directory (Mash\Snapshots).&nbsp; Snapshots are indicated by
         appending to "-l.n.m" to the root of the file name. E.g., "My.esp"
         becomes "My-01.esp" or "My Mod v1.01.esp" becomes "My Mod v1.01-01.esp".</li>
       <li><span style="color: rgb(51, 0, 153);">Note that Mash will
@@ -1121,14 +1140,14 @@
         plus snapshot number when the snapshot is saved. </li>
       <li><b>Delete</b>: Deletes the file... Permanently. Also deletes all
         backups and temp files, but not snapshots. </li>
-      <li><b>Hide</b>: Moves the file to a subdirectory (Mash\Hidden).&nbsp; Use
-        this on seldom used mods to keep them from cluttering the mods listing.
-        This is especially useful when modding, since the TESCS Data Files list
-        cannot be sorted.<br>
+      <li><b>Hide</b>: Moves the file to a sub-directory (Mash\Hidden).&nbsp;
+        Use this on seldom used mods to keep them from cluttering the mods
+        listing. This is especially useful when modding, since the TESCS Data
+        Files list cannot be sorted.<br>
         <span style="color: rgb(51, 0, 153);"> Note that there's a corresponding
           "Unhide..." command in the "Actions" menu. If the file's group is
           defined (e.g. Heads), and if the Mash\Hidden directory has a
-          subdirectory with the same name (e.g. Mash\Hidden\Heads), then the
+          sub-directory with the same name (e.g. Mash\Hidden\Heads), then the
           file will be hidden in it.</span></li>
       <li><b>Sort</b>: Reorders selected mods to make them sort in alphabetical
         order. Modified time of first mod is set to earliest modified time of
@@ -1987,7 +2006,7 @@
         in such a way as to prevent that.) When the file is saved, these
         different master references will be merged into a single reference. </li>
       <li>If the rename has an Updater associated with it (i.e., from "AoScrye
-        1.1.esp" to "AoScrye 1.15.esp"), then the new name will hilighted in
+        1.1.esp" to "AoScrye 1.15.esp"), then the new name will highlighted in
         dark green. Otherwise, the rename will be highlighted in pale green.
         (See <a href="#ModUpdating">Mod Updating</a> above for more
         information.) </li>
@@ -2005,11 +2024,18 @@
       <li>Then switch to the save tab. If the save you want to use is not blue,
         then begin editing the master list for it. </li>
       <li>If there are any missing masters, then rename them. Also check the
-        autorenames (look for green hilighted items) to see if they look right.
-      </li>
+        auto-renames (look for green highlighted items) to see if they look
+        right. </li>
       <li>Then use "Sync to Load List, do a final inspection and save the file.
       </li>
       <li>Then use Repair All on the file (see below).</li>
+    </ul>
+    <p><span style="color: rgb(51, 0, 153);">Note: If any of the masters is in
+        an unknown encoding your actions will be canceled and you will receive a
+        notification. This is to prevent damage to your saves/mods. Try renaming
+        the offending master outside of Mash and update accordingly in the
+        masters mini-tab (the list you were alterating).</span></p>
+    <ul>
     </ul>
     <p><span style="color: rgb(51, 51, 255);"><b> <a name="RepairRefsCommand">Repair
             Refs Command</a></b></span></p>
@@ -2087,6 +2113,14 @@
     <p>For more info, including a list of problematic mods (and updates/patches
       for them) see: <a href="http://en.uesp.net/wiki/Tes3Mod:Leveled_Lists">UESP
         Leveled Lists</a>.</p>
+    <p><span style="color: rgb(51, 51, 255);"><strong>Masters mini-tab extra
+          action for saves.</strong></span></p>
+    <ul>
+      <li><strong>"Restore mod order from save"</strong> will restore the mod
+        order that your selected save was using at the time to your mod list.
+        This is irreversible so backup your mod order if you think you may
+        change your mind afterwards.</li>
+    </ul>
     <p><br>
     </p>
     <p> </p>
@@ -2405,12 +2439,30 @@
           Troubleshooting</b></span>
       <hr></h2>
     <p><span style="color: rgb(204, 102, 0);"></span></p>
-    <p><b>Installers bugs:</b></p>
+    <p><b></b></p>
     <ul>
-      <li> If you have bugs while you are using the Installers tab then go to
-        the settings (Gear icon on the status bar) and browse and re-set your
-        installers directory from there. Afterwards do a full-refresh on the
-        installers tab. It fixes things in between version updates.</li>
+      <li> <b>Installers bugs: </b>If you have bugs while you are using the
+        Installers tab then go to the settings (Gear icon on the status bar) and
+        browse and re-set your installers directory from there. Afterwards do a
+        full-refresh on the installers tab. It fixes things in between version
+        updates.</li>
+      <li><strong>Encoding bugs:</strong> Try renaming the offending mod.</li>
+      <li><strong>EOFError when starting Wrye Mash: </strong>Delete
+        "settings.pkl" and "settings.pkl.bak" from Mash directory, they are
+        corrupted.</li>
+      <li><strong>EOFError when using the updaters:</strong> Go to your
+        Morrowind "data files" and open the "mash" directory inside it. Inside
+        that folder you will find a file named ObjectMaps.pkl. Delete it. This
+        will make Wrye Mash forget which mods it has updated but it will not
+        affect your updated saves or any mods you have updated.</li>
+      <li><strong>Windows 10, After the first time wizard Wrye Mash crashes
+          with:&nbsp; UnicodeDecodeError: 'ascii' codec can't decode byte 0xa0
+          in position 1: ordinal not in range(128): </strong>Disable the "Use
+        Unicode UTF-8 for worldwide language support" in the "Region Settings"
+        of your Windows 10 installation.</li>
+    </ul>
+    <br>
+    <ul>
     </ul>
     <p> <a name="Versions" style="color: rgb(204, 102, 0);"><b><br>
         </b></a></p>
@@ -2420,8 +2472,34 @@
             Versions</b></a> </span>
       <hr></h2>
     <p><a name="Versions" style="color: rgb(204, 102, 0);"></a></p>
-    <p><b>100 Polemos [4/7/2018]</b></p>
-    <p>Mainly a bugfix and optimization version<br>
+    <p><b>100 Polemos [6/25/2018]</b></p>
+    <p><em><strong>-Mainly a bugfix and optimization version</strong></em><br>
+      Fixed a bug in Master Tab (thanks praisejebus732 and Jaiysaun!).<br>
+      Cleaned the settings module code.<br>
+      Increased the size of the start-up wizard dialog.<br>
+      OpenMW implementation additions and fixes. =&gt; OpenMW/TES3mp<br>
+      Updated the help file.<br>
+      Refactored MGE XE and mlox statusbar implementation.<br>
+      Added the option to set MGE XE path in settings. Will still try to auto
+      detect the path if not already set.<br>
+      Finalized Wrye Mash alpha (as in before beta) v100 for OpenMW. =&gt;
+      OpenMW/TES3mp<br>
+      Optimized TESLint and Custom Commands, log dialogs.<br>
+      Optimized TES3CMD Fixit and Multipatch functions. Wrye Mash will no longer
+      freeze while TES3CMD is working.<br>
+      Fixed a regression bug in the query dialogs.<br>
+      Time is shown in 24h format now (in lists). Date remains locale specific.<br>
+      Fixed a bug in the newly updated query dialog (the one with the check
+      mark).<br>
+      Added a warning when changing masters with unknown encodings in a save .
+      The action is cancelled before any changes are made.<br>
+      Optimized installers full refresh. A full refresh of 1.34GB installers
+      (and Data Files) takes 5.6 sec in my system<br>
+      Implemented 7z crc scan for big files. Depending on the size of the
+      scanned files there is a 2%-20% speed increase.<br>
+      Implemented xxhash algorithm in place of crc32 for installer packages (for
+      the packages not their contents), which decreased by 30% the scan time of
+      packages.<br>
       Fixed the toolbar not refreshing when editing mlox in the settings.<br>
       Mash will now try to revert to the backup settings configuration if
       settings.pkl is missing.<br>
@@ -2447,10 +2525,10 @@
       Mash first time use Wizard is now allowed to be resized.<br>
       Some code refactoring in the Mash Wizard also added encoding choices (for
       translated version of Morrowind).<br>
-      Added a warning when changing a master into a file with unknown encodings.
-      The action is cancelled before any changes are made.<br>
+      Added a warning when changing masters with unknown encodings in a
+      mod/plugin . The action is cancelled before any changes are made.<br>
       Added a warning when a master is automatically deselected in the masters
-      list (when missing or of wrong encoding).<br>
+      list in saves and mod/plugins (when missing or of wrong encoding).<br>
       Fixed problem in masters list when a file contains unknown characters. It
       will not bug out but it will deselect the problematic master. (Thanks
       KarmicKid)<br>
@@ -2465,7 +2543,7 @@
       Small speed improvement in package installations. =&gt; OpenMW/TES3mp<br>
       Added a check on open if there is already an instance of Wrye Mash
       running.<br>
-      First 64bit release.<br>
+      <strong>First 64bit release.</strong><br>
       Code updates preparing transition to wxpython Phoenix.<br>
       Fixed another Unicode bug, (thanks movomo!).<br>
       Optimized "Full Refresh" speed in Installers by around 75%!! You got to
