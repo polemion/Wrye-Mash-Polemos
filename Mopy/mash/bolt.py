@@ -385,16 +385,16 @@ class Path(object): # Polemos: Unicode fixes.
     @property
     def crc(self):  # Polemos: Optimized. It went from 23 sec to 6 sec in a 6700k system.
         """Calculates and returns crc value for self."""
-        if self.size <= 16777216:
-            crc = 0L
-            with self.open('rb', 65536) as ins:
-                for x in xrange((self.size / 65536) + 1):
-                    crc = crc32(ins.read(65536), crc)
-            return crc if crc > 0 else 4294967296L + crc
-        #  7z is faster on big files
-        args = ushlex.split('7z.exe h "%s"' % self.s)
-        ins = Popen(args, bufsize=-1, stdout=PIPE, creationflags=DETACHED_PROCESS)
-        return int([x for x in ins.stdout][14].split(':')[1], 16)
+        if conf.settings['advanced.7zipcrc32'] and self.size > 16777216:
+            #  7z is faster on big files
+            args = ushlex.split('7z.exe h "%s"' % self.s)
+            ins = Popen(args, bufsize=-1, stdout=PIPE, creationflags=DETACHED_PROCESS)
+            return int([x for x in ins.stdout][14].split(':')[1], 16)
+        crc = 0L
+        with self.open('rb', 65536) as ins:
+            for x in xrange((self.size / 65536) + 1):
+                crc = crc32(ins.read(65536), crc)
+        return crc if crc > 0 else 4294967296L + crc
 
     #--Path stuff -------------------------------------------------------
     #--New Paths, subpaths
@@ -2248,6 +2248,8 @@ class WryeText:
         if srcPath:
             ins.close()
             out.close()
+
+import conf  # Polemos: Hackish approach for importing settings into the module.
 
 # Main ------------------------------------------------------------------------- #
 if __name__ == '__main__' and len(sys.argv) > 1:

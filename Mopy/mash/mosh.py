@@ -4646,7 +4646,7 @@ class Installer(object):  # Polemos: added MWSE compatibility, optimised, bug fi
                             (rootName, rpFile.s, apFile.crc, (apFile.size/1024)))
                 if progress_info: progress(index, string)
                 # Polemos: Progress dialogs crawl if they have to show many items continuously. The same seems to
-                # happen also on native windows progress dialogs (if you wonder why the show more is not on by
+                # also happen on native windows progress dialogs (if you wonder why the "show more" is not ON by
                 # default) and it is the main reason, in my opinion, of the extreme slowness in Windows 10 progress
                 # dialogs. We mitigate this here by updating the progress dialog by steps of 10 until reaching the
                 # final 9 items which are shown by steps of 1.

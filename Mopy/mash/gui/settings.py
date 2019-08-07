@@ -52,6 +52,7 @@ dPos = wx.DefaultPosition
 dSize = wx.DefaultSize
 Size = wx.Size
 space = ((0,0),1,wx.EXPAND,5)
+def SizerMany(n, a): return [wx.BoxSizer(a) for x in range(n)]
 
 
 class SettingsWindow(wx.Dialog):  # Polemos: Total reconstruction.
@@ -75,14 +76,15 @@ class SettingsWindow(wx.Dialog):  # Polemos: Total reconstruction.
         self.pathsRestart = False
 
         # Panels
-        self.TabNames = {0:'General', 1:'Paths', 2:'Advanced', 3:'About'}  # Keep this updated for tab events.
+        self.TabNames = {0:'General', 1:'Paths', 2:'Defaults', 3:'Advanced', 4:'About'}  # Keep this updated for tab events.
         self.settings_notebook = wx.Notebook(self, wx.ID_ANY, dPos, size=(-1, -1))
         self.general_panel = wx.Panel(self.settings_notebook, wx.ID_ANY, dPos, dSize, wx.TAB_TRAVERSAL)
         self.paths_panel = wx.Panel(self.settings_notebook, wx.ID_ANY, dPos, dSize, wx.TAB_TRAVERSAL)
+        self.adv_panel = wx.Panel(self.settings_notebook, wx.ID_ANY, dPos, dSize, wx.TAB_TRAVERSAL)
         self.defaults_panel = wx.Panel(self.settings_notebook, wx.ID_ANY, dPos, dSize, wx.TAB_TRAVERSAL)
         self.about_panel = wx.Panel(self.settings_notebook, wx.ID_ANY, dPos, dSize, wx.TAB_TRAVERSAL)
 
-        if True:  # General Panel
+        if True:  # General Panel ==================== #
             # Main Menu Settings
             MenuBox = wx.StaticBox(self.general_panel, wx.ID_ANY, _(u'Main Menu Settings:'))
             Menu_Sizer = wx.StaticBoxSizer(MenuBox, wx.HORIZONTAL)
@@ -109,10 +111,7 @@ class SettingsWindow(wx.Dialog):  # Polemos: Total reconstruction.
             # Layout
             Menu_Sizer.AddMany([(self.Menubar_po,0,wx.ALL,5),space,(self.Columns_Menu_po,0,wx.ALL,5)])
             Update_Sizer.AddMany([(self.Update_po,1,wx.ALL,5),(self.Update_staticText,0,wx.ALL,5),(self.fldUpdate,0,wx.BOTTOM|wx.LEFT|wx.RIGHT,5)])
-            IntOpt0_Sizer = wx.BoxSizer(wx.HORIZONTAL)
-            IntOpt1_Sizer = wx.BoxSizer(wx.HORIZONTAL)
-            IntOpt2_Sizer = wx.BoxSizer(wx.HORIZONTAL)
-            IntOpt3_Sizer = wx.BoxSizer(wx.HORIZONTAL)
+            IntOpt0_Sizer, IntOpt1_Sizer, IntOpt2_Sizer, IntOpt3_Sizer = SizerMany(4, wx.HORIZONTAL)
             IntOpt0_Sizer.AddMany([(self.HovHigh, 0, wx.ALL, 5),space,(self.LrgFont, 0, wx.ALL, 5)])
             IntOpt1_Sizer.AddMany([(self.MinOnClose, 0, wx.ALL, 5), ((0, 0), 1, wx.EXPAND, 5), (self.ShowErr, 0, wx.ALL, 5)])
             IntOpt2_Sizer.AddMany([(self.InterfaceStatic, 0, wx.ALIGN_CENTER|wx.ALL, 5), ((30, 0), 0, 0, 5),(self.ThemeChoice, 1, wx.ALL, 5)])
@@ -125,7 +124,7 @@ class SettingsWindow(wx.Dialog):  # Polemos: Total reconstruction.
             self.general_panel.Layout()
             General_Sizer.Fit(self.general_panel)
 
-        if True:  # Paths Panel
+        if True:  # Paths Panel ==================== #
             # Common
             MainPathsBox = wx.StaticBox(self.paths_panel, wx.ID_ANY, _(u'Main Paths:'))
             MainPaths_Sizer = wx.StaticBoxSizer(MainPathsBox, wx.VERTICAL)
@@ -134,30 +133,25 @@ class SettingsWindow(wx.Dialog):  # Polemos: Total reconstruction.
             Paths_Sizer = wx.BoxSizer(wx.VERTICAL)
 
             if not self.openmw:  # Regular Morrowind support
-                # ===== Main Paths ===== #
-                # Morrowind
+                # Main Paths: Morrowind
                 self.Morrowind_static = wx.StaticText(MainPathsBox, wx.ID_ANY, u'Morrowind:', dPos, dSize, 0)
                 uns = rtc.RichTextCtrl(MainPathsBox, wx.ID_ANY, u'', dPos, size=(1, 1))  # Ugly unselect hack...
                 self.fldMw = wx.TextCtrl(MainPathsBox, wx.ID_ANY, u'', dPos, name='fldMw', size=(-1, 20), style=wx.TE_RICH)
                 self.btnBrowseMw = wx.Button(MainPathsBox, wx.ID_OPEN, u'...', dPos, size=(30, 24), name='btnBrowseMw')
-                # Installers
+                # Main Paths: Installers
                 self.Installers_static = wx.StaticText(MainPathsBox, wx.ID_ANY, _(u'Installers:'), dPos, dSize, 0)
                 self.fldInst = wx.TextCtrl(MainPathsBox, wx.ID_ANY, u'', dPos, name='fldInst', size=(-1, 20), style=wx.TE_RICH)
                 self.btnBrowseInst = wx.Button(MainPathsBox, wx.ID_OPEN, u'...', dPos, size=(30, 24), name='btnBrowseInst')
-                # ===== Optional Paths ==== #
-                # MGE XE
+                # Optional Paths: MGE XE
                 self.MGEXE_static = wx.StaticText(OptionalPathsBox, wx.ID_ANY, u'MGE XE:', dPos, dSize, 0)
                 self.fldMGEXE = wx.TextCtrl(OptionalPathsBox, wx.ID_ANY, u'', dPos, name='fldMGEXE', size=(-1, 20), style=wx.TE_RICH)
                 self.btnBrowseMGEXE = wx.Button(OptionalPathsBox, wx.ID_OPEN, u'...', dPos, size=(30, 24), name='btnBrowseMGEXE')
-                # Mlox
+                # Optional Paths: Mlox
                 self.Mlox_static = wx.StaticText(OptionalPathsBox, wx.ID_ANY, u'Mlox:', dPos, dSize, 0)
                 self.fldmlox = wx.TextCtrl(OptionalPathsBox, wx.ID_ANY, u'', dPos, name='fldmlox', size=(-1, 20), style=wx.TE_RICH)
                 self.btnBrowsemlox = wx.Button(OptionalPathsBox, wx.ID_OPEN, u'...', dPos, size=(30, 24), name='btnBrowsemlox')
                 # Layout
-                Morrowind_Sizer = wx.BoxSizer(wx.HORIZONTAL)
-                Installers_Sizer = wx.BoxSizer(wx.HORIZONTAL)
-                Mlox_Sizer = wx.BoxSizer(wx.HORIZONTAL)
-                MGEXE_Sizer = wx.BoxSizer(wx.HORIZONTAL)
+                Morrowind_Sizer, Installers_Sizer, Mlox_Sizer, MGEXE_Sizer = SizerMany(4, wx.HORIZONTAL)
                 Morrowind_Sizer.AddMany([(self.Morrowind_static,0,wx.TOP|wx.RIGHT,5),
                         ((2,0),0,0,5),(uns,0,0,0),(self.fldMw,1,wx.ALIGN_CENTER,5),(self.btnBrowseMw,0,wx.LEFT,5)])
                 Installers_Sizer.AddMany([(self.Installers_static,0,wx.TOP|wx.RIGHT,5),
@@ -171,45 +165,38 @@ class SettingsWindow(wx.Dialog):  # Polemos: Total reconstruction.
                 Paths_Sizer.AddMany([(MainPaths_Sizer,0,wx.EXPAND|wx.ALL,5),((0,0),1,0,5),(OptionalPaths_Sizer,0,wx.EXPAND|wx.ALL,5)])
 
             if self.openmw:  #  OpenMW/TES3mp support
-                # ===== Main Paths ===== #
-                # OpenMW/TES3mp
+                # Main Paths: OpenMW/TES3mp
                 self.OpenMWTES3mp_static = wx.StaticText(MainPathsBox, wx.ID_ANY, _(u'OpenMW/TES3mp:'), dPos, dSize, 0)
                 uns = rtc.RichTextCtrl(MainPathsBox, wx.ID_ANY, u'', dPos, size=(1, 1))  # Ugly unselect hack...
                 self.fldOpenMWloc = wx.TextCtrl(MainPathsBox, wx.ID_ANY, u'', dPos, name='fldOpenMWloc', size=(-1, 20), style=wx.TE_RICH)
                 self.btnBrowseOpenMWloc = wx.Button(MainPathsBox, wx.ID_OPEN, u'...', dPos, size=(30, 24), name='btnBrowseOpenMWloc')
-                # Downloads
+                # Main Paths: Downloads
                 self.Downloads_static = wx.StaticText(MainPathsBox, wx.ID_ANY, _(u'Downloads:'), dPos, dSize, 0)
                 self.fldDownloads = wx.TextCtrl(MainPathsBox, wx.ID_ANY, u'', dPos, name='fldDownloads', size=(-1, 20), style=wx.TE_RICH)
                 self.btnBrowseDownloads = wx.Button(MainPathsBox, wx.ID_OPEN, u'...', dPos, size=(30, 24), name='btnBrowseDownloads')
-                # DataMods
+                # Main Paths: DataMods
                 self.Mods_static = wx.StaticText(MainPathsBox, wx.ID_ANY, _(u'Mods:'), dPos, dSize, 0)
                 self.flddatamods = wx.TextCtrl(MainPathsBox, wx.ID_ANY, u'', dPos, name='flddatamods', size=(-1, 20), style=wx.TE_RICH)
                 self.btnBrowsedatamods = wx.Button(MainPathsBox, wx.ID_OPEN, u'...', dPos, size=(30, 24), name='btnBrowsedatamods')
-                # openmw.cfg
+                # Main Paths: openmw.cfg
                 self.OpenMWConfigs_static = wx.StaticText(MainPathsBox, wx.ID_ANY, u'openmw.cfg:', dPos, dSize, 0)
                 self.fldOpenMWConf = wx.TextCtrl(MainPathsBox, wx.ID_ANY, u'', dPos, name='fldOpenMWConf', size=(-1, 20), style=wx.TE_RICH)
                 self.btnBrowseOpenMWConf = wx.Button(MainPathsBox, wx.ID_OPEN, u'...', dPos, size=(30, 24), name='btnBrowseOpenMWConf')
-                # ===== Optional Paths ==== #
-                # Morrowind Data Files
+                # Optional Paths: Morrowind Data Files
                 self.DataFiles_static = wx.StaticText(OptionalPathsBox, wx.ID_ANY, _(u'Morrowind Data Files:'), dPos, dSize, 0)
                 self.fldDataFiles = wx.TextCtrl(OptionalPathsBox, wx.ID_ANY, u'', dPos, name='fldDataFiles', size=(-1, 20), style=wx.TE_RICH)
                 self.btnBrowseDataFiles = wx.Button(OptionalPathsBox, wx.ID_OPEN, u"...", dPos, size=(30, 24), name='btnBrowseDataFiles')
-                # TES3mp pluginlist.json
+                # Optional Paths: TES3mp pluginlist.json
                 self.TES3mpConfigs_static = wx.StaticText(OptionalPathsBox, wx.ID_ANY, u'TES3mp pluginlist.json:', dPos, dSize, 0)
                 self.fldTES3mpConf = wx.TextCtrl(OptionalPathsBox, wx.ID_ANY, u'', dPos, name='fldTES3mpConf', size=(-1, 20), style=wx.TE_RICH)
                 self.btnBrowseTES3mpConf = wx.Button(OptionalPathsBox, wx.ID_OPEN, u'...', dPos, size=(30, 24), name='btnBrowseTES3mpConf')
-                # Mlox64
+                # Optional Paths: Mlox64
                 self.Mlox64_static = wx.StaticText(OptionalPathsBox, wx.ID_ANY, u'Mlox:', dPos, dSize, 0)
                 self.fldmlox64 = wx.TextCtrl(OptionalPathsBox, wx.ID_ANY, u'', dPos, name='fldmlox64', size=(-1, 20), style=wx.TE_RICH)
                 self.btnBrowsemlox64 = wx.Button(OptionalPathsBox, wx.ID_OPEN, u'...', dPos, size=(30, 24), name='btnBrowsemlox64')
                 # Layout
-                OpenMWTES3mp_Sizer = wx.BoxSizer(wx.HORIZONTAL)
-                Downloads_Sizer = wx.BoxSizer(wx.HORIZONTAL)
-                Mods_Sizer = wx.BoxSizer(wx.HORIZONTAL)
-                OpenMWconf_Sizer = wx.BoxSizer(wx.HORIZONTAL)
-                DataFiles_Sizer = wx.BoxSizer(wx.HORIZONTAL)
-                TES3mpconf_Sizer = wx.BoxSizer(wx.HORIZONTAL)
-                Mlox64_Sizer = wx.BoxSizer(wx.HORIZONTAL)
+                OpenMWTES3mp_Sizer, Downloads_Sizer, Mods_Sizer, OpenMWconf_Sizer = SizerMany(4, wx.HORIZONTAL)
+                DataFiles_Sizer, TES3mpconf_Sizer, Mlox64_Sizer, = SizerMany(3, wx.HORIZONTAL)
                 OpenMWTES3mp_Sizer.AddMany([(self.OpenMWTES3mp_static,0,wx.TOP|wx.RIGHT,5),
                                     ((2,0),0,0,5),(uns,0,0,0),(self.fldOpenMWloc,1,wx.ALIGN_CENTER,5),(self.btnBrowseOpenMWloc,0,wx.LEFT,5)])
                 Downloads_Sizer.AddMany([(self.Downloads_static,0,wx.TOP|wx.RIGHT,5),
@@ -229,7 +216,7 @@ class SettingsWindow(wx.Dialog):  # Polemos: Total reconstruction.
                 OptionalPaths_Sizer.AddMany([(DataFiles_Sizer,0,wx.EXPAND,5),(TES3mpconf_Sizer,0,wx.EXPAND,5),(Mlox64_Sizer,0,wx.EXPAND,5)])
                 Paths_Sizer.AddMany([(MainPaths_Sizer,0,wx.EXPAND|wx.ALL,5),((0,0),1,0,5),(OptionalPaths_Sizer,0,wx.EXPAND|wx.ALL,5)])
 
-        if True:  # Defaults Panel
+        if True:  # Defaults Panel ==================== #
             # Warnings Settings
             WarnBox = wx.StaticBox(self.defaults_panel, wx.ID_ANY, _(u'Mash Warning Prompts (Check To Enable):'))
             Warn_Sizer = wx.StaticBoxSizer(WarnBox, wx.HORIZONTAL)
@@ -249,7 +236,28 @@ class SettingsWindow(wx.Dialog):  # Polemos: Total reconstruction.
             self.defaults_panel.Layout()
             Defaults_Sizer.Fit(self.defaults_panel)
 
-        if True:  # About Panel
+        if True:  # Advanced Panel ==================== #
+            # Common
+            advitmsBox = wx.StaticBox( self.adv_panel, wx.ID_ANY, u'Advanced Settings:' )
+            advitms_Sizer = wx.StaticBoxSizer(advitmsBox, wx.VERTICAL)
+
+            if not self.openmw:  # Regular Morrowind support
+                self.a7zcrcOn = wx.CheckBox(advitmsBox, wx.ID_ANY,
+                        u'Use 7zip to calculate crc32 for large files (2%-20% faster "Refresh")', dPos, dSize, 0)
+                advitms_Sizer.AddMany([(self.a7zcrcOn, 0, 0, 5)])
+
+            if self.openmw:  # OpenMW/TES3mp support
+                advinfo = wx.StaticText(advitmsBox, wx.ID_ANY, _(u'Nothing here yet!'), dPos, dSize, 0)
+                advitms_Sizer.AddMany([(advinfo, 0, 0, 5)])
+
+            # Common Layout
+            adv_Sizer = wx.BoxSizer(wx.VERTICAL)
+            adv_Sizer.Add(advitms_Sizer, 1, wx.EXPAND|wx.ALL, 5)
+            self.adv_panel.SetSizer(adv_Sizer)
+            self.adv_panel.Layout()
+            adv_Sizer.Fit(self.adv_panel)
+
+        if True:  # About Panel ==================== #
             # Title/Version/Image Logo
             self.title = wx.StaticText(self.about_panel, wx.ID_ANY, self.name_po, dPos, dSize, wx.ALIGN_CENTRE)
             self.version = wx.StaticText(self.about_panel, wx.ID_ANY, self.version_po, dPos, dSize, wx.ALIGN_CENTRE)
@@ -258,16 +266,15 @@ class SettingsWindow(wx.Dialog):  # Polemos: Total reconstruction.
             self.license_button = wx.Button(self.about_panel, wx.ID_ANY, _(u'License'), dPos, size=(60, 22))
             self.credits_button = wx.Button(self.about_panel, wx.ID_ANY, _(u'Credits'), dPos, size=(60, 22))
             # Contents
-            self.contents = rtc.RichTextCtrl(self.about_panel,wx.ID_ANY,u'',dPos,size=(-1,166),style=wx.TE_READONLY|wx.VSCROLL|wx.HSCROLL|wx.NO_BORDER|wx.WANTS_CHARS)
+            self.contents = rtc.RichTextCtrl(self.about_panel,wx.ID_ANY,u'',dPos,size=(-1,166),
+                                style=wx.TE_READONLY|wx.VSCROLL|wx.HSCROLL|wx.NO_BORDER|wx.WANTS_CHARS)
             self.contents.SetFocus()
             # URL
-            self.home_url = wx.HyperlinkCtrl(self.about_panel,wx.ID_ANY,self.website_po[0],self.website_po[1],dPos,dSize,wx.HL_CONTEXTMENU|wx.HL_DEFAULT_STYLE)
+            self.home_url = wx.HyperlinkCtrl(self.about_panel,wx.ID_ANY,self.website_po[0],
+                                self.website_po[1],dPos,dSize,wx.HL_CONTEXTMENU|wx.HL_DEFAULT_STYLE)
             # Layout
-            AboutImageBtn_Sizer = wx.BoxSizer(wx.HORIZONTAL)
-            AboutImage_Sizer = wx.BoxSizer(wx.VERTICAL)
-            AboutMain_Sizer = wx.BoxSizer(wx.HORIZONTAL)
-            AboutURL_Sizer = wx.BoxSizer(wx.HORIZONTAL)
-            About_Sizer = wx.BoxSizer(wx.VERTICAL)
+            AboutImage_Sizer, About_Sizer = SizerMany(2, wx.VERTICAL)
+            AboutImageBtn_Sizer, AboutMain_Sizer, AboutURL_Sizer = SizerMany(3, wx.HORIZONTAL)
             AboutImageBtn_Sizer.AddMany([(self.license_button,0,wx.RIGHT|wx.LEFT,5),((11,0),0,0,5),(self.credits_button,0,wx.RIGHT|wx.LEFT,5)])
             AboutURL_Sizer.AddMany([space,(self.home_url,0,wx.RIGHT|wx.LEFT|wx.EXPAND,5),space])
             AboutImage_Sizer.AddMany([(self.wrye_bad,0,wx.ALL,5),space,(AboutImageBtn_Sizer,0,wx.TOP,5),space,(AboutURL_Sizer,1,wx.EXPAND|wx.TOP,5),space])
@@ -328,6 +335,7 @@ class SettingsWindow(wx.Dialog):  # Polemos: Total reconstruction.
             self.settings_notebook.AddPage(self.general_panel, _(u'General'), True)
             self.settings_notebook.AddPage(self.paths_panel, _(u'Paths'), False)
             self.settings_notebook.AddPage(self.defaults_panel, _(u'Defaults'), False)
+            self.settings_notebook.AddPage(self.adv_panel, u"Advanced", False)
             self.settings_notebook.AddPage(self.about_panel, _(u'About'), False)
             main_Sizer = wx.BoxSizer(wx.VERTICAL)
             main_Sizer.AddMany([(self.settings_notebook,1,wx.EXPAND|wx.ALL,5),(Buttons_Sizer,0,wx.RIGHT|wx.LEFT|wx.EXPAND,5)])
@@ -346,8 +354,8 @@ class SettingsWindow(wx.Dialog):  # Polemos: Total reconstruction.
 
         if True:  # Events:
             self.timer_po()
-            self.Bind(wx.EVT_CLOSE, self.OnCancel)
-            wx.EVT_BUTTON(self, wx.ID_CANCEL, self.OnCancel)
+            self.Bind(wx.EVT_CLOSE, self.OnClose)
+            wx.EVT_BUTTON(self, wx.ID_CANCEL, self.OnClose)
             wx.EVT_BUTTON(self, wx.ID_OK, self.OnOk)
             wx.EVT_BUTTON(self, wx.ID_OPEN, self.OpenDialog)
             self.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED, self.OnShowPage)
@@ -374,10 +382,6 @@ class SettingsWindow(wx.Dialog):  # Polemos: Total reconstruction.
         if self.openmw:  # OpenMW/TES3mp support
             [x.Wrap(-1) for x in (self.OpenMWTES3mp_static,self.Downloads_static,self.Mods_static,self.OpenMWConfigs_static,
                                   self.DataFiles_static,self.TES3mpConfigs_static,self.Mlox64_static)]
-
-    def pos_save(self):
-        """Saves the Settings pos."""
-        conf.settings['mash.settings.pos'] = self.GetPosition()
 
     def importThemeList(self):
         """Import theme list."""
@@ -488,12 +492,6 @@ class SettingsWindow(wx.Dialog):  # Polemos: Total reconstruction.
             getattr(self, 'fld%s'%name).SetValue(path)
             if self.openmw: self.dir_already_set()
 
-    def OnCancel(self, event):
-        """Cancel button handler."""
-        self.pos_save()
-        self.timer.Stop()
-        self.Destroy()
-
     def menu_config_po(self):
         """Set the menu configuration."""
         menu_changed = False
@@ -573,6 +571,7 @@ class SettingsWindow(wx.Dialog):  # Polemos: Total reconstruction.
             conf.settings['mloxpath'] = self.fldmlox.GetValue()
             conf.settings['sInstallersDir'] = self.fldInst.GetValue()
             conf.settings['mgexe.dir'] = self.fldMGEXE.GetValue()
+            conf.settings['advanced.7zipcrc32'] = self.a7zcrcOn.GetValue()
 
         if self.openmw:  # OpenMW/Tes3MP Settings:
             conf.settings['openmwDir'] = self.fldOpenMWloc.GetValue()
@@ -589,12 +588,18 @@ class SettingsWindow(wx.Dialog):  # Polemos: Total reconstruction.
                 name = conf.dataMap[item.Name[3:]]
                 if name in dirs: dirs[name] = GPath(item.GetValue())
 
-        self.set_settings()
-        self.OnClose(None)
+        self.set_settings()  # Common Settings
+        self.OnClose()
+        self.chkRestart()
 
-    def OnClose(self, event):
+    def OnClose(self, event=None):
         """Notifications on settings close."""
-        self.OnCancel(None)
+        conf.settings['mash.settings.pos'] = self.GetPosition()
+        self.timer.Stop()
+        self.Destroy()
+
+    def chkRestart(self):
+        """Check if Wrye Mash needs to restart."""
         if any((self.menu_config_po(),
                 self.LrgFontEx != self.LrgFont.GetValue(),
                 self.ShowErrEx != self.ShowErr.GetValue(),
@@ -626,14 +631,18 @@ class SettingsWindow(wx.Dialog):  # Polemos: Total reconstruction.
         """Init settings.."""
         self.InitCommon()
 
-        if not self.openmw:  # Polemos: Regular Morrowind Settings:
+        if not self.openmw:  # Regular Morrowind Settings:
+            # Paths
             for x, y in zip((self.fldMw, self.fldmlox, self.fldInst, self.fldMGEXE),
                             (conf.settings['mwDir'], conf.settings['mloxpath'],
                              conf.settings['sInstallersDir'], conf.settings['mgexe.dir'])):
                 try: x.SetValue(y)
                 except: pass
+            # Misc
+            self.a7zcrcOn.SetValue(conf.settings['advanced.7zipcrc32'])
 
-        if self.openmw:  # Polemos: OpenMW/Tes3MP Settings
+        if self.openmw:  # OpenMW/Tes3MP Settings
+            # Paths
             for x, y in zip((self.fldOpenMWloc,self.flddatamods,self.fldDownloads,self.fldOpenMWConf,self.fldDataFiles,self.fldTES3mpConf,self.fldmlox64),
                             (conf.settings['openmwDir'],conf.settings['datamods'],conf.settings['downloads'],
                              os.path.join(conf.settings['openmwprofile'], 'openmw.cfg'),conf.settings['openmw.datafiles'],

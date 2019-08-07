@@ -101,6 +101,7 @@ settingDefaults = {
     'mash.page': 2,
     'mash.window.sizes': {},
     'mash.bit.ver': '',
+
     #-Polemos: Profile
     'profile.active':'Default',
     'profile.encoding': 'utf-8',
@@ -110,11 +111,7 @@ settingDefaults = {
         'cp1250': 'Central European Latin',
         'cp1251': 'Cyrillic alphabets'
         },
-    #-Polemos: Date scheme for version checking
-    'last.check': None,
-    'timeframe.check': 15,
-    'enable.check': True,
-    'asked.check': False,
+
     #-Polemos: Interface Settings
     'active.theme': ('Default theme', None),
     'backup.slots': 3,
@@ -123,6 +120,16 @@ settingDefaults = {
     'mash.large.fonts': False,
     'app.min.systray': False,
     'show.debug.log': True,
+
+    #-Polemos: Advanced Settings
+    'advanced.7zipcrc32': True,
+
+    #-Polemos: Date scheme for version checking (Web)
+    'last.check': None,
+    'timeframe.check': 15,
+    'enable.check': True,
+    'asked.check': False,
+
     #-Polemos: Common Sash Settings (Mod, Plugins, Saves Tabs)
     'mash.max.sash': 400,
     'mash.sash.window.size':(867, 395),
@@ -213,7 +220,6 @@ settingDefaults = {
     'mash.installers.conflictsReport.showLower':True,
     'mash.installers.conflictsReport.showInactive':False,
     'mash.installers.show.progress.info':False,
-
     'mash.installers.markers': [],
     'mash.installers.sort': 'Order',
     'mash.installers.colReverse': {},
