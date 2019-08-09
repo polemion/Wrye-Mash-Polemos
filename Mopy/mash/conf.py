@@ -70,9 +70,26 @@ settingDefaults = {
     'wizard.first.openmw': True,
     'wizard.first.mw': True,
 
-    #--Morrowind Directory
+    #--Morrowind settings
     'mwDir': '',
-    'sInstallersDir':None,
+    'sInstallersDir': None,
+    #-Polemos: MGE XE
+    'mgexe.detected': False,
+    'mgexe.dir': '',
+    #-Polemos: mlox dir
+    'mloxpath':'',
+
+    #-Polemos: OpenMW/TES3mp settings
+    'openmw': False,
+    'tes3mp': False,
+    'openmwDir': None,
+    'openmwprofile': None,
+    'TES3mpConf': '',
+    'datamods': None,
+    'downloads': None,
+    'mlox64path': '',
+    'openmw.datafiles': '',
+    'mashdir': None,
 
     # Dialog Queries
     'query.masters.update2': False,
@@ -133,25 +150,6 @@ settingDefaults = {
     #-Polemos: Common Sash Settings (Mod, Plugins, Saves Tabs)
     'mash.max.sash': 400,
     'mash.sash.window.size':(867, 395),
-
-    #-Polemos: MGE XE
-    'mgexe.detected': False,
-    'mgexe.dir': '',
-
-    #-Polemos: mlox dir
-    'mloxpath':'',
-
-    #-Polemos: OpenMW/TES3mp settings
-    'openmw': False,
-    'tes3mp': False,
-    'openmwDir': None,
-    'openmwprofile': None,
-    'TES3mpConf': '',
-    'datamods': None,
-    'downloads': None,
-    'mlox64path': '',
-    'openmw.datafiles': '',
-    'mashdir': None,
 
     #--Wrye Mash: Load Lists
     'mash.loadLists.data': {

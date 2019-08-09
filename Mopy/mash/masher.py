@@ -112,11 +112,11 @@ class check_version: # Polemos
             u'\n\nClick Yes to enable checking every 15 days (recommended).\nIf you click No you can always enable it later'
                         u' in the settings (and also change how often it checks).'), _(u'Wrye Mash Updates?'))
         conf.settings['asked.check'] = True
-        if result: # If YES:
+        if result == wx.ID_YES: # If YES:
             conf.settings['enable.check'] = True
             conf.settings['timeframe.check'] = 15
             conf.settings['last.check'] = date.today()
-        elif not result: conf.settings['enable.check'] = False  # If NO.
+        elif result == wx.ID_NO: conf.settings['enable.check'] = False  # If NO.
 
     def checkdate(self):
         today = date.today()
@@ -133,20 +133,20 @@ class check_version: # Polemos
         elif conf.settings['mash.version'][0] < self.newver: return True
 
     def notify(self, status):
-        if status == 'error': # On error
+        if status == 'error':  # On error
             gui.dialog.ErrorMessage(None, _(u'An error occurred while trying to check for available updates.'
                 u'\n\nPlease try again later or visit Wrye Mash home page on Nexus.'), title=_(u'Update error'))
 
-        elif status: # On available update
+        elif status:  # On available update
             result = gui.dialog.askdialog(None, _(u'Wrye Mash v%s has been released.\n\nWould you like to download it?'
                 u' (Will open your internet browser).' % (self.newver)), _(u'Wrye Mash %s released.' % (self.newver)))
 
             conf.settings['last.check'] = date.today()
-            if result:  # If YES:
+            if result == wx.ID_YES:  # If YES:
                 if sys.platform == 'win32':  # Windows compatibility (Thinking about Linux).
                     wx.LaunchDefaultBrowser(nash.wrye_download_site('download', self.wryemode))
 
-        elif not status: # If no update
+        elif not status:  # If no update
             conf.settings['last.check'] = date.today()
             if self.mode == 'manual':
                 gui.dialog.InfoMessage(None, _(u'You seem to have the latest version.\n\n'
@@ -925,9 +925,9 @@ class ModPackageList(gui.List):  # Polemos
         filesLen = bolt.MultiThreadGauge(self, (package_tempdir, package_path, data_files)).getInstallLen
         # Complex package?
         if not filesLen:
-            if not gui.dialog.askdialog(self, _(u'This package\'s structure is too complex to be detected correctly. '
+            if gui.dialog.askdialog(self, _(u'This package\'s structure is too complex to be detected correctly. '
                 u'Would you like to proceed nevertheless? Click No to abort.\n\nIf you abort, you can retry installing the package and then select the'
-                    u' "Advanced" option to set the package "data files" folder.'), _(u'Complex package')): return
+                    u' "Advanced" option to set the package "data files" folder.'), _(u'Complex package')) == wx.ID_NO: return
         # Clean some junk
         bolt.CleanJunkTemp()
         # Move to Mods dir
@@ -3965,7 +3965,9 @@ class MenuBar:  # Polemos
         """"Installers panel menu."""
         self.data_inst = mosh.InstallersData()
         # "Actions" items:
-        self.ID_Installers_Open = self.PanelMenu.Append(wx.ID_ANY , _(u"Open..."), _(u"Open installer file."))
+        self.ID_Installers_Import = self.PanelMenu.Append(wx.ID_ANY , _(u"Import Package..."), _(u"Import a package into the Installers directory."))
+        self.PanelMenu.AppendSeparator()
+        self.ID_Installers_Open = self.PanelMenu.Append(wx.ID_ANY , _(u"Open..."), _(u"Open installer file and view contents."))
         self.ID_Files_Open_installers_po = self.PanelMenu.Append(wx.ID_ANY , _(u"Open Installers dir"), _(u"Go to Installers directory."))
         self.PanelMenu.AppendSeparator()
         self.ID_Installers_Refresh = self.PanelMenu.Append(wx.ID_ANY , _(u"Refresh Data"), _(u"Refreshes installers."))
@@ -3977,6 +3979,7 @@ class MenuBar:  # Polemos
                 _(u"Correct underrides in anPackages and install missing files from active anPackages."))
         self.MainMenuGUI.Append(self.PanelMenu, _(u'&Actions'))
         # Events:
+        self.parent.Bind(wx.EVT_MENU, self.Installers_ImportP, self.ID_Installers_Import)
         self.parent.Bind(wx.EVT_MENU, self.Installers_Open, self.ID_Installers_Open)
         self.parent.Bind(wx.EVT_MENU, self.Files_Open_installers_po, self.ID_Files_Open_installers_po)
         self.parent.Bind(wx.EVT_MENU, self.Installers_Refresh, self.ID_Installers_Refresh)
@@ -4066,11 +4069,14 @@ class MenuBar:  # Polemos
     def FilesIns(self, event): Installers_SortBy.Execute(Installers_SortBy('Files'), event)
 
     # Actions =================== #
+    def Installers_ImportP(self, event): Installers_Import.Execute(Installers_Import(), event)
+
     def Installers_Open(self, event):
         """Open installer file."""
         try:
             dir = self.data_inst.dir
             file = singletons.gInstallers.detailsItem
+            if file is None: gui.dialog.ErrorMessage(None, _(u'Please select an Installer file first (from the Installers list).'))
             dir.join(file).start()
         except: pass
 
@@ -5672,7 +5678,7 @@ class File_MoveTo(Link):
     def Execute(self,event):
         """Handle menu selection."""
         destDir = os.path.join(self.window.data.dir,conf.settings['mosh.fileInfo.hiddenDir'])
-        destDir = gui.dialog.DirDialog(self.window,_(u'Move To...'),destDir)
+        destDir = gui.dialog.DirDialog(self.window,_(u'Move To...'), destDir)
         if not destDir: return
         #--Do it
         fileInfos = self.window.data
@@ -6436,8 +6442,9 @@ class File_Stats(Link):
 
 # Installers Links -----------------------------------------------------------------
 
-class Installers_AddMarker(Link): # Polemos: made compatible with menubar, fixes.
+class Installers_AddMarker(Link):  # Polemos: made compatible with menubar, fixes.
     """Add an installer marker."""
+
     def AppendToMenu(self,menu,window,data):
         Link.AppendToMenu(self,menu,window,data)
         menuItem = wx.MenuItem(menu,self.id,_(u'Add Marker...'))
@@ -6459,8 +6466,9 @@ class Installers_AddMarker(Link): # Polemos: made compatible with menubar, fixes
 
 #------------------------------------------------------------------------------
 
-class Installers_AnnealAll(Link): # Polemos: made compatible with menubar.
+class Installers_AnnealAll(Link):  # Polemos: made compatible with menubar.
     """Anneal all packages."""
+
     def AppendToMenu(self,menu,window,data):
         Link.AppendToMenu(self,menu,window,data)
         menuItem = wx.MenuItem(menu,self.id,_(u'Anneal All'))
@@ -6483,6 +6491,7 @@ class Installers_AnnealAll(Link): # Polemos: made compatible with menubar.
 
 class Installers_AutoAnneal(Link):
     """Toggle autoAnneal setting."""
+
     def AppendToMenu(self,menu,window,data):
         Link.AppendToMenu(self,menu,window,data)
         menuItem = wx.MenuItem(menu,self.id,_(u'Auto-Anneal'),kind=wx.ITEM_CHECK)
@@ -6496,8 +6505,9 @@ class Installers_AutoAnneal(Link):
 
 #------------------------------------------------------------------------------
 
-class Installers_Enabled(Link):# Polemos: made compatible with menubar.
+class Installers_Enabled(Link):  # Polemos: made compatible with menubar.
     """Flips installer state."""
+
     def AppendToMenu(self,menu,window,data):
         Link.AppendToMenu(self,menu,window,data)
         menuItem = wx.MenuItem(menu,self.id,_(u'Enabled'),kind=wx.ITEM_CHECK)
@@ -6592,6 +6602,7 @@ class Installers_ConflictsReportShowsLower(Link):  # Polemos: made compatible wi
 
 class Installers_AvoidOnStart(Link):
     """Ensures faster Mash startup by preventing Installers from being startup tab."""
+
     def AppendToMenu(self,menu,window,data):
         Link.AppendToMenu(self,menu,window,data)
         menuItem = wx.MenuItem(menu,self.id,_(u'Avoid at Startup'),kind=wx.ITEM_CHECK)
@@ -6602,6 +6613,49 @@ class Installers_AvoidOnStart(Link):
         """Handle selection."""
         conf.settings['mash.installers.fastStart'] ^= True
         if conf.settings['mash.menubar.enabled']: singletons.MenuBar.installers_settings_cond()
+
+#------------------------------------------------------------------------------
+
+class Installers_Import(Link):  # Polemos
+    """Add a new package (user friendly)."""
+
+    def AppendToMenu(self, menu, window, data):
+        Link.AppendToMenu(self, menu, window, data)
+        menuItem = wx.MenuItem(menu, self.id, _(u'Import Package...'))
+        menu.AppendItem(menuItem)
+
+    def Execute(self, event):
+        """Handle selection."""
+        package = gui.dialog.FileDialog(None, _(u'Choose a package to import into the Installers directory.'), wildcard=_(u'Archive files (*.*)|*.*'))
+        if package is None: return
+        sourcePath, pakFile = package
+        # Move or copy?
+        mc_query = gui.dialog.askdialog(None , _(u'Remove the original file after importing it?\n\n'
+            u'If you click Yes the original file will be deleted (after it is copied into the Installers directory).\n'
+                u'If the file fails to be copied, the deletion will be aborted automatically.'), _(u'Remove original file?'), True)
+        if mc_query == wx.ID_CANCEL: return
+        # Check if a file with the same name exists
+        targPath = os.path.join(conf.settings['sInstallersDir'], pakFile)
+        if os.path.isfile(targPath):
+            overwrite = gui.dialog.askdialog(None , _(u'A package with the same name already exists in the Installers directory.\n\n'
+                u'Click Yes to overwrite the existing package or click No to abort the import process.'), _(u'Overwrite file?'))
+            if overwrite == wx.ID_NO: return
+        # Copy/overwrite file to destination
+        try: shutil.copyfile(sourcePath, targPath)
+        except shutil.Error:
+            gui.dialog.ErrorMessage(None, _(u'Operation failed: You may not import a package from Installers into the Installers.'))
+            return
+        except IOError:
+            gui.dialog.ErrorMessage(None, _(u'Operation failed: Access denied. Unable to write on the destination.'))
+            return
+        except: return
+        # Refresh GUI
+        singletons.gInstallers.OnShow()
+        # Delete source?
+        if mc_query == wx.ID_YES:
+            try: os.remove(sourcePath)
+            except: gui.dialog.WarningMessage(None, _(u'The package was succesfully imported into the Installers '
+                u'directory but Wrye Mash wasn\'t able to delete the original file. You may have to delete the source file manually.'))
 
 #------------------------------------------------------------------------------
 
@@ -7061,6 +7115,7 @@ class Installers_Open(balt.Tank_Open):  #-# D.C.-G.:Added to avoid errors when t
         menuItem = wx.MenuItem(menu,self.id,_(u'Open...'))
         menu.AppendItem(menuItem)
         if not os.access(mosh.dirs["installers"].s, os.W_OK): menuItem.Enable(False) #-#
+        menuItem.Enable(bool(self.selected))
 
 class Installer_Open(balt.Tank_Open):
     """Open selected file(s)."""
@@ -7627,7 +7682,7 @@ class Mods_LoadList:  # Polemos: Added compability with menubar, optimized, refa
 
 #------------------------------------------------------------------------------
 
-class Mods_EsmsFirst(Link): # Polemos: made compatible with toolbar menu.
+class Mods_EsmsFirst(Link):  # Polemos: made compatible with toolbar menu.
     """Sort esms to the top."""
 
     def __init__(self,prefix=''):
@@ -7670,7 +7725,7 @@ class Mods_TESlint_Config(Link): # Polemos: A TES3lint config dialog.
 
 #------------------------------------------------------------------------------
 
-class snapshot_po_take(Link): # Polemos
+class snapshot_po_take(Link):  # Polemos
     """Take snapshot."""
 
     def AppendToMenu(self,menu,window,data):
@@ -7695,7 +7750,7 @@ class snapshot_po_take(Link): # Polemos
 
 #------------------------------------------------------------------------------
 
-class snapshot_po_restore(Link): # Polemos
+class snapshot_po_restore(Link):  # Polemos
     """Restore snapshot."""
 
     def AppendToMenu(self,menu,window,data):
@@ -7746,7 +7801,7 @@ class snapshot_po_restore(Link): # Polemos
 
 #------------------------------------------------------------------------------
 
-class snapshot_po_import(Link): # Polemos
+class snapshot_po_import(Link):  # Polemos
     """Import snapshot."""
 
     def __init__(self, type='txt'):
@@ -7789,7 +7844,7 @@ class snapshot_po_import(Link): # Polemos
 
 #------------------------------------------------------------------------------
 
-class snapshot_po_select(Link): # Polemos
+class snapshot_po_select(Link):  # Polemos
     """Select a saved snapshot."""
 
     def __init__(self, type='txt'):
@@ -7850,7 +7905,7 @@ class snapshot_po_select(Link): # Polemos
 
 #------------------------------------------------------------------------------
 
-class snapshot_po_export(Link): # Polemos
+class snapshot_po_export(Link):  # Polemos
     """Export a snapshot."""
 
     def __init__(self, type='txt'):
@@ -7889,7 +7944,7 @@ class snapshot_po_export(Link): # Polemos
 
 #------------------------------------------------------------------------------
 
-class Mods_CopyActive(Link): # Polemos: added a dialog informing about the copy to clipboard.
+class Mods_CopyActive(Link):  # Polemos: added a dialog informing about copying into the clipboard.
     """Copy active mods to clipboard."""
 
     def AppendToMenu(self,menu,window,data):
@@ -7952,7 +8007,7 @@ class Mods_OpenMWcfg(Link): # Polemos
 
 #------------------------------------------------------------------------------
 
-class Mods_SelectedFirst(Link): # Polemos: made compatible with toolbar menu.
+class Mods_SelectedFirst(Link):  # Polemos: made compatible with toolbar menu.
     """Sort loaded mods to the top."""
 
     def __init__(self,prefix=''):
@@ -8037,7 +8092,7 @@ class Mods_ReplacersData(ListEditorData):
 
 #------------------------------------------------------------------------------
 
-class Mods_Replacers(Link): # Polemos: made compatible with toolbar menu.
+class Mods_Replacers(Link):  # Polemos: made compatible with toolbar menu.
     """Mod Replacers dialog."""
 
     def AppendToMenu(self,menu,window,data):
@@ -8057,7 +8112,7 @@ class Mods_Replacers(Link): # Polemos: made compatible with toolbar menu.
 
 #------------------------------------------------------------------------------
 
-class Check_for_updates(Link): # Polemos
+class Check_for_updates(Link):  # Polemos
     """Check for updates."""
 
     def AppendToMenu(self, menu, window, data):
@@ -8072,7 +8127,7 @@ class Check_for_updates(Link): # Polemos
 
 #------------------------------------------------------------------------------
 
-class Reset_Beth_Dates(Link): # Polemos
+class Reset_Beth_Dates(Link):  # Polemos
     """Reset dates for Bethesda ESMs and BSAs."""
 
     def AppendToMenu(self, menu, window, data):
@@ -8091,16 +8146,18 @@ class Reset_Beth_Dates(Link): # Polemos
                       'tribunal.bsa': 1035940926,
                       'tribunal.esm': 1035940926}
         # Reset Bethesda dates
-        [os.utime(os.path.join(data_files, x), (DatesIndex[x.lower()], DatesIndex[x.lower()])) for x in scandir.listdir(data_files) if x.lower() in DatesIndex.keys()]
+        [os.utime(os.path.join(data_files, x), (DatesIndex[x.lower()],
+            DatesIndex[x.lower()])) for x in scandir.listdir(data_files) if x.lower() in DatesIndex.keys()]
         # Finish
         try: test = self.window
         except: self.window = singletons.BSArchives.details.Archives
-        gui.dialog.InfoMessage(self.window, _(u'The dates of the Bethesda Masters (.ESM) and Archives (.BSA)\nhave been reset to their original dates.'))
+        gui.dialog.InfoMessage(self.window, _(u'The dates of the Bethesda Masters'
+            u' (.ESM) and Archives (.BSA)\nhave been reset to their original dates.'))
         self.window.Refresh()
 
 #------------------------------------------------------------------------------
 
-class Create_Mashed_Patch(Link): # Polemos
+class Create_Mashed_Patch(Link):  # Polemos
     """An easy way to create a mashed patch(Good for newbies)."""
 
     def AppendToMenu(self, menu, window, data):
@@ -8124,7 +8181,7 @@ class Create_Mashed_Patch(Link): # Polemos
             return
         if os.path.isfile(dest_file):
             dialog = gui.dialog.askdialog(self.window , _(u'Replace existing Mashed Patch?'), _(u'Mashed Patch'))
-            if dialog:
+            if dialog == wx.ID_YES:
                 if not Remove(dest_file):
                     gui.dialog.WarningMessage(self.window, _(u'Access Denied.\n\nCannot remove old "Mashed Lists.esp".'))
                     return
@@ -8145,7 +8202,7 @@ class Create_Mashed_Patch(Link): # Polemos
 
 #------------------------------------------------------------------------------
 
-class Mods_IniTweaks(Link): # Polemos: made compatible with toolbar menu.
+class Mods_IniTweaks(Link):  # Polemos: made compatible with toolbar menu.
     """Import LCV Schedules to mod file."""
 
     def AppendToMenu(self,menu,window,data):
@@ -8177,7 +8234,7 @@ class Mods_IniTweaks(Link): # Polemos: made compatible with toolbar menu.
 
 #------------------------------------------------------------------------------
 
-class Mods_Tes3cmd_Fixit(): # Polemos: made compatible with toolbar menu, more.
+class Mods_Tes3cmd_Fixit():  # Polemos: made compatible with toolbar menu, more.
     """TES3cmd fixit."""
     
     def AppendToMenu(self, menu, window, data):
@@ -10346,6 +10403,9 @@ def InitUtilsLinks_items():  # Polemos: Different initialization for items links
 
 def InitInstallerLinks():  # Polemos: Added open installers dir, enable extra info in progress bar, added new sorting items.
     """Initialize Installer tab menus."""
+    # --Add new
+    InstallersPanel.mainMenu.append(Installers_Import())
+    InstallersPanel.mainMenu.append(SeparatorLink())
     #--Sorting
     sortMenu = MenuLink(_(u"Sort by"))
     sortMenu.links.append(Installers_SortActive())

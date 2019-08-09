@@ -243,39 +243,30 @@ def TextEntry(parent,message,default=''):
         return value
 
 
-def askdialog(parent, question, caption):  # Polemos
+def askdialog(parent, question, caption, cnl=False):  # Polemos
     """Shows a modal yes/no dialog and return the resulting answer (True/False)."""
-    dialog = wx.MessageDialog(parent, question, caption, style=wx.YES_NO|wx.ICON_QUESTION|wx.STAY_ON_TOP)
-    if dialog.ShowModal() == wx.ID_YES:
-        dialog.Destroy()
-        return True
-    else:
-        dialog.Destroy()
-        return False
+    style = wx.YES_NO|wx.ICON_QUESTION|wx.STAY_ON_TOP
+    if cnl: style = style|wx.CANCEL
+    dialog = wx.MessageDialog(parent, question, caption, style=style).ShowModal()
+    return dialog
 
 
-def DirDialog(parent,message=_(u'Choose a directory.'),defaultPath=''):
+def DirDialog(parent, message=_(u'Choose a directory.'), defaultPath=''):  # Polemos
     """Shows a modal directory dialog and return the resulting path, or None if canceled."""
-    dialog = wx.DirDialog(parent,message,defaultPath,style=wx.DD_NEW_DIR_BUTTON)
-    if dialog.ShowModal() != wx.ID_OK:
-        dialog.Destroy()
-        return None
-    else:
-        path = dialog.GetPath()
-        dialog.Destroy()
-        return path
+    dialog = wx.DirDialog(parent, message, defaultPath, style=wx.DD_NEW_DIR_BUTTON)
+    dialog.ShowModal()
+    path = dialog.GetPath()
+    dialog.Destroy()
+    return None if not path else path
 
 
-def FileDialog(parent,message=_(u'Choose a directory.'),defaultPath='', defaultfile='', wildcard=_(u'Executable files (*.exe)|*.exe')):  # Polemos
-    """Shows a modal find file dialog and returns the resulting file path, or None if canceled."""
+def FileDialog(parent, message=_(u'Choose a file.'), defaultPath='', defaultfile='', wildcard=_(u'Executable files (*.exe)|*.exe')):  # Polemos
+    """Shows a modal find file dialog and returns the resulting file path and filename or None if canceled."""
     dialog = wx.FileDialog(parent, message, defaultPath, defaultfile, wildcard, style=wx.FD_OPEN|wx.FD_FILE_MUST_EXIST)
-    if dialog.ShowModal() != wx.ID_OK:
-        dialog.Destroy()
-        return None
-    else:
-        path = dialog.GetPath()
-        dialog.Destroy()
-        return path
+    dialog.ShowModal()
+    path, filename = dialog.GetPath(), dialog.GetFilename()
+    dialog.Destroy()
+    return None if not path else (path, filename)
 
 
 def ContinueQuery(parent, tmessage, message, continueKey, title=_(u'Warning'), nBtn=True):  # Polemos
