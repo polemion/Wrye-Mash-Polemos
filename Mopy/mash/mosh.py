@@ -3685,10 +3685,22 @@ class ModInfos(FileInfos):
 
     def loadObjectMaps(self):
         """Load ObjectMaps from file."""
-        path = os.path.join(self.dir,settings['mosh.modInfos.objectMaps'])
-        if os.path.exists(path):
-            self.objectMaps = compat.uncpickle(open(path,'rb'))
-        else: self.objectMaps = {}
+        ins, path = False, os.path.join(self.dir,settings['mosh.modInfos.objectMaps'])
+        try:
+            if os.path.exists(path):
+                ins = open(path,'rb')
+                self.objectMaps = compat.uncpickle(ins)
+        except EOFError:  # Polemos: Fix for corrupted Updaters pkl
+            import gui.dialog, wx
+            if ins: ins.close()
+            if gui.dialog.ErrorQuery(None, _(u'Updaters data has been corrupted and needs to be reset.\n\nClick '
+                u'Yes to automatically delete the updaters data file.\n(This will make Wrye Mash forget which mods it has updated '
+                    u'but it will not affect your updated saves - an inconvenience really).\n\nClick No if you wish to do it '
+                        u'manually by deleting the following file:\n%s') % path) == wx.ID_YES:
+                try: os.remove(path)
+                except: gui.dialog.ErrorMessage(None, _(u'Wrye Mash was unable to delete the file which '
+                    u'holds the Updaters data. You need to manually delete the following file:\n\n"%s"' % path))
+        finally: self.objectMaps = {}
 
     def saveObjectMaps(self):
         """Save ObjectMaps to file."""
