@@ -60,7 +60,7 @@ class HelperMixin: # Polemos fixes.
                 if x.lower().endswith('.esp') or x.lower().endswith('.esm') or x.lower().endswith('.ess'): x = '"%s"' % x
                 if x != 'tes3cmd.exe': args_po = '%s %s' % (args_po, x)
         except: args_po = ''
-        command = 'cd /D "%s" & %s%s' % (getDataDir(), cmd_po, args_po) # Polemos: Tired trying to work with Popens buggy attitude. Be my guest.
+        command = 'cd /D "%s" & %s%s' % (getDataDir(), cmd_po, args_po) # Polemos: Tired trying to work with Marry Popens buggy attitude. Be my guest.
         return Popen(command, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
 
     def buildFixitArgs(self, hideBackups, backupDir):
@@ -173,16 +173,10 @@ class Threaded(threading.Thread, HelperMixin):
         for line in iter(p.stderr.readline,''): self.err += line.strip() + '\n'
         if self.callback: self.callback()
 
-def getDataDir(): # Polemos fix
+def getDataDir():  # Polemos fix
     data_files_dir = os.path.join(conf.settings['mwDir'], 'Data Files')
     return data_files_dir
 
-def getLocation(): # Polemos fix
-    locs = [singletons.MashDir,
-            os.path.join(singletons.MashDir, 'tes3cmd'),
-            conf.settings['mwDir'],
-            os.path.join(conf.settings['mwDir'], 'Data Files')]
-    for loc in locs:
-        path = os.path.join(loc, 'tes3cmd.exe')
-        if os.path.exists(path): return path
-    return None
+def getLocation():  # Polemos: Returns path only if TES3cmd is in "Data Files" dir
+    path = os.path.join(conf.settings['mwDir'], 'Data Files', 'tes3cmd.exe')
+    return path if os.path.exists(path) else None
