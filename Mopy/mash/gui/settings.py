@@ -150,8 +150,12 @@ class SettingsWindow(wx.Dialog):  # Polemos: Total reconstruction.
                 self.Mlox_static = wx.StaticText(OptionalPathsBox, wx.ID_ANY, u'Mlox:', dPos, dSize, 0)
                 self.fldmlox = wx.TextCtrl(OptionalPathsBox, wx.ID_ANY, u'', dPos, name='fldmlox', size=(-1, 20), style=wx.TE_RICH)
                 self.btnBrowsemlox = wx.Button(OptionalPathsBox, wx.ID_OPEN, u'...', dPos, size=(30, 24), name='btnBrowsemlox')
+                # Optional Paths: TES3cmd
+                self.TES3cmd_static0 = wx.StaticText(OptionalPathsBox, wx.ID_ANY, u'TES3cmd:', dPos, dSize, 0)
+                self.TES3cmd_static1 = wx.StaticText(OptionalPathsBox, wx.ID_ANY, u'', size=(-1, -1), style=0)
+                self.btnRechkT3cmd = wx.Button(OptionalPathsBox, wx.ID_ANY, _(u'Re-Check'), dPos, size=(70, 24))
                 # Layout
-                Morrowind_Sizer, Installers_Sizer, Mlox_Sizer, MGEXE_Sizer = SizerMany(4, wx.HORIZONTAL)
+                Morrowind_Sizer, Installers_Sizer, Mlox_Sizer, MGEXE_Sizer, TES3cmd_Sizer = SizerMany(5, wx.HORIZONTAL)
                 Morrowind_Sizer.AddMany([(self.Morrowind_static,0,wx.TOP|wx.RIGHT,5),
                         ((2,0),0,0,5),(uns,0,0,0),(self.fldMw,1,wx.ALIGN_CENTER,5),(self.btnBrowseMw,0,wx.LEFT,5)])
                 Installers_Sizer.AddMany([(self.Installers_static,0,wx.TOP|wx.RIGHT,5),
@@ -160,8 +164,10 @@ class SettingsWindow(wx.Dialog):  # Polemos: Total reconstruction.
                         ((35,0),0,0,5),(self.fldmlox,1,wx.ALIGN_CENTER,5),(self.btnBrowsemlox,0,wx.LEFT,5)])
                 MGEXE_Sizer.AddMany([(self.MGEXE_static,0,wx.TOP|wx.RIGHT,5),
                         ((20,0),0,0,5),(self.fldMGEXE,1,wx.ALIGN_CENTER,5),(self.btnBrowseMGEXE,0,wx.LEFT,5)])
+                TES3cmd_Sizer.AddMany([(self.TES3cmd_static0,0,wx.TOP|wx.RIGHT,5),
+                        ((11,0),0,0,5),(self.TES3cmd_static1,1,wx.TOP|wx.RIGHT,5),(self.btnRechkT3cmd,0,wx.LEFT,5)])
                 MainPaths_Sizer.AddMany([(Morrowind_Sizer,0,wx.EXPAND,5),(Installers_Sizer,0,wx.EXPAND,5)])
-                OptionalPaths_Sizer.AddMany([(Mlox_Sizer,0,wx.EXPAND,5),(MGEXE_Sizer,0,wx.EXPAND,5)])
+                OptionalPaths_Sizer.AddMany([(Mlox_Sizer,0,wx.EXPAND,5),(MGEXE_Sizer,0,wx.EXPAND,5), (TES3cmd_Sizer,0,wx.EXPAND,5)])
                 Paths_Sizer.AddMany([(MainPaths_Sizer,0,wx.EXPAND|wx.ALL,5),((0,0),1,0,5),(OptionalPaths_Sizer,0,wx.EXPAND|wx.ALL,5)])
 
             if self.openmw:  #  OpenMW/TES3mp support
@@ -358,6 +364,7 @@ class SettingsWindow(wx.Dialog):  # Polemos: Total reconstruction.
             wx.EVT_BUTTON(self, wx.ID_CANCEL, self.OnClose)
             wx.EVT_BUTTON(self, wx.ID_OK, self.OnOk)
             wx.EVT_BUTTON(self, wx.ID_OPEN, self.OpenDialog)
+            if not self.openmw: self.btnRechkT3cmd.Bind(wx.EVT_BUTTON, self.OnDetectTES3cmd)
             self.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED, self.OnShowPage)
             self.license_button.Bind(wx.EVT_BUTTON, self.license_txt)
             self.credits_button.Bind(wx.EVT_BUTTON, self.credits_txt)
@@ -598,6 +605,16 @@ class SettingsWindow(wx.Dialog):  # Polemos: Total reconstruction.
         self.timer.Stop()
         self.Destroy()
 
+    def OnDetectTES3cmd(self, event=None):
+        """Returns TES3cmd.exe path."""
+        path = os.path.join(conf.settings['mwDir'], 'Data Files', 'tes3cmd.exe')
+        if os.path.exists(path):
+            self.TES3cmd_static1.SetLabel(_(u'Detected!'))
+            self.TES3cmd_static1.SetForegroundColour(wx.BLUE)
+        else:
+            self.TES3cmd_static1.SetLabel(_(u'"TES3cmd.exe" not found in "Data Files" directory.'))
+            self.TES3cmd_static1.SetForegroundColour(wx.RED)
+
     def chkRestart(self):
         """Check if Wrye Mash needs to restart."""
         if any((self.menu_config_po(),
@@ -639,6 +656,7 @@ class SettingsWindow(wx.Dialog):  # Polemos: Total reconstruction.
                 try: x.SetValue(y)
                 except: pass
             # Misc
+            self.OnDetectTES3cmd()
             self.a7zcrcOn.SetValue(conf.settings['advanced.7zipcrc32'])
 
         if self.openmw:  # OpenMW/Tes3MP Settings
