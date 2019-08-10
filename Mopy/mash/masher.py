@@ -8158,7 +8158,7 @@ class Reset_Beth_Dates(Link):  # Polemos
 #------------------------------------------------------------------------------
 
 class Create_Mashed_Patch(Link):  # Polemos
-    """An easy way to create a mashed patch(Good for newbies)."""
+    """An easy way to create a mashed patch (Good for newbies)."""
 
     def AppendToMenu(self, menu, window, data):
         Link.AppendToMenu(self, menu, window, data)
@@ -8170,6 +8170,16 @@ class Create_Mashed_Patch(Link):  # Polemos
         """Handle menu selection."""
         try: test = self.window
         except: self.window = singletons.modList
+        # Check if TES3cmd is installed and if yes suggest multipatch
+        if tes3cmd.getLocation():
+            tmessage = _(u'TES3cmd detected.')
+            message = _( u'Since you have TES3cmd installed you can use the TES3cmd Multipatch'
+                         u' instead of Mashed Patch. TES3cmd\'s Multipatch is more powerful than'
+                         u' the Mashed Patch since it not only creates merged leveled lists but'
+                         u' also patches several other problems. You may create a multipatch by'
+                         u' going on the TES3cmd menu and selecting it.')
+            gui.dialog.ContinueQuery(self.window, tmessage, message, 'query.tes3cmd.multipatch', _(u'Mashed Patch?'), nBtn=False)
+        # Proceed with Mashed Patch actions
         data_files = fChk(mosh.dirs['mods'].s)
         source_file = os.path.join(singletons.MashDir, 'Extras', 'Mashed Lists.esp')
         if not conf.settings['openmw']:  # Polemos: Regular Morrowind support

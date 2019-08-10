@@ -105,6 +105,7 @@ settingDefaults = {
     'query.schedules.import.continue': False,
     'query.renumberRefs.continue': False,
     'query.removeDebrisCells.continue': False,
+    'query.tes3cmd.multipatch': False,
 
     #--Wrye Mash
     'all.ok': True,
