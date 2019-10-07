@@ -60,7 +60,8 @@ class HelperMixin: # Polemos fixes.
                 if x.lower().endswith('.esp') or x.lower().endswith('.esm') or x.lower().endswith('.ess'): x = '"%s"' % x
                 if x != 'tes3cmd.exe': args_po = '%s %s' % (args_po, x)
         except: args_po = ''
-        command = 'cd /D "%s" & %s%s' % (getDataDir(), cmd_po, args_po) # Polemos: Tired trying to work with Marry Popens buggy attitude. Be my guest.
+        # Polemos: Tired trying to work with Mary Popens buggy attitude. Be my guest.
+        command = 'cd /D "%s" & %s%s' % (getDataDir(), cmd_po, args_po)
         return Popen(command, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
 
     def buildFixitArgs(self, hideBackups, backupDir):

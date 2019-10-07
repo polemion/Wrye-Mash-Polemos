@@ -53,12 +53,10 @@ from datetime import date  # Polemos
 from subprocess import PIPE, check_call  # Polemos: KEEP "check_call" !!!
 from threading import Thread  # Polemos
 from types import *
-
 import scandir
 import wx
 import wx.html
 from wx.lib.mixins.listctrl import ListCtrlAutoWidthMixin
-
 import balt
 import bolt
 import conf
@@ -86,7 +84,7 @@ from unimash import n_path as n_path, uniChk as uniChk, fChk as fChk, uniformatD
 DETACHED_PROCESS = 0x00000008       # Polemos: No console window.
 warnings.filterwarnings('ignore')   # Polemos: Filter unneeded warnings.
 
-# Polemos: For wxPython
+# Polemos: Constants for wxPython
 dPos = wx.DefaultPosition
 dSize = wx.DefaultSize
 

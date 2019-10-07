@@ -63,59 +63,60 @@ def compileTranslator(txtPath,pklPath):
     reNewLine = re.compile(r'\\n')
     #--Scan text file
     translator = {}
-    def addTranslation(key,value):
-        key,value   = key[:-1],value[:-1]
+    def addTranslation(key, value):
+        key,value = key[:-1], value[:-1]
         #print `key`, `value`
         if key and value:
             key = reTrans.match(key).group(2)
             value = reTrans.match(value).group(2)
             translator[key] = value
-    key,value,mode = '','',0
+    key, value, mode = '', '', 0
     textFile = file(txtPath)
     for line in textFile:
         #--Blank line. Terminates key, value pair
         if reBlank.match(line):
-            addTranslation(key,value)
-            key,value,mode = '','',0
+            addTranslation(key, value)
+            key, value, mode = '', '', 0
         #--Begin key input?
         elif reSource.match(line):
-            addTranslation(key,value)
-            key,value,mode = '','',1
+            addTranslation(key, value)
+            key, value, mode = '', '', 1
         #--Begin value input?
         elif reValue.match(line): mode = 2
         elif mode == 1: key += line
         elif mode == 2: value += line
-    addTranslation(key,value) #--In case missed last pair
+    addTranslation(key, value) #--In case missed last pair
     textFile.close()
     #--Write translator to pickle
     filePath = pklPath
     tempPath = filePath+'.tmp'
-    cPickle.dump(translator,open(tempPath,'w'))
+    cPickle.dump(translator, open(tempPath, 'w'))
     if os.path.exists(filePath): os.remove(filePath)
-    os.rename(tempPath,filePath)
+    os.rename(tempPath, filePath)
 
 #--Do translator test and set
 currentLocale = locale.getlocale()
-if locale.getlocale() == (None,None): locale.setlocale(locale.LC_ALL,'')
-language = locale.getlocale()[0].split('_',1)[0]
+if locale.getlocale() == (None, None): locale.setlocale(locale.LC_ALL, '')
+language = locale.getlocale()[0].split('_', 1)[0]
 if language.lower() == 'german': language = 'de' #--Hack for German speakers who aren't 'DE'.
-languagePkl, languageTxt = (os.path.join('data',language+ext) for ext in ('.pkl','.txt'))
+languagePkl, languageTxt = (os.path.join('data', language+ext) for ext in ('.pkl', '.txt'))
 #--Recompile pkl file?
 if os.path.exists(languageTxt) and (not os.path.exists(languagePkl) or (os.path.getmtime(languageTxt) > os.path.getmtime(languagePkl))):
-    compileTranslator(languageTxt,languagePkl)
+    compileTranslator(languageTxt, languagePkl)
 #--Use dictionary from pickle as translator
 if os.path.exists(languagePkl):
     with open(languagePkl) as pklFile:
         reEscQuote = re.compile(r"\\'")
         _translator = cPickle.load(pklFile)
-    def _(text,encode=True):
-        if encode: text = reEscQuote.sub("'",text.encode('string_escape'))
-        head,core,tail = reTrans.match(text).groups()
+    def _(text, encode=True):
+        if encode: text = reEscQuote.sub("'", text.encode('string_escape'))
+        head, core, tail = reTrans.match(text).groups()
         if core and core in _translator: text = head+_translator[core]+tail
         if encode: text = text.decode('string_escape')
         return text
 else:
-    def _(text,encode=True): return text
+    def _(text, encode=True): return text
+
 # Errors --------------------------------------------------------------------- #
 
 
@@ -127,28 +128,29 @@ class BoltError(Exception):
 
 class AbstractError(BoltError):
     """Coding Error: Abstract code section called."""
-    def __init__(self,message=_(u'Abstract section called.')): BoltError.__init__(self,message)
+    def __init__(self, message=_(u'Abstract section called.')): BoltError.__init__(self, message)
 
 
 class ArgumentError(BoltError):
     """Coding Error: Argument out of allowed range of values."""
-    def __init__(self,message=_(u'Argument is out of allowed ranged of values.')): BoltError.__init__(self,message)
+    def __init__(self, message=_(u'Argument is out of allowed ranged of values.')): BoltError.__init__(self, message)
 
 
 class StateError(BoltError):
     """Error: Object is corrupted."""
-    def __init__(self,message=_(u'Object is in a bad state.')): BoltError.__init__(self,message)
+    def __init__(self, message=_(u'Object is in a bad state.')): BoltError.__init__(self, message)
 
 
 class UncodedError(BoltError):
     """Coding Error: Call to section of code that hasn't been written."""
-    def __init__(self,message=_(u'Section is not coded yet.')): BoltError.__init__(self,message)
+    def __init__(self, message=_(u'Section is not coded yet.')): BoltError.__init__(self, message)
+
 # LowStrings ------------------------------------------------------------------ #
 
 
 class LString(object):
     """Strings that compare as lower case strings."""
-    __slots__ = ('_s','_cs')
+    __slots__ = ('_s', '_cs')
 
     def __init__(self,s):
         if isinstance(s,LString): s = s._s

@@ -41,8 +41,24 @@
             Versions</b></a> </span>
       <hr></h2>
     <p><a name="Versions" style="color: rgb(204, 102, 0);"></a></p>
-    <p><b>100 Polemos [6/25/2018]</b></p>
+    <p><b>100 Polemos [</b><b><b>10/8/2019</b>]</b></p>
     <p><em><strong>-Mainly a bugfix and optimization version</strong></em><br>
+      Added a notification when using Mashed Patch and having TES3cmd installed
+      which suggests the use of Multipatch instead (User-friendly).<br>
+      Implemented a self reset of "Updaters" data in case it gets corrupted
+      (asks the user first).<br>
+      TES3cmd is shown if it is detected correctly in the Paths section of the
+      Settings dialog (to avoid user confusions).<br>
+      TES3cmd was, in some cases, erroneously detected as active when it was
+      outside "Data Files" folder, this is now fixed.<br>
+      Refactored/optimised various wxpython dialogs.<br>
+      Fixed the "Open..." option menu in the Installers to show information if
+      no package is selected in Menubar or be disabled in the Old Menu.<br>
+      Added a new menu option "Import Package.." which imports packages to the
+      Installers directory (User-friendly).<br>
+      Added the option to disable the new "7zip crc32 calculation on big files"
+      in the settings (just in case).<br>
+      Added a new "Advanced" tab on the settings dialog.<br>
       Fixed a bug in Master Tab (thanks praisejebus732 and Jaiysaun!).<br>
       Cleaned the settings module code.<br>
       Increased the size of the start-up wizard dialog.<br>
@@ -64,8 +80,8 @@
       The action is cancelled before any changes are made.<br>
       Optimized installers full refresh. A full refresh of 1.34GB installers
       (and Data Files) takes 5.6 sec in my system<br>
-      Implemented 7z crc scan for big files. Depending on the size of the
-      scanned files there is a 2%-20% speed increase.<br>
+      Implemented 7z crc32 calculation for big files. Depending on the size of
+      the scanned files there is a 2%-20% speed increase.<br>
       Implemented xxhash algorithm in place of crc32 for installer packages (for
       the packages not their contents), which decreased by 30% the scan time of
       packages.<br>
@@ -132,7 +148,7 @@
       having multiple Mash installations.<br>
       Fixed a bug in Installers highlight color.<br>
       Added animation package support. Wrye Mash will recognize animation
-      packages now.<b><br>
+      packages now.<b></b><b><br>
       </b></p>
     <p><b>99&nbsp; Polemos [10/16/2018]</b></p>
     <p>Added a notification when changing paths in settings to restart Wrye
