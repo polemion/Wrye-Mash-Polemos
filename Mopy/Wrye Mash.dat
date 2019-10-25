@@ -6,8 +6,8 @@
   </head>
   <body style="                        background-color: rgb(255, 242, 204);">
     <hr style="color: white; margin-left: auto; margin-right: auto;">
-    <h1><span style="color: rgb(0, 51, 51);"> <b>Polemos's Wrye Mash Fork v100
-          pre-release beta 4</b> </span> </h1>
+    <h1><span style="color: rgb(0, 51, 51);"> <b>Polemos's Wrye Mash Fork v100</b>
+      </span> </h1>
     <p><b>Latest Version: <a href="https://www.nexusmods.com/morrowind/mods/45439">Nexus
           </a><br> Discussion: <a href="https://www.nexusmods.com/morrowind/mods/45439?tab=posts">Comments
           section</a></b></p>
@@ -297,9 +297,11 @@
     <ul>
       <li> On the paths tab the two main options are the Morrowind install
         directory and the installers directory.</li>
-      <li>The optional paths can be skipped and they are not necessary.</li>
+      <li>The optional paths can be skipped as they are not necessary.</li>
       <li> Enter a new path in the text field or click the button on the right
         of the field to change the defined directory.</li>
+      <li>If TES3cmd is in the correct location a blue detected message is
+        shown. Click "Re-Check" to recheck it.</li>
     </ul>
     <p><img src="images%5Csettings3.jpg" alt="" title="Defaults"></p>
     <ul>
@@ -308,11 +310,15 @@
       <li>Reset the columns widths of all the displayed lists in Wrye Mash to
         their default settings.</li>
     </ul>
+    <p><img src="images%5Csettings4.jpg" alt=" " title="Advanced"></p>
     <ul>
+      <li>"Use 7zip to calculate crc32 for large files...": If this is selected,
+        Mash will also use the 7z executable to calculate large files crc32
+        values. This may speed up times in some configurations. Check it out.</li>
     </ul>
-    <span style="color: rgb(0, 51, 51);"><span style="color: rgb(51, 0, 153);">Note:
-        </span></span><span style="color: rgb(51, 0, 153);">The changes are not
-      saved, unless you click on the 'OK' button.</span>
+    <p><span style="color: rgb(0, 51, 51);"><span style="color: rgb(51, 0, 153);">Note:
+          </span></span><span style="color: rgb(51, 0, 153);">The changes are
+        not saved, unless you click on the 'OK' button.</span> </p>
     <ul>
     </ul>
     <br>
@@ -2472,8 +2478,11 @@
             Versions</b></a> </span>
       <hr></h2>
     <p><a name="Versions" style="color: rgb(204, 102, 0);"></a></p>
-    <p><b>100 Polemos [10/8/2019]</b></p>
+    <p><b>100 Polemos [10/25/2019]</b></p>
     <p><em><strong>-Mainly a bugfix and optimization version</strong></em><br>
+      Updated help file.<br>
+      Removed trailing spaces and used UNIX line endings.<br>
+      Refactored error and locale code.<br>
       Added a notification when using Mashed Patch and having TES3cmd installed
       which suggests the use of Multipatch instead (User-friendly).<br>
       Implemented a self reset of "Updaters" data in case it gets corrupted
@@ -2562,8 +2571,8 @@
       <strong>First 64bit release.</strong><br>
       Code updates preparing transition to wxpython Phoenix.<br>
       Fixed another Unicode bug, (thanks movomo!).<br>
-      Optimized "Full Refresh" speed in Installers by around 75%!! You got to
-      see to believe it! It went from 23" to 5" in my system.<br>
+      <strong>Optimized "Full Refresh" speed in Installers by around 75%!! You
+        got to see to believe it! It went from 23" to 5" in my system.</strong><br>
       Added option to force close Wrye Mash if it is stuck ad infinitum in the
       debug log.<br>
       Optimized author, description, mod name fields dialog code and datetime

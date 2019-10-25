@@ -250,7 +250,7 @@ class SettingsWindow(wx.Dialog):  # Polemos: Total reconstruction.
 
             if not self.openmw:  # Regular Morrowind support
                 self.a7zcrcOn = wx.CheckBox(advitmsBox, wx.ID_ANY,
-                        u'Use 7zip to calculate crc32 for large files (2%-20% faster "Refresh")', dPos, dSize, 0)
+                        u'Use 7zip to calculate crc32 for large files (may give 2%-20% faster "Refresh")', dPos, dSize, 0)
                 advitms_Sizer.AddMany([(self.a7zcrcOn, 0, 0, 5)])
 
             if self.openmw:  # OpenMW/TES3mp support
