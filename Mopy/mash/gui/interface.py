@@ -27,7 +27,7 @@
 
 
 import wx, os, json
-from ..mosh import _
+from ..unimash import _
 from .. import singletons
 
 # Default Style

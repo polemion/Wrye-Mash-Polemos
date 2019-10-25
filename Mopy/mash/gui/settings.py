@@ -41,7 +41,8 @@
 import wx, os
 from .. import singletons
 import scandir, json, codecs  # Polemos
-from ..mosh import _, dirs, GPath
+from ..mosh import dirs, GPath
+from ..unimash import _  # Polemos
 import dialog as gui  # Polemos
 from .. import conf  # Polemos
 import wx.richtext as rtc  # Polemos

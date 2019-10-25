@@ -33,15 +33,13 @@ import os
 import scandir
 import sys
 import wx
-
 import dialog as gui
-from mash.plugins.mlox.loader import Mlox_The_Path
+from ..plugins.mlox.loader import Mlox_The_Path
 from .. import conf
-from ..mosh import _
+from ..unimash import _
 
+# Constants
 MashDir = os.path.dirname(sys.argv[0])
-
-# wx code simplification
 dPos = wx.DefaultPosition
 dSize = wx.DefaultSize
 Size = wx.Size

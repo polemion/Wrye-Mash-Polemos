@@ -60,7 +60,6 @@ from wx.lib.mixins.listctrl import ListCtrlAutoWidthMixin
 import balt
 import bolt
 import conf
-import exception
 import gui.dialog
 import gui.interface as interface  # Polemos
 import plugins.tes3cmd.gui
@@ -76,17 +75,97 @@ from gui.settings import SettingsWindow
 from gui.utils import UtilsPanel as UtilsPanel, UtilsList as UtilsList  # Polemos
 from gui.wizard import WizardDialog  # Polemos
 from plugins import tes3cmd
-from mosh import _, StateError, UncodedError
-from mosh import formatInteger, formatDate, ResetTempDir as ResetTempDir  # Polemos
+from unimash import _  # Polemos
+from merrors import StateError, UncodedError
+from mosh import formatInteger, formatDate, ResetTempDir  # Polemos
 from sfix import Popen  # Polemos
-from unimash import n_path as n_path, uniChk as uniChk, fChk as fChk, uniformatDate as uniformatDate  # Polemos
+from unimash import n_path, uniChk, fChk, uniformatDate  # Polemos
 
+# Constants
 DETACHED_PROCESS = 0x00000008       # Polemos: No console window.
 warnings.filterwarnings('ignore')   # Polemos: Filter unneeded warnings.
-
 # Polemos: Constants for wxPython
 dPos = wx.DefaultPosition
 dSize = wx.DefaultSize
+
+# Polemos: That's a no no (Use only on .py versions):
+'''#  - Make sure that python root directory is in PATH, so can access dll's.
+if sys.prefix not in set(os.environ['PATH'].split(';')):
+    os.environ['PATH'] += ';'+sys.prefix'''
+
+#--Internet Explorer
+try: import wx.lib.iewin  # Polemos: Todo: Need to replace this. => [iewin]
+except: pass
+
+def openmw_enabled():  # Polemos
+    """Check if openmw.dat exists and return True if it does."""
+    return os.path.exists(os.path.join(singletons.MashDir, 'openmw.dat'))
+
+# Gui Ids
+class IdListIterator:
+    """Iterator for IdList object."""
+
+    def __init__(self, idList):
+        """Initialize."""
+        self.idList = idList
+        self.prevId = idList.baseId - 1
+        self.lastId = idList.baseId + idList.size - 1
+
+    def __iter__(self):
+        """Iterator method."""
+        return self
+
+    def next(self):
+        """Iterator method."""
+        if self.prevId >= self.lastId:
+            raise StopIteration
+        self.prevId += 1
+        return self.prevId
+
+
+class IdList:
+    """List of ids."""
+
+    def __init__(self,baseId,size,*extras):
+        self.BASE = baseId
+        self.MAX = baseId + size -1
+        self.baseId = baseId
+        self.size = size
+        #--Extra
+        nextId = baseId + size
+        for extra in extras:
+            setattr(self,extra,nextId)
+            nextId += 1
+
+    def __iter__(self):
+        """Return iterator."""
+        return IdListIterator(self)
+
+# ID Constants
+
+#--Generic
+ID_RENAME = 6000
+ID_SET    = 6001
+ID_SELECT = 6002
+ID_BROWSER = 6003
+ID_NOTES  = 6004
+ID_EDIT   = 6005
+ID_BACK   = 6006
+ID_NEXT   = 6007
+
+#--File Menu
+ID_REVERT_BACKUP = 6100
+ID_REVERT_FIRST  = 6101
+ID_BACKUP_NOW    = 6102
+
+#--Label Menus
+ID_LOADERS   = IdList(10000, 90, 'SAVE', 'EDIT', 'ALL', 'NONE')
+ID_REMOVERS  = IdList(10100,90,'EDIT','EDIT_CELLS')
+ID_REPLACERS = IdList(10200,90,'EDIT')
+ID_GROUPS    = IdList(10300,90,'EDIT','NONE')
+ID_RATINGS   = IdList(10400,90,'EDIT','NONE')
+ID_PROFILES  = IdList(10500,90,'EDIT')
+ID_CUSTOMS  = IdList(10600,90, 'RUN') # Polemos
 
 
 class check_version: # Polemos
@@ -207,87 +286,6 @@ def Remove(file): # Polemos
         except: return False
     return True
 
-
-# Polemos: That's a no no (Use only on .py versions):
-'''#  - Make sure that python root directory is in PATH, so can access dll's.
-if sys.prefix not in set(os.environ['PATH'].split(';')):
-    os.environ['PATH'] += ';'+sys.prefix'''
-
-#--Internet Explorer
-try: import wx.lib.iewin  # Polemos: Todo: Need to replace this. => [iewin]
-except: pass
-
-def openmw_enabled():  # Polemos
-    """Check if openmw.dat exists and return True if it does."""
-    return os.path.exists(os.path.join(singletons.MashDir, 'openmw.dat'))
-
-# Gui Ids ---------------------------------------------------------------------
-
-class IdListIterator:
-    """Iterator for IdList object."""
-
-    def __init__(self, idList):
-        """Initialize."""
-        self.idList = idList
-        self.prevId = idList.baseId - 1
-        self.lastId = idList.baseId + idList.size - 1
-
-    def __iter__(self):
-        """Iterator method."""
-        return self
-
-    def next(self):
-        """Iterator method."""
-        if self.prevId >= self.lastId:
-            raise StopIteration
-        self.prevId += 1
-        return self.prevId
-
-#------------------------------------------------------------------------------
-
-class IdList:
-    """List of ids."""
-
-    def __init__(self,baseId,size,*extras):
-        self.BASE = baseId
-        self.MAX = baseId + size -1
-        self.baseId = baseId
-        self.size = size
-        #--Extra
-        nextId = baseId + size
-        for extra in extras:
-            setattr(self,extra,nextId)
-            nextId += 1
-
-    def __iter__(self):
-        """Return iterator."""
-        return IdListIterator(self)
-
-#--Constants-------------------------------------------------------------------
-
-#--Generic
-ID_RENAME = 6000
-ID_SET    = 6001
-ID_SELECT = 6002
-ID_BROWSER = 6003
-ID_NOTES  = 6004
-ID_EDIT   = 6005
-ID_BACK   = 6006
-ID_NEXT   = 6007
-
-#--File Menu
-ID_REVERT_BACKUP = 6100
-ID_REVERT_FIRST  = 6101
-ID_BACKUP_NOW    = 6102
-
-#--Label Menus
-ID_LOADERS   = IdList(10000, 90, 'SAVE', 'EDIT', 'ALL', 'NONE')
-ID_REMOVERS  = IdList(10100,90,'EDIT','EDIT_CELLS')
-ID_REPLACERS = IdList(10200,90,'EDIT')
-ID_GROUPS    = IdList(10300,90,'EDIT','NONE')
-ID_RATINGS   = IdList(10400,90,'EDIT','NONE')
-ID_PROFILES  = IdList(10500,90,'EDIT')
-ID_CUSTOMS  = IdList(10600,90, 'RUN') # Polemos
 
 # Message Dialogs -------------------------------------------------------------
 
@@ -1344,7 +1342,7 @@ class MasterList(gui.List):
             if not masterInfo.modInfo or not masterInfo.isLoaded: modMap[oldMod] = -1  #--Delete
             else:
                 masterName = masterInfo.name
-                if masterName not in self.newMasters: raise mosh.MoshError, _(u"Missing master: %s" % masterName)
+                if masterName not in self.newMasters: raise mosh.mError, _(u"Missing master: %s" % masterName)
                 newMod = self.newMasters.index(masterName) + 1
                 if newMod != oldMod: modMap[oldMod] = newMod
                 #--Object map?

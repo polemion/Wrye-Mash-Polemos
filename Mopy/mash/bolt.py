@@ -37,7 +37,7 @@
 
 
 import cPickle
-import locale
+from unimash import _  # Polemos
 import os
 import re
 import shutil
@@ -50,103 +50,18 @@ import codecs, stat, scandir, ushlex, thread, xxhash  # Polemos
 from subprocess import PIPE, check_call  # Polemos: KEEP => check_call <= !!
 from sfix import Popen  # Polemos
 import compat
+# Exceptions
+from merrors import mError as BoltError
+# Coding Errors
+from merrors import AbstractError, ArgumentError, StateError, UncodedError, ConfError
 
+
+# Constants
 MashDir = os.path.dirname(sys.argv[0])
-reTrans = re.compile(r'^([ :=\.]*)(.+?)([ :=\.]*$)')  # Localization
 DETACHED_PROCESS = 0x00000008  # Polemos: No console window.
+_gpaths = {}
 
-def compileTranslator(txtPath,pklPath):
-    """Compiles specified txtFile into pklFile."""
-    reSource = re.compile(r'^=== ')
-    reValue = re.compile(r'^>>>>\s*$')
-    reBlank = re.compile(r'^\s*$')
-    reNewLine = re.compile(r'\\n')
-    #--Scan text file
-    translator = {}
-    def addTranslation(key, value):
-        key,value = key[:-1], value[:-1]
-        #print `key`, `value`
-        if key and value:
-            key = reTrans.match(key).group(2)
-            value = reTrans.match(value).group(2)
-            translator[key] = value
-    key, value, mode = '', '', 0
-    textFile = file(txtPath)
-    for line in textFile:
-        #--Blank line. Terminates key, value pair
-        if reBlank.match(line):
-            addTranslation(key, value)
-            key, value, mode = '', '', 0
-        #--Begin key input?
-        elif reSource.match(line):
-            addTranslation(key, value)
-            key, value, mode = '', '', 1
-        #--Begin value input?
-        elif reValue.match(line): mode = 2
-        elif mode == 1: key += line
-        elif mode == 2: value += line
-    addTranslation(key, value) #--In case missed last pair
-    textFile.close()
-    #--Write translator to pickle
-    filePath = pklPath
-    tempPath = filePath+'.tmp'
-    cPickle.dump(translator, open(tempPath, 'w'))
-    if os.path.exists(filePath): os.remove(filePath)
-    os.rename(tempPath, filePath)
-
-#--Do translator test and set
-currentLocale = locale.getlocale()
-if locale.getlocale() == (None, None): locale.setlocale(locale.LC_ALL, '')
-language = locale.getlocale()[0].split('_', 1)[0]
-if language.lower() == 'german': language = 'de' #--Hack for German speakers who aren't 'DE'.
-languagePkl, languageTxt = (os.path.join('data', language+ext) for ext in ('.pkl', '.txt'))
-#--Recompile pkl file?
-if os.path.exists(languageTxt) and (not os.path.exists(languagePkl) or (os.path.getmtime(languageTxt) > os.path.getmtime(languagePkl))):
-    compileTranslator(languageTxt, languagePkl)
-#--Use dictionary from pickle as translator
-if os.path.exists(languagePkl):
-    with open(languagePkl) as pklFile:
-        reEscQuote = re.compile(r"\\'")
-        _translator = cPickle.load(pklFile)
-    def _(text, encode=True):
-        if encode: text = reEscQuote.sub("'", text.encode('string_escape'))
-        head, core, tail = reTrans.match(text).groups()
-        if core and core in _translator: text = head+_translator[core]+tail
-        if encode: text = text.decode('string_escape')
-        return text
-else:
-    def _(text, encode=True): return text
-
-# Errors --------------------------------------------------------------------- #
-
-
-class BoltError(Exception):
-    """Generic error with a string message."""
-    def __init__(self,message): self.message = message
-    def __str__(self): return self.message
-
-
-class AbstractError(BoltError):
-    """Coding Error: Abstract code section called."""
-    def __init__(self, message=_(u'Abstract section called.')): BoltError.__init__(self, message)
-
-
-class ArgumentError(BoltError):
-    """Coding Error: Argument out of allowed range of values."""
-    def __init__(self, message=_(u'Argument is out of allowed ranged of values.')): BoltError.__init__(self, message)
-
-
-class StateError(BoltError):
-    """Error: Object is corrupted."""
-    def __init__(self, message=_(u'Object is in a bad state.')): BoltError.__init__(self, message)
-
-
-class UncodedError(BoltError):
-    """Coding Error: Call to section of code that hasn't been written."""
-    def __init__(self, message=_(u'Section is not coded yet.')): BoltError.__init__(self, message)
-
-# LowStrings ------------------------------------------------------------------ #
-
+# LowStrings
 
 class LString(object):
     """Strings that compare as lower case strings."""
@@ -189,7 +104,6 @@ class LString(object):
 
 # Paths ----------------------------------------------------------------------- #
 
-_gpaths = {}
 def GPath(name):
     """Returns common path object for specified name/path."""
     if name is None: return None
@@ -202,7 +116,8 @@ def GPath(name):
 
 
 class Path(object): # Polemos: Unicode fixes.
-    """A file path. May be just a directory, filename or full path. Paths are immutable objects that represent file directory paths."""
+    """A file path. May be just a directory, filename or full path.
+    Paths are immutable objects that represent file directory paths."""
     #--Class Vars/Methods
     norm_path = {} #--Dictionary of paths
     mtimeResets = [] #--Used by getmtime
@@ -420,7 +335,7 @@ class Path(object): # Polemos: Unicode fixes.
                 for x,y,z in scandir.walk(topdown,onerror))  # Polemos: replaced os.walk which is slow in Python 2.7 and below.
         else:
             return ((GPath(x),[GPath(u) for u in y],[GPath(u) for u in z])
-                for x,y,z in scandir.walk(topdown,onerror))  # See above man.
+                for x,y,z in scandir.walk(topdown,onerror))  # See above.
 
     #--File system info
     #--THESE REALLY OUGHT TO BE PROPERTIES.
@@ -514,7 +429,7 @@ class Path(object): # Polemos: Unicode fixes.
             self.temp.open('w').close()
             self.untemp()
 
-    def untemp(self,doBackup=False): # Polemos fix
+    def untemp(self,doBackup=False):  # Polemos fix
         """Replaces file with temp version, optionally making backup of file first."""
         if self.exists():
             if doBackup:
@@ -552,7 +467,7 @@ class Path(object): # Polemos: Unicode fixes.
         os.chmod(path, stat.S_IWRITE)
         func(path)
 
-# Polemos: Special Methods Magic, taken with shame from Wrye Bash 307 Beta2. :(
+# Polemos: Special Methods Magic from Wrye Bash 307 Beta2.
 # --Hash/Compare, based on the _cs attribute so case insensitive. NB: Paths
     # directly compare to basestring and Path and will blow for anything else
     def __hash__(self): return hash(self._cs)
@@ -587,7 +502,7 @@ class Path(object): # Polemos: Unicode fixes.
 reUnixNewLine = re.compile(r'(?<!\r)\n')
 
 # Util Classes ----------------------------------------------------------------
-#------------------------------------------------------------------------------
+
 class CsvReader:
     """For reading csv files. Handles both command tab separated (excel) formats."""
     def __init__(self,path):
@@ -608,6 +523,7 @@ class CsvReader:
         self.ins.close()
 
 #------------------------------------------------------------------------------
+
 class Flags(object):
     """Represents a flag field."""
     __slots__ = ['_names','_field']
@@ -1124,7 +1040,7 @@ class CleanJunkTemp:  # Polemos
     """Simple junk files cleaning."""
     junklist = ('thumbs.db', 'desktop.ini')
     try: tempdir = os.path.join(MashDir, u'Temp')
-    except: tempdir = os.path.join(MashDird, 'Temp')
+    except: tempdir = os.path.join(MashDir, 'Temp')
     junk_files = []
 
     def __init__(self):
@@ -1404,6 +1320,7 @@ class PickleDict:
         return True
 
 #------------------------------------------------------------------------------
+
 class Settings(DataDict):
     """Settings/configuration dictionary with persistent storage. 
     
@@ -1783,7 +1700,7 @@ def delist(header,items,on=False):
         for indexItem in enumerate(items): print '>%2d: %s' % indexItem
 
 
-def dictFromLines(lines,sep=None): # Polemos: Is this used anywhere...?
+def dictFromLines(lines,sep=None):  # Polemos: Is this used anywhere...?
     """Generate a dictionary from a string with lines, stripping comments and skipping empty strings."""
     reComment = re.compile('#.*')
     temp = [reComment.sub('',x).strip() for x in lines.split('\n')]

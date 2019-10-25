@@ -44,7 +44,7 @@ from .. import singletons
 from .. import conf
 from .. import mosh
 from ..balt import Links, leftSash, hSizer, vSizer
-from ..mosh import _
+from ..unimash import _
 from .. import gui
 from . import dialog
 from subprocess import PIPE

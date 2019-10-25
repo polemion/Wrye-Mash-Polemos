@@ -42,7 +42,7 @@ The startup code redirects stdin/stderr to a file, so this class allows provides
 """
 
 import sys, wx, os, codecs
-from mosh import _
+from unimash import _  # Polemos
 import conf, singletons
 import gui.dialog as gui
 

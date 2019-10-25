@@ -41,12 +41,10 @@
 import codecs
 import os
 from copy import copy
-
 import wx
-
-from mash import singletons
-from mash.mosh import _
-from mash.plugins import tes3cmd
+from ... import singletons
+from ...unimash import _
+from ...plugins import tes3cmd
 from . import tes3cmdgui
 
 

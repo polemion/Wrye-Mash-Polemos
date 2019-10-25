@@ -38,19 +38,15 @@
 # ========================================================================================
 
 # Modified by D.C.-G. < 16:35 2010-06-11 > for UtilsPanel extension.
-# Modified by Polemos in 2,000,000 places, 2018~.
+# Modified by Polemos :) in 2,000,000 places, 2018~.
 
 
-import locale  # Localization
-try:  # Polemos: Possible fix for "locale.Error: unsupported locale setting"
-    locale.setlocale(locale.LC_ALL,'')  # Todo: Pos for Phoenix
-except: locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')  # Statistics...
-
+import locale
 import time
 from subprocess import PIPE, check_call  # Polemos
 from sfix import Popen  # Polemos
 import codecs, ushlex, scandir  # Polemos
-from unimash import uniChk as uniChk, encChk as encChk  # Polemos
+from unimash import uniChk, encChk, _  # Polemos
 import array
 import cPickle
 import cStringIO
@@ -67,40 +63,27 @@ import bolt
 from bolt import LString, GPath, DataDict, SubProgress
 import compat
 import mush
+# Exceptions
+from merrors import mError as MoshError
+# Coding Errors
+from merrors import AbstractError, ArgumentError, StateError, UncodedError, ConfError
+# TES3 File Errors
+from merrors import Tes3Error
+from merrors import Tes3ReadError, Tes3RefError, Tes3SizeError, Tes3UnknownSubRecord
+# Usage Errors
+from merrors import MaxLoadedError, SortKeyError
 
+
+# Singletons, Constants
 MashDir = os.path.dirname(sys.argv[0])  # Polemos
 DETACHED_PROCESS = 0x00000008  # Polemos
-
-def formatInteger(value):
-    """Convert integer to string formatted to locale."""
-    return locale.format('%d',int(value),1)
-
-def formatDate(value):   # Polemos
-    """Convert time to string formatted to locale's default date/time."""
-    form = '%x, %H:%M:%S'
-    try: return time.strftime(form, time.localtime(value))
-    except:  # Needed when installers are outside Unix Epoch
-        return time.strftime(form, time.localtime(0))
-
-def megethos(num):  # Polemos
-        """Convert byte sizes to KBs, MBs or GBs."""
-        digits = len(str(num))
-        if digits <= 3: return '%dB' % (num)
-        elif 4 <= digits <= 6: return '%dKB' % (num / 1024)
-        elif 7 <= digits <= 9: return '%dMB' % (num / 1024 ** 2)
-        elif digits >= 10: return '%dGB' % (num / 1024 ** 3)
-
-# Singletons, Constants -------------------------------------------------------
-
 #--File Singletons
 mwIniFile = None    #--MWIniFile singleton
 modInfos  = None    #--ModInfos singleton
 saveInfos = None    #--SaveInfos singleton
-
 #--Settings
 dirs = {}
 settings = None
-
 #--Default settings
 settingDefaults = {
     'mosh.modInfos.resetMTimes': 0,
@@ -110,162 +93,28 @@ settingDefaults = {
     'mosh.fileInfo.snapshotDir': r'Mash\Snapshots',
     }
 
-# Locale: String Translation --------------------------------------------------
 
-def compileTranslator(txtPath,pklPath):
-    """Compiles specified txtFile into pklFile."""
-    reSource = re.compile(r'^=== ')
-    reValue = re.compile(r'^>>>>\s*$')
-    reBlank = re.compile(r'^\s*$')
-    reNewLine = re.compile(r'\\n')
-    #--Scan text file
-    translator = {}
-    def addTranslation(key,value):
-        key   = reNewLine.sub('\n',key[:-1])
-        value = reNewLine.sub('\n',value[:-1])
-        if key and value: translator[key] = value
-    key,value,mode = '','',0
-    textFile = file(txtPath)
-    for line in textFile:
-        #--Blank line. Terminates key, value pair
-        if reBlank.match(line):
-            addTranslation(key,value)
-            key,value,mode = '','',0
-        #--Begin key input?
-        elif reSource.match(line):
-            addTranslation(key,value)
-            key,value,mode = '','',1
-        #--Begin value input?
-        elif reValue.match(line): mode = 2
-        elif mode == 1: key += line
-        elif mode == 2: value += line
-    addTranslation(key,value) #--In case missed last pair
-    textFile.close()
-    #--Write translator to pickle
-    filePath = pklPath
-    tempPath = filePath+'.tmp'
-    cPickle.dump(translator,open(tempPath,'w'))
-    if os.path.exists(filePath): os.remove(filePath)
-    os.rename(tempPath,filePath)
-    
-#--Do translator test and set
-language = locale.getlocale()[0].split('_',1)[0]
-languagePkl, languageTxt = (os.path.join('locale',language+ext) for ext in ('.pkl','.txt'))
-#--Recompile pkl file?
-if os.path.exists(languageTxt) and (not os.path.exists(languagePkl) or (
-    os.path.getmtime(languageTxt) > os.path.getmtime(languagePkl))): compileTranslator(languageTxt,languagePkl)
-#--Use dictionary from pickle as translator
-if os.path.exists(languagePkl):
-    with open(languagePkl) as pklFile:
-        _translator = cPickle.load(pklFile)
-    def _(text): return _translator.get(text,text)
-else:
-    def _(text): return text
+def formatInteger(value):
+    """Convert integer to string formatted to locale."""
+    return locale.format('%d', int(value), 1)
 
 
-# Exceptions ------------------------------------------------------------------
-
-class MoshError(Exception):
-    """Generic Error"""
-
-    def __init__(self,message):
-        self.message = message
-
-    def __str__(self):
-        return self.message
+def formatDate(value):   # Polemos
+    """Convert time to string formatted to locale's default date/time."""
+    form = '%x, %H:%M:%S'
+    try: return time.strftime(form, time.localtime(value))
+    except:  # Needed when installers are outside Unix Epoch
+        return time.strftime(form, time.localtime(0))
 
 
-# Coding Errors ---------------------------------------------------------------
+def megethos(num):  # Polemos
+        """Convert byte sizes to KBs, MBs or GBs."""
+        digits = len(str(num))
+        if digits <= 3: return '%dB' % (num)
+        elif 4 <= digits <= 6: return '%dKB' % (num / 1024)
+        elif 7 <= digits <= 9: return '%dMB' % (num / 1024 ** 2)
+        elif digits >= 10: return '%dGB' % (num / 1024 ** 3)
 
-class AbstractError(MoshError): 
-    """Coding Error: Abstract code section called."""
-
-    def __init__(self,message=_(u'Abstract section called.')):
-        MoshError.__init__(self,message)
-
-class ArgumentError(MoshError):
-    """Coding Error: Argument out of allowed range of values."""
-    pass
-
-class StateError(MoshError):
-    """Error: Object is corrupted."""
-    pass
-
-class UncodedError(MoshError): 
-    """Coding Error: Call to section of code that hasn't been written."""
-
-    def __init__(self,message=_(u'Section is not coded yet.')):
-        MoshError.__init__(self,message)
-
-class ConfError(MoshError):  # Polemos
-    """Config file errors. Same as abstract."""
-
-    def __init__(self, message):
-        MoshError.__init__(self, message)
-
-# TES3 File Errors ------------------------------------------------------------
-
-class Tes3Error(MoshError):
-    """TES3 Error: File is corrupted."""
-    def __init__(self,inName,message):
-        MoshError.__init__(self,message)
-        self.inName = inName
-
-    def __str__(self):
-        if self.inName: return self.inName+': '+self.message
-        else: return _(u'Unknown File: ')+self.message
-
-class Tes3ReadError(Tes3Error):
-    """TES3 Error: Attempt to read outside of buffer."""
-    def __init__(self,inName,recType,tryPos,maxPos):
-        self.recType = recType
-        self.tryPos = tryPos
-        self.maxPos = maxPos
-        if tryPos < 0: message = (_(u'%s: Attempted to read before (%d) beginning of file/buffer.') % (recType,tryPos))
-        else: message = (_(u'%s: Attempted to read past (%d) end (%d) of file/buffer.') % (recType,tryPos,maxPos))
-        Tes3Error.__init__(self,inName,message)
-
-class Tes3RefError(Tes3Error):
-    """TES3 Error: Reference is corrupted."""
-    def __init__(self,inName,cellId,objId,iObj,iMod,masterName=''):
-        self.cellId = cellId
-        self.iMod = iMod
-        self.iObj = iObj
-        self.objId = objId
-        self.masterName = masterName
-        message = (_(u'%s: Bad Ref: %s: objId: %s iObj: %d') % (inName,cellId,objId,iObj))
-        if iMod: message += u' iMod: %d [%s]' % (iMod,masterName)
-        Tes3Error.__init__(self,inName,message)
-
-class Tes3SizeError(Tes3Error):
-    """TES3 Error: Record/subrecord has wrong size."""
-    def __init__(self,inName,recName,readSize,maxSize,exactSize=True):
-        self.recName = recName
-        self.readSize = readSize
-        self.maxSize = maxSize
-        self.exactSize = exactSize
-        if exactSize: messageForm = _(u'%s: Expected size == %d, but got: %d ')
-        else: messageForm = _(u'%s: Expected size <= %d, but got: %d ')
-        Tes3Error.__init__(self,inName,messageForm % (recName,readSize,maxSize))
-
-
-class Tes3UnknownSubRecord(Tes3Error):
-    """TES3 Error: Unknown subrecord."""
-    def __init__(self,inName,subName,recName):
-        Tes3Error.__init__(self,inName,_(u'Extraneous subrecord (%s) in %s record.')
-            % (subName,recName))
-
-# Usage Errors ----------------------------------------------------------------
-
-class MaxLoadedError(MoshError):
-    """Usage Error: Attempt to add a mod to load list when load list is full."""
-    def __init__(self,message=_(u'Load list is full.')):
-        MoshError.__init__(self,message)
-
-class SortKeyError(MoshError):
-    """Unknown Error: Unrecognized sort key."""
-    def __init__(self,message=_(u'Unrecognized sort key.')):
-        MoshError.__init__(self,message)
 
 # Data Dictionaries -----------------------------------------------------------
 
@@ -6553,7 +6402,7 @@ class WorldRefs:
         #--Map'em
         for mmName in masterInfo.masterNames:
             if mmName not in self.masterNames: 
-                raise MoshError(_(u"Misordered esm: %s should load before %s") % (mmName, masterInfo.name))
+                raise mError(_(u"Misordered esm: %s should load before %s") % (mmName, masterInfo.name))
             masterMap.append(self.masterNames.index(mmName)+1)
         #--Done
         return masterMap       
@@ -7263,10 +7112,10 @@ class CharSetImporter:
                 elif maStats:
                     v00,v30 = [int(stat) for stat in maStats.groups()]
                     curStats.append((v00,v30))
-                else: raise MoshError(_(u'Bad line in CharSet class file.')+line.strip()+' >> '+stripped)
+                else: raise mError(_(u'Bad line in CharSet class file.') + line.strip() + ' >> ' + stripped)
         #--Post Parse
         for className,stats in self.classStats.items():
-            if len(stats) != 35: raise MoshError(_(u'Bad number of stats for class ')+className)
+            if len(stats) != 35: raise mError(_(u'Bad number of stats for class ') + className)
             stats = self.classStats[className] = dict(zip(statNames,stats))
             #--Health
             str00,str30 = stats['Strength']
@@ -7494,7 +7343,7 @@ class ScheduleGenerator:
                             chunk = chunk.strip()
                             maSleep = reSleep.match(chunk)
                             if not maSleep or maSleep.group(1) == '=':
-                                raise MoshError(_(u'Bad sleep condition state for %s in %s: %s') % (section,town,line))
+                                raise mError(_(u'Bad sleep condition state for %s in %s: %s') % (section, town, line))
                             condition,state = maSleep.group(2), sleepStates[maSleep.group(1)]
                             condition = reIsMember.sub(r'getPCRank \1 >= 0',condition)
                             cellStates += ((condition,state),)
@@ -7514,7 +7363,7 @@ class ScheduleGenerator:
                         rem = reDef.sub(replDef,rem)
                         #--Cell
                         maCell = reCell.match(rem)
-                        if not maCell: raise MoshError(_(u'Pos cell not defined for %s %s %d') % (town,npc,cycle))
+                        if not maCell: raise mError(_(u'Pos cell not defined for %s %s %d') % (town, npc, cycle))
                         cell = maCell.group(1)
                         rem = rem[len(cell):].strip()
                         #--Pos

@@ -24,7 +24,7 @@
 # ===========================================================================================
 
 import wx, os
-from ...mosh import _
+from ...unimash import _
 from ... import conf
 
 

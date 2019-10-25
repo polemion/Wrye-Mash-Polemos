@@ -38,22 +38,20 @@
 # ========================================================================================
 
 
-import cPickle  #  Polemos: Used to be pickle, changed obviously.
+import cPickle  # Polemos: Used to be pickle, changed obviously.
 import wx
 from wx.lib.mixins.listctrl import ListCtrlAutoWidthMixin
 from .. import singletons
-from .. import exception
+from ..merrors import InterfaceError
 from .. import balt
 from .. import mosh
-from ..mosh import _
+from ..unimash import _   # Polemos
 from .. import conf  # Polemos
 import interface  # Polemos
 
 
+# Constants
 wxListAligns = [wx.LIST_FORMAT_LEFT, wx.LIST_FORMAT_RIGHT, wx.LIST_FORMAT_CENTRE]
-
-
-class InterfaceError(exception.MashError): pass
 
 
 class ListDragDropMixin:

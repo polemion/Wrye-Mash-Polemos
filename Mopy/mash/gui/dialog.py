@@ -41,7 +41,7 @@
 import wx, os, codecs
 from .. import conf
 from .. import singletons
-from ..mosh import _
+from ..unimash import _  # Polemos
 from .. import mosh
 import wx.lib.dialogs as wx_dialogs_po  # Polemos
 import wx.html  # Polemos
@@ -231,7 +231,7 @@ class ConflictDialog(wx.Dialog):  # Polemos
         self.SetData('replace')
 
 
-def TextEntry(parent,message,default=''):
+def TextEntry(parent, message, default=''):
     """Shows a text entry dialog and returns result or None if canceled."""
     dialog = wx.TextEntryDialog(parent,message,default)
     if dialog.ShowModal() != wx.ID_OK:
@@ -310,7 +310,7 @@ def ContinueQuery(parent, tmessage, message, continueKey, title=_(u'Warning'), n
     return result
 
 
-def LogMessage(parent,message, logText,title=u'', style=0, asDialog=True):
+def LogMessage(parent, message, logText,title=u'', style=0, asDialog=True):
     """Query Dialog."""
     pos = conf.settings.get('mash.message.log.pos',dPos)
     size = conf.settings.get('mash.message.log.size',(400,400))
@@ -502,12 +502,12 @@ class RenameDialog(wx.Dialog):  # Polemos
         self.Destroy()
 
 
-def InfoMessage(parent,message,title=_(u'Information'),style=(wx.OK|wx.ICON_INFORMATION|wx.STAY_ON_TOP)):
+def InfoMessage(parent, message, title=_(u'Information'), style=(wx.OK|wx.ICON_INFORMATION|wx.STAY_ON_TOP)):
     """Shows a modal information message."""
     return Message(parent,message,title,style)
 
 
-def ManualDetectDialog(parent,message,title=u'',style=wx.YES_NO|wx.ICON_EXCLAMATION|wx.STAY_ON_TOP|wx.CANCEL):  # Polemos
+def ManualDetectDialog(parent, message, title=u'', style=wx.YES_NO|wx.ICON_EXCLAMATION|wx.STAY_ON_TOP|wx.CANCEL):  # Polemos
     """Manually or autodetect dialog."""
     dialog = wx.MessageDialog(parent,message,title,style)
     dialog.SetYesNoLabels(_(u'Try to autodetect'), _(u'Manual search'))
@@ -516,27 +516,27 @@ def ManualDetectDialog(parent,message,title=u'',style=wx.YES_NO|wx.ICON_EXCLAMAT
     return result
 
 
-def WarningQuery(parent,message,title=u'',style=(wx.YES_NO|wx.ICON_EXCLAMATION|wx.STAY_ON_TOP)):
+def WarningQuery(parent, message, title=u'', style=(wx.YES_NO|wx.ICON_EXCLAMATION|wx.STAY_ON_TOP)):
     """Shows a modal warning message."""
     return Message(parent,message,title,style)
 
 
-def WarningMessage(parent,message,title=_(u'Warning'),style=(wx.OK|wx.ICON_EXCLAMATION|wx.STAY_ON_TOP)):
+def WarningMessage(parent, message, title=_(u'Warning'), style=(wx.OK|wx.ICON_EXCLAMATION|wx.STAY_ON_TOP)):
     """Shows a modal warning message."""
     return Message(parent,message,title,style)
 
 
-def ErrorQuery(parent,message,title=u'',style=(wx.YES_NO|wx.ICON_HAND|wx.STAY_ON_TOP)):  # Polemos
+def ErrorQuery(parent, message, title=u'', style=(wx.YES_NO|wx.ICON_HAND|wx.STAY_ON_TOP)):  # Polemos
     """Shows a modal warning/error message."""
     return Message(parent,message,title,style)
 
 
-def ErrorMessage(parent,message,title=_(u'Error'),style=(wx.OK|wx.ICON_HAND|wx.STAY_ON_TOP)):
+def ErrorMessage(parent, message, title=_(u'Error'), style=(wx.OK|wx.ICON_HAND|wx.STAY_ON_TOP)):
     """Shows a modal error message."""
     return Message(parent,message,title,style)
 
 
-def Message(parent,message,title=u'',style=wx.OK|wx.STAY_ON_TOP):
+def Message(parent, message, title=u'', style=wx.OK|wx.STAY_ON_TOP):
     """Shows a modal MessageDialog. Use ErrorMessage, WarningMessage or InfoMessage."""
     dialog = wx.MessageDialog(parent,message,title,style)
     result = dialog.ShowModal()

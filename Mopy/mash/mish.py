@@ -45,7 +45,7 @@ import string
 import sys
 import types
 import mosh
-from mosh import _
+from unimash import _  # Polemos
 import mush
 
 

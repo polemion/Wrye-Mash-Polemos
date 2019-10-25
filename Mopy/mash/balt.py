@@ -36,15 +36,12 @@
 #
 # =============================================================================
 
-# Imports ---------------------------------------------------------------------
-#--Localization
-#..Handled by bolt, so import that.
+# Imports
 import bolt
-from bolt import _, GPath
-from bolt import AbstractError, ArgumentError, StateError, UncodedError
+from bolt import GPath
+from unimash import _  # Polemos
+from merrors import AbstractError, ArgumentError, StateError, UncodedError
 import conf  # Polemos
-
-#--Python
 import cStringIO
 import string
 import sys
@@ -53,7 +50,24 @@ import time
 import wx
 from wx.lib.mixins.listctrl import ListCtrlAutoWidthMixin
 
+
+# Constants
+defId = -1
+defVal = wx.DefaultValidator
+defPos = wx.DefaultPosition
+defSize = wx.DefaultSize
+wxListAligns = {
+    'LEFT':   wx.LIST_FORMAT_LEFT,
+    'RIGHT':  wx.LIST_FORMAT_RIGHT,
+    'CENTER': wx.LIST_FORMAT_CENTRE,
+    }
+# Settings
+_settings = {} #--Using applications should override this.
+sizes = {} #--Using applications should override this.
+
+
 # Basics ---------------------------------------------------------------------
+
 class IdList:
     """Provides sequences of semi-unique ids. Useful for choice menus. 
 
@@ -80,23 +94,9 @@ class IdList:
         for id in xrange(self.BASE,self.MAX+1):
             yield id
 
-# Constants -------------------------------------------------------------------
-defId = -1
-defVal = wx.DefaultValidator
-defPos = wx.DefaultPosition
-defSize = wx.DefaultSize
-
-wxListAligns = {
-    'LEFT':   wx.LIST_FORMAT_LEFT, 
-    'RIGHT':  wx.LIST_FORMAT_RIGHT, 
-    'CENTER': wx.LIST_FORMAT_CENTRE,
-    }
-
-# Settings --------------------------------------------------------------------
-_settings = {} #--Using applications should override this.
-sizes = {} #--Using applications should override this.
 
 # Colors ----------------------------------------------------------------------
+
 class Colors:
     """Colour collection and wrapper for wx.ColourDatabase.
     Provides dictionary syntax access (colors[key]) and predefined colours."""
@@ -124,14 +124,15 @@ class Colors:
                 else: self.data[key] = wx.Colour(*value)
         if key in self.data: return self.data[key]
         else: return self.database.Find(key)
-    
+
+
 #--Singleton
 colors = Colors()
 
 # Images ----------------------------------------------------------------------
-images = {} #--Singleton for collection of images.
+images = {}  #--Singleton for collection of images.
 
-#------------------------------------------------------------------------------
+
 class Image: 
     """Wrapper for images, allowing access in various formats/classes.
 
@@ -155,7 +156,7 @@ class Image:
             self.icon.CopyFromBitmap(self.GetBitmap())
         return self.icon
 
-#------------------------------------------------------------------------------
+
 class ImageBundle: 
     """Wrapper for bundle of images.
 
@@ -174,7 +175,7 @@ class ImageBundle:
                 self.iconBundle.AddIcon(image.GetIcon())
         return self.iconBundle
 
-#------------------------------------------------------------------------------
+
 class ImageList:
     """Wrapper for wx.ImageList.
 
@@ -203,6 +204,7 @@ class ImageList:
         return self.indices[key]
 
 # Functions -------------------------------------------------------------------
+
 def fill(text,width=60):
     """Wraps paragraph to width characters."""
     pars = [textwrap.fill(text,width) for text in text.split('\n')]
@@ -235,6 +237,7 @@ def setCheckListItems(gList,names,values):  # Polemos - Installers: break if not
         for index in xrange(gList.GetCount(),len(names),-1): gList.Delete(index-1)
 
 # Elements --------------------------------------------------------------------
+
 def bell(arg=None):
     """"Rings the system bell and returns the input argument (useful for return bell(value))."""
     wx.Bell()
@@ -290,6 +293,7 @@ def spinCtrl(parent,value='',pos=defPos,size=defSize,style=wx.SP_ARROW_KEYS,
     return gSpinCtrl
 
 # Sub-Windows -----------------------------------------------------------------
+
 def leftSash(parent,defaultSize=(100,100),onSashDrag=None):
     """Creates a left sash window."""
     sash = wx.SashLayoutWindow(parent,style=wx.SW_3D)
@@ -315,6 +319,7 @@ def topSash(parent,defaultSize=(100,100),onSashDrag=None):
     return sash
 
 # Sizers ----------------------------------------------------------------------
+
 spacer = ((0,0),1) #--Used to space elements apart.
 
 def aSizer(sizer,*elements):
@@ -344,8 +349,8 @@ def vsbSizer(boxArgs,*elements):
     return aSizer(wx.StaticBoxSizer(wx.StaticBox(*boxArgs),wx.VERTICAL),*elements)
 
 # Modal Dialogs ---------------------------------------------------------------
-#------------------------------------------------------------------------------
-def askDirectory(parent,message=_('Choose a directory.'),defaultPath=''):
+
+def askDirectory(parent, message=_(u'Choose a directory.'), defaultPath=''):
     """Shows a modal directory dialog and return the resulting path, or None if canceled."""
     dialog = wx.DirDialog(parent,message,GPath(defaultPath).s,style=wx.DD_NEW_DIR_BUTTON)
     if dialog.ShowModal() != wx.ID_OK:
@@ -357,7 +362,8 @@ def askDirectory(parent,message=_('Choose a directory.'),defaultPath=''):
         return path
 
 #------------------------------------------------------------------------------
-def askContinue(parent,message,continueKey,title=_('Warning')):
+
+def askContinue(parent, message, continueKey, title=_(u'Warning')):
     """Shows a modal continue query if value of continueKey is false. Returns True to continue.
     Also provides checkbox "Don't show this in future." to set continueKey to true."""
     #--ContinueKey set?
@@ -366,7 +372,7 @@ def askContinue(parent,message,continueKey,title=_('Warning')):
     dialog = wx.Dialog(parent,defId,title,size=(350,200),style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER)
     icon = wx.StaticBitmap(dialog,defId,
         wx.ArtProvider_GetBitmap(wx.ART_WARNING,wx.ART_MESSAGE_BOX, (32,32)))
-    gCheckBox = checkBox(dialog,_("Don't show this in the future."))
+    gCheckBox = checkBox(dialog,_(u"Don't show this in the future."))
     #--Layout
     sizer = vSizer(
         (hSizer(
@@ -388,6 +394,7 @@ def askContinue(parent,message,continueKey,title=_('Warning')):
     return result in (wx.ID_OK,wx.ID_YES)
 
 #------------------------------------------------------------------------------
+
 def askOpen(parent,title='',defaultDir='',defaultFile='',wildcard='',style=wx.FD_OPEN):
     """Show as file dialog and return selected path(s)."""
     defaultDir,defaultFile = [GPath(x).s for x in (defaultDir,defaultFile)]
@@ -410,6 +417,7 @@ def askSave(parent,title='',defaultDir='',defaultFile='',wildcard='',style=wx.FD
     return askOpen(parent,title,defaultDir,defaultFile,wildcard,wx.FD_SAVE|style )
 
 #------------------------------------------------------------------------------
+
 def askText(parent,message,title='',default=''):
     """Shows a text entry dialog and returns result or None if canceled."""
     dialog = wx.TextEntryDialog(parent,message,title,default)
@@ -422,6 +430,7 @@ def askText(parent,message,title='',default=''):
         return value
 
 # Message Dialogs -------------------------------------------------------------
+
 def askStyled(parent,message,title,style):
     """Shows a modal MessageDialog. 
     Use ErrorMessage, WarningMessage or InfoMessage."""
@@ -439,7 +448,7 @@ def askYes(parent,message,title='',default=True):
     style = wx.YES_NO|wx.ICON_EXCLAMATION|((wx.NO_DEFAULT,wx.YES_DEFAULT)[default])
     return askStyled(parent,message,title,style)
     
-def askWarning(parent,message,title=_('Warning')):
+def askWarning(parent,message,title=_(u'Warning')):
     """Shows a modal warning message."""
     return askStyled(parent,message,title,wx.OK|wx.CANCEL|wx.ICON_EXCLAMATION)
     
@@ -447,7 +456,7 @@ def showOk(parent,message,title=''):
     """Shows a modal error message."""
     return askStyled(parent,message,title,wx.OK)
 
-def showError(parent,message,title=_('Error')):
+def showError(parent,message,title=_(u'Error')):
     """Shows a modal error message."""
     return askStyled(parent,message,title,wx.OK|wx.ICON_HAND)
 
@@ -466,10 +475,11 @@ def showList(parent,header,items,maxItems=0,title=''):
     message = string.Template(header).substitute(count=numItems)
     message += '\n* '+'\n* '.join(items[:min(numItems,maxItems)])
     if numItems > maxItems:
-        message += _('\n(And %d others.)') % (numItems - maxItems,)
+        message += _(u'\n(And %d others.)') % (numItems - maxItems,)
     return askStyled(parent,message,title,wx.OK)
 
 #------------------------------------------------------------------------------
+
 def showLogClose(evt=None):
     """Handle log message closing."""
     window = evt.GetEventObject()
@@ -521,6 +531,7 @@ def showLog(parent,logText,title='',style=0,asDialog=True,fixedFont=False,icons=
         window.Show()
 
 #------------------------------------------------------------------------------
+
 def showWryeLog(parent,logText,title='',style=0,asDialog=True,icons=None):
     """Convert logText from wtxt to html and display. Optionally, logText can be path to an html file."""
     import wx.lib.iewin
@@ -570,13 +581,13 @@ def showWryeLog(parent,logText,title='',style=0,asDialog=True,icons=None):
         _settings['balt.WryeLog.pos'] = window.GetPositionTuple()
         _settings['balt.WryeLog.size'] = window.GetSizeTuple()
         window.Destroy()
-    else:
-        window.Show()
+    else: window.Show()
 
 # Other Windows ---------------------------------------------------------------
-#------------------------------------------------------------------------------
+
 class ListEditorData:
     """Data capsule for ListEditor. [Abstract]"""
+
     def __init__(self,parent):
         """Initialize."""
         self.parent = parent #--Parent window.
@@ -658,7 +669,9 @@ class ListEditorData:
 #------------------------------------------------------------------------------
 class ListEditor(wx.Dialog):
     """Dialog for editing lists."""
+
     def __init__(self,parent,id,title,data,type='list'):
+        """Init."""
         #--Data
         self.data = data #--Should be subclass of ListEditorData
         self.items = data.getItemList()
@@ -691,13 +704,13 @@ class ListEditor(wx.Dialog):
             self.gInfoBox = None
         #--Buttons
         buttonSet = (
-            (data.showAction, _('Action'), self.DoAction),
-            (data.showAdd,    _('Add'),    self.DoAdd),
-            (data.showEdit,   _('Edit'),   self.DoEdit),
-            (data.showRename, _('Rename'), self.DoRename),
-            (data.showRemove, _('Remove'), self.DoRemove),
-            (data.showSave,   _('Save'),   self.DoSave),
-            (data.showCancel, _('Cancel'), self.DoCancel),
+            (data.showAction, _(u'Action'), self.DoAction),
+            (data.showAdd,    _(u'Add'),    self.DoAdd),
+            (data.showEdit,   _(u'Edit'),   self.DoEdit),
+            (data.showRename, _(u'Rename'), self.DoRename),
+            (data.showRemove, _(u'Remove'), self.DoRemove),
+            (data.showSave,   _(u'Save'),   self.DoSave),
+            (data.showCancel, _(u'Cancel'), self.DoCancel),
             )
         if sum(bool(x[0]) for x in buttonSet):
             buttons = vSizer()
@@ -734,9 +747,7 @@ class ListEditor(wx.Dialog):
         item = self.items[index]
         if self.list.IsChecked(index):
             self.data.check(item)
-        else:
-            self.data.uncheck(item)
-        #self.list.SetSelection(index)
+        else: self.data.uncheck(item)
 
     #--List Commands
     def DoAction(self,event):
@@ -767,7 +778,7 @@ class ListEditor(wx.Dialog):
         itemDex = selections[0]
         curName = self.list.GetString(itemDex)
         #--Dialog
-        newName = askText(self,_('Rename to:'),_('Rename'),curName)
+        newName = askText(self,_(u'Rename to:'),_(u'Rename'),curName)
         if not newName or newName == curName:
             return
         elif newName in self.items:
@@ -831,8 +842,10 @@ class ListEditor(wx.Dialog):
         self.Destroy()
 
 #------------------------------------------------------------------------------
+
 class Picture(wx.Window):
     """Picture panel."""
+
     def __init__(self, parent,width,height,scaling=1,style=0):
         """Initialize."""
         wx.Window.__init__(self, parent, defId,size=(width,height),style=style)
@@ -862,7 +875,6 @@ class Picture(wx.Window):
             factor = min(1.0*picWidth/imgWidth,1.0*picHeight/imgHeight)
             newWidth,newHeight = int(factor*imgWidth),int(factor*imgHeight)
             self.scaled = image.Scale(newWidth,newHeight).ConvertToBitmap()
-            #self.scaled = image.Scale(newWidth,newHeight,wx.IMAGE_QUALITY_HIGH ).ConvertToBitmap()
         
     def OnPaint(self, event=None):
         """Draw bitmap or clear drawing area."""
@@ -876,21 +888,19 @@ class Picture(wx.Window):
             yPos = max(0,(panelHeight - self.scaled.GetHeight())/2)
             dc.Clear()
             dc.DrawBitmap(self.scaled,xPos,yPos,False)
-        else:
-            dc.Clear()
-        #dc.SetPen(wx.Pen("BLACK", 1))
-        #dc.SetBrush(wx.TRANSPARENT_BRUSH)
-        #(width,height) = self.GetSize()
-        #dc.DrawRectangle(0,0,width,height)
+        else: dc.Clear()
 
     def OnSize(self,event):
         self.Refresh()
 
 #------------------------------------------------------------------------------
+
 class Progress(bolt.Progress):
     """Progress as progress dialog."""
+
     def __init__(self,title=_(u'Progress'),message=' '*60,parent=None,
         style=wx.PD_APP_MODAL|wx.PD_ELAPSED_TIME|wx.PD_AUTO_HIDE):
+        """Init."""
         if sys.version[:3] != '2.4': style |= wx.PD_SMOOTH 
         self.dialog = wx.ProgressDialog(title,message,100,parent,style)
         bolt.Progress.__init__(self)
@@ -900,7 +910,7 @@ class Progress(bolt.Progress):
         self.prevState = -1
         self.prevTime = 0
 
-    def doProgress(self,state,message): # Polemos: bug fix.
+    def doProgress(self,state,message):  # Polemos: bug fix.
         if not self.dialog: raise StateError(_(u'Dialog already destroyed.'))
         elif (state == 0 or state == 1 or (message != self.prevMessage) or 
             (state - self.prevState) > 0.05 or (time.time() - self.prevTime) > 0.5):
@@ -919,7 +929,8 @@ class Progress(bolt.Progress):
 #------------------------------------------------------------------------------
 
 class Tank(wx.Panel):  # Polemos: Edits
-    """'Tank' format table. Takes the form of a wxListCtrl in Report mode, with multiple columns and (optionally) column an item menus."""
+    """'Tank' format table. Takes the form of a wxListCtrl in Report mode,
+    with multiple columns and (optionally) column an item menus."""
 
     class ListCtrl(wx.ListCtrl, ListCtrlAutoWidthMixin):
         """List control extended with the wxPython auto-width mixin class."""
@@ -1259,6 +1270,7 @@ class Tank(wx.Panel):  # Polemos: Edits
 
 class Links(list):
     """List of menu or button links."""
+
     class LinksPoint:
         """Point in a link list. For inserting, removing, appending items."""
         def __init__(self,list,index):

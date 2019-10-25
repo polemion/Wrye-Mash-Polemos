@@ -37,15 +37,13 @@
 #
 # ========================================================================================
 
-
 # Polemos: I guess the original was made by Yakoby?
 # Polemos: Refactored, optimised, unicode/cosmetic/regular fixes/changes.
 
-
 import wx
-from mash.mosh import _
+from ...unimash import _
 
-
+# Constants
 dPos = wx.DefaultPosition
 dSize = wx.DefaultSize
 

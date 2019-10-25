@@ -38,7 +38,7 @@
 
 
 import wx
-from mosh import _
+from unimash import _  # Polemos
 
 
 settings = None
