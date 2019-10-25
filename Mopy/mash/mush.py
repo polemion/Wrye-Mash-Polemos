@@ -41,7 +41,7 @@
 # Record Types/Order
 # - Used for record sorting.
 # - Order increment flags:
-#   + increment order by 1 
+#   + increment order by 1
 #   . don't increment order
 
 recordTypes = """

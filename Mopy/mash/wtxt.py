@@ -51,7 +51,7 @@ Headings:
 Notes:
 * These must start at first character of line.
 * The XXX text is compressed to form an anchor. E.g == Foo Bar gets anchored as" FooBar".
-* If the line has trailing ='s, they are discarded. This is useful for making 
+* If the line has trailing ='s, they are discarded. This is useful for making
   text version of level 1 and 2 headings more readable.
 
 Bullet Lists:
@@ -63,7 +63,7 @@ Notes:
 * These must start at first character of line.
 * Recognized bullet characters are: - ! ? . + * o The dot (.) produces an invisible
   bullet, and the * produces a bullet character.
-  
+
 Styles:
   __Text__
   ~~Italic~~
@@ -77,7 +77,7 @@ Links:
  [[file|text]] produces <a href=file>text</a>
 
 Contents
-{{CONTENTS=NN}} Where NN is the desired depth of contents (1 for single level, 
+{{CONTENTS=NN}} Where NN is the desired depth of contents (1 for single level,
 2 for two levels, etc.).
 """
 
@@ -160,7 +160,7 @@ def genHtml(srcFile,outFile=None,cssDir=''):
         address = text = maObject.group(1).strip()
         if '|' in text:
             (address,text) = [chunk.strip() for chunk in text.split('|',1)]
-            if address == '#': address += reWd.sub('',text) 
+            if address == '#': address += reWd.sub('',text)
         if not reFullLink.search(address): address = address+'.html'
         return '<a href="%s">%s</a>' % (address,text)
     #--Tags

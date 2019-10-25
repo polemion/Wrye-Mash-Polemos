@@ -307,14 +307,14 @@ class List(wx.Panel):  # Polemos: Additions.
 
     def GetSortSettings(self,col,reverse):
         """Return parsed col, reverse arguments. Used by SortSettings.
-        col: sort variable. 
+        col: sort variable.
         Defaults to last sort. (self.sort)
         reverse: sort order
         1: Descending order
         0: Ascending order
         -1: Use current reverse settings for sort variable, unless
-            last sort was on same sort variable -- in which case, 
-            reverse the sort order. 
+            last sort was on same sort variable -- in which case,
+            reverse the sort order.
         -2: Use current reverse setting for sort variable.
         """
         #--Sort Column

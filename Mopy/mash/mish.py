@@ -50,10 +50,10 @@ import mush
 
 
 class Callables:
-    """A singleton set of objects (typically functions or class instances) that 
-    can be called as functions from the command line. 
-    
-    Functions are called with their arguments, while object instances are called 
+    """A singleton set of objects (typically functions or class instances) that
+    can be called as functions from the command line.
+
+    Functions are called with their arguments, while object instances are called
     with their method and then their functions. E.g.:
     * bish afunction arg1 arg2 arg3
     * bish anInstance.aMethod arg1 arg2 arg3"""
@@ -63,12 +63,12 @@ class Callables:
         self.callObjs = {}
 
     def add(self,callObj,callKey=None): #--Add a callable
-        """Add a callable object. 
-        
+        """Add a callable object.
+
         callObj:
-            A function or class instance. 
-        callKey: 
-            Name by which the object will be accessed from the command line. 
+            A function or class instance.
+        callKey:
+            Name by which the object will be accessed from the command line.
             If callKey is not defined, then callObj.__name__ is used."""
         callKey = callKey or callObj.__name__
         self.callObjs[callKey] = callObj
@@ -414,7 +414,7 @@ def refInfo(fileName,forMods=-1,forCellId=None):
         objects.sort(key=lambda a: a[1])
         for object in objects:
             if forMods != -1 and forMods != object[0]: continue
-            if printCell: 
+            if printCell:
                 print printCell
                 printCell = False
             master = object[0] and masters[object[0]-1][0]
@@ -537,7 +537,7 @@ def pcLeveler(fileName):
             else:
                 print '  set stemp to %d + ((%d - %d)*level/30)' % (v00,v30,v00)
                 print 'set%s stemp' % (compName,)
-        print 
+        print
     print charSet1.substitute(className=className)
 
 @mainFunction
@@ -559,7 +559,7 @@ def etxtToWtxt(fileName=None):
 
 @mainFunction
 def textMunch(fileName=None):
-    """TextMunch: This is a standin for EditPlus Text munching. It should just 
+    """TextMunch: This is a standin for EditPlus Text munching. It should just
     call whatever text muncher is currently being used."""
     etxtToWtxt(fileName)
 
@@ -593,7 +593,7 @@ def temp(fileName):
                 info.spId = 'wr_bookCre'
                 info.setChanged()
             #--Change tests?
-            if info.spId in ('wr_mysCre','wr_bookCre'): 
+            if info.spId in ('wr_mysCre','wr_bookCre'):
                 #--Test vars
                 for index,test in enumerate(info.tests):
                     if not test: pass
