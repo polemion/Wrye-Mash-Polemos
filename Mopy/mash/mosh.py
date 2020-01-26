@@ -2290,7 +2290,7 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
                 plugin = maLoadPluginFiles.group(1).rstrip()
                 loadPluginPath = os.path.join(self.dir, 'Data Files', plugin)
                 loadPluginExt = os.path.splitext(loadPluginPath)[-1].lower()
-                if len(self.loadFiles) == 255: self.loadFilesExtra.append(plugin)
+                if len(self.loadFiles) == 1023: self.loadFilesExtra.append(plugin)
                 elif os.path.exists(loadPluginPath) and re.match('^\.es[pm]$', loadPluginExt): self.loadFiles.append(plugin)
                 else: self.loadFilesBad.append(plugin)
 
@@ -2579,8 +2579,8 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
         """Load only if morrowind.ini/openmw.cfg has changed."""
         hasChanged = self.hasChanged()
         if hasChanged: self.loadConf()
-        if len(self.loadFiles) > 255:
-            del self.loadFiles[255:]
+        if len(self.loadFiles) > 1023:
+            del self.loadFiles[1023:]
             self.safeSave()
         return hasChanged
 
@@ -2630,7 +2630,7 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
 
     def isMaxLoaded(self):
         """True if load list is full."""
-        return len(self.loadFiles) >= 255
+        return len(self.loadFiles) >= 1023
 
     def isLoaded(self,modFile):
         """True if modFile is in load list."""
