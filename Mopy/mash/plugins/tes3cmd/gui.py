@@ -38,10 +38,8 @@
 # ========================================================================================
 
 
-import codecs
-import os
 from copy import copy
-import wx
+import wx, os, io
 from ... import singletons
 from ...unimash import _
 from ...plugins import tes3cmd
@@ -245,12 +243,12 @@ class Cleaner(tes3cmdgui.cleaner, OutputParserMixin):
     def SaveLog(self, fileName):  # Polemos fixes.
         """ Saves the log information to the given location """
         try:
-            with codecs.open(fileName, 'w') as log:
+            with io.open(fileName, 'w') as log:
                 for fn in self.output.keys():
                     log.write(u'--%s--\r\n' % fn)
                     log.write(self.GetLog(fn))
         except:
-            with codecs.open(fileName, 'w', encoding='utf-8', errors='replace') as log:
+            with io.open(fileName, 'w', encoding='utf-8', errors='replace') as log:
                 for fn in self.output.keys():
                     log.write(u'--%s--\r\n' % fn)
                     log.write((self.GetLog(fn)).decode('utf-8', errors='ignore').replace('.esp"', '%s"' % fn).replace('.esm"', '%s"' % fn).replace('.esp w', '%s w' % fn).replace('.esm w', '%s w' % fn))

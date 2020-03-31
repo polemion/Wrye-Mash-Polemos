@@ -32,7 +32,7 @@
 #  along with Wrye Bolt; if not, write to the Free Software Foundation,
 #  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #
-#  Wrye Bolt copyright (C) 2005, 2006, 2007, 2008, 2009 Wrye 
+#  Wrye Bolt copyright (C) 2005, 2006, 2007, 2008, 2009 Wrye
 #
 # =============================================================================
 
@@ -40,7 +40,8 @@
 import bolt
 from bolt import GPath
 from unimash import _  # Polemos
-from merrors import AbstractError, ArgumentError, StateError, UncodedError
+from merrors import AbstractError as AbstractError, ArgumentError as ArgumentError
+from merrors import StateError as StateError, UncodedError as UncodedError
 import conf  # Polemos
 import cStringIO
 import string
@@ -69,14 +70,14 @@ sizes = {} #--Using applications should override this.
 # Basics ---------------------------------------------------------------------
 
 class IdList:
-    """Provides sequences of semi-unique ids. Useful for choice menus. 
+    """Provides sequences of semi-unique ids. Useful for choice menus.
 
-    Sequence ids come in range from baseId up through (baseId + size - 1). 
+    Sequence ids come in range from baseId up through (baseId + size - 1).
     Named ids will be assigned ids starting at baseId + size.
-    
+
     Example:
-      loadIds = IdList(10000, 90,'SAVE','EDIT','NONE') 
-    sequence ids are accessed by an iterator: i.e. iter(loadIds), and 
+      loadIds = IdList(10000, 90,'SAVE','EDIT','NONE')
+    sequence ids are accessed by an iterator: i.e. iter(loadIds), and
     named ids accessed by name. e.g. loadIds.SAVE, loadIds.EDIT, loadIds.NONE
     """
 
@@ -100,7 +101,7 @@ class IdList:
 class Colors:
     """Colour collection and wrapper for wx.ColourDatabase.
     Provides dictionary syntax access (colors[key]) and predefined colours."""
-    def __init__(self): 
+    def __init__(self):
         self.data = {}
         self.database = None
 
@@ -133,7 +134,7 @@ colors = Colors()
 images = {}  #--Singleton for collection of images.
 
 
-class Image: 
+class Image:
     """Wrapper for images, allowing access in various formats/classes.
 
     Allows image to be specified before wx.App is initialized."""
@@ -149,7 +150,7 @@ class Image:
         if not self.bitmap:
             self.bitmap = wx.Bitmap(self.file.s,self.type)
         return self.bitmap
-    
+
     def GetIcon(self):
         if not self.icon:
             self.icon = wx.EmptyIcon()
@@ -157,7 +158,7 @@ class Image:
         return self.icon
 
 
-class ImageBundle: 
+class ImageBundle:
     """Wrapper for bundle of images.
 
     Allows image bundle to be specified before wx.App is initialized."""
@@ -198,7 +199,7 @@ class ImageList:
             for key,image in self.data:
                 indices[key] = imageList.Add(image.GetBitmap())
         return self.imageList
-    
+
     def __getitem__(self,key):
         self.GetImageList()
         return self.indices[key]
@@ -217,7 +218,7 @@ def ensureDisplayed(frame,x=100,y=100):
         frame.MoveXY(topLeft.x+x,topLeft.y+y)
 
 def setCheckListItems(gList,names,values):  # Polemos - Installers: break if not read.
-    """Convenience method for setting a bunch of wxCheckListBox items. The main advantage 
+    """Convenience method for setting a bunch of wxCheckListBox items. The main advantage
     of this is that it doesn't clear the list unless it needs to. Which is good if you want
     to preserve the scroll position of the list."""
     if not names: gList.Clear()
@@ -399,7 +400,7 @@ def askOpen(parent,title='',defaultDir='',defaultFile='',wildcard='',style=wx.FD
     """Show as file dialog and return selected path(s)."""
     defaultDir,defaultFile = [GPath(x).s for x in (defaultDir,defaultFile)]
     dialog = wx.FileDialog(parent,title,defaultDir,defaultFile,wildcard, style )
-    if dialog.ShowModal() != wx.ID_OK: 
+    if dialog.ShowModal() != wx.ID_OK:
         result = False
     elif style & wx.MULTIPLE:
         result = map(GPath,dialog.GetPaths())
@@ -432,7 +433,7 @@ def askText(parent,message,title='',default=''):
 # Message Dialogs -------------------------------------------------------------
 
 def askStyled(parent,message,title,style):
-    """Shows a modal MessageDialog. 
+    """Shows a modal MessageDialog.
     Use ErrorMessage, WarningMessage or InfoMessage."""
     dialog = wx.MessageDialog(parent,message,title,style)
     result = dialog.ShowModal()
@@ -447,11 +448,11 @@ def askYes(parent,message,title='',default=True):
     """Shows a modal warning message."""
     style = wx.YES_NO|wx.ICON_EXCLAMATION|((wx.NO_DEFAULT,wx.YES_DEFAULT)[default])
     return askStyled(parent,message,title,style)
-    
+
 def askWarning(parent,message,title=_(u'Warning')):
     """Shows a modal warning message."""
     return askStyled(parent,message,title,wx.OK|wx.CANCEL|wx.ICON_EXCLAMATION)
-    
+
 def showOk(parent,message,title=''):
     """Shows a modal error message."""
     return askStyled(parent,message,title,wx.OK)
@@ -463,7 +464,7 @@ def showError(parent,message,title=_(u'Error')):
 def showWarning(parent,message,title=_(u'Warning')):
     """Shows a modal warning message."""
     return askStyled(parent,message,title,wx.OK|wx.ICON_EXCLAMATION)
-    
+
 def showInfo(parent,message,title=_(u'Information')):
     """Shows a modal information message."""
     return askStyled(parent,message,title,wx.OK|wx.ICON_INFORMATION)
@@ -642,7 +643,7 @@ class ListEditorData:
     def setInfo(self,item,text):
         """Sets string info on specified item."""
         raise AbstractError
-    
+
     #--Checklist
     def getChecks(self):
         """Returns checked state of items as array of True/False values matching Item list."""
@@ -801,7 +802,7 @@ class ListEditor(wx.Dialog):
         if self.gInfoBox:
             self.gInfoBox.DiscardEdits()
             self.gInfoBox.SetValue('')
-        
+
     #--Show Info
     def OnSelect(self,event):
         """Handle show info (item select) event."""
@@ -875,7 +876,7 @@ class Picture(wx.Window):
             factor = min(1.0*picWidth/imgWidth,1.0*picHeight/imgHeight)
             newWidth,newHeight = int(factor*imgWidth),int(factor*imgHeight)
             self.scaled = image.Scale(newWidth,newHeight).ConvertToBitmap()
-        
+
     def OnPaint(self, event=None):
         """Draw bitmap or clear drawing area."""
         dc = wx.PaintDC(self)
@@ -901,7 +902,7 @@ class Progress(bolt.Progress):
     def __init__(self,title=_(u'Progress'),message=' '*60,parent=None,
         style=wx.PD_APP_MODAL|wx.PD_ELAPSED_TIME|wx.PD_AUTO_HIDE):
         """Init."""
-        if sys.version[:3] != '2.4': style |= wx.PD_SMOOTH 
+        if sys.version[:3] != '2.4': style |= wx.PD_SMOOTH
         self.dialog = wx.ProgressDialog(title,message,100,parent,style)
         bolt.Progress.__init__(self)
         self.message = message
@@ -912,7 +913,7 @@ class Progress(bolt.Progress):
 
     def doProgress(self,state,message):  # Polemos: bug fix.
         if not self.dialog: raise StateError(_(u'Dialog already destroyed.'))
-        elif (state == 0 or state == 1 or (message != self.prevMessage) or 
+        elif (state == 0 or state == 1 or (message != self.prevMessage) or
             (state - self.prevState) > 0.05 or (time.time() - self.prevTime) > 0.5):
             if message != self.prevMessage: self.dialog.Update(int(state*100),message)
             else: self.dialog.Update(int(state*100))
@@ -1092,7 +1093,7 @@ class Tank(wx.Panel):  # Polemos: Edits
     def SortItems(self,column=None,reverse='CURRENT'):
         """Sort items. Real work is done by data object, and that completed
         sort is then "cloned" list through an intermediate cmp function.
-        
+
         column: column to sort. Defaults to current sort column.
 
         reverse:

@@ -45,7 +45,7 @@ import locale
 import time
 from subprocess import PIPE, check_call  # Polemos
 from sfix import Popen  # Polemos
-import codecs, ushlex, scandir  # Polemos
+import io, ushlex, scandir  # Polemos
 from unimash import uniChk, encChk, _  # Polemos
 import array
 import cPickle
@@ -64,14 +64,11 @@ from bolt import LString, GPath, DataDict, SubProgress
 import compat
 import mush
 # Exceptions
-from merrors import mError as MoshError
-# Coding Errors
-from merrors import AbstractError, ArgumentError, StateError, UncodedError, ConfError
-# TES3 File Errors
-from merrors import Tes3Error
-from merrors import Tes3ReadError, Tes3RefError, Tes3SizeError, Tes3UnknownSubRecord
-# Usage Errors
-from merrors import MaxLoadedError, SortKeyError
+from merrors import mError as MoshError, Tes3Error as Tes3Error
+from merrors import AbstractError as AbstractError, ArgumentError as ArgumentError, StateError as StateError
+from merrors import UncodedError as UncodedError, ConfError as ConfError
+from merrors import Tes3ReadError as Tes3ReadError, Tes3RefError as Tes3RefError, Tes3SizeError as Tes3SizeError
+from merrors import MaxLoadedError as MaxLoadedError, SortKeyError as SortKeyError, Tes3UnknownSubRecord as Tes3UnknownSubRecord
 
 
 # Singletons, Constants
@@ -2027,7 +2024,12 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
         self.filesRisk = []
         self.skip = True
 
-    def getSetting(self,section,key,default=None):
+    def criticalMsg(self, msg):
+        """Show critical messages to user."""
+        import gui.dialog as gui
+        gui.ErrorMessage(None, msg)
+
+    def getSetting(self, section, key, default=None):
         """Gets a single setting from the file."""
         section,key = map(bolt.LString,(section,key))
         settings = self.getSettings()
@@ -2099,7 +2101,7 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
         reSection = re.compile(r'^\[\s*(.+?)\s*\]$')
         reSetting = re.compile(r'(.+?)\s*=')
         #--Read MIT file
-        with codecs.open(mitPath, 'r', encoding=self.encod, errors='replace') as mitFile:
+        with io.open(mitPath, 'r', encoding=self.encod, errors='replace') as mitFile:
             sectionSettings = None
             settings = {}
             for line in mitFile:
@@ -2113,8 +2115,8 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
             if section.lower() in ('game files','archives','mit'): del settings[section]
         #--Apply it
         tmpPath = '%s.tmp' % self.path
-        with codecs.open(self.path, 'r', encoding=self.encod, errors='replace') as iniFile:
-            with codecs.open(tmpPath, 'w', encoding=self.encod, errors='replace') as tmpFile:
+        with io.open(self.path, 'r', encoding=self.encod, errors='replace') as iniFile:
+            with io.open(tmpPath, 'w', encoding=self.encod, errors='replace') as tmpFile:
                 section = None
                 sectionSettings = {}
                 for line in iniFile:
@@ -2183,7 +2185,7 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
         #self.StructureChk(datafiles_po) todo: check for cfg abnormalities...
         # Save, nice and cozy.
         datafiles_po = ''.join(datafiles_po)
-        with codecs.open(self.path, 'w', encoding=self.encod) as file:
+        with io.open(self.path, 'w', encoding=self.encod) as file:
             file.write(datafiles_po)
         self.loadConf()
 
@@ -2233,9 +2235,9 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
             self.DataModsDirs = [os.path.normpath((line.rstrip()).replace('data="', '').replace('"', '')) for line in self.openmw_datamods()[:]]
         return self.DataModsDirs[:]
 
-    def open_conf_file(self): # Polemos
+    def open_conf_file(self):  # Polemos
         """Return Morrowind.ini or OpenMW.cfg file."""
-        with codecs.open(self.path, 'r', encoding=self.encod, errors='replace') as conf_file:
+        with io.open(self.path, 'r', encoding=self.encod, errors='strict') as conf_file:
             return conf_file.readlines()
 
     def loadConf(self):  # Polemos
@@ -2265,39 +2267,43 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
         self.flush_conf()
         PluginSection, ArchiveSection = False, False
 
-        for line in self.open_conf_file():
-            maLoadPluginSection = reLoadPluginSection.match(line)
-            maLoadArchiveSection = reLoadArchiveSection.match(line)
-            maLoadPluginFiles = reLoadPluginFiles.match(line)
-            maLoadArchiveFiles = reLoadArchiveFiles.match(line)
+        try:
+            for line in self.open_conf_file():
+                maLoadPluginSection = reLoadPluginSection.match(line)
+                maLoadArchiveSection = reLoadArchiveSection.match(line)
+                maLoadPluginFiles = reLoadPluginFiles.match(line)
+                maLoadArchiveFiles = reLoadArchiveFiles.match(line)
 
-            if maLoadArchiveSection:
-                ArchiveSection = True
-                self.ArchiveSection = line.rstrip()
+                if maLoadArchiveSection:
+                    ArchiveSection = True
+                    self.ArchiveSection = line.rstrip()
 
-            if maLoadPluginSection:
-                PluginSection = True
-                self.PluginSection = line.rstrip()
+                if maLoadPluginSection:
+                    PluginSection = True
+                    self.PluginSection = line.rstrip()
 
-            if maLoadArchiveFiles:
-                archive = maLoadArchiveFiles.group(1).rstrip()
-                loadArchivePath = os.path.join(self.dir, 'Data Files', archive)
-                loadArchiveExt = os.path.splitext(loadArchivePath)[-1].lower()
-                if os.path.exists(loadArchivePath) and re.match('^\.bsa$', loadArchiveExt): self.bsaFiles.append(archive)
-                else: self.loadFilesBad.append(archive)
+                if maLoadArchiveFiles:
+                    archive = maLoadArchiveFiles.group(1).rstrip()
+                    loadArchivePath = os.path.join(self.dir, 'Data Files', archive)
+                    loadArchiveExt = os.path.splitext(loadArchivePath)[-1].lower()
+                    if os.path.exists(loadArchivePath) and re.match('^\.bsa$', loadArchiveExt): self.bsaFiles.append(archive)
+                    else: self.loadFilesBad.append(archive)
 
-            if maLoadPluginFiles:
-                plugin = maLoadPluginFiles.group(1).rstrip()
-                loadPluginPath = os.path.join(self.dir, 'Data Files', plugin)
-                loadPluginExt = os.path.splitext(loadPluginPath)[-1].lower()
-                if len(self.loadFiles) == 255: self.loadFilesExtra.append(plugin)
-                elif os.path.exists(loadPluginPath) and re.match('^\.es[pm]$', loadPluginExt): self.loadFiles.append(plugin)
-                else: self.loadFilesBad.append(plugin)
+                if maLoadPluginFiles:
+                    plugin = maLoadPluginFiles.group(1).rstrip()
+                    loadPluginPath = os.path.join(self.dir, 'Data Files', plugin)
+                    loadPluginExt = os.path.splitext(loadPluginPath)[-1].lower()
+                    if len(self.loadFiles) == 255: self.loadFilesExtra.append(plugin)
+                    elif os.path.exists(loadPluginPath) and re.match('^\.es[pm]$', loadPluginExt): self.loadFiles.append(plugin)
+                    else: self.loadFilesBad.append(plugin)
 
-            if not maLoadArchiveFiles and not maLoadPluginFiles: self.confLoadLines.append(line.rstrip())
-            if not line:
-                if not PluginSection: raise Tes3Error('Morrowind.ini', _(u'Morrowind.ini: [Game Files] section not found.'))
-                if not ArchiveSection: raise Tes3Error('Morrowind.ini', _(u'Morrowind.ini: [Archives] section not found.'))
+                if not maLoadArchiveFiles and not maLoadPluginFiles: self.confLoadLines.append(line.rstrip())
+                if not line:
+                    if not PluginSection: raise Tes3Error('Morrowind.ini', _(u'Morrowind.ini: [Game Files] section not found.'))
+                    if not ArchiveSection: raise Tes3Error('Morrowind.ini', _(u'Morrowind.ini: [Archives] section not found.'))
+        except:  # Last resort to avoid conf file corruption
+            self.flush_conf()
+
 
     def load_OpenMW_cfg(self):  # Polemos
         """Read plugin data from openmw.cfg"""
@@ -2435,6 +2441,12 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
 
     def save(self):  # Polemos fixes, optimizations, OpenMW/TES3mp support, BSA support, speed up massive lists.
         """Prepare data to write to morrowind.ini or openmw.cfg file."""
+        if not self.confLoadLines:
+            self.criticalMsg(_(
+                u'Unable to parse morrowind.ini. No changes can be made.'
+                u'\n\nPlease try to select a different encoding from the settings menu and restart Wrye Mash.'))
+            self.flush_conf()
+            return
         writeCache, failed = [], {}
 
         if self.hasChanged():  # Has the config file changed?
@@ -2442,7 +2454,7 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
             elif self.openmw: error_ini_po = _(u'Openmw.cfg has changed')
             raise StateError(error_ini_po)
 
-        with open(self.path, 'w') as conf_File:
+        with io.open(self.path, 'w', encoding=self.encod, errors='strict') as conf_File:
 
             if not self.openmw:  # Morrowind
                 # Check for irregular file namings.
@@ -2524,19 +2536,19 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
         self.loadConf()
         # If the errors are only for mod entries, skip them, keep the changes in the configuration file and notify user
         if len(items) == len(mods):
-            import gui.dialog as gui
             errors = '\n'.join(mods)
-            gui.ErrorMessage(None, _(u'Problems encountered while updating %s. The following entries were not added:\n\n%s' % (conf, errors)))
+            self.criticalMsg(_(u'Problems encountered while updating %s. The following entries were not added:\n\n%s' % (conf, errors)))
         # If there are also errors on lines without mod entries, notify user and raise error to revert to backup
         if len(items) > len(mods):
             errors = '\n'.join([(u'%s %s: %s...'%(l, x, items[x][:35])) if len(items[x]) > 35 else (u'%s %s: %s'%(l, x, items[x])) for x in items])
-            raise ConfError(_(u'Problems encountered while updating %s. Reverted to backup, no changes were saved:\n\n%s' % (conf, errors)))
+            self.criticalMsg(_(u'Problems encountered while updating %s. Will revert to backup, no changes will be saved:\n\n%s' % (conf, errors)))
+            self.restoreBackup()
 
     def restoreBackup(self):  # Polemos: Good to have a safety switch.
         """Restores the latest morrowind.ini/openmw.cfg backup file on save failure."""
-        # Does last backup file exists?
+        # Does the last backup file exist?
         if os.path.isfile('%s.bak' % self.path): conf_bck = '%s.bak' % self.path
-        # If missing does the first backup ever taken exist?
+        # If missing, does the first backup ever taken exist?
         elif os.path.isfile('%s.baf' % self.path): conf_bck = '%s.baf' % self.path
         # Shit happens. Notify user and abort.
         else: return u'Fatal: No backup file was found to restore configuration!'
@@ -2559,7 +2571,6 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
     def safeSave(self):  # Polemos
         """Safe save conf file."""
         self.makeBackup()
-        self.save()
         try: self.save()
         except ConfError as err:
             import gui.dialog as gui
@@ -2605,9 +2616,9 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
 
     def isWellOrdered(self,loadFile=None):
         if loadFile and loadFile not in self.loadFiles: return True
-        #Yakoby: An attempt at a fix for issue #27.I am not sure why
-        #this is now needed and wasn't before.One posibility is that
-        #when modInfos gets manipulated this isn't refreshed.
+        # Yakoby: An attempt at a fix for issue #27.I am not sure why
+        # this is now needed and wasn't before.One posibility is that
+        # when modInfos gets manipulated this isn't refreshed.
         elif loadFile:
             mtime = modInfos[loadFile].mtime
             if mtime not in self.doubleTime: self.refreshDoubleTime()
@@ -3762,7 +3773,7 @@ class UtilsData(DataDict): # Polemos: Many changes here.
         utilsFile = "utils.dcg"
         newData = {}
         if os.path.isfile(utilsFile) and os.access(utilsFile, os.R_OK):
-            with codecs.open(utilsFile, "r", encoding='utf-8', errors='replace') as file:
+            with io.open(utilsFile, "r", encoding='utf-8', errors='replace') as file:
                 lines = file.readlines()
             for line in lines:
                 line = line.rstrip()
@@ -3783,7 +3794,7 @@ class UtilsData(DataDict): # Polemos: Many changes here.
                         u'; Format of a Utility entry:\r\n'
                         u';\r\n'
                         u'; ID of the utility; Filename; Parameters; Description of the utility; Name of the Utility\r\n\r\n')
-        with codecs.open('utils.dcg', "w", encoding='utf-8') as file:
+        with io.open('utils.dcg', "w", encoding='utf-8') as file:
             file.write(default_text)
 
     def delete(self,fileName):
@@ -3798,7 +3809,7 @@ class UtilsData(DataDict): # Polemos: Many changes here.
         orgData = {}
         self.badata = []
         if os.path.isfile(utilsFile) and os.access(utilsFile, os.R_OK):
-            with codecs.open(utilsFile, "r", encoding='utf-8', errors='replace') as file:
+            with io.open(utilsFile, 'r', encoding='utf-8', errors='replace') as file:
                 lines = file.readlines()
             lines = [line.rstrip() for line in lines]
             for line in lines:
@@ -3827,7 +3838,7 @@ class UtilsData(DataDict): # Polemos: Many changes here.
                                 idx = lines.index(line)
                                 lines[idx] = u"%s;%s;%s;%s" % ((key,) + value)
                         except: pass
-            with codecs.open(utilsFile, "w", encoding='utf-8', errors='replace') as file:
+            with io.open(utilsFile, "w", encoding='utf-8', errors='replace') as file:
                 lines = '\r\n'.join([line for line in lines if line not in self.badata])
                 try: file.write(lines.encode('utf-8'))
                 except: file.write(lines)
@@ -3855,7 +3866,7 @@ class CommandsData:
         if not os.path.isfile(self.config_file_path): self.save_commands(save_default=True)
         try:
             if os.path.isfile(self.config_file_path) and os.access(self.config_file_path, os.R_OK):
-                with codecs.open(self.config_file_path, 'r', encoding='utf-8', errors='replace') as file:
+                with io.open(self.config_file_path, 'r', encoding='utf-8', errors='replace') as file:
                     config_file = file.readlines()
                 commands = {}
                 for line in config_file:
@@ -3871,7 +3882,7 @@ class CommandsData:
 
     def save_commands(self, save_default=False):
         try:
-            with codecs.open(self.config_file_path, 'w', encoding='utf-8', errors='replace') as file:
+            with io.open(self.config_file_path, 'w', encoding='utf-8', errors='replace') as file:
                 file.write(self.default_config_file())
                 if not save_default:
                     for key, value in self.data.iteritems():
@@ -4087,12 +4098,12 @@ class datamod_order:   # Polemos: OpenMW/TES3mp support
 
     def create(self, file, text=u''):
         """Create a file and save text."""
-        with codecs.open(file, 'w', self.encod) as f:
+        with io.open(file, 'w', encoding=self.encod) as f:
             f.write(text)
 
     def read(self, file):
         """Read file contents from a file in a chosen dir."""
-        with codecs.open(file, 'r', self.encod) as f:
+        with io.open(file, 'r', encoding=self.encod) as f:
             return f.readlines()
 
 #------------------------------------------------------------------------------
@@ -4305,7 +4316,7 @@ class LoadModOrder:  # Polemos
 
     def parseBck(self, bckFile):
         """Save backup file."""
-        with codecs.open(bckFile, 'r', self.encod) as bck:
+        with io.open(bckFile, 'r', encoding=self.encod) as bck:
             self.dataFactory(bck.readlines())
 
 # -----------------------------------------------------------------------------
@@ -4350,7 +4361,7 @@ class SaveModOrder:  # Polemos
 
     def saveBck(self, bckFile):
         """Save backup file."""
-        with codecs.open(bckFile, 'w', self.encod) as bck:
+        with io.open(bckFile, 'w', encoding=self.encod) as bck:
             if self.mode == 'advanced':
                 for x in ['%s,%s\n'%(x[5],x[6]) for x in self.modData]: bck.write(x)
             else:
@@ -4879,7 +4890,7 @@ class InstallerArchive(Installer):
         progress.state,progress.full = 0,len(fileNames)
         #--Dump file list
         try:
-            with codecs.open(self.tempList.s, 'w', encoding='utf-8') as out:
+            with io.open(self.tempList.s, 'w', encoding='utf-8') as out:
                 out.write(u'\n'.join(fileNames))
         except:
             import gui.dialog
@@ -5153,7 +5164,7 @@ class InstallersData(bolt.TankData, DataDict):  # Polemos fixes
         if GPath('mash.ini').exists():
             mashIni = ConfigParser.ConfigParser()
             try:
-                with codecs.open('mash.ini', 'r', encoding='utf-8') as f: mashIni.readfp(f)
+                with io.open('mash.ini', 'r', encoding='utf-8') as f: mashIni.readfp(f)
                 mash_ini = True
                 instPath = GPath(mashIni.get('General', 'sInstallersDir').strip()).s
             except:
@@ -5163,17 +5174,17 @@ class InstallersData(bolt.TankData, DataDict):  # Polemos fixes
         if instPath != dirs["installers"].s:
             if not mash_ini:
                 if os.path.exists(os.path.join(MashDir, "mash_default.ini")):
-                    with codecs.open('mash_default.ini', 'r', encoding='utf-8') as f: d = f.read()
+                    with io.open('mash_default.ini', 'r', encoding='utf-8') as f: d = f.read()
                 else: d = "[General]\n"
-                with codecs.open('mash.ini', 'w', encoding='utf-8') as f: f.write(d)
+                with io.open('mash.ini', 'w', encoding='utf-8') as f: f.write(d)
                 mashIni = ConfigParser.ConfigParser()
                 try:
-                    with codecs.open('mash.ini', 'r', encoding='utf-8') as f: mashIni.readfp(f)
+                    with io.open('mash.ini', 'r', encoding='utf-8') as f: mashIni.readfp(f)
                 except: pass
             mashIni.set("General", "sInstallersDir", os.path.abspath(dirs["installers"].s))
             installers_po = u"[General]\nsInstallersDir=%s" % (str(GPath(mashIni.get('General', 'sInstallersDir').strip())
                                 ).replace("bolt.Path(u'", '').replace("')", '')).decode('unicode_escape')
-            with codecs.open('mash.ini', 'wb+', encoding='utf-8') as f: f.write(installers_po)
+            with io.open('mash.ini', 'wb+', encoding='utf-8') as f: f.write(installers_po)
 
     def getSorted(self,column,reverse):
         """Returns items sorted according to column and reverse."""
@@ -6402,7 +6413,7 @@ class WorldRefs:
         #--Map'em
         for mmName in masterInfo.masterNames:
             if mmName not in self.masterNames:
-                raise mError(_(u"Misordered esm: %s should load before %s") % (mmName, masterInfo.name))
+                raise MoshError(_(u"Misordered esm: %s should load before %s") % (mmName, masterInfo.name))
             masterMap.append(self.masterNames.index(mmName)+1)
         #--Done
         return masterMap
@@ -7112,10 +7123,10 @@ class CharSetImporter:
                 elif maStats:
                     v00,v30 = [int(stat) for stat in maStats.groups()]
                     curStats.append((v00,v30))
-                else: raise mError(_(u'Bad line in CharSet class file.') + line.strip() + ' >> ' + stripped)
+                else: raise MoshError(_(u'Bad line in CharSet class file.') + line.strip() + ' >> ' + stripped)
         #--Post Parse
         for className,stats in self.classStats.items():
-            if len(stats) != 35: raise mError(_(u'Bad number of stats for class ') + className)
+            if len(stats) != 35: raise MoshError(_(u'Bad number of stats for class ') + className)
             stats = self.classStats[className] = dict(zip(statNames,stats))
             #--Health
             str00,str30 = stats['Strength']
@@ -7343,7 +7354,7 @@ class ScheduleGenerator:
                             chunk = chunk.strip()
                             maSleep = reSleep.match(chunk)
                             if not maSleep or maSleep.group(1) == '=':
-                                raise mError(_(u'Bad sleep condition state for %s in %s: %s') % (section, town, line))
+                                raise MoshError(_(u'Bad sleep condition state for %s in %s: %s') % (section, town, line))
                             condition,state = maSleep.group(2), sleepStates[maSleep.group(1)]
                             condition = reIsMember.sub(r'getPCRank \1 >= 0',condition)
                             cellStates += ((condition,state),)
@@ -7363,7 +7374,7 @@ class ScheduleGenerator:
                         rem = reDef.sub(replDef,rem)
                         #--Cell
                         maCell = reCell.match(rem)
-                        if not maCell: raise mError(_(u'Pos cell not defined for %s %s %d') % (town, npc, cycle))
+                        if not maCell: raise MoshError(_(u'Pos cell not defined for %s %s %d') % (town, npc, cycle))
                         cell = maCell.group(1)
                         rem = rem[len(cell):].strip()
                         #--Pos
@@ -7562,7 +7573,7 @@ def defaultini():  # Polemos: The default ini.
                    u'sInstallersDir=Installers ;--Default\n'
                    u';sInstallersDir=..\Morrowind Mods\Installers ;--Alternate')
     try:
-        with codecs.open('mash_default.ini', 'w', encoding='utf-8') as f:
+        with io.open('mash_default.ini', 'w', encoding='utf-8') as f:
             f.write(default_ini)
     except: pass
 
@@ -7606,7 +7617,7 @@ def mashini_read():  # Polemos: Make mash.ini an override.
         import ConfigParser
         mashIni = ConfigParser.ConfigParser()
         try:
-            with codecs.open('mash.ini', 'r', encoding='utf-8') as f:
+            with io.open('mash.ini', 'r', encoding='utf-8') as f:
                 mashIni.readfp(f)
         except: pass
 

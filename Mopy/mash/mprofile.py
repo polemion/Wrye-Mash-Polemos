@@ -24,7 +24,16 @@
 # ===========================================================================================
 
 
-import os, codecs, conf, singletons
+import os, io, conf, singletons
+
+
+def profilePaths():
+    """Set profile default paths"""
+    profiledir = os.path.join(singletons.MashDir, 'Profiles', conf.settings['profile.active'])
+    profile = os.path.join(profiledir, 'profile.ini')
+    mods = os.path.join(profiledir, 'mods.dat')
+    confBcks = os.path.join(profiledir, 'confBcks')
+    return {'profiledir': profiledir, 'profile': profile, 'mods': mods, 'confBcks': confBcks}
 
 
 class user_profile:  # Polemos
@@ -32,6 +41,7 @@ class user_profile:  # Polemos
 
     def __init__(self):
         """Initialize."""
+        self.mashVer = conf.settings['mash.version'][0]
         if not self.checkactive(): self.createdefault()
         self.version_updates()
         singletons.Profile = self
@@ -41,11 +51,20 @@ class user_profile:  # Polemos
         for line in self.getdata('profile'):
             if '#   Wrye Mash v' in line:  # Versions before v99
                 self.create(self.profile, text=self.defaultini())
-                for x in ['active.dat','bsa.dat','plugins.dat']:
+                for x in ['active.dat', 'bsa.dat', 'plugins.dat']:
                     target = os.path.join(self.profiledir, x)
                     if os.path.isfile(target):
                         try: os.remove(target)
                         except: pass
+        updPrVer = []
+        for line in self.getdata('profile'):  # Update Wrye Mash version in profile
+            mashVer = 'profver=%s' % self.mashVer
+            if 'profver=' in line:
+                if line != mashVer: line = mashVer
+            if line: updPrVer.append(line.rstrip())
+            self.create(self.profile, text=u'\n'.join(updPrVer))
+        if not self.getdata('profile'):  # Recreate profile.ini if it is missing
+            self.create(self.profile, text=self.defaultini())
 
     def getdata(self, data='profile'):
         """Method for easy data retrieval"""
@@ -64,10 +83,11 @@ class user_profile:  # Polemos
 
     def setprofile(self):
         """Set profile default paths"""
-        self.profiledir = os.path.join(singletons.MashDir, 'Profiles', conf.settings['profile.active'])
-        self.profile = os.path.join(self.profiledir, 'profile.ini')
-        self.mods = os.path.join(self.profiledir, 'mods.dat')
-        return self.profiledir, self.profile, self.mods
+        self.profiledir = profilePaths()['profiledir']
+        self.profile = profilePaths()['profile']
+        self.mods = profilePaths()['mods']
+        self.confBcks = profilePaths()['confBcks']
+        return self.profiledir, self.profile, self.mods, self.confBcks
 
     def createdefault(self):
         """Create default files/dirs."""
@@ -77,29 +97,29 @@ class user_profile:  # Polemos
             if not os.path.exists(self.profiledir): os.makedirs(self.profiledir)
             if not os.path.isfile(self.profile): self.create(self.profile, text=self.defaultini())
             if not os.path.isfile(self.mods): self.create(self.mods)
+            if not os.path.isdir(self.confBcks): os.makedirs(self.confBcks)
         except: pass # todo: add dialog to inform user
 
     def create(self, data, text=''):
         """Create method."""
-        with codecs.open(data, 'w', 'utf-8') as f:
+        with io.open(data, 'w', encoding='utf-8') as f:
             f.write(text)
 
     def read(self, data):
         """Read method."""
-        with codecs.open(data, 'r', 'utf-8') as f:
+        with io.open(data, 'r', encoding='utf-8') as f:
             data = f.readlines()
-        return data
+        return [x.strip() for x in data]
 
     def defaultini(self):
         """Return default.ini text."""
-        version = conf.settings['mash.version']
         openmw = conf.settings['openmw']
         tes3mp = conf.settings['tes3mp']
         if not openmw: engine = 'Morrowind'
         elif openmw and not tes3mp: engine = 'openmw'
         elif openmw and tes3mp: engine = 'openmw_tes3mp'
-        text = ('#   Wrye Mash Profile Data    #\r\n',
+        text = ('#   Wrye Mash Profile Data    #',
                 '[General]',
-                'profver=%s' % (version[0]),
+                'profver=%s' % (self.mashVer),
                 'engine=%s' % (engine))
-        return '\r\n'.join(text)
+        return u'\n'.join(text)

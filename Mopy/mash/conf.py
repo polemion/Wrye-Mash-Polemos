@@ -123,12 +123,6 @@ settingDefaults = {
     #-Polemos: Profile
     'profile.active':'Default',
     'profile.encoding': 'utf-8',
-    'mash.encodings': {
-        'utf-8': 'Wrye Mash Default.',
-        'cp1252': 'Western Latin, Morrowind default.',
-        'cp1250': 'Central European Latin',
-        'cp1251': 'Cyrillic alphabets'
-        },
 
     #-Polemos: Interface Settings
     'active.theme': ('Default theme', None),

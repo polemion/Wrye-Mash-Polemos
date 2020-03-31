@@ -40,9 +40,9 @@
 
 import wx, os
 from .. import singletons
-import scandir, json, codecs  # Polemos
+import scandir, json, io  # Polemos
 from ..mosh import dirs, GPath
-from ..unimash import _  # Polemos
+from ..unimash import _, profileEncodings, defaultEncoding  # Polemos
 import dialog as gui  # Polemos
 from .. import conf  # Polemos
 import wx.richtext as rtc  # Polemos
@@ -72,7 +72,7 @@ class SettingsWindow(wx.Dialog):  # Polemos: Total reconstruction.
         if settings is not None: self.settings = settings
         else: self.settings = {}
         self.ThemeChoiceList = [x[0] for x in self.importThemeList()]
-        self.EncodChoiceList = [('%s, %s' % (x, conf.settings['mash.encodings'][x])) for x in conf.settings['mash.encodings']]
+        self.EncodChoiceList = [('%s, %s' % (x, profileEncodings[x])) for x in profileEncodings]
         self.warnkeys = {x: conf.settings[x] for x in conf.settingDefaults if 'query.' in x}
         self.pathsRestart = False
 
@@ -399,7 +399,7 @@ class SettingsWindow(wx.Dialog):  # Polemos: Total reconstruction.
         themeData = []*(len(themeList)+1)
         for theme in themeList:
             themePath = os.path.join(themedir, theme)
-            with codecs.open(themePath, 'r', 'utf-8') as rawTheme:
+            with io.open(themePath, 'r', encoding='utf-8') as rawTheme:
                 themeRaw = json.load(rawTheme)
                 themeData.append((themeRaw['theme.info'], theme))
         if not [name for name in themeData if name[0] == 'Default theme']:themeData.append(('Default theme', None))
@@ -521,7 +521,7 @@ class SettingsWindow(wx.Dialog):  # Polemos: Total reconstruction.
         conf.settings['app.min.systray'] = self.MinOnClose.GetValue()
         conf.settings['show.debug.log'] = self.ShowErr.GetValue()
         conf.settings['active.theme'] = self.ThemeChoiceNew = [x for num, x in enumerate(self.themeData) if num == self.ThemeChoice.GetSelection()][0]
-        conf.settings['profile.encoding'] = self.EncodChoiceNew = [enc for enc in conf.settings['mash.encodings'] if enc in
+        conf.settings['profile.encoding'] = self.EncodChoiceNew = [enc for enc in profileEncodings if enc in
                     [x for num, x in enumerate(self.EncodChoiceList) if num == self.EncodChoice.GetSelection()][0]][0]
         for x in self.warnkeys: conf.settings[x]=False if x in self.warnList.GetCheckedStrings() else True
         if self.colReset.GetValue(): self.resetMashLists()
@@ -635,7 +635,8 @@ class SettingsWindow(wx.Dialog):  # Polemos: Total reconstruction.
         self.MinOnClose.SetValue(conf.settings['app.min.systray'])
         self.ShowErr.SetValue(conf.settings['show.debug.log'])
         self.ThemeChoice.SetSelection([num for num, x in enumerate(self.themeData) if x[0] == conf.settings['active.theme'][0]][0])
-        self.EncodChoice.SetSelection([num for num, x in enumerate(self.EncodChoiceList) if conf.settings['profile.encoding'] in x][0])
+        try: self.EncodChoice.SetSelection([num for num, x in enumerate(self.EncodChoiceList) if conf.settings['profile.encoding'] in x][0])
+        except: self.EncodChoice.SetSelection([num for num, x in enumerate(self.EncodChoiceList) if defaultEncoding in x][0])
         self.Update_po.SetValue(conf.settings['enable.check'])
         self.fldUpdate.SetValue(conf.settings['timeframe.check'])
         self.warnList.SetCheckedStrings([x for x in self.warnkeys if not self.warnkeys[x]])

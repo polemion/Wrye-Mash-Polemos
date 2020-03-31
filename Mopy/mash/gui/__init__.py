@@ -42,7 +42,7 @@ import cPickle  # Polemos: Used to be pickle, changed obviously.
 import wx
 from wx.lib.mixins.listctrl import ListCtrlAutoWidthMixin
 from .. import singletons
-from ..merrors import InterfaceError
+from ..merrors import InterfaceError as InterfaceError
 from .. import balt
 from .. import mosh
 from ..unimash import _   # Polemos

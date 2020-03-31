@@ -41,7 +41,7 @@ WxPython contains code for logging output to a file, or logging output to a wind
 The startup code redirects stdin/stderr to a file, so this class allows provides a wrapper around stdin/stderr
 """
 
-import sys, wx, os, codecs
+import sys, wx, os, io
 from unimash import _  # Polemos
 import conf, singletons
 import gui.dialog as gui
@@ -106,7 +106,7 @@ class ErrorLog(wx.Dialog):  # Polemos
         dialog = wx.FileDialog(self, _(u'Save log'), singletons.MashDir, "Debug", '*.log', wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT)
         if dialog.ShowModal() == wx.ID_OK:
             fileName = os.path.join(dialog.GetDirectory(), dialog.GetFilename())
-            with codecs.open(fileName, 'w', encoding='utf-8', errors='replace') as file:
+            with io.open(fileName, 'w', encoding='utf-8', errors='replace') as file:
                 file.write(self.text_log.GetValue())
 
     def OnClose(self, event):

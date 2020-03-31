@@ -144,7 +144,7 @@ excludes = ["Tkconstants", "Tkinter", "tcl", "doctest", "pdb", "unittest",
             'pywin.debugger', 'pywin.debugger.dbgcon', 'pywin.dialogs']
 # dll Excludes
 dll_excludes = ['libgdk-win32-2.0-0.dll', 'libgobject-2.0-0.dll', 'tcl84.dll', 'tk84.dll', 'msvcp90.dll',
-                'UxTheme.dll', 'msvcr71.dll', "IPHLPAPI.DLL", "NSI.dll", "WINNSI.DLL", "WTSAPI32.dll"]
+                'UxTheme.dll', 'msvcr71.dll', 'IPHLPAPI.DLL', 'NSI.dll', 'WINNSI.DLL', 'WTSAPI32.dll']
 
 # py2exe options
 opts = {'py2exe': {'includes': includes,

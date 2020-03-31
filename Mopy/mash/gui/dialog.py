@@ -38,11 +38,12 @@
 # ========================================================================================
 
 
-import wx, os, codecs
-from .. import conf
-from .. import singletons
+import wx, os, io
+from time import strftime as timestamp
+from .. import conf, singletons, mosh
+from shutil import copyfile
 from ..unimash import _  # Polemos
-from .. import mosh
+from ..mprofile import profilePaths as profilePaths
 import wx.lib.dialogs as wx_dialogs_po  # Polemos
 import wx.html  # Polemos
 import interface  # Polemos
@@ -156,7 +157,7 @@ class netProgressDialog:  # Polemos
 
 
 class ConflictDialog(wx.Dialog):  # Polemos
-    """A filetree copy resolution dialog."""
+    """A file-tree copy resolution dialog."""
     GetData = False
 
     def __init__(self, parent, modName, title=_(u'Target folder already exists...')):
@@ -788,7 +789,7 @@ class ListDialog(wx.Dialog):  # Polemos
         """Init."""
         wx.Dialog.__init__(self, parent, id=wx.ID_ANY, title=title, pos=dPos, size=Size(417, 234), style=wx.STAY_ON_TOP|wx.DEFAULT_DIALOG_STYLE)
         if data != {}: self.data = data
-        else:self.data = {}
+        else: self.data = {}
 
         if True:  # Contents
             self.contents_list = wx.ListBox(self, wx.ID_ANY, dPos, dSize, u'', wx.LB_ALWAYS_SB|wx.LB_SORT)
@@ -801,6 +802,7 @@ class ListDialog(wx.Dialog):  # Polemos
             self.cancel_button = wx.Button(self, wx.ID_CANCEL, _(u'Cancel'), dPos, (60,26), 0)
 
         if True:  # Theming
+            self.contents_list.SetFont(wx.Font(9, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, ''))
             self.contents_list.SetForegroundColour(wx.Colour(0, 0, 0))
             self.contents_list.SetBackgroundColour(wx.Colour(255, 255, 255))
 
@@ -826,17 +828,20 @@ class ListDialog(wx.Dialog):  # Polemos
         self.ShowModal()
 
     def OnCancel(self, event):
+        """On cancel."""
         self.GetValue = False
         self.data = {}
         self.Destroy()
 
     def OnScreen(self):
+        """Show list."""
         try:
             self.screen_data = [u'[%s] : [%s]' % (x, self.data[x]) for x in self.data]
             self.contents_list.SetItems(self.screen_data)
         except: pass
 
     def add(self, event):
+        """Add item."""
         dialog = ItemDialog(self, _(u'Add Command'), {u'': u''})
         value = dialog.GetValue
         if value == {u'': u''}: return
@@ -845,14 +850,16 @@ class ListDialog(wx.Dialog):  # Polemos
             self.OnScreen()
 
     def CurrentItem(self):
+        """On item select actions."""
         try:
             command = self.contents_list.GetString(self.contents_list.GetSelection())
             name, args = command.split(u' : ')
             name, args = name.strip(u'[] '), args.strip(u'[] ')
             return name, args, {name:args}
-        except: pass # In a way we propagate the exception to the caller.
+        except: pass  # In a way we propagate the exception to the caller.
 
     def edit(self, event):
+        """Edit selected."""
         try: name, args, result = self.CurrentItem()
         except: return
         dialog = ItemDialog(self, _(u'Edit Command'), result)
@@ -864,12 +871,14 @@ class ListDialog(wx.Dialog):  # Polemos
             self.OnScreen()
 
     def remove(self, event):
+        """Remove selected"""
         try:
             del self.data[self.CurrentItem()[0]]
             self.OnScreen()
         except: pass
 
     def OnOK(self, event):
+        """On OK."""
         self.GetValue = self.data
         self.data = {}
         self.Destroy()
@@ -1161,7 +1170,7 @@ class AdvLog(wx.Dialog):  # Polemos
         dialog = wx.FileDialog(self, _(u'Save log'), singletons.MashDir, self.logname, '*.log', wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT)
         if dialog.ShowModal() == wx.ID_OK:
             fileName = os.path.join(dialog.GetDirectory(), dialog.GetFilename())
-            with codecs.open(fileName, 'w', encoding='utf-8', errors='replace') as file:
+            with io.open(fileName, 'w', encoding='utf-8', errors='replace') as file:
                 file.write(self.winlog())
 
     def close(self, event):
@@ -1407,7 +1416,8 @@ class HelpDialog(wx.Dialog):  # Polemos
             self.main.SetMinimumPaneSize(178)
             self.conText.Wrap(-1)
             indexSizer = wx.BoxSizer(wx.VERTICAL)
-            indexSizer.AddMany([(self.conText,0,wx.ALL|wx.EXPAND,5),(self.search,0,wx.EXPAND|wx.RIGHT|wx.LEFT,5),(self.index,1,wx.EXPAND|wx.TOP|wx.RIGHT|wx.LEFT,5)])
+            indexSizer.AddMany([(self.conText,0,wx.ALL|wx.EXPAND,5),
+                (self.search,0,wx.EXPAND|wx.RIGHT|wx.LEFT,5),(self.index,1,wx.EXPAND|wx.TOP|wx.RIGHT|wx.LEFT,5)])
             contentSizer = wx.BoxSizer(wx.VERTICAL)
             contentSizer.Add(self.help, 1, wx.EXPAND, 5)
             self.indexPanel.SetSizer(indexSizer)
@@ -1509,7 +1519,7 @@ class HelpDialog(wx.Dialog):  # Polemos
         # Morrowind - OpenMW/TES3mp support
         helpFile ='Wrye Mash.dat' if not self.openmw else 'openmw.dat'
         path = os.path.join(singletons.MashDir, helpFile)
-        with codecs.open(path, 'r') as hlpData:
+        with io.open(path, 'r') as hlpData:
             self.helpData = hlpData.read()
         self.help.SetPage(self.helpData)
 
@@ -1527,4 +1537,157 @@ class HelpDialog(wx.Dialog):  # Polemos
             conf.settings['mash.help.sash'] = self.main.GetSashPosition()
             conf.settings['mash.help.pos'] = self.GetPosition()
             conf.settings['mash.help.size'] = self.GetSizeTuple()
+        self.Destroy()
+
+
+class ConfBackup(wx.Dialog):
+    """A dialog for performing manual backups of Morrowind/OpenMW configuration files."""
+
+    def __init__(self, parent=None):
+        """Init."""
+        wx.Dialog.__init__(self, parent, id=wx.ID_ANY, title=_(u'Backup/Restore Configuration'), pos=dPos,
+                           size=wx.Size(602, 300), style=wx.DEFAULT_DIALOG_STYLE|wx.STAY_ON_TOP)
+        self.SetSizeHints(-1, -1)
+        self.confFileNamesTemplate = ('morrowind.ini', 'openmw.cfg', 'pluginlist.json')
+        self.confInit()
+        self.timer_po()
+        cnfListChoices = self.setConfList()
+
+        if True:  # Content
+            # Main
+            self.intro = wx.StaticText(self, wx.ID_ANY, _(u'Use [Ctrl] + [Left Mouse Click] to select/unselect multiple items:'), dPos, dSize,0)
+            self.cnfList = wx.ListBox(self, wx.ID_ANY, dPos, dSize, cnfListChoices, wx.LB_ALWAYS_SB|wx.LB_EXTENDED)
+            # Buttons
+            self.res_btn = wx.Button(self, wx.ID_ANY, _(u'Restore Selected'), dPos, wx.Size(160, 22), 0)
+            self.del_btn = wx.Button(self, wx.ID_ANY, _(u'Delete Selected'), dPos, wx.Size(160, 22), 0)
+            self.bck_btn = wx.Button(self, wx.ID_ANY, _(u'Backup Current Configuration'), dPos, wx.Size(180, 22), 0)
+            self.cnl_btn = wx.Button(self, wx.ID_CANCEL, _(u'Exit'), dPos, wx.Size(55, 22), 0)
+
+        if True:  # Theming
+            self.intro.Wrap(-1)
+            self.cnfList.SetFont(wx.Font(10, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, ''))
+            '''self.SetForegroundColour(wx.Colour(240, 240, 240))
+            self.SetBackgroundColour(wx.Colour(240, 240, 240))
+            self.intro.SetForegroundColour(wx.Colour(0, 0, 0))
+            self.intro.SetBackgroundColour(wx.Colour(240, 240, 240))'''
+            self.cnfList.SetForegroundColour(wx.Colour(0, 0, 0))
+            self.cnfList.SetBackgroundColour(wx.Colour(255, 255, 255))
+            self.del_btn.SetForegroundColour(wx.RED)
+
+        if True:  # Layout
+            contentSizer = wx.BoxSizer(wx.VERTICAL)
+            contentSizer.AddMany([(self.intro, 0, wx.TOP|wx.RIGHT|wx.LEFT, 5), (self.cnfList, 1, wx.EXPAND|wx.ALL, 5)])
+            btnSizer = wx.BoxSizer(wx.HORIZONTAL)
+            btnSizer.AddMany([(self.res_btn, 0, wx.LEFT|wx.RIGHT, 5), ((0,0),1,0,5), (self.del_btn, 0, wx.LEFT|wx.RIGHT, 5), ((0,0),1,0,5),
+                (self.bck_btn, 0, wx.RIGHT|wx.LEFT, 5), (self.cnl_btn, 0, wx.LEFT|wx.RIGHT|wx.DOWN, 5)])
+            mainSizer = wx.BoxSizer(wx.VERTICAL)
+            mainSizer.AddMany([(contentSizer, 1, wx.EXPAND, 5), (btnSizer, 0, wx.ALIGN_RIGHT|wx.EXPAND, 5)])
+            self.SetSizer(mainSizer)
+            self.Layout()
+
+        if True:  # Events
+            wx.EVT_CLOSE(self, self.OnExit)
+            self.res_btn.Bind(wx.EVT_BUTTON, self.restore)
+            self.del_btn.Bind(wx.EVT_BUTTON, self.delete)
+            self.bck_btn.Bind(wx.EVT_BUTTON, self.backup)
+            wx.EVT_BUTTON(self, wx.ID_CANCEL, self.OnExit)
+
+        self.ShowModal()
+
+    def timer_po(self):
+        """Timer for buttons."""
+        self.timer = wx.Timer(self)
+        self.Bind(wx.EVT_TIMER, self.onUpdate, self.timer)
+        self.timer.Start(100)
+
+    def onUpdate(self, event):
+        """Timer actions."""
+        if len(self.cnfList.GetSelections()) > 1 or not self.cnfList.GetSelections():
+            if self.res_btn.IsEnabled(): self.res_btn.Disable()
+        else:
+            if not self.res_btn.IsEnabled(): self.res_btn.Enable()
+        if not self.cnfList.GetSelections():
+            if self.del_btn.IsEnabled(): self.del_btn.Disable()
+        else:
+            if not self.del_btn.IsEnabled(): self.del_btn.Enable()
+
+    def confInit(self):
+        """Set conf path info."""
+        self.confBckDir = profilePaths()['confBcks']
+        self.openmw = conf.settings['openmw']
+        if not self.openmw:
+            self.confFiles = {'Morrowind.ini': os.path.join(conf.settings['mwDir'], 'Morrowind.ini')}
+        elif self.openmw:
+            self.confFiles = {'OpenMW.cfg': os.path.join(conf.settings['openmwprofile'], 'OpenMW.cfg')}
+            if conf.settings['tes3mp']: self.confFiles['pluginlist.json'] = conf.settings['TES3mpConf']
+
+    def setConfList(self):
+        """Creates configuration files list."""
+        rawConfList = {x:os.path.join(self.confBckDir, x) for x in os.listdir(
+            self.confBckDir) if not os.path.isdir(os.path.join(self.confBckDir, x))}
+        rawConfIndex = sorted([rawConfList[x] for x in rawConfList], key=os.path.getmtime, reverse=True)
+        sortedRawConfList = [x.replace(self.confBckDir, '').replace('\\', '') for x in rawConfIndex]
+        if not self.openmw:  # Morrowind
+            ConfList = [x for x in sortedRawConfList if x.endswith('.ini')]
+        elif self.openmw:  # OpenMW/TES3mp
+            ConfList = [x for x in sortedRawConfList if x.endswith('.cfg') or x.endswith('.json')]
+        return [x for x in ConfList if x.split(']')[1].lower() in self.confFileNamesTemplate]  # One last check.
+
+    def restore(self, event):
+        """Restore actions"""
+        fnameS = self.cnfList.GetString(self.cnfList.GetSelections()[0])
+        fname = fnameS.split(']')[1]  # Brutal, but efficient
+        if fname.lower() == 'morrowind.ini':  # Morrowind
+            if conf.settings['mwDir']:  # Not really needed though...
+                src = os.path.join(self.confBckDir, fnameS)
+                dst = os.path.join(conf.settings['mwDir'], fname)
+            else:
+                WarningMessage(self, _(u'Unable to Restore:\n\nMorrowind is not set correctly in settings.\n'
+                                     u'Please open the settings window and check the configuration.'))
+                return
+        elif fname.lower() == 'openmw.cfg':  # OpenMW
+            if conf.settings['openmwprofile']:
+                src = os.path.join(self.confBckDir, fnameS)
+                dst = os.path.join(conf.settings['openmwprofile'], fname)
+            else:
+                WarningMessage(self, _(u'Unable to Restore:\n\nOpenMW is not set in settings.\n'
+                                     u'Please open the settings window and set the configuration of OpenMW.'))
+                return
+        elif fname.lower() == 'pluginlist.json':  # TES3mp
+            if conf.settings['TES3mpConf']:
+                src = os.path.join(self.confBckDir, fnameS)
+                dst = os.path.join(conf.settings['TES3mpConf'], fname)
+            else:
+                WarningMessage(self, _(u'Unable to Restore:\n\nTES3mp is not set in settings.\n'
+                                     u'Please open the settings window and set the configuration of TES3mp.'))
+                return
+        # File actions.
+        try: copyfile(src, dst)
+        except IOError as err:  # Access Denied.
+            ErrorMessage(self, _(u'Access Denied, unable to overwrite destination:\n\n%s') % err, _(u'Access Denied'))
+        except Exception as err:  # Who knows.
+            ErrorMessage(self, _(u'An error occurred while trying to restore:\n\n%s' % err))
+
+    def backup(self, event):
+        """Backup actions"""
+        timeStr = timestamp("%Y-%m-%d_%H-%M-%S")
+        for fl in self.confFiles:
+            src = self.confFiles[fl]
+            dst = os.path.join(self.confBckDir, '[%s]%s' % (timeStr, fl))
+            try: copyfile(src, dst)
+            except Exception as err:
+                ErrorMessage(self, _(u'An error occurred while trying to backup configuration:\n\n%s' % err))
+        self.cnfList.SetItems(self.setConfList())
+
+    def delete(self, event):
+        """Delete actions"""
+        for fl in self.cnfList.GetSelections():
+            target = os.path.join(self.confBckDir, self.cnfList.GetString(fl))
+            try: os.remove(target)
+            except Exception as err:
+                ErrorMessage(self, _(u'An error occurred while trying to delete the selected item(s):\n\n%s' % err))
+        self.cnfList.SetItems(self.setConfList())
+
+    def OnExit(self, event):
+        """Exit dialog."""
         self.Destroy()

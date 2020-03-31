@@ -27,16 +27,11 @@
 # ===========================================================================================
 
 
-import codecs
-import json
-import os
-import scandir
-import sys
-import wx
+import io, json, os, scandir, sys, wx
 import dialog as gui
 from ..plugins.mlox.loader import Mlox_The_Path
 from .. import conf
-from ..unimash import _
+from ..unimash import _, profileEncodings, defaultEncoding
 
 # Constants
 MashDir = os.path.dirname(sys.argv[0])
@@ -59,7 +54,7 @@ class WizardDialog(wx.Dialog):
     def __init__(self, title=u'Wrye Mash Polemos fork', pos=dPos, style=wx.DEFAULT_DIALOG_STYLE|wx.STAY_ON_TOP|wx.RESIZE_BORDER):
         wx.Dialog.__init__(self, parent=None, id=wx.ID_ANY, title=title, pos=pos, size=Size(415, 500), style=style)
         self.Interface_Themes = [x[0] for x in self.importThemeList()]
-        self.Encoding_Ch = [('%s, %s' % (x, conf.settings['mash.encodings'][x])) for x in conf.settings['mash.encodings']]
+        self.Encoding_Ch = [('%s, %s' % (x, profileEncodings[x])) for x in profileEncodings]
         self.MashDate = conf.settings['mash.version']
         self.SetSizeHints(-1, -1)
         self.WMPF_sword = wx.StaticBitmap(self, wx.ID_ANY, wx.Bitmap(u'images/daggerfall.png',wx.BITMAP_TYPE_ANY), dPos, dSize, 0)
@@ -418,7 +413,7 @@ class WizardDialog(wx.Dialog):
         themeData = []*(len(themeList)+1)
         for theme in themeList:
             themePath = os.path.join(themedir, theme)
-            with codecs.open(themePath, 'r', 'utf-8') as rawTheme:
+            with io.open(themePath, 'r', encoding='utf-8') as rawTheme:
                 themeRaw = json.load(rawTheme)
                 themeData.append((themeRaw['theme.info'], theme))
         if not [name for name in themeData if name[0] == 'Default theme']:themeData.append(('Default theme', None))
@@ -646,7 +641,7 @@ class WizardDialog(wx.Dialog):
         conf.settings['timeframe.check'] = self.Update_spinCtrl.GetValue()
         conf.settings['asked.check'] = True
         conf.settings['active.theme'] = [x for num, x in enumerate(self.themeData) if num == self.Interface_choices.GetSelection()][0]
-        conf.settings['profile.encoding'] = [enc for enc in conf.settings['mash.encodings'] if enc in
+        conf.settings['profile.encoding'] = [enc for enc in profileEncodings if enc in
                     [x for num, x in enumerate(self.Encoding_Ch) if num == self.Encoding_choices.GetSelection()][0]][0]
 
         if not conf.settings['openmw']:  # Regular Morrowind
@@ -681,7 +676,8 @@ class WizardDialog(wx.Dialog):
         self.Update_checkBox.SetValue(conf.settings['enable.check'])
         self.Update_spinCtrl.SetValue(conf.settings['timeframe.check'])
         self.Interface_choices.SetSelection([num for num, x in enumerate(self.themeData) if x[0] == conf.settings['active.theme'][0]][0])
-        self.Encoding_choices.SetSelection([num for num, x in enumerate(self.Encoding_Ch) if conf.settings['profile.encoding'] in x][0])
+        try: self.Encoding_choices.SetSelection([num for num, x in enumerate(self.Encoding_Ch) if conf.settings['profile.encoding'] in x][0])
+        except: self.Encoding_choices.SetSelection([num for num, x in enumerate(self.Encoding_Ch) if defaultEncoding in x][0])
 
         if not conf.settings['openmw']:  # Regular Morrowind
             try: self.fldMw.SetValue(conf.settings['mwDir'])

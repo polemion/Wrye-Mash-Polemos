@@ -37,6 +37,15 @@ usualEncodings = (
     None,                   # Default
 )
 
+profileEncodings = {
+        'cp1252': 'Western Latin (Morrowind default)',
+        'cp1250': 'Central European Latin (Polish)',
+        'cp1251': 'Cyrillic alphabets'
+}
+
+defaultEncoding = 'utf-8'
+if not defaultEncoding in profileEncodings:
+    profileEncodings[defaultEncoding] = '(Wrye Mash default)'
 
 def compileTranslator(txtPath, pklPath):
     """Compiles specified txtFile into pklFile."""

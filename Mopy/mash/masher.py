@@ -40,7 +40,7 @@
 
 # Imports
 import cStringIO
-import codecs  # Polemos
+import io  # Polemos
 import os
 import re
 import shutil
@@ -76,7 +76,7 @@ from gui.utils import UtilsPanel as UtilsPanel, UtilsList as UtilsList  # Polemo
 from gui.wizard import WizardDialog  # Polemos
 from plugins import tes3cmd
 from unimash import _  # Polemos
-from merrors import StateError, UncodedError
+from merrors import StateError as StateError, UncodedError as UncodedError
 from mosh import formatInteger, formatDate, ResetTempDir  # Polemos
 from sfix import Popen  # Polemos
 from unimash import n_path, uniChk, fChk, uniformatDate  # Polemos
@@ -545,7 +545,7 @@ class ListEditorDialog(wx.Dialog):
         #--Data
         itemDex = selections[0]
         item = self.items[itemDex]
-        if not self.data.remove(item): return 
+        if not self.data.remove(item): return
         #--GUI
         del self.items[itemDex]
         self.list.Delete(itemDex)
@@ -1212,7 +1212,7 @@ class MasterList(gui.List):
             if not self.load(mmName): return False
         #--Select master
         for masterInfo in masterInfos: masterInfo.isLoaded = True
-        if masterName not in self.newMasters: 
+        if masterName not in self.newMasters:
             self.newMasters.append(masterName)
             if masterName not in self.allMasters: self.allMasters.append(masterName)
             self.ReList()
@@ -1342,7 +1342,7 @@ class MasterList(gui.List):
             if not masterInfo.modInfo or not masterInfo.isLoaded: modMap[oldMod] = -1  #--Delete
             else:
                 masterName = masterInfo.name
-                if masterName not in self.newMasters: raise mosh.mError, _(u"Missing master: %s" % masterName)
+                if masterName not in self.newMasters: raise mosh.MoshError, _(u"Missing master: %s" % masterName)
                 newMod = self.newMasters.index(masterName) + 1
                 if newMod != oldMod: modMap[oldMod] = newMod
                 #--Object map?
@@ -1631,7 +1631,7 @@ class ModList(gui.List, gui.ListDragDropMixin):  # Polemos: OpenMW/TES3mp suppor
     def OnAPress(self, event):
         if event.ControlDown(): self.SelectAll()
         else: self.OnGenKeys(u'A')
-    
+
     def OnUpPress(self, event):
         event.Skip()
         self.moveSelected(event, (-1))
@@ -2026,7 +2026,8 @@ class ModDetails(wx.Window): # Polemos: fixed bugs, refactored, optimised, recod
             sizer_h0 = wx.BoxSizer(wx.HORIZONTAL)
             sizer_h0.AddMany([(modText, 0, 0, 4), ((0, 0), 1), (self.version, 0, wx.RIGHT, 4)])
             sizer_h1 = wx.BoxSizer(wx.HORIZONTAL)
-            sizer_h1.AddMany([((0, 0), 1), (self.save, 0, wx.RIGHT, 4), (self.master_btn, 0, wx.CENTER, 4), (self.cancel, 0, wx.LEFT, 4), ((0, 0), 1)])
+            sizer_h1.AddMany([((0, 0), 1), (self.save, 0, wx.RIGHT, 4),
+                (self.master_btn, 0, wx.CENTER, 4), (self.cancel, 0, wx.LEFT, 4), ((0, 0), 1)])
             sizer = wx.BoxSizer(wx.VERTICAL)
             self.SetSizer(sizer)
             sizer.AddMany([(toolbar_sizer, 0, wx.EXPAND, 5),(sizer_h0,0,wx.EXPAND),self.file,self.author,
@@ -2059,7 +2060,7 @@ class ModDetails(wx.Window): # Polemos: fixed bugs, refactored, optimised, recod
         if backupFile is None: return
         srcDir = os.path.join(singletons.MashDir, 'snapshots')
         try:
-            with codecs.open((os.path.join(srcDir, 'datasnap%s.txt'%backupFile)), 'r', encoding=self.encod) as f:
+            with io.open((os.path.join(srcDir, 'datasnap%s.txt'%backupFile)), 'r', encoding=self.encod) as f:
                 restore_po = f.readlines()
         except:
             gui.dialog.ErrorMessage(self.window, _(u'Couldn\'t find or open the snapshot file.'))
@@ -2694,7 +2695,7 @@ class SaveDetails(wx.Window): # Polemos: fixed old bugs, refactored, optimized, 
     def SetFile(self,fileName='SAME'):
         """Set file to be viewed."""
         #--Reset?
-        if fileName == 'SAME': 
+        if fileName == 'SAME':
             if not self.saveInfo or self.saveInfo.name not in mosh.saveInfos:
                 fileName = None
             else: fileName = self.saveInfo.name
@@ -3208,7 +3209,7 @@ class InstallersPanel(SashTankPanel): # Polemos: Refactored, changes.
                 files.sort(key=lambda x: sortKeys[x])
                 buff = ''
                 if header: buff = header+'\n'
-                buff += '\n'.join(files) 
+                buff += '\n'.join(files)
                 return buff
             elif header: return header+'\n'
             else: return ''
@@ -4112,18 +4113,26 @@ class MenuBar:  # Polemos
         self.PanelMenu.AppendSeparator()
         self.ID_plugins_CopyActive = self.PanelMenu.Append(wx.ID_ANY, _(u"Copy Active Mods"), _(u"Copy Active Mods in clipboard."))
         if True:  # "Snapshots" sub-items:
-            self.ID_snapshot_po_take = self.sub_PanelMenu1.Append(wx.ID_ANY, _(u"Take fast snapshot"), _(u"Take a fast snapshot of your mod order."))
-            self.ID_snapshot_po_restore = self.sub_PanelMenu1.Append(wx.ID_ANY, _(u"Restore fast snapshot"), _(u"Restore a fast snapshot of your mod order"))
-            self.ID_snapshot_po_select = self.sub_PanelMenu1.Append(wx.ID_ANY, _(u"Restore saved snapshot"), _(u"Find a saved snapshot file to restore your mod order."))
+            self.ID_snapshot_po_take = self.sub_PanelMenu1.Append(wx.ID_ANY, _(u"Take fast snapshot"),
+                                                                  _(u"Take a fast snapshot of your mod order."))
+            self.ID_snapshot_po_restore = self.sub_PanelMenu1.Append(wx.ID_ANY, _(u"Restore fast snapshot"),
+                                                                     _(u"Restore a fast snapshot of your mod order"))
+            self.ID_snapshot_po_select = self.sub_PanelMenu1.Append(wx.ID_ANY, _(u"Restore saved snapshot"),
+                                                                    _(u"Find a saved snapshot file to restore your mod order."))
             self.sub_PanelMenu1.AppendSeparator()
-            self.ID_snapshot_po_import = self.sub_PanelMenu1.Append(wx.ID_ANY, _(u"Import snapshot(s)"), _(u"Import snapshot(s) files from a directory."))
-            self.ID_snapshot_po_export = self.sub_PanelMenu1.Append(wx.ID_ANY, _(u"Export snapshot"), _(u"Export snapshot to a chosen directory."))
+            self.ID_snapshot_po_import = self.sub_PanelMenu1.Append(wx.ID_ANY, _(u"Import snapshot(s)"),
+                                                                    _(u"Import snapshot(s) files from a directory."))
+            self.ID_snapshot_po_export = self.sub_PanelMenu1.Append(wx.ID_ANY, _(u"Export snapshot"),
+                                                                    _(u"Export snapshot to a chosen directory."))
             self.PanelMenu.AppendMenu(wx.ID_ANY, _(u'&Snapshots'), self.sub_PanelMenu1)
         self.PanelMenu.AppendSeparator()
+        self.ID_Conf_Bck = self.PanelMenu.Append(wx.ID_ANY, _(u"Backup/Restore Config files"),
+                                                 _(u"Take a manual backup/restore of your Configuration."))
         self.ID_Files_Open = self.PanelMenu.Append(wx.ID_ANY, _(u"Open \"Data Files\" dir"), _(u"Open \"Data Files\" directory."))
         self.ID_Files_Unhide_mod = self.PanelMenu.Append(wx.ID_ANY, _(u"Unhide..."), _(u"Unhide selected mod.")).Enable(False)
         self.PanelMenu.AppendSeparator()
-        self.ID_Create_Mashed_Patch = self.PanelMenu.Append(wx.ID_ANY, _(u"Create Mashed Patch"), _(u"Automates creation, enabling and list importing for Mashed Patch."))
+        self.ID_Create_Mashed_Patch = self.PanelMenu.Append(wx.ID_ANY, _(u"Create Mashed Patch"),
+                                                            _(u"Automates creation, enabling and list importing for Mashed Patch."))
         self.MainMenuGUI.Append(self.PanelMenu, _(u'&Actions'))
         # Events:
         self.parent.Bind(wx.EVT_MENU, self.Mods_CopyActive, self.ID_plugins_CopyActive)
@@ -4132,6 +4141,7 @@ class MenuBar:  # Polemos
         self.parent.Bind(wx.EVT_MENU, self.snapshot_po_select, self.ID_snapshot_po_select)
         self.parent.Bind(wx.EVT_MENU, self.snapshot_po_import, self.ID_snapshot_po_import)
         self.parent.Bind(wx.EVT_MENU, self.snapshot_po_export, self.ID_snapshot_po_export)
+        self.parent.Bind(wx.EVT_MENU, self.Conf_Bck, self.ID_Conf_Bck)
         self.parent.Bind(wx.EVT_MENU, self.Files_Open, self.ID_Files_Open)
         #self.parent.Bind(wx.EVT_MENU, self.Files_Unhide_mod, self.ID_Files_Unhide_mod)
         self.parent.Bind(wx.EVT_MENU, self.Create_Mashed_Patch, self.ID_Create_Mashed_Patch)
@@ -4223,17 +4233,23 @@ class MenuBar:  # Polemos
         self.ID_Mods_CopyActive = self.PanelMenu.Append(wx.ID_ANY, _(u"Copy Active Mods"), _(u"Copy Active Mods in clipboard."))
         if True: # "Snapshots" sub-items:
             self.ID_snapshot_po_take = self.sub_PanelMenu1.Append(wx.ID_ANY, _(u"Take fast snapshot"), _(u"Take a fast snapshot of your mod order."))
-            self.ID_snapshot_po_restore = self.sub_PanelMenu1.Append(wx.ID_ANY, _(u"Restore fast snapshot"), _(u"Restore a fast snapshot of your mod order"))
-            self.ID_snapshot_po_select = self.sub_PanelMenu1.Append(wx.ID_ANY, _(u"Restore saved snapshot"), _(u"Find a saved snapshot file to restore your mod order."))
+            self.ID_snapshot_po_restore = self.sub_PanelMenu1.Append(wx.ID_ANY, _(u"Restore fast snapshot"),
+                                                                     _(u"Restore a fast snapshot of your mod order"))
+            self.ID_snapshot_po_select = self.sub_PanelMenu1.Append(wx.ID_ANY, _(u"Restore saved snapshot"),
+                                                                    _(u"Find a saved snapshot file to restore your mod order."))
             self.sub_PanelMenu1.AppendSeparator()
-            self.ID_snapshot_po_import = self.sub_PanelMenu1.Append(wx.ID_ANY, _(u"Import snapshot(s)"), _(u"Import snapshot(s) files from a directory."))
+            self.ID_snapshot_po_import = self.sub_PanelMenu1.Append(wx.ID_ANY, _(u"Import snapshot(s)"),
+                                                                    _(u"Import snapshot(s) files from a directory."))
             self.ID_snapshot_po_export = self.sub_PanelMenu1.Append(wx.ID_ANY, _(u"Export snapshot"), _(u"Export snapshot to a chosen directory."))
             self.PanelMenu.AppendMenu(wx.ID_ANY, _(u'&Snapshots'), self.sub_PanelMenu1)
         self.PanelMenu.AppendSeparator()
+        self.ID_Conf_Bck = self.PanelMenu.Append(wx.ID_ANY, _(u"Backup/Restore Morrowind.ini"),
+                                                 _(u"Take a manual backup/restore of your Configuration."))
         self.ID_Files_Open = self.PanelMenu.Append(wx.ID_ANY, _(u"Open \"Data Files\" dir"), _(u"Open \"Data Files\" directory."))
         self.ID_Files_Unhide_mod = self.PanelMenu.Append(wx.ID_ANY, _(u"Unhide..."), _(u"Unhide selected mod."))
         self.PanelMenu.AppendSeparator()
-        self.ID_Create_Mashed_Patch = self.PanelMenu.Append(wx.ID_ANY, _(u"Create Mashed Patch"), _(u"Automates creation, enabling and importing for Mashed Patch."))
+        self.ID_Create_Mashed_Patch = self.PanelMenu.Append(wx.ID_ANY, _(u"Create Mashed Patch"),
+                                                            _(u"Automates creation, enabling and importing for Mashed Patch."))
         self.MainMenuGUI.Append(self.PanelMenu, _(u'&Actions'))
         # Events:
         self.parent.Bind(wx.EVT_MENU, self.Mods_CopyActive, self.ID_Mods_CopyActive)
@@ -4242,6 +4258,7 @@ class MenuBar:  # Polemos
         self.parent.Bind(wx.EVT_MENU, self.snapshot_po_select, self.ID_snapshot_po_select)
         self.parent.Bind(wx.EVT_MENU, self.snapshot_po_import, self.ID_snapshot_po_import)
         self.parent.Bind(wx.EVT_MENU, self.snapshot_po_export, self.ID_snapshot_po_export)
+        self.parent.Bind(wx.EVT_MENU, self.Conf_Bck, self.ID_Conf_Bck)
         self.parent.Bind(wx.EVT_MENU, self.Files_Open, self.ID_Files_Open)
         self.parent.Bind(wx.EVT_MENU, self.Files_Unhide_mod, self.ID_Files_Unhide_mod)
         self.parent.Bind(wx.EVT_MENU, self.Create_Mashed_Patch, self.ID_Create_Mashed_Patch)
@@ -4394,6 +4411,7 @@ class MenuBar:  # Polemos
     def snapshot_po_select(self, event): snapshot_po_select.Execute(snapshot_po_select(), event)
     def snapshot_po_import(self, event): snapshot_po_import.Execute(snapshot_po_import(), event)
     def snapshot_po_export(self, event): snapshot_po_export.Execute(snapshot_po_export(), event)
+    def Conf_Bck(self, event): Mods_Conf_Bck.Execute(Mods_Conf_Bck(), event)
     def Files_Open(self, event): Files_Open.Execute(Files_Open(), event)
     def Files_Unhide_mod(self, event): Files_Unhide.Execute(Files_Unhide(), event, 'mod')
     def Create_Mashed_Patch(self, event): Create_Mashed_Patch.Execute(Create_Mashed_Patch(), event)
@@ -4464,7 +4482,8 @@ class MenuBar:  # Polemos
         # "Misc" items:
         self.ID_Files_Open_saves_po = self.misc_saveMenu.Append(wx.ID_ANY, _(u"&Open Saves dir"), _(u"Open default saves directory."))
         self.ID_Files_Unhide = self.misc_saveMenu.Append(wx.ID_ANY, _(u"&Unhide..."), _(u"Unhide hidden save files."))
-        self.ID_Saves_MapGridLines = self.map_sav = self.misc_saveMenu.Append(wx.ID_ANY, _(u"&World Map Gridlines"), _(u"World Map Gridlines??"), wx.ITEM_CHECK)
+        self.ID_Saves_MapGridLines = self.map_sav = self.misc_saveMenu.Append(wx.ID_ANY, _(u"&World Map Gridlines"),
+                                                                              _(u"World Map Gridlines??"), wx.ITEM_CHECK)
         self.MainMenuGUI.Append(self.misc_saveMenu, _(u'&Misc'))
         # Conditions
         self.saves_misc_cond()
@@ -4486,7 +4505,8 @@ class MenuBar:  # Polemos
             items = self.GetItems()
             curProfile = conf.settings.get('mash.profile', self.defaultName)
             if curProfile not in items: curProfile = self.defaultName
-            [panel_id(id).Check(item.lower() == curProfile.lower()) for id, item in zip(self.idList, items) if panel_label(id) == conf.settings['mash.profile']]
+            [panel_id(id).Check(item.lower() == curProfile.lower()) for id,
+                item in zip(self.idList, items) if panel_label(id) == conf.settings['mash.profile']]
         else:
             [panel_del(x.GetId()) for x in panel_get()]
             self.built_profiles_saves()
@@ -4758,7 +4778,7 @@ class DocBrowser(wx.Frame):  # Polemos: Refactored
         (workDir,fileName) = os.path.split(oldPath)
         #--Dialog
         dialog = wx.FileDialog(self,_(u"Rename file to:"), workDir,fileName, '*.*', wx.FD_SAVE|wx.FD_OVERWRITE_PROMPT)
-        if dialog.ShowModal() != wx.ID_OK: 
+        if dialog.ShowModal() != wx.ID_OK:
             dialog.Destroy()
             return None
         path = dialog.GetPath()
@@ -4843,7 +4863,7 @@ class DocBrowser(wx.Frame):  # Polemos: Refactored
             self.plainText.SetEditable(editing)
             self.docIsWtxt = self.GetIsWtxt(docPath)
             htmlPath = self.docIsWtxt and (os.path.splitext(docPath)[0]+'.html')
-            if htmlPath and (not os.path.exists(htmlPath) or 
+            if htmlPath and (not os.path.exists(htmlPath) or
                 (os.path.getmtime(docPath) > os.path.getmtime(htmlPath))):
                 import wtxt
                 docsDir = os.path.join(mosh.modInfos.dir,'Docs')
@@ -5180,12 +5200,12 @@ class MashApp(wx.App):  # Polemos: Added settings, file check, updates check, ml
 
 # Links -----------------------------------------------------------------------
 #class Link:
-#    """Abstract class for a menuitem or button. These objects are added to a 
-#    list, and the menuitems are then built on demand through the AppendToMenu 
+#    """Abstract class for a menuitem or button. These objects are added to a
+#    list, and the menuitems are then built on demand through the AppendToMenu
 #    method. Execution of the command is carried out by the Do method.
 #
-#    Design allows control items to be created by 1) defining link classes, and 
-#    2) creating link objects all at once in an initLinks method. This design 
+#    Design allows control items to be created by 1) defining link classes, and
+#    2) creating link objects all at once in an initLinks method. This design
 #    keeps link coding from being buried in the interface that it's attached to.
 #    """
 #    def __init__(self):
@@ -5512,7 +5532,7 @@ class Files_Unhide(Link): # Polemos: made compatible with Menu bar.
         #--File dialog
         if not os.path.exists(srcDir): os.makedirs(srcDir)
         dialog = wx.FileDialog(self.window,u'Unhide files:',srcDir, u'', wildcard, wx.FD_OPEN|wx.FD_MULTIPLE)
-        if dialog.ShowModal() != wx.ID_OK: 
+        if dialog.ShowModal() != wx.ID_OK:
             dialog.Destroy()
             return
         srcPaths = dialog.GetPaths()
@@ -5548,7 +5568,7 @@ class File_Delete(Link):
         message += '\n* ' + '\n* '.join(sorted(self.data))
         dialog = wx.MessageDialog(self.window,message,_(u'Delete Files'),
             style=wx.YES_NO|wx.ICON_EXCLAMATION)
-        if dialog.ShowModal() != wx.ID_YES: 
+        if dialog.ShowModal() != wx.ID_YES:
             dialog.Destroy()
             return
         dialog.Destroy()
@@ -5614,7 +5634,7 @@ class File_Duplicate(Link):
         (destDir,destName,wildcard) = (fileInfo.dir, root+' Copy'+ext,'*'+ext)
         if not os.path.exists(destDir): os.makedirs(destDir)
         dialog = wx.FileDialog(self.window,_(u'Duplicate as:'),destDir, destName,wildcard,wx.FD_SAVE|wx.FD_OVERWRITE_PROMPT)
-        if dialog.ShowModal() != wx.ID_OK: 
+        if dialog.ShowModal() != wx.ID_OK:
             dialog.Destroy()
             return
         (destDir,destName) = os.path.split(dialog.GetPath())
@@ -5779,7 +5799,7 @@ class File_Snapshot(Link):
         (destDir,destName,wildcard) = fileInfo.getNextSnapshot()
         if not os.path.exists(destDir): os.makedirs(destDir)
         dialog = wx.FileDialog(self.window,_(u'Save snapshot as:'),destDir, destName,wildcard,wx.FD_SAVE|wx.FD_OVERWRITE_PROMPT)
-        if dialog.ShowModal() != wx.ID_OK: 
+        if dialog.ShowModal() != wx.ID_OK:
             dialog.Destroy()
             return
         (destDir,destName) = os.path.split(dialog.GetPath())
@@ -5820,7 +5840,7 @@ class File_RevertToSnapshot(Link):
         if not os.path.exists(srcDir): os.makedirs(srcDir)
         try: dialog = wx.FileDialog(self.window, _(u'Revert %s to snapshot:') % (fileName,), srcDir, '', wildcard, wx.FD_OPEN)
         except: dialog = wx.FileDialog(self.window, _(u'Revert to snapshot?'), srcDir, '', wildcard, wx.FD_OPEN)
-        if dialog.ShowModal() != wx.ID_OK: 
+        if dialog.ShowModal() != wx.ID_OK:
             dialog.Destroy()
             return
         snapPath = dialog.GetPath()
@@ -5833,7 +5853,7 @@ class File_RevertToSnapshot(Link):
         except:
             message = (_(u"Revert to snapshot dated %s?") % (formatDate(mosh.getmtime(snapPath))))
             dialog = wx.MessageDialog(self.window, message, _(u'Revert to Snapshot'), style=wx.YES_NO | wx.ICON_EXCLAMATION)
-        if dialog.ShowModal() != wx.ID_YES: 
+        if dialog.ShowModal() != wx.ID_YES:
             dialog.Destroy()
             return
         wx.BeginBusyCursor()
@@ -5915,7 +5935,7 @@ class File_RevertToBackup:
         except:
             message = _(u"Revert file to backup dated %s?") % (uniformatDate(mosh.getmtime(self.backup)))
             dialog = wx.MessageDialog(self.window, message, _(u'Revert to Backup'), style=wx.YES_NO|wx.ICON_EXCLAMATION)
-        if dialog.ShowModal() == wx.ID_YES: 
+        if dialog.ShowModal() == wx.ID_YES:
             wx.BeginBusyCursor()
             dest = os.path.join(fileInfo.dir,fileName)
             shutil.copy(backup,dest)
@@ -5990,12 +6010,12 @@ class File_Remove_RefsData(ListEditorData):
         workDir = conf.settings.get('mosh.workDir',conf.settings['mwDir'])
         dialog = wx.FileDialog(self.parent,_(u'Select Ref Remover file or files:'),
             workDir,'', '*.*', wx.FD_OPEN|wx.FD_MULTIPLE)
-        if dialog.ShowModal() != wx.ID_OK: 
+        if dialog.ShowModal() != wx.ID_OK:
             dialog.Destroy()
             return None
         paths = dialog.GetPaths()
         dialog.Destroy()
-        if len(paths) == 0: 
+        if len(paths) == 0:
             return None
         elif len(paths) == 1:
             conf.settings.setChanged('mash.refRemovers.data')
@@ -6034,7 +6054,7 @@ class File_Remove_Refs:
     """Add ref remover links."""
     def __init__(self):
         """Initialize."""
-        self.safeCells = conf.settings['mash.refRemovers.safeCells'] 
+        self.safeCells = conf.settings['mash.refRemovers.safeCells']
         self.removers = conf.settings['mash.refRemovers.data']
 
     def GetItems(self):
@@ -6142,7 +6162,7 @@ class File_Replace_RefsData(ListEditorData):
         workDir = conf.settings.get('mosh.workDir',conf.settings['mwDir'])
         dialog = wx.FileDialog(self.parent,_(u'Select Ref Replacer list file:'),
             workDir,'', '*.*', wx.FD_OPEN)
-        if dialog.ShowModal() != wx.ID_OK: 
+        if dialog.ShowModal() != wx.ID_OK:
             dialog.Destroy()
             return None
         path = dialog.GetPath()
@@ -6322,7 +6342,7 @@ class File_RepairRefs(Link):
 #------------------------------------------------------------------------------
 
 class File_SortRecords(Link):
-    """Sorts the records in the file. 
+    """Sorts the records in the file.
     This is just to make records easier to find in TESCS Details view."""
 
     def AppendToMenu(self,menu,window,data):
@@ -6976,7 +6996,7 @@ class Installer_Duplicate(InstallerLink):
         if not result: return
         #--Error checking
         newName = GPath(result).tail
-        if not newName.s: 
+        if not newName.s:
             balt.showWarning(self.gTank,_(u"%s is not a valid name.") % result)
             return
         if newName in self.data:
@@ -7263,7 +7283,7 @@ class InstallerArchive_Unpack(InstallerLink):
         if not result: return
         #--Error checking
         project = GPath(result).tail
-        if not project.s or project.cext in ('.rar','.zip','.7z'): 
+        if not project.s or project.cext in ('.rar','.zip','.7z'):
             balt.ShowWarning(self.gTank,_(u"%s is not a valid project name.") % result)
             return
         if self.data.dir.join(project).isfile():
@@ -7739,7 +7759,7 @@ class snapshot_po_take(Link):  # Polemos
         log = mosh.LogFile(cStringIO.StringIO())
         for num, name in enumerate(mosh.mwIniFile.loadOrder): log('%s' % (name))
         text = mosh.winNewLines(log.out.getvalue())
-        with codecs.open((os.path.join(srcDir, 'snapshot.txt')), 'w', encoding=conf.settings['profile.encoding']) as f:
+        with io.open((os.path.join(srcDir, 'snapshot.txt')), 'w', encoding=conf.settings['profile.encoding']) as f:
             try: f.write(text)
             except: f.write(text.decode(conf.settings['profile.encoding']))
         gui.dialog.InfoMessage(self.window, _(u'Active mods snapshot taken.'))
@@ -7766,7 +7786,7 @@ class snapshot_po_restore(Link):  # Polemos
             gui.dialog.ErrorMessage(self.window, _(u'You need to create a snapshot file first.'))
             return
         try:
-            with codecs.open((os.path.join(srcDir, 'snapshot.txt')), 'r', encoding=conf.settings['profile.encoding']) as f: restore_po = f.readlines()
+            with io.open((os.path.join(srcDir, 'snapshot.txt')), 'r', encoding=conf.settings['profile.encoding']) as f: restore_po = f.readlines()
         except:
             gui.dialog.ErrorMessage(self.window, _(u'Couldn\'t open the snapshot file.'))
             return
@@ -7869,7 +7889,7 @@ class snapshot_po_select(Link):  # Polemos
         srcPath = dialog.GetPath()
         dialog.Destroy()
         try:
-            with codecs.open(srcPath, 'r', encoding=conf.settings['profile.encoding']) as f: select_po = f.readlines()
+            with io.open(srcPath, 'r', encoding=conf.settings['profile.encoding']) as f: select_po = f.readlines()
         except:
             gui.dialog.ErrorMessage(self.window, _(u'There was a problem opening this snapshot.'))
             return
@@ -7933,7 +7953,7 @@ class snapshot_po_export(Link):  # Polemos
             return
         (destDir,destName) = os.path.split(dialog.GetPath())
         dialog.Destroy()
-        with codecs.open((os.path.join(destDir, destName)), 'w', encoding=conf.settings['profile.encoding']) as f:
+        with io.open((os.path.join(destDir, destName)), 'w', encoding=conf.settings['profile.encoding']) as f:
             try: f.write(text)
             except: f.write(text.decode(conf.settings['profile.encoding']))
         gui.dialog.InfoMessage(self.window, _(u'Active mods snapshot exported to: \n%s' % (destDir,)))
@@ -7965,48 +7985,64 @@ class Mods_CopyActive(Link):  # Polemos: added a dialog informing about copying 
 
 #------------------------------------------------------------------------------
 
-class Mods_MorrowindIni(Link): # Polemos: made compatible with menubar.
+class Mods_MorrowindIni(Link):  # Polemos: made compatible with menubar.
     """Open Morrowind.ini."""
 
-    def AppendToMenu(self,menu,window,data):
+    def AppendToMenu(self, menu, window, data):
         """Add to menu."""
-        Link.AppendToMenu(self,menu,window,data)
-        menuItem = wx.MenuItem(menu,self.id,_(u'Morrowind.ini...'))
+        Link.AppendToMenu(self, menu, window, data)
+        menuItem = wx.MenuItem(menu, self.id, _(u'Morrowind.ini...'))
         menu.AppendItem(menuItem)
-        self.path = os.path.join(conf.settings['mwDir'],'Morrowind.ini')
-        menuItem.Enable(os.path.exists(self.path))
+        menuItem.Enable(os.path.exists(os.path.join(conf.settings['mwDir'], 'Morrowind.ini')))
 
     def Execute(self,event):
         """Handle selection."""
-        try: test = self.path
-        except: self.path = os.path.join(conf.settings['mwDir'],'Morrowind.ini')
-        os.startfile(self.path)
+        os.startfile(os.path.join(conf.settings['mwDir'], 'Morrowind.ini'))
+
+#------------------------------------------------------------------------------
+
+class Mods_Conf_Bck(Link):  # Polemos
+    """Manual backup of Morrowind/OpenMW configuration files."""
+
+    def AppendToMenu(self, menu, window, data):
+        """Add to menu."""
+        openmw = conf.settings['openmw']
+        Link.AppendToMenu(self, menu, window, data)
+        if not openmw: menuItem = wx.MenuItem(menu, self.id, _(u'Backup/Restore Morrowind.ini'))
+        elif openmw: menuItem = wx.MenuItem(menu, self.id, _(u'Backup/Restore Conf files'))
+        menu.AppendItem(menuItem)
+        if not openmw: path = os.path.join(conf.settings['mwDir'], 'Morrowind.ini')
+        elif openmw: path = os.path.join(conf.settings['openmwprofile'], 'OpenMW.cfg')
+        menuItem.Enable(os.path.exists(path))
+
+    def Execute(self,event):
+        """Handle selection."""
+        gui.dialog.ConfBackup()
 
 #------------------------------------------------------------------------------
 
 class Mods_OpenMWcfg(Link): # Polemos
     """Open OpenMW.cfg."""
 
-    def AppendToMenu(self,menu,window,data):
+    def AppendToMenu(self, menu, window, data):
         """Add to menu."""
-        Link.AppendToMenu(self,menu,window,data)
-        menuItem = wx.MenuItem(menu,self.id,_(u'OpenMW.cfg...'))
+        Link.AppendToMenu(self, menu, window, data)
+        menuItem = wx.MenuItem(menu, self.id, _(u'OpenMW.cfg...'))
         menu.AppendItem(menuItem)
-        self.path = os.path.join(conf.settings['openmwprofile'],'OpenMW.cfg')
-        menuItem.Enable(os.path.exists(self.path))
+        path = os.path.join(conf.settings['openmwprofile'],'OpenMW.cfg')
+        menuItem.Enable(os.path.exists(path))
 
     def Execute(self,event):
         """Handle selection."""
-        try: test = self.path
-        except: self.path = os.path.join(conf.settings['openmwprofile'],'OpenMW.cfg')
-        os.startfile(self.path)
+        path = os.path.join(conf.settings['openmwprofile'],'OpenMW.cfg')
+        os.startfile(path)
 
 #------------------------------------------------------------------------------
 
 class Mods_SelectedFirst(Link):  # Polemos: made compatible with toolbar menu.
     """Sort loaded mods to the top."""
 
-    def __init__(self,prefix=''):
+    def __init__(self, prefix=''):
         """Init."""
         Link.__init__(self)
         self.prefix = prefix
@@ -8230,10 +8266,10 @@ class Mods_IniTweaks(Link):  # Polemos: made compatible with toolbar menu.
         if not os.path.exists(mitDir):
             mitDir = conf.settings['mwDir']
         dialog = wx.FileDialog(self.window,_(u'INI Tweaks'),mitDir,'', '*.mit', wx.FD_OPEN )
-        if dialog.ShowModal() != wx.ID_OK: 
+        if dialog.ShowModal() != wx.ID_OK:
             dialog.Destroy()
             return
-        mitPath = dialog.GetPath() 
+        mitPath = dialog.GetPath()
         dialog.Destroy()
         mosh.mwIniFile.applyMit(mitPath)
         gui.dialog.InfoMessage(self.window, _(u'%s applied.') % (os.path.split(mitPath)[1],), _(u'INI Tweaks'))
@@ -8242,7 +8278,7 @@ class Mods_IniTweaks(Link):  # Polemos: made compatible with toolbar menu.
 
 class Mods_Tes3cmd_Fixit():  # Polemos: made compatible with toolbar menu, more.
     """TES3cmd fixit."""
-    
+
     def AppendToMenu(self, menu, window, data):
         self.window = window
         menuItem = menu.Append(wx.ID_ANY, _(u'Fixit (all active)'))
@@ -8358,7 +8394,7 @@ class Mods_Mlox(): # Polemos discarding mlox.py in favor of mlox.exe. Almost com
     def parseMlox(self, output):
         """Mlox mod order parser."""
         if os.path.isfile(os.path.join(self.mloxdir, output)):
-            with codecs.open(os.path.join(self.mloxdir, output), 'r', encoding=conf.settings['profile.encoding']) as mloxOut:
+            with io.open(os.path.join(self.mloxdir, output), 'r', encoding=conf.settings['profile.encoding']) as mloxOut:
                 return mloxOut.readlines(), True
         return None, False
 
@@ -8510,7 +8546,7 @@ class Mod_Labels:
         """Append label list to menu."""
         self.window = window
         self.data = data
-        menu.Append(self.idList.EDIT,self.editMenu) 
+        menu.Append(self.idList.EDIT,self.editMenu)
         menu.AppendSeparator()
         menu.Append(self.idList.NONE,_(u'None'))
         ids = iter(self.idList)
@@ -8624,7 +8660,7 @@ class Mod_Export_Dialogue(Link):
         textDir = conf.settings.get('mosh.workDir',conf.settings['mwDir'])
         #--File dialog
         dialog = wx.FileDialog(self.window,_(u'Export dialogs to:'),textDir, textName, '*.*', wx.FD_SAVE|wx.FD_OVERWRITE_PROMPT)
-        if dialog.ShowModal() != wx.ID_OK: 
+        if dialog.ShowModal() != wx.ID_OK:
             dialog.Destroy()
             return
         textPath = dialog.GetPath()
@@ -8655,7 +8691,7 @@ class Mod_Export_Scripts(Link):
         textDir = conf.settings.get('mosh.workDir',conf.settings['mwDir'])
         #--File dialog
         dialog = wx.FileDialog(self.window,_(u'Export scripts to:'),textDir, textName, '*.*', wx.FD_SAVE|wx.FD_OVERWRITE_PROMPT)
-        if dialog.ShowModal() != wx.ID_OK: 
+        if dialog.ShowModal() != wx.ID_OK:
             dialog.Destroy()
             return
         textPath = dialog.GetPath()
@@ -8689,7 +8725,7 @@ class Mod_Import_Dialogue(Link):
             textDir = conf.settings.get('mosh.workDir',conf.settings['mwDir'])
         #--File dialog
         dialog = wx.FileDialog(self.window,_(u'Import dialogs from:'),textDir, textName, '*.*', wx.FD_OPEN )
-        if dialog.ShowModal() != wx.ID_OK: 
+        if dialog.ShowModal() != wx.ID_OK:
             dialog.Destroy()
             return
         textPath = dialog.GetPath()
@@ -8848,7 +8884,7 @@ class Mod_Import_Scripts(Link):
             textDir = conf.settings.get('mosh.workDir',conf.settings['mwDir'])
         #--File dialog
         dialog = wx.FileDialog(self.window,_(u'Import scripts from:'),textDir, textName, '*.*', wx.FD_OPEN)
-        if dialog.ShowModal() != wx.ID_OK: 
+        if dialog.ShowModal() != wx.ID_OK:
             dialog.Destroy()
             return
         textPath = dialog.GetPath()
@@ -8891,7 +8927,7 @@ class Mod_Tes3cmd_Clean(Link):  # Polemos: Optimized code.
         logDir = os.path.join(conf.settings['mwDir'], u'Data Files', u'tes3cmd', u'Logs')
         if not os.path.exists(logDir): os.makedirs(logDir)
         for fileName in self.form.files:
-            with codecs.open(os.path.join(logDir, '%s.log' % fileName), 'w', encoding='utf-8') as log:
+            with io.open(os.path.join(logDir, '%s.log' % fileName), 'w', encoding='utf-8') as log:
                 log.write(self.form.GetLog(fileName))
         self.window.Refresh()
 
@@ -9088,7 +9124,7 @@ class Mod_RenumberRefs(Link):
             if not (0 < first <= 100000):
                 gui.dialog.ErrorMessage(self.window,_(u"Object index must be an integer in range 1:100,000."))
                 return
-            if first == curFirst: 
+            if first == curFirst:
                 gui.dialog.ErrorMessage(self.window,_(u"New object index is same as old object index!"))
                 return
             #--Renumber objects
@@ -9162,7 +9198,7 @@ class Mod_UpdatersData(ListEditorData):
         wildcard = _(u'Morrowind Mod Files')+' (*.esp;*.esm)|*.esp;*.esm'
         #--File dialog
         dialog = wx.FileDialog(self.parent,_(u'Select previous version:'),modDir, '', wildcard, wx.FD_OPEN)
-        if dialog.ShowModal() != wx.ID_OK: 
+        if dialog.ShowModal() != wx.ID_OK:
             dialog.Destroy()
             return None
         fromPath = dialog.GetPath()
@@ -9809,10 +9845,10 @@ class Masters_Update(Link):
 class Masters_SyncToLoad(Link):
     """Syncs master list to current load list (for save games) or to masters files in current load list (for mods)."""
 
-    def AppendToMenu(self,menu,window,data):
-        Link.AppendToMenu(self,menu,window,data)
-        if self.window.fileInfo.isMod(): menuItem = wx.MenuItem(menu,self.id,_(u"Sync to Load ESMs"))
-        else: menuItem = wx.MenuItem(menu,self.id,_(u"Sync to Load List"))
+    def AppendToMenu(self, menu, window, data):
+        Link.AppendToMenu(self, menu, window, data)
+        if self.window.fileInfo.isMod(): menuItem = wx.MenuItem(menu, self.id, _(u"Sync to Load ESMs"))
+        else: menuItem = wx.MenuItem(menu, self.id, _(u"Sync to Load List"))
         menu.AppendItem(menuItem)
 
     def Execute(self,event):
@@ -9879,7 +9915,8 @@ class Masters_RestoreModOrder(Link):  # Polemos
         self.window.Refresh()
         singletons.mashFrame.RefreshData()
         if missing_po: gui.dialog.WarningMessage(self.window, _(u"Mod order restored but the"
-                u" following mod files were either missing or stored in an unknown encoding (try renaming them if they exist): \n\n%s\n") % (missing_po.decode(conf.settings['profile.encoding'], 'replace'),))
+                u" following mod files were either missing or stored in an unknown encoding "
+                u"(try renaming them if they exist): \n\n%s\n") % (missing_po.decode(conf.settings['profile.encoding'], 'replace'),))
         else: gui.dialog.InfoMessage(self.window, _(u'Mod order successfully restored.'))
 
 
@@ -9902,7 +9939,7 @@ class Master_ChangeTo(Link):
         #--File Dialog
         wildcard = _(u'Morrowind Mod Files')+' (*.esp;*.esm)|*.esp;*.esm'
         dialog = wx.FileDialog(self.window,_(u'Change master name to:'), mosh.modInfos.dir, masterName, wildcard, wx.FD_OPEN)
-        if dialog.ShowModal() != wx.ID_OK: 
+        if dialog.ShowModal() != wx.ID_OK:
             dialog.Destroy()
             return
         (newDir,newName) = os.path.split(dialog.GetPath())
@@ -9929,7 +9966,7 @@ class Config_ScreenShots(Link): # Polemos: changed "Next Shot.." to a better nam
         menuItem = wx.MenuItem(menu,self.id,_(u'Configure screenshots'))
         menu.AppendItem(menuItem)
 
-    def Execute(self,event): # Polemos: Compatibility changes for menu bar.
+    def Execute(self,event):  # Polemos: Compatibility changes for the menu bar.
         ini = mosh.mwIniFile
         base = ini.getSetting('General','Screen Shot Base Name','ScreenShot')
         next = ini.getSetting('General','Screen Shot Index','0')
@@ -9947,7 +9984,7 @@ class Config_ScreenShots(Link): # Polemos: changed "Next Shot.." to a better nam
             LString('Screen Shot Enable'): '1',
             }}
         screensDir = GPath(newBase).head
-        if screensDir: 
+        if screensDir:
             if not screensDir.isabs(): screensDir = mosh.dirs['app'].join(screensDir)
             screensDir.makedirs()
         ini.saveSettings(settings)
@@ -9993,21 +10030,21 @@ class Screen_ConvertToJpg(Link):
 class Screen_Rename(Link):
     """Renames files by pattern."""
 
-    def AppendToMenu(self,menu,window,data):
-        Link.AppendToMenu(self,menu,window,data)
-        menuItem = wx.MenuItem(menu,self.id,_(u'Rename...'))
+    def AppendToMenu(self, menu, window, data):
+        Link.AppendToMenu(self, menu, window, data)
+        menuItem = wx.MenuItem(menu, self.id, _(u'Rename...'))
         menu.AppendItem(menuItem)
         menuItem.Enable(len(data) > 0)
 
-    def Execute(self,event):
+    def Execute(self, event):
         #--File Info
-        rePattern = re.compile(r'^([^\\/]+?)(\d*)(\.(jpg|bmp|png))$',re.I)
+        rePattern = re.compile(r'^([^\\/]+?)(\d*)(\.(jpg|bmp|png))$', re.I)
         fileName0 = self.data[0]
-        pattern = balt.askText(self.window,_(u"Enter new name. E.g. Screenshot 123.bmp"), _(u"Rename Files"),fileName0.s)
+        pattern = balt.askText(self.window, _(u"Enter new name. E.g. Screenshot 123.bmp"), _(u"Rename Files"), fileName0.s)
         if not pattern: return
         maPattern = rePattern.match(pattern)
         if not maPattern:
-            balt.showError(self.window,_(u"Bad extension or file root: %s" % pattern))
+            balt.showError(self.window, _(u"Bad extension or file root: %s" % pattern))
             return
         root,numStr,ext = maPattern.groups()[:3]
         numLen = len(numStr)
@@ -10015,7 +10052,7 @@ class Screen_Rename(Link):
         screensDir = mosh.screensData.dir
         for oldName in map(GPath,self.data):
             newName = GPath(root)+numStr+oldName.ext
-            if newName != oldName: 
+            if newName != oldName:
                 oldPath = screensDir.join(oldName)
                 newPath = screensDir.join(newName)
                 if not newPath.exists(): oldPath.moveTo(newPath)
@@ -10124,7 +10161,7 @@ class AutoQuit_Button(Link):
         self.gButton = None
 
     def SetState(self,state=None):
-        """Sets state related info. If newState != none, sets to new state first. 
+        """Sets state related info. If newState != none, sets to new state first.
         For convenience, returns state when done."""
         if state is None: #--Default
             state = conf.settings.get('mash.autoQuit.on',False)
@@ -10238,7 +10275,7 @@ def InitSettings():
     conf.settings = mosh.settings
     conf.settings.loadDefaults(conf.settingDefaults)
 
-def installers_choose(): # Polemos.
+def installers_choose():  # Polemos.
     """Select Installers dir if not already defined."""
     gui.dialog.WarningMessage(None, _(u'Installers dir is not defined. Click OK to select a folder to'
         u' use (for mod installers).\n\nIf you are upgrading and you get this message, select your old Installers directory.'))
@@ -10261,7 +10298,7 @@ def installers_choose(): # Polemos.
             return
 
 
-def InitDirs(): # Polemos: Added Installers dir check + OpenMW/TES3mp support.
+def InitDirs():  # Polemos: Added Installers dir check + OpenMW/TES3mp support.
     """Initialise directories."""
     if not conf.settings['openmw']:  # Regular Morrowind
         if conf.settings['sInstallersDir'] is None: installers_choose()
@@ -10334,15 +10371,15 @@ def InitImages():  #-# D.C.-G. for SettingsWindow, Polemos addons and changes (s
 def InitColors():  # Polemos
     """Initialize colors."""
     colors['mash.esm'] = colors['mash.installers.dirty'] = gui.interface.internalStyle['list.background']
-    colors['mash.doubleTime.not'] = (235,235,235)
-    colors['mash.doubleTime.exists'] = (255,220,220)
-    colors['mash.doubleTime.load'] = (255,100,100)
-    colors['mash.exOverLoaded'] = (0xFF,0x99,0)
-    colors['mash.masters.remapped'] = (100,255,100)
-    colors['mash.masters.changed'] = (220,255,220)
-    colors['mash.installers.skipped'] = (0xe0,0xe0,0xe0)
-    colors['mash.installers.outOfOrder'] = (0xDF,0xDF,0xC5)
-    colors['bash.installers.dirty'] = (0xFF,0xBB,0x33)
+    colors['mash.doubleTime.not'] = (235, 235, 235)
+    colors['mash.doubleTime.exists'] = (255, 220, 220)
+    colors['mash.doubleTime.load'] = (255, 100, 100)
+    colors['mash.exOverLoaded'] = (0xFF, 0x99, 0)
+    colors['mash.masters.remapped'] = (100, 255, 100)
+    colors['mash.masters.changed'] = (220, 255, 220)
+    colors['mash.installers.skipped'] = (0xe0, 0xe0, 0xe0)
+    colors['mash.installers.outOfOrder'] = (0xDF, 0xDF, 0xC5)
+    colors['bash.installers.dirty'] = (0xFF, 0xBB, 0x33)
 
 
 def Mw():  # Todo: Temporal solution, change.
@@ -10363,7 +10400,7 @@ def InitStatusBar():  #-# D.C.-G. for SettingsWindow, Polemos addons and changes
     MashStatusBar.links.append(App_Help())
 
 
-def InitMasterLinks():  # Polemos: Added sortby, restore mod order from save
+def InitMasterLinks():  # Polemos: Added sort-by, restore mod order from save
     """Initialize master list menus."""
     MasterList.mainMenu.append(Masters_CopyList())
     MasterList.mainMenu.append(Masters_SyncToLoad())
@@ -10559,6 +10596,7 @@ def InitModLinks():  # Polemos addons and changes.
     if Mw(): ModList.mainMenu.append(Reset_Beth_Dates())
     if Mw(): ModList.mainMenu.append(Mods_MorrowindIni())
     else: ModList.mainMenu.append(Mods_OpenMWcfg())
+    ModList.mainMenu.append(Mods_Conf_Bck())
     if Mw(): ModList.mainMenu.append(Mods_IniTweaks())
     if Mw(): ModList.mainMenu.append(Mods_Replacers())
     ModList.mainMenu.append(SeparatorLink())

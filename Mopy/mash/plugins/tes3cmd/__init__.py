@@ -40,11 +40,11 @@
 
 import os
 import subprocess
-from mash.sfix import Popen # Polemos
+from ...sfix import Popen
 import threading
 import time
 import Queue as queue
-from mash import conf, singletons
+from ... import conf, singletons
 
 class HelperMixin: # Polemos fixes.
 
