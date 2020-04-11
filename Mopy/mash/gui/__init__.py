@@ -100,7 +100,7 @@ class ListDragDropMixin:
             else: return
         # Get bounding rect for the item being dropped onto and if the user is
         # dropping into the lower half of the rect, we want to insert _after_ this item.
-        try: # Polemos fix
+        try:  # Polemos fix
             rect = self.listCtrl.GetItemRect(toIdx)
             if y > rect.y + rect.height/2: toIdx += 1
         except: pass
@@ -191,7 +191,8 @@ class List(wx.Panel):  # Polemos: Additions.
                 (mouseItem, HitFlag) = self.list.HitTest(event.GetPosition())
                 if mouseItem != self.mouseItem and mouseItem != -1:
                     self.mouseItem = mouseItem
-                    itemColor = self.list.GetItemTextColour(mouseItem) if self.list.GetItemTextColour(mouseItem) != wx.NullColour else self.fontDefaultColor
+                    itemColor = self.list.GetItemTextColour(mouseItem) if self.list.GetItemTextColour(
+                        mouseItem) != wx.NullColour else self.fontDefaultColor
                     self.lastItemColor = (mouseItem, itemColor)
                     self.MouseEffect(mouseItem)
             elif event.Leaving() and self.mouseItem is not None and self.mouseItem != -1:

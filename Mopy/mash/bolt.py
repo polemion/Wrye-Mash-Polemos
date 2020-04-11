@@ -355,7 +355,7 @@ class Path(object): # Polemos: Unicode fixes.
         """Open a unicode file function."""
         if self._shead and not os.path.exists(self._shead):
             os.makedirs(self._shead)
-        return io.open(self._s,*args, encoding="utf-8")
+        return io.open(self._s, *args, encoding="utf-8")
 
     def makedirs(self):
         """Create dir function."""

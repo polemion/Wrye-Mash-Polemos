@@ -80,6 +80,7 @@ from merrors import StateError as StateError, UncodedError as UncodedError
 from mosh import formatInteger, formatDate, ResetTempDir  # Polemos
 from sfix import Popen  # Polemos
 from unimash import n_path, uniChk, fChk, uniformatDate  # Polemos
+from merrors import MashError as MashError  # Polemos
 
 # Constants
 DETACHED_PROCESS = 0x00000008       # Polemos: No console window.
@@ -558,7 +559,7 @@ class ListEditorDialog(wx.Dialog):
 
 #------------------------------------------------------------------------------
 
-class BSArchivesList(gui.List,  gui.ListDragDropMixin):  # Polemos
+class BSArchivesList(gui.List, gui.ListDragDropMixin):  # Polemos
     """BSA Archives."""
     # --Class Data
     mainMenu = []  # --Column menu
@@ -575,9 +576,10 @@ class BSArchivesList(gui.List,  gui.ListDragDropMixin):  # Polemos
         self.colReverse = conf.settings.getChanged('mash.Archives.colReverse')
         self.colWidths = conf.settings['mash.Archives.colWidths']
         # --Data/Items
+        singletons.ArchivesList = self
         self.data = data = mosh.BSAdata()
         self.bsafiles = mosh.mwIniFile
-        self.active_bsa = []
+        self.active_bsa = 0
         self.sort = conf.settings['mash.Archives.sort']
         # --Links
         self.mainMenu = BSArchivesList.mainMenu
@@ -597,33 +599,29 @@ class BSArchivesList(gui.List,  gui.ListDragDropMixin):  # Polemos
         self.data.refresh()
         self.chk_data()
         # --Details
-        if detail == 'SAME':
-            selected = set(self.GetSelected())
+        if detail == 'SAME': selected = set(self.GetSelected())
         else: selected = {detail}
         # --Populate
-        if files == 'ALL':
-            self.PopulateItems(selected=selected)
-        elif isinstance(files, StringTypes):
-            self.PopulateItem(files, selected=selected)
+        if files == 'ALL': self.PopulateItems(selected=selected)
+        elif isinstance(files, StringTypes): self.PopulateItem(files, selected=selected)
         else:  # --Iterable
-            for file in files:
-                self.PopulateItem(file, selected=selected)
+            for file in files: self.PopulateItem(file, selected=selected)
+        self.set_status()
 
     def chk_data(self):
-        """Remove non existant files."""
+        """Remove non existent files."""
         for x in self.data.keys():
             if not os.path.isfile(self.data[x][1]):
                 del self.data[x]
 
     def set_status(self):  # Polemos fix for Mods tab.
         """GUI toolbar status."""
-        self.Refresh()
         if not self.openmw:  # Polemos: Regular Morrowind support
             text = _(u" Mods: %d/%d   |  BSAs: %d/%d") % (
-                len(mosh.mwIniFile.loadFiles),len(mosh.modInfos.data),self.active_bsa, len(self.items))
+                len(mosh.mwIniFile.loadFiles), len(mosh.modInfos.data), self.active_bsa, len(self.items))
         if self.openmw:  # Polemos: OpenMW/TES3mp support
             text = _(u" Plugins: %d/%d   |  BSAs: %d/%d") % (
-                len(mosh.mwIniFile.loadFiles),len(mosh.modInfos.data),self.active_bsa,len(self.items))
+                len(mosh.mwIniFile.loadFiles), len(mosh.modInfos.data), self.active_bsa, len(self.items))
         singletons.statusBar.SetStatusField(text, 2)
 
     def bsa_active_count(self):
@@ -674,7 +672,7 @@ class BSArchivesList(gui.List,  gui.ListDragDropMixin):  # Polemos
             self.items.sort(key=lambda a: self.data[a][4])
         elif col == 'Size':
             self.items.sort(key=lambda a: self.data[a][3])
-        else: raise exception.MashError, _(u'Unrecognized sort key: %s' % col)
+        else: raise MashError(col)
         # --Ascending
         if reverse: self.items.reverse()
 
@@ -686,7 +684,7 @@ class BSArchivesList(gui.List,  gui.ListDragDropMixin):  # Polemos
         [disabled.append(x) if self.data[x][2] else enabled.append(x) for x in archives]
         if disabled: self.bsafiles.unload(disabled, action='Archives')
         if enabled: self.bsafiles.load(enabled, action='Archives')
-        self.set_status()
+        self.Refresh()
 
     def OnDoubleClick(self,event):
         """Handle double click event."""
@@ -942,7 +940,7 @@ class ModPackageList(gui.List):  # Polemos
         self.items.sort(lambda a, b: cmp(a.lower(), b.lower()))
         if col == 'Package': pass # Default
         elif col == 'Size': self.items.sort(key=lambda a: self.data[a][3])
-        else: raise exception.MashError, _(u'Unrecognized sort key: %s' % col)
+        else: raise MashError(col)
         # --Ascending
         if reverse: self.items.reverse()
 
@@ -1157,7 +1155,7 @@ class MasterList(gui.List):
             allMasters = self.allMasters
             data = self.data
             self.items.sort(key=lambda a: allMasters.index(data[a].name))
-        else: raise exception.MashError, _(u'Unrecognized sort key: %s' % col)
+        else: raise MashError(col)
         #--Ascending
         if reverse: self.items.reverse()
         #--ESMs First?
@@ -1410,7 +1408,7 @@ class ModList(gui.List, gui.ListDragDropMixin):  # Polemos: OpenMW/TES3mp suppor
         else: selected = {detail}
         #--Populate
         if files == 'ALL': self.PopulateItems(selected=selected)
-        elif isinstance(files, StringTypes): self.PopulateItem(files,selected=selected)
+        elif isinstance(files, StringTypes): self.PopulateItem(files, selected=selected)
         else: #--Iterable
             for file in files: self.PopulateItem(file, selected=selected)
         singletons.modDetails.SetFile(detail)
@@ -1515,7 +1513,7 @@ class ModList(gui.List, gui.ListDragDropMixin):  # Polemos: OpenMW/TES3mp suppor
             self.items.sort(key=lambda a: data[a].tes3.hedr.version)
         elif col == '#':
             self.items.sort(key=lambda a: data[a].mtime)
-        else: raise exception.MashError, _(u'Unrecognized sort key: %s' % col)
+        else: raise MashError(col)
         #--Ascending
         if reverse: self.items.reverse()
         #--ESMs First?
@@ -1525,7 +1523,8 @@ class ModList(gui.List, gui.ListDragDropMixin):  # Polemos: OpenMW/TES3mp suppor
         else:
             conf.settings['openmw.mods.esmsFirst'] = self.esmsFirst
             if self.esmsFirst or col in ['Load Order', '#', 'Modified']: self.items.sort(
-                lambda a, b: cmp(a.lower().endswith('.esm') and a.lower().endswith('.omwgame'), b.lower().endswith('.esp') and b.lower().endswith('.omwaddon')))
+                lambda a, b: cmp(a.lower().endswith('.esm') and a.lower().endswith('.omwgame'),
+                                 b.lower().endswith('.esp') and b.lower().endswith('.omwaddon')))
         #--Selected First?
         if not self.OpenMW: conf.settings['mash.mods.selectedFirst'] = self.selectedFirst
         else:  conf.settings['openmw.mods.selectedFirst'] = self.selectedFirst
@@ -1759,7 +1758,7 @@ class ModdataList(gui.List, gui.ListDragDropMixin):  # Polemos
         self.mainMenu = ModdataList.mainMenu
         self.itemMenu = ModdataList.itemMenu
         #--Parent init
-        gui.List.__init__(self,parent,-1,ctrlStyle=(wx.LC_REPORT))
+        gui.List.__init__(self,parent, -1, ctrlStyle=(wx.LC_REPORT))
         gui.ListDragDropMixin.__init__(self, self.list)
         #--Image List
         checkboxesIL = singletons.images['mash.checkboxes'].GetImageList()
@@ -1770,7 +1769,7 @@ class ModdataList(gui.List, gui.ListDragDropMixin):  # Polemos
         self.list.Bind(wx.EVT_KEY_DOWN, self.OnKeyDown)
         self.list.Bind(wx.EVT_CHAR, self.OnChar)
 
-    def Refresh(self,files='ALL',detail='SAME'):
+    def Refresh(self,files='ALL', detail='SAME'):
         """Refreshes UI for specified file."""
         self.data.refresh()
         #--Details
@@ -1778,9 +1777,9 @@ class ModdataList(gui.List, gui.ListDragDropMixin):  # Polemos
         else: selected = {detail}
         #--Populate
         if files == 'ALL': self.PopulateItems(selected=selected)
-        elif isinstance(files, StringTypes): self.PopulateItem(files,selected=selected)
+        elif isinstance(files, StringTypes): self.PopulateItem(files, selected=selected)
         else: #--Iterable
-            for file in files: self.PopulateItem(file,selected=selected)
+            for file in files: self.PopulateItem(file, selected=selected)
         singletons.modList.Refresh()
         singletons.ArchivesList.Refresh()
         singletons.mashFrame.SetStatusCount()
@@ -1802,13 +1801,13 @@ class ModdataList(gui.List, gui.ListDragDropMixin):  # Polemos
             else: value = ''
             #--Insert/SetString
             if mode and (colDex == 0): self.list.InsertStringItem(itemDex, value)
-            else: self.list.SetStringItem(itemDex, colDex, unicode(str(value), encoding='utf-8', errors='ignore')) # todo: test this
+            else: self.list.SetStringItem(itemDex, colDex, unicode(str(value), encoding='utf-8', errors='ignore'))  # todo: test this
         #--Image
         on = fileInfo[5]
         self.list.SetItemImage(itemDex,self.checkboxes.Getsimple(on))
         #--Selection State
-        if fileName in selected: self.list.SetItemState(itemDex,wx.LIST_STATE_SELECTED,wx.LIST_STATE_SELECTED)
-        else: self.list.SetItemState(itemDex,0,wx.LIST_STATE_SELECTED)
+        if fileName in selected: self.list.SetItemState(itemDex, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
+        else: self.list.SetItemState(itemDex, 0, wx.LIST_STATE_SELECTED)
 
     def SortItems(self,col=None,reverse=-2):
         (col, reverse) = self.GetSortSettings(col,reverse)
@@ -1824,7 +1823,7 @@ class ModdataList(gui.List, gui.ListDragDropMixin):  # Polemos
             self.items.sort(key=lambda a: data[a][4])
         elif col == 'Version':
             self.items.sort(key=lambda a: data[a][3])
-        else: raise exception.MashError, _(u'Unrecognized sort key: %s' % col)
+        else: raise MashError(col)
         #--Ascending
         if reverse: self.items.reverse()
 
@@ -1930,7 +1929,7 @@ class ModdataList(gui.List, gui.ListDragDropMixin):  # Polemos
             toIdx += 1
         self.data.moveTo(items)
         self.Refresh()
-        self.datamods.updateDatamods(self.items)
+        singletons.ModdataList.datamods.updateDatamods(self.items)
 
     def moveSelected(self, event, moveMod):
         """Moves selected files up or down (depending on moveMod)."""
@@ -1949,7 +1948,7 @@ class ModdataList(gui.List, gui.ListDragDropMixin):  # Polemos
         self.data.moveTo(items)
         if not selected: return
         self.Refresh()
-        self.datamods.updateDatamods(self.items)
+        singletons.ModdataList.datamods.updateDatamods(self.items)
 
 #------------------------------------------------------------------------------
 
@@ -2032,7 +2031,7 @@ class ModDetails(wx.Window): # Polemos: fixed bugs, refactored, optimised, recod
             self.SetSizer(sizer)
             sizer.AddMany([(toolbar_sizer, 0, wx.EXPAND, 5),(sizer_h0,0,wx.EXPAND),self.file,self.author,
                     self.modified,self.description,(self.masters,1,wx.EXPAND),(sizer_h1,0,wx.EXPAND|wx.TOP|wx.ALIGN_CENTER,4)])
-        if True: # Events
+        if True:  # Events
             self.restore_btn.Bind(wx.EVT_BUTTON, self.restore)
             self.backup_btn.Bind(wx.EVT_BUTTON, self.backup)
             self.master_btn.Bind(wx.EVT_BUTTON, self.MasterMenu)
@@ -2362,11 +2361,9 @@ class ModPanel(gui.NotebookPanel):  # Polemos: OpenMW/TES3mp support, fixes and 
             # Globals
             singletons.modList = ModList(self.leftPanel)
             singletons.modList.details = self.modDetails
-            singletons.ArchivesList = BSArchivesList(self)
-            singletons.BSArchives.details = self.BSArchives
             # Mini Tabs
             self.Adv_book.AddPage(singletons.modList.details, _(u'Mod Details'), True)
-            self.Adv_book.AddPage(singletons.BSArchives.details, _(u'BSA Archives'), False)
+            self.Adv_book.AddPage(singletons.BSArchives, _(u'BSA Archives'), False)
         if True:  # Layout
             self.modDetails.Fit()
             self.BSArchives.Fit()
@@ -2399,8 +2396,8 @@ class ModPanel(gui.NotebookPanel):  # Polemos: OpenMW/TES3mp support, fixes and 
         """Sets mod count in last field."""
         try:
             if not self.openmw:  # Polemos: Regular Morrowind support
-                text = _(u' Mods: %d/%d  | BSAs: %d/%d') % (len(mosh.mwIniFile.loadFiles), len(mosh.modInfos.data),
-                                                            singletons.BSArchives.Archives.active_bsa, len(singletons.BSArchives.Archives.items))
+                text = _(u' Mods: %d/%d  | BSAs: %d/%d') % (len(mosh.mwIniFile.loadFiles),
+                    len(mosh.modInfos.data), singletons.BSArchives.Archives.active_bsa, len(singletons.BSArchives.Archives.items))
             if self.openmw:  # Polemos: OpenMW/TES3mp support
                 text = _(u' Plugins: %d/%d  | BSAs: %d/%d') % (len(mosh.mwIniFile.loadFiles), len(mosh.modInfos.data),
                     len(mosh.mwIniFile.get_active_bsa()), len(singletons.BSArchives.Archives.items))
@@ -2456,15 +2453,15 @@ class SaveList(gui.List):  # Polemos: OpenMW support, additions, more...
         self.mainMenu = SaveList.mainMenu
         self.itemMenu = SaveList.itemMenu
         #--Parent init
-        gui.List.__init__(self,parent,-1,ctrlStyle=(wx.LC_REPORT))
+        gui.List.__init__(self,parent, -1, ctrlStyle=(wx.LC_REPORT))
         #--Image List
         checkboxesIL = self.checkboxes.GetImageList()
         self.list.SetImageList(checkboxesIL,wx.IMAGE_LIST_SMALL)
         #--Events
-        wx.EVT_LIST_ITEM_SELECTED(self,self.listId,self.OnItemSelected)
+        wx.EVT_LIST_ITEM_SELECTED(self, self.listId, self.OnItemSelected)
         self.list.Bind(wx.EVT_KEY_DOWN, self.OnKeyDown)
 
-    def Refresh(self,files='ALL',detail='SAME'):
+    def Refresh(self,files='ALL', detail='SAME'):
         """Refreshes UI for specified files."""
         #--Details
         if detail == 'SAME': selected = set(self.GetSelected())
@@ -2531,7 +2528,7 @@ class SaveList(gui.List):  # Polemos: OpenMW support, additions, more...
             self.items.sort(lambda a,b: cmp(
                 data[a].tes3.gmdt.curCell.lower(),
                 data[b].tes3.gmdt.curCell.lower()))
-        else: raise exception.MashError, _(u'Unrecognized sort key: %s' % col)
+        else: raise MashError(col)
         #--Ascending
         if reverse: self.items.reverse()
 
@@ -3663,7 +3660,7 @@ class MashFrame(wx.Frame):  # Polemos: Added a Menubar, OpenMW/TES3mp support, m
     """Main application frame."""
     mincush = False
 
-    def __init__(self, parent=None,pos=wx.DefaultPosition, size=(400, 500), style=wx.DEFAULT_FRAME_STYLE):
+    def __init__(self, parent=None, pos=wx.DefaultPosition, size=(400, 500), style=wx.DEFAULT_FRAME_STYLE):
         """Initialization."""
         # The One
         singletons.mashFrame = self
@@ -3735,7 +3732,7 @@ class MashFrame(wx.Frame):  # Polemos: Added a Menubar, OpenMW/TES3mp support, m
             if self.OpenMW:
                 mosh.mwIniFile.FullRefresh()
                 singletons.ModPackageList.Refresh()
-            # Check Archives
+            # Check Archives.
             singletons.ArchivesList.Refresh()
             # Repopulate Morrowind Mods.
             if popMods: singletons.modList.Refresh(popMods)
@@ -3750,41 +3747,44 @@ class MashFrame(wx.Frame):  # Polemos: Added a Menubar, OpenMW/TES3mp support, m
             #--Current notebook panel
             if singletons.gInstallers: singletons.gInstallers.frameActivated = True
             self.notebook.GetPage(self.notebook.GetSelection()).OnShow()
+            # Duplicate entries found in configuration files?
+            if mosh.mwIniFile.loadFilesDups:
+                mosh.mwIniFile.safeSave()
 
         if True:  #--WARNINGS------------------------------#
             # --Does morrowind.ini have any bad or missing files?
             if mosh.mwIniFile.loadFilesBad:
                 message = (_(u"Missing files and/or incorrect entries have been removed from load list:\n\n  %s")
-                    % (', '.join(mosh.mwIniFile.loadFilesBad),))
+                    % (u', '.join(mosh.mwIniFile.loadFilesBad),))
                 mosh.mwIniFile.safeSave()
-                gui.dialog.WarningMessage(self,message)
+                gui.dialog.WarningMessage(self, message)
             # --Was load list too long?
             if mosh.mwIniFile.loadFilesExtra:
                 message = (_(u"Load list has been truncated because it was too long:\n\n  %s")
-                    % (', '.join(mosh.mwIniFile.loadFilesExtra),))
+                    % (u', '.join(mosh.mwIniFile.loadFilesExtra),))
                 mosh.mwIniFile.safeSave()
-                gui.dialog.WarningMessage(self,message)
+                gui.dialog.WarningMessage(self, message)
             #--Any new corrupted mod files?
             corruptMods, message = set(mosh.modInfos.corrupted.keys()), ''
             if not corruptMods <= self.knownCorrupted:
                 message += _(u"The following mod files have corrupted headers: \n\n")
-                message += ','.join(sorted(corruptMods))+'.'
+                message += u','.join(sorted(corruptMods))+'.'
                 self.knownCorrupted |= corruptMods
             # --Any new corrupted saves?
             corruptSaves = set(mosh.saveInfos.corrupted.keys())
             if not corruptSaves <= self.knownCorrupted:
                 if message: message += '\n'
                 message += _(u'The following save files have corrupted headers: \n\n')
-                message += ','.join(sorted(corruptSaves))+'.'
+                message += u','.join(sorted(corruptSaves))+'.'
                 self.knownCorrupted |= corruptSaves
             # Show warning messages.
-            if message: gui.dialog.WarningMessage(self,message)
+            if message: gui.dialog.WarningMessage(self, message)
             # --Any Y2038 Resets?
             if mosh.y2038Resets:
                 message = (_(u'Mash cannot handle dates greater than January 19, 2038. Accordingly, the dates for the '
-                    u'following files have been reset to an earlier date: \n%s.') % ', '.join(sorted(mosh.y2038Resets)))
+                    u'following files have been reset to an earlier date: \n%s.') % u', '.join(sorted(mosh.y2038Resets)))
                 del mosh.y2038Resets[:]
-                gui.dialog.WarningMessage(self,message)
+                gui.dialog.WarningMessage(self, message)
 
     def OnIconize(self, event):  # Polemos
         """Handle minimize event."""
@@ -8182,7 +8182,7 @@ class Reset_Beth_Dates(Link):  # Polemos
             DatesIndex[x.lower()])) for x in scandir.listdir(data_files) if x.lower() in DatesIndex.keys()]
         # Finish
         try: test = self.window
-        except: self.window = singletons.BSArchives.details.Archives
+        except: self.window = singletons.BSArchives.Archives
         gui.dialog.InfoMessage(self.window, _(u'The dates of the Bethesda Masters'
             u' (.ESM) and Archives (.BSA)\nhave been reset to their original dates.'))
         self.window.Refresh()

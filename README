@@ -24,4 +24,4 @@ To configure Wrye Mash to run with OpenMW capabilities rename "openmw.dat.ren" =
 Note: You will find a lot of "Polemos" inside the code. Those are most of my changes.
 Another thing also, I use an unorthodox python style, this is by choice (kinda OCD).
 
-v100 updates.
+v101 updates.

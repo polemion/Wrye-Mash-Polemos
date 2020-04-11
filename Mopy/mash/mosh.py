@@ -1996,9 +1996,9 @@ class Tes3(Record):
 class MWIniFile:  # Polemos: OpenMW/TES3mp support
     """Morrowind.ini/OpenMW.cfg file."""
 
-    def __init__(self, dir):
+    def __init__(self, dr):
         """Init."""
-        self.dir = dir
+        self.dir = dr
         self.openmw = settings['openmw']
         self.encod = settings['profile.encoding']
         if not self.openmw:  # Morrowind
@@ -2010,12 +2010,15 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
         self.DataMods = []
         self.DataModsDirs = []
         self.ConfCache = []
+        self.activeFileExts = set()
+        self.openmwPathDict = {}
         self.PluginSection = ''
         self.ArchiveSection = ''
         self.loadFiles = []
         self.bsaFiles = []
-        self.loadFilesBad = []  # Set in Morrowind.ini, but missing!
+        self.loadFilesBad = []
         self.loadFilesExtra = []
+        self.loadFilesDups = False
         self.mtime = 0
         self.size = 0
         self.doubleTime = {}
@@ -2031,7 +2034,7 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
 
     def getSetting(self, section, key, default=None):
         """Gets a single setting from the file."""
-        section,key = map(bolt.LString,(section,key))
+        section, key = map(bolt.LString, (section, key))
         settings = self.getSettings()
         if section in settings: return settings[section].get(key,default)
         else: return default
@@ -2046,28 +2049,28 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
         settings = {}
         sectionSettings = None
         for line in iniFile:
-            stripped = reComment.sub('',line).strip()
+            stripped = reComment.sub('', line).strip()
             maSection = reSection.match(stripped)
             maSetting = reSetting.match(stripped)
             if maSection:
                 sectionSettings = settings[LString(maSection.group(1))] = {}
             elif maSetting:
                 if sectionSettings is None:
-                    sectionSettings = settings.setdefault(LString('General'),{})
+                    sectionSettings = settings.setdefault(LString('General'), {})
                     self.isCorrupted = True
                 sectionSettings[LString(maSetting.group(1))] = maSetting.group(2).strip()
         iniFile.close()
         return settings
 
-    def saveSetting(self,section,key,value):
+    def saveSetting(self, section, key, value):
         """Changes a single setting in the file."""
-        settings = {section:{key:value}}
+        settings = {section: {key:value}}
         self.saveSettings(settings)
 
     def saveSettings(self,settings):
         """Applies dictionary of settings to ini file. Values in settings dictionary can be
         either actual values or full key=value line ending in newline char."""
-        settings = dict((LString(x),dict((LString(u),v) for u,v in y.iteritems())) for x,y in settings.iteritems())
+        settings = dict((LString(x),dict((LString(u), v) for u, v in y.iteritems())) for x, y in settings.iteritems())
         reComment = re.compile(';.*')
         reSection = re.compile(r'^\[\s*(.+?)\s*\]$')
         reSetting = re.compile(r'(.+?)\s*=')
@@ -2082,13 +2085,13 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
             maSetting = reSetting.match(stripped)
             if maSection:
                 section = LString(maSection.group(1))
-                sectionSettings = settings.get(section,{})
+                sectionSettings = settings.get(section, {})
             elif maSetting and LString(maSetting.group(1)) in sectionSettings:
                 key = LString(maSetting.group(1))
                 value = sectionSettings[key]
                 if type(value) is str and value[-1] == '\n':
                     line = value
-                else: line = '%s=%s\n' % (key,value)
+                else: line = '%s=%s\n' % (key, value)
             tmpFile.write(line)
         tmpFile.close()
         iniFile.close()
@@ -2112,7 +2115,7 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
                 elif maSetting: sectionSettings[maSetting.group(1).lower()] = line
         #--Discard Games Files (Loaded mods list) from settings
         for section in settings.keys():
-            if section.lower() in ('game files','archives','mit'): del settings[section]
+            if section.lower() in ('game files', 'archives', 'mit'): del settings[section]
         #--Apply it
         tmpPath = '%s.tmp' % self.path
         with io.open(self.path, 'r', encoding=self.encod, errors='replace') as iniFile:
@@ -2130,64 +2133,77 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
                         line = sectionSettings[maSetting.group(1).lower()]
                     tmpFile.write(line)
         #--Done
-        renameFile(tmpPath,self.path,True)
+        renameFile(tmpPath,self.path, True)
         self.mtime = getmtime(self.path)
+
+    def itmDeDup(self, itms):
+        """Item de-duplication."""
+        the_set = set()
+        the_set_add = the_set.add
+        return [x for x in itms if not (x in the_set or the_set_add(x))]
 
     def checkActiveState(self, DataDir):  # Polemos
         """True if DataDir is in load list (OpenMW/TES3mp)."""
-        if self.hasChanged(): return DataDir in self.openmw_data_files()
-        else: return DataDir in self.DataModsDirs
+        return DataDir in self.sanitizeDatamods(self.openmw_datamods()[:], False)
 
     def unloadDatamod(self, DataDir):  # Polemos
         """Remove DataDir from OpenMW."""
-        DataDir = [(u'data="%s"\r\n' % x) for x in DataDir]
-        for x in DataDir: self.DataMods.remove(x)
+        DataDirF = [u'data="%s"' % os.path.realpath(x).rstrip() for x in DataDir]
+        [self.DataMods.remove(x) for x in DataDirF if x in self.DataMods]
         self.SaveDatamods(self.DataMods)
 
     def loadDatamod(self, DataDir, DataOrder):  # Polemos
         """Add DataDir to OpenMW."""
-        [self.DataMods.append(u'data="%s"\r\n' % x) for x in DataDir]
-        DataOrder = [u'data="%s"\r\n' % (x) for x in DataOrder]
-        datamodsListExport = [x for x in DataOrder if x in self.DataMods]
+        [self.DataMods.append(u'data="%s"' % os.path.realpath(x)) for x in DataDir]
+        DataOrderF = [u'data="%s"' % x for x in DataOrder]
+        datamodsListExport = [x for x in DataOrderF if x in self.DataMods]
         self.SaveDatamods(datamodsListExport)
 
     def updateDatamods(self, DataOrder):  # Polemos
-        """Update DataDirs to OpenMW."""
-        DataOrder = [u'data="%s"\r\n' % (x) for x in DataOrder]
-        datamodsListExport = [x for x in DataOrder if x in self.DataMods]
+        """Update DataDirs order (active or not - OpenMW)."""
+        DataOrderF = [u'data="%s"' % os.path.realpath(x) for x in DataOrder]
+        datamodsListExport = [x for x in DataOrderF if x in self.DataMods]
+        self.DataMods = datamodsListExport
         self.SaveDatamods(datamodsListExport)
 
-    def SaveDatamods(self, data):  # Polemos
+    def sanitizeDatamods(self, data, repack=True):  # Polemos
+        """Sanitize DataDirs entries openmw.cfg)."""
+        filterPaths = [x.split('"')[1] for x in data]
+        filterDups = self.itmDeDup(filterPaths)
+        filterMissing = [x for x in filterDups if os.path.isdir(x)]
+        return [u'data="%s"'%os.path.realpath(x).rstrip() for x in filterMissing
+            ] if repack else [os.path.realpath(x).rstrip() for x in filterMissing]
+
+    def SaveDatamods(self, rawdata):  # Polemos
         """Export DataDirs to openmw.cfg."""
+        data = self.sanitizeDatamods(rawdata)
         reLoadFile = re.compile(ur'data=(.*)$', re.UNICODE)
-        datafiles_po = []
+        datamodsMark = True
         DataMods_empty = True
-        line_replaced = False
         conf_tmp = []
         # Check for no entries
-        for line in self.open_conf_file():
+        for line in self.confLoadLines[:]:
             maLoadFile = reLoadFile.match(line)
-            if maLoadFile: DataMods_empty = False
-            conf_tmp.append(line)
-        try: conf_tmp[-1] = '%s\r\n' % conf_tmp[-1].rstrip()
-        except: conf_tmp = [''] # If OpenMW.cfg is empty (!!!).
-        # Parse OpenMW.cfg
-        if not DataMods_empty:
-            for line in conf_tmp:
-                maLoadFile = reLoadFile.match(line)
-                if maLoadFile and not line_replaced:
-                    line_replaced = True
-                    [datafiles_po.append(x) for x in data]
-                if not maLoadFile: datafiles_po.append(line)
-        else:  # If no entries
-            datafiles_po = conf_tmp[:]
-            [datafiles_po.append(x) for x in data]
+            if maLoadFile:
+                DataMods_empty = False
+                if datamodsMark:
+                    datamodsMark = False
+                    conf_tmp.extend(data)
+            else: conf_tmp.append(line.rstrip())
+        # If no entries
+        if DataMods_empty:
+            if conf_tmp[-1] == 'PluginMark' and data:
+                del conf_tmp[-1]
+                conf_tmp.extend(data)
+                conf_tmp.append('PluginMark')
+            else: conf_tmp.extend(data)
+        # No DataMods dirs
+        if conf_tmp and not self.DataModsDirs:
+            self.safeSave('\n'.join([
+                x for x in conf_tmp if not any(['PluginMark' in x, 'ArchiveMark' in x])]))
         #self.StructureChk(datafiles_po) todo: check for cfg abnormalities...
-        # Save, nice and cozy.
-        datafiles_po = ''.join(datafiles_po)
-        with io.open(self.path, 'w', encoding=self.encod) as file:
-            file.write(datafiles_po)
-        self.loadConf()
+        self.confLoadLines = conf_tmp
+        self.safeSave()
 
     def StructureChk(self, cfg):  # Polemos: Not enabled. todo: enable openmw.cfg check
         """Last check before saving OpenMW cfg file."""
@@ -2224,16 +2240,16 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
         for line in self.open_conf_file():
             maLoadFile = reLoadFile.match(line)
             if maLoadFile:
-                self.DataMods.append(line)
+                self.DataMods.append(line.rstrip())
             self.ConfCache.append(line)
-        if not self.DataMods: return ''
+        if not self.DataMods: return []
         return self.DataMods
 
     def openmw_data_files(self):  # Polemos
         """Return data file directories (OpenMW)."""
         if self.hasChanged():
-            self.DataModsDirs = [os.path.normpath((line.rstrip()).replace('data="', '').replace('"', '')) for line in self.openmw_datamods()[:]]
-        return self.DataModsDirs[:]
+            self.DataModsDirs = self.sanitizeDatamods(self.openmw_datamods()[:], False)
+        return self.DataModsDirs
 
     def open_conf_file(self):  # Polemos
         """Return Morrowind.ini or OpenMW.cfg file."""
@@ -2247,14 +2263,55 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
         elif self.openmw:  # OpenMW/TES3mp
             self.load_OpenMW_cfg()
 
-    def flush_conf(self):  # Polemos.
+    def flush_conf(self, full=True):  # Polemos.
         """Flush old data."""
-        self.PluginSection = ''
-        self.ArchiveSection = ''
-        del self.confLoadLines[:]
-        del self.loadFiles[:]
-        del self.bsaFiles[:]
+        if full:
+            self.PluginSection = ''
+            self.ArchiveSection = ''
+            del self.confLoadLines[:]
+            del self.loadFiles[:]
+            del self.bsaFiles[:]
+        self.loadFilesDups = False
         del self.loadFilesBad[:]
+        del self.loadFilesExtra[:]
+
+    def getExt(self, itmPath):
+        """Return itm extension."""
+        ext = os.path.splitext(itmPath)[-1].lower()
+        self.activeFileExts.add(ext)
+        return ext
+
+    def chkCase(self, itms):  # Polemos
+        """Check for duplicates and remove them if they are not in path. Fix case if unique."""
+        if not any([itms is not None, not itms]): return itms  # Unforeseen events
+        if not self.openmw:  # Morrowind
+            origin = os.path.join(self.dir, 'Data Files')
+            inItms = {x.lower() for x in itms}
+            if len(inItms) < len(itms):
+                itmsR = [x for x in os.listdir(
+                    origin) if [e for e in self.activeFileExts if x.lower().endswith(e)]]
+                self.loadFilesDups = True
+                return list({unicode(x) for x in itms if x in itmsR})
+        elif self.openmw:  # OpenMW self.openmwPathDict
+            inItms = {x.lower() for x in itms}
+            if len(inItms) < len(itms):
+                itmsR = [x for x in self.openmwPathDict if x in [
+                    fl for fl in os.listdir(os.path.dirname(self.openmwPathDict[x])) if x.lower() == fl.lower()]]
+                self.loadFilesDups = True
+                return list({unicode(x) for x in itms if x in itmsR})
+        return itms  # All OK
+
+    def getSrcFilePathInfo(self, itm):  # Polemos
+        """Acquire mod/plugin path info."""
+        if not self.openmw:  # Morrowind
+            modDir = [os.path.join(self.dir, 'Data Files', itm)]
+        elif self.openmw:  # OpenMW
+            modDir = self.DataModsDirs[:]
+        for dr in modDir:
+            itmPath = os.path.join(dr, itm)
+            if os.path.isfile(itmPath):
+                return itmPath
+        return False
 
     def load_Morrowind_INI(self):  # Polemos.
         """Read Plugin and Archive data from morrowind.ini"""
@@ -2284,26 +2341,26 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
 
                 if maLoadArchiveFiles:
                     archive = maLoadArchiveFiles.group(1).rstrip()
-                    loadArchivePath = os.path.join(self.dir, 'Data Files', archive)
-                    loadArchiveExt = os.path.splitext(loadArchivePath)[-1].lower()
-                    if os.path.exists(loadArchivePath) and re.match('^\.bsa$', loadArchiveExt): self.bsaFiles.append(archive)
+                    loadArchivePath, loadArchiveExt = self.getSrcFilePathInfo(archive), self.getExt(archive)
+                    if loadArchivePath and re.match('^\.bsa$', loadArchiveExt): self.bsaFiles.append(archive)
                     else: self.loadFilesBad.append(archive)
 
                 if maLoadPluginFiles:
                     plugin = maLoadPluginFiles.group(1).rstrip()
-                    loadPluginPath = os.path.join(self.dir, 'Data Files', plugin)
-                    loadPluginExt = os.path.splitext(loadPluginPath)[-1].lower()
+                    loadPluginPath, loadPluginExt = self.getSrcFilePathInfo(plugin), self.getExt(plugin)
                     if len(self.loadFiles) == 255: self.loadFilesExtra.append(plugin)
-                    elif os.path.exists(loadPluginPath) and re.match('^\.es[pm]$', loadPluginExt): self.loadFiles.append(plugin)
+                    elif loadPluginPath and re.match('^\.es[pm]$', loadPluginExt): self.loadFiles.append(plugin)
                     else: self.loadFilesBad.append(plugin)
 
                 if not maLoadArchiveFiles and not maLoadPluginFiles: self.confLoadLines.append(line.rstrip())
                 if not line:
                     if not PluginSection: raise Tes3Error('Morrowind.ini', _(u'Morrowind.ini: [Game Files] section not found.'))
                     if not ArchiveSection: raise Tes3Error('Morrowind.ini', _(u'Morrowind.ini: [Archives] section not found.'))
+
+            self.bsaFiles = self.chkCase(self.bsaFiles)
+            self.loadFiles = self.chkCase(self.loadFiles)
         except:  # Last resort to avoid conf file corruption
             self.flush_conf()
-
 
     def load_OpenMW_cfg(self):  # Polemos
         """Read plugin data from openmw.cfg"""
@@ -2331,30 +2388,26 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
         for line in conf_tmp:  # Parse OpenMW.cfg
             maLoadArchiveFiles = reLoadArchiveFiles.match(line)
             maLoadPluginFiles = reLoadPluginFiles.match(line)
-            badArchive = True
-            badPlugin = True
 
             if maLoadArchiveFiles:  # Archives
                 if ArchivesMark is None: ArchivesMark = True
                 archiveFile = maLoadArchiveFiles.group(1)
-                for dir in self.datafiles_po:
-                    archivePath = os.path.join(dir, archiveFile)
-                    if os.path.isfile(archivePath):
-                        self.bsaFiles.append(archiveFile)
-                        badArchive = False
-                        break
-                if badArchive: self.loadFilesBad.append(archiveFile)
+                self.getExt(archiveFile)
+                archivePath = self.getSrcFilePathInfo(archiveFile)
+                if archivePath:
+                    self.bsaFiles.append(archiveFile)
+                    self.openmwPathDict[archiveFile] = archivePath
+                else: self.loadFilesBad.append(archiveFile)
 
             if maLoadPluginFiles:  # Plugins
                 if PluginsMark is None: PluginsMark = True
                 PluginFile = maLoadPluginFiles.group(1)
-                for dir in self.datafiles_po:
-                    pluginPath = os.path.join(dir, PluginFile)
-                    if os.path.isfile(pluginPath):
-                        self.loadFiles.append(PluginFile)
-                        badPlugin = False
-                        break
-                if badPlugin: self.loadFilesBad.append(PluginFile)
+                self.getExt(PluginFile)
+                PluginPath = self.getSrcFilePathInfo(PluginFile)
+                if PluginPath:
+                    self.loadFiles.append(PluginFile)
+                    self.openmwPathDict[PluginFile] = PluginPath
+                else: self.loadFilesBad.append(PluginFile)
 
             if Archives_empty:  # If no Archive entries
                 if 'no-sound=' in line:
@@ -2373,6 +2426,8 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
 
         if Plugins_empty: self.confLoadLines.append('PluginMark')  # If no Plugin entries
         if not no_sound_mark: self.confLoadLines.insert(0, 'ArchiveMark')
+        self.bsaFiles = self.chkCase(self.bsaFiles)
+        self.loadFiles = self.chkCase(self.loadFiles)
         if self.bsaFiles: self.openmw_apply_order(self.bsaFiles, self.datafiles_po)
         if self.loadFiles: self.openmw_apply_order(self.loadFiles, self.datafiles_po)
 
@@ -2414,11 +2469,9 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
         plugins_order = self.data_files_factory(self.loadFiles, self.datafiles_po)[:]
         plugins_order.sort(key=lambda x: os.path.getmtime(x))
         plugins_order = [os.path.basename(x) for x in plugins_order]
-        the_set = set()                                                                       ##
-        the_set_add = the_set.add                                                              #  Remove duplicates.
-        plugins_order = [x for x in plugins_order if not (x in the_set or the_set_add(x))]    ##
-        esm_order = [x for x in plugins_order if x.endswith('.esm') or x.endswith('.omwgame')]
-        esp_order = [x for x in plugins_order if x.endswith('.esp') or x.endswith('.omwaddon')]
+        plugins_order = self.itmDeDup(plugins_order)
+        esm_order = [x for x in plugins_order if x.lower().endswith('.esm') or x.lower().endswith('.omwgame')]
+        esp_order = [x for x in plugins_order if x.lower().endswith('.esp') or x.lower().endswith('.omwaddon')]
         return esm_order + esp_order
 
     def save_openmw_archive_factory(self): # Polemos: OpenMW/TES3mp
@@ -2426,18 +2479,13 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
         archives_order = self.data_files_factory(self.bsaFiles, self.datafiles_po)[:]
         archives_order.sort(key=lambda x: os.path.getmtime(x))
         archives_order = [os.path.basename(x) for x in archives_order]
-        the_set = set()                                                                       ##
-        the_set_add = the_set.add                                                              #  Remove duplicates.
-        archives_order = [x for x in archives_order if not (x in the_set or the_set_add(x))]  ##
-        return [x for x in archives_order if x.endswith('.bsa')]
+        archives_order = self.itmDeDup(archives_order)
+        return [x for x in archives_order if x.lower().endswith('.bsa')]
 
-    def fileNamChk(self, flist):
-        """Check for irregular file namings."""
-        probs = []
-        for x in flist:
-            try: x.decode(encChk(x))
-            except: probs.append(x)
-        return probs
+    def saveS(self, simpleData):  # Polemos
+        """Simple no rules storage."""
+        with io.open(self.path, 'w', encoding=self.encod, errors='strict') as conf_File:
+            conf_File.write(simpleData)
 
     def save(self):  # Polemos fixes, optimizations, OpenMW/TES3mp support, BSA support, speed up massive lists.
         """Prepare data to write to morrowind.ini or openmw.cfg file."""
@@ -2455,7 +2503,6 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
             raise StateError(error_ini_po)
 
         with io.open(self.path, 'w', encoding=self.encod, errors='strict') as conf_File:
-
             if not self.openmw:  # Morrowind
                 # Check for irregular file namings.
                 if not settings['query.file.risk']:
@@ -2493,19 +2540,18 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
 
             try:  # Try to join all and save once.
                 tmpwriteCache = '\n'.join(writeCache)
-                conf_File.write(tmpwriteCache+'\n')
+                conf_File.write(tmpwriteCache)
             except:  # On fail, save by line.
                 for num, x in enumerate(writeCache):
-                    x = '%s\n'%x
+                    x = '%s\n' % x
                     try: conf_File.write(x)
                     except:
                         try: conf_File.write(x.encode(encChk(x)))
-                        except: failed[num]=x.rstrip()
+                        except: failed[num] = x.rstrip()
 
         self.mtime = getmtime(self.path)
         self.size = os.path.getsize(self.path)
-        del self.loadFilesBad[:]
-        del self.loadFilesExtra[:]
+        self.flush_conf(False)
         # Notify user for any errors.
         if failed: self.charFailed(failed)
 
@@ -2523,6 +2569,14 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
             riskItms = '\n'.join(self.filesRisk)
             gui.WarningMessage(None, _(u'The affected filenames are:\n\n%s' % riskItms), _(u'Affected Filenames List'))
         del self.filesRisk[:]
+
+    def fileNamChk(self, flist):
+        """Check for irregular file namings."""
+        probs = []
+        for x in flist:
+            try: x.decode(encChk(x))
+            except: probs.append(x)
+        return probs
 
     def charFailed(self, items):  # Polemos
         """Show failed entries to the user."""
@@ -2568,10 +2622,12 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
         if not os.path.exists(firstBackup):
             shutil.copy(original,firstBackup)
 
-    def safeSave(self):  # Polemos
+    def safeSave(self, simpleData=False):  # Polemos
         """Safe save conf file."""
         self.makeBackup()
-        try: self.save()
+        try:
+            if not simpleData: self.save()
+            else: self.saveS(simpleData)
         except ConfError as err:
             import gui.dialog as gui
             gui.ErrorMessage(None, err.message)
@@ -2660,7 +2716,8 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
             self.refreshDoubleTime()
             self.loadOrder = modInfos.getLoadOrder(self.loadFiles)
         elif action == 'Archives':  # Polemos bsa support
-            [self.bsaFiles.append(x) for x in Files if x not in self.bsaFiles]
+            bsaSet = set(self.bsaFiles)
+            self.bsaFiles.extend([x for x in Files if x not in bsaSet])
             self.safeSave()
 
     def unload(self, Files, doSave=True, action='Plugins'):  # Polemos: Speed up
@@ -2740,16 +2797,17 @@ class MasterInfo:
 class FileInfo: # Polemos: OpenMW/TES3mp support
     """Abstract TES3 File."""
 
-    def __init__(self,dir,name):
+    def __init__(self, directory, name):
         """Init."""
         self.openMW = settings['openmw']
         if not self.openMW:  # Morrowind support
-            path = os.path.join(dir, name)
+            path = os.path.join(directory, name)
         if self.openMW:  # OpenMW/TES3mp support
-            dir = [x for x in MWIniFile.openmw_data_files(MWIniFile(settings['openmwprofile']))[:] if os.path.isfile(os.path.join(x, name))][0]
-            path = os.path.join(dir, name)
+            directory = [x for x in MWIniFile.openmw_data_files(
+                MWIniFile(settings['openmwprofile']))[:] if os.path.isfile(os.path.join(x, name))][0]
+            path = os.path.join(directory, name)
         self.name = name
-        self.dir = dir
+        self.dir = directory
         if os.path.exists(path):
             self.ctime = os.path.getctime(path)
             self.mtime = getmtime(path)
@@ -4077,7 +4135,7 @@ class datamod_order:   # Polemos: OpenMW/TES3mp support
         return result
 
     def datamods(self):
-        """Create Datamods data from openmw.cfg and from Datamods dir."""
+        """Create Datamods data from openmw.cfg and Datamods dir."""
         # Init stuff
         isdir = os.path.isdir
         join = os.path.join
@@ -4149,7 +4207,7 @@ class BSA_order:  # Polemos
     def bsa_files(self):
         """Return a list of bsa files."""
         if not self.openmw:
-            bsas = [os.path.join(self.dir,bsafile) for bsafile in scandir.listdir(self.dir) if bsafile.endswith('.bsa')]
+            bsas = [os.path.join(self.dir, bsafile) for bsafile in scandir.listdir(self.dir) if bsafile.endswith('.bsa')]
         if self.openmw:
             bsas = []
             bsadir = self.bsa_dir()[:]
@@ -4157,7 +4215,7 @@ class BSA_order:  # Polemos
             # even though we are using append() inside the comprehension (which defeats
             # the purpose)... Be my guest and change it.
             [[bsas.append(os.path.join(moddir, bsafile)) for bsafile in scandir.listdir(moddir)
-                    if bsafile.endswith('.bsa')] for moddir in bsadir if os.path.exists(moddir)]
+                    if bsafile.lower().endswith('.bsa')] for moddir in bsadir if os.path.exists(moddir)]
         return bsas
 
     def bsa_active(self):
@@ -5297,7 +5355,7 @@ class InstallersData(bolt.TankData, DataDict):  # Polemos fixes
     def refreshRenamed(self):
         """Refreshes Installer.off_local from corresponding csv file."""
         changed = False
-        pRenamed = dirs['mods'].join('Mash','Official_Local.csv')
+        pRenamed = dirs['mods'].join('Mash', 'Official_Local.csv')
         if not pRenamed.exists():
             changed = bool(Installer.off_local)
             self.renamedSizeDate = (0,0)

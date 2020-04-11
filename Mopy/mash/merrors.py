@@ -147,6 +147,11 @@ class SortKeyError(mError):
         mError.__init__(self, message)
 
 # Various Errors
+class MashError(mError):
+    """Mash Error: Unrecognized sort key."""
+    def __init__(self, col=u'', message=_(u'Unrecognized sort key')):
+        if col is None: col=u''
+        mError.__init__(self, u'%s%s%s' % (message, u': ' if col or col is None else u'.', col))
 
 class InterfaceError(mError):
     """Interface Error."""
