@@ -39,6 +39,7 @@
 
 
 import wx, os, io
+import time
 from time import strftime as timestamp
 from .. import conf, singletons, mosh
 from shutil import copyfile
@@ -532,17 +533,74 @@ def ErrorQuery(parent, message, title=u'', style=(wx.YES_NO|wx.ICON_HAND|wx.STAY
     return Message(parent,message,title,style)
 
 
-def ErrorMessage(parent, message, title=_(u'Error'), style=(wx.OK|wx.ICON_HAND|wx.STAY_ON_TOP)):
+def ErrorMessage(parent, message, title=_(u'Error'), style=(wx.OK|wx.ICON_HAND|wx.STAY_ON_TOP), dtype='error', modal=True):
     """Shows a modal error message."""
-    return Message(parent,message,title,style)
+    return Message(parent, message, title, style) if modal else MessageU(parent, message, dtype, title, modal)
 
 
 def Message(parent, message, title=u'', style=wx.OK|wx.STAY_ON_TOP):
     """Shows a modal MessageDialog. Use ErrorMessage, WarningMessage or InfoMessage."""
-    dialog = wx.MessageDialog(parent,message,title,style)
+    dialog = wx.MessageDialog(parent, message, title, style)
     result = dialog.ShowModal()
     dialog.Destroy()
     return result
+
+
+class MessageU(wx.Dialog):
+    """An experimental modal/nonmodal themable message dialog."""
+    count = 6
+
+    def __init__(self, parent, message, dtype, title=u'', modal=True, style=wx.DEFAULT_DIALOG_STYLE|wx.STAY_ON_TOP):  # Polemos
+        """Init."""
+        wx.Dialog.__init__(self, parent, wx.ID_ANY, title=title, pos=dPos, size=Size(526, 140), style=style)
+        self.SetSizeHints(-1, -1)
+        message = message.split('\n\n')
+        if len(message) > 1: hmsg, msg = message[0], '\n\n'.join(message[1:])
+        else: hmsg, msg = message[0], ''
+        mode = {'error': (wx.ART_ERROR, wx.ART_MESSAGE_BOX)}
+
+        if True:  # Content
+            panel = wx.Panel(self, wx.ID_ANY, dPos, dSize, wx.TAB_TRAVERSAL)
+            sign = wx.StaticBitmap(panel, wx.ID_ANY, wx.ArtProvider.GetBitmap(mode[dtype][0], mode[dtype][1]), dPos, dSize, 0)
+            headTxt = wx.StaticText(panel, wx.ID_ANY, hmsg, dPos, dSize, 0)
+            mainTxt = wx.StaticText(panel, wx.ID_ANY, msg, dPos, dSize, 0)
+            self.okBtn = wx.Button(self, wx.ID_OK, _(u'OK (%s)'%self.count), dPos, dSize, 0)
+
+        if True:  # Theming
+            self.SetBackgroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_WINDOW))
+            panel.SetBackgroundColour(wx.Colour(255, 255, 255))
+            sign.SetBackgroundColour(wx.Colour(255, 255, 255))
+            headTxt.SetFont(wx.Font(11, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, ''))
+            headTxt.SetForegroundColour(wx.Colour(0, 0, 170))
+
+        if True:  # Layout
+            [x.Wrap(-1) for x in (headTxt, mainTxt)]
+            txtSizer = wx.BoxSizer(wx.VERTICAL)
+            txtSizer.AddMany([(headTxt, 1, wx.EXPAND|wx.ALL, 5),(mainTxt, 1, wx.EXPAND|wx.ALL, 5)])
+            cntSizer = wx.BoxSizer(wx.HORIZONTAL)
+            cntSizer.AddMany([(sign, 0, wx.ALL, 5), (txtSizer, 1, wx.EXPAND, 5)])
+            panel.SetSizer(cntSizer)
+            panel.Layout()
+            cntSizer.Fit(panel)
+            mainSizer = wx.BoxSizer(wx.VERTICAL)
+            mainSizer.AddMany([(panel, 1, wx.EXPAND|wx.BOTTOM, 5), (self.okBtn, 0, wx.ALL|wx.ALIGN_RIGHT, 5)])
+            self.SetSizer(mainSizer)
+            self.Layout()
+            self.ShowModal() if modal else self.Show()
+
+        if not modal:
+            self.timer = wx.Timer(self)
+            self.Bind(wx.EVT_TIMER, self.onUpdate, self.timer)
+            self.timer.Start(1000)
+
+    def onUpdate(self, event):
+        """Timer events."""
+        if self.count == 0:
+            self.timer.Destroy()
+            self.Destroy()
+        else:
+            self.count -= 1
+            self.okBtn.SetLabel(_(u'OK (%s)'%self.count))
 
 
 class ScrolledtextMessage(wx.Dialog):  # Polemos
@@ -593,58 +651,65 @@ class MaxCharDialog(wx.Dialog):  # Polemos
         self.ShowModal()
 
     def timer_po(self):
+        """Timer."""
         self.timer = wx.Timer(self)
         self.Bind(wx.EVT_TIMER, self.onUpdate, self.timer)
         self.timer.Start(100)
 
     def char_remain(self):
+        """Show remaining chars."""
         current = _(u'Chars: %s of %s' % (len(self.fld_po.GetValue()), self.maxchar))
         return current
 
     def char_update(self, event):
+        """On char change events."""
         self.fldchars.ChangeValue(self.char_remain())
 
     def onUpdate(self, event):
+        """Timer events."""
         if len(self.fld_po.GetValue()) > self.maxchar: self.btnOK.Disable()
         else: self.btnOK.Enable()
 
     def OnSize(self, event):
+        """Change size events."""
         self.Layout()
         if self.init:
             self.SetSizeHints(*self.GetSize())
             self.init = False
 
     def OnCancel(self, event):
+        """On clicking Cancel events."""
         self.fin_val_po = self.current
         self.timer.Stop()
         self.Destroy()
 
     def OnOk(self, event):
+        """On clicking OK events."""
         self.fin_val_po = self.fld_po.GetValue()
         self.timer.Stop()
         self.Destroy()
 
     def GetValue(self):
+        """Return final value."""
         return self.fin_val_po
 
 
 class date_time_dialog(wx.Dialog):  # Polemos
     """Shows a Date/Time multi field spinner Dialog."""
 
-    def __init__(self, parent, title, caption, datetime, id=wx.ID_ANY, size=(400, 200), pos=dPos):
+    def __init__(self, parent, title, caption, datetime, id=wx.ID_ANY, size=(418, 258), pos=dPos):
         """Init."""
         wx.Dialog.__init__(self, parent=parent, id=id, title=title, pos=pos, size=size, style=wx.CAPTION|wx.DEFAULT_DIALOG_STYLE|wx.STAY_ON_TOP)
-
-        import time
         self.datetime = datetime
         year, month, day, hour, min, sec = time.strptime(datetime, '%m-%d-%Y %H:%M:%S')[0:6]
+        self.curDT = '%s/%s/%s, %s:%s:%s' % (month, day, year, hour, min, sec)
+        self.timer_po()
 
         if True:  # Contents
             # Title
             self.info = wx.StaticText(self, wx.ID_ANY, caption, dPos, dSize, 0)
             # Date
             dateBox = wx.StaticBox(self, wx.ID_ANY, _(u'Date:'))
-            dateSizer = wx.StaticBoxSizer(dateBox, wx.HORIZONTAL)
             self.month_static = wx.StaticText(dateBox, wx.ID_ANY, _(u'Month:'), dPos, dSize, 0)
             self.month = wx.SpinCtrl(dateBox,wx.ID_ANY,u'',dPos,Size(65,-1),wx.SP_ARROW_KEYS|wx.SP_WRAP|wx.ALIGN_CENTER_HORIZONTAL,1,12,month)
             self.day_static = wx.StaticText(dateBox,wx.ID_ANY,_(u'Day:'),dPos,dSize,0)
@@ -653,15 +718,18 @@ class date_time_dialog(wx.Dialog):  # Polemos
             self.year = wx.SpinCtrl(dateBox,wx.ID_ANY,u'',dPos,Size(85,-1),wx.SP_ARROW_KEYS|wx.SP_WRAP|wx.ALIGN_CENTER_HORIZONTAL,1970,2038,year)
             # Time
             timeBox = wx.StaticBox(self, wx.ID_ANY, _(u'Time:'))
-            timeSizer = wx.StaticBoxSizer(timeBox, wx.HORIZONTAL)
             self.hour_static = wx.StaticText(timeBox,wx.ID_ANY,_(u'Hour:'),dPos,dSize,0)
             self.hour = wx.SpinCtrl(timeBox,wx.ID_ANY,u'',dPos,Size(65,-1),wx.SP_ARROW_KEYS|wx.SP_WRAP|wx.ALIGN_CENTER_HORIZONTAL,0,23,hour)
             self.min_static = wx.StaticText(timeBox,wx.ID_ANY, _(u'Min:'),dPos,dSize,0)
             self.min = wx.SpinCtrl(timeBox,wx.ID_ANY,u'',dPos,Size(65,-1),wx.SP_ARROW_KEYS|wx.SP_WRAP|wx.ALIGN_CENTER_HORIZONTAL,0,59,min)
             self.sec_static = wx.StaticText(timeBox,wx.ID_ANY, _(u'Sec:'),dPos,dSize,0)
             self.sec = wx.SpinCtrl(timeBox,wx.ID_ANY,u'',dPos,Size(65,-1),wx.SP_ARROW_KEYS|wx.SP_WRAP|wx.ALIGN_CENTER_HORIZONTAL,0,59,sec)
-            # Buttons
+            # Manual insert
+            mnlBox = wx.StaticBox(self, wx.ID_ANY, _(u'Insert Date/Time Manually (mm/dd/YYYY, hh:mm:ss):'))
+            self.mnlTxtCtrl = wx.TextCtrl(mnlBox, wx.ID_ANY, '', dPos, dSize, 0)
+            # Buttons area
             self.ok_button = wx.Button(self, wx.ID_OK, _(u'OK'), dPos, (-1, 22), 0)
+            self.smplTextCtrl = wx.TextCtrl(self, wx.ID_ANY, self.curDT, dPos, dSize, wx.TE_CENTRE|wx.TE_READONLY|wx.SIMPLE_BORDER)
             self.cancel_button = wx.Button(self, wx.ID_CANCEL, _(u'Cancel'), dPos, (-1, 22), 0)
 
         if True:  # Theming
@@ -670,22 +738,31 @@ class date_time_dialog(wx.Dialog):  # Polemos
             self.month_static.SetForegroundColour(wx.Colour(0, 0, 0))
             self.month_static.SetBackgroundColour(wx.Colour(240, 240, 240))
             self.month.SetBackgroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_CAPTIONTEXT))
+            self.smplTextCtrl.SetForegroundColour(wx.Colour(0, 0, 0))
+            self.smplTextCtrl.SetBackgroundColour(wx.Colour(224, 224, 224))
 
         if True:  # Layout
             # Date
+            dateSizer = wx.StaticBoxSizer(dateBox, wx.HORIZONTAL)
             dateSizer.AddMany([(self.month_static,0,wx.ALIGN_CENTER_VERTICAL|wx.RIGHT|wx.LEFT,5),(self.month,0,wx.RIGHT|wx.LEFT,5),
                     ((0,0),1,wx.EXPAND,5),(self.day_static,0,wx.ALIGN_CENTER_VERTICAL|wx.RIGHT|wx.LEFT,5),(self.day,0,wx.RIGHT|wx.LEFT,5),
                     ((0,0),1,wx.EXPAND,5),(self.year_static,0,wx.ALIGN_CENTER_VERTICAL|wx.RIGHT|wx.LEFT,5),(self.year,0,wx.RIGHT|wx.LEFT,5)])
             # Time
+            timeSizer = wx.StaticBoxSizer(timeBox, wx.HORIZONTAL)
             timeSizer.AddMany([(self.hour_static,0,wx.ALIGN_CENTER_VERTICAL|wx.LEFT|wx.RIGHT,5),(self.hour,0,wx.RIGHT|wx.LEFT,5),
                     ((0,0),1,wx.EXPAND,5),(self.min_static,0,wx.ALIGN_CENTER_VERTICAL|wx.LEFT|wx.RIGHT,5),(self.min,0,wx.RIGHT|wx.LEFT,5),
                     ((0,0),1,wx.EXPAND,5),(self.sec_static,0,wx.ALIGN_CENTER_VERTICAL|wx.LEFT|wx.RIGHT,5),(self.sec,0,wx.RIGHT|wx.LEFT,5)])
+            # Manual
+            mnlSizer = wx.StaticBoxSizer(mnlBox, wx.HORIZONTAL)
+            mnlSizer.Add(self.mnlTxtCtrl, 1, wx.ALL, 5)
             # Buttons
             btnSizer = wx.BoxSizer(wx.HORIZONTAL)
-            btnSizer.AddMany([(self.ok_button,0,wx.ALL,5),((0,0),1,wx.EXPAND,5),(self.cancel_button,0,wx.ALL,5)])
+            btnSizer.AddMany([(self.ok_button,0,wx.ALL,5),
+                (self.smplTextCtrl, 1, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5), (self.cancel_button,0,wx.ALL,5)])
             # Main
             mainSizer = wx.BoxSizer(wx.VERTICAL)
-            mainSizer.AddMany([(self.info,0,wx.ALL|wx.EXPAND,5),(dateSizer,-1,wx.EXPAND,5),(timeSizer,-1,wx.EXPAND,5),(btnSizer,0,wx.EXPAND,5)])
+            mainSizer.AddMany([(self.info,0,wx.ALL|wx.EXPAND,5), (dateSizer,-1,wx.EXPAND,5),
+                    (timeSizer,-1,wx.EXPAND,5), (mnlSizer, 0, wx.EXPAND, 5), (btnSizer,0,wx.EXPAND,5)])
             self.SetSizer(mainSizer)
             self.Layout()
 
@@ -693,6 +770,8 @@ class date_time_dialog(wx.Dialog):  # Polemos
             wx.EVT_CLOSE(self, self.OnCancel)
             wx.EVT_BUTTON(self, wx.ID_OK, self.OnOk)
             wx.EVT_BUTTON(self, wx.ID_CANCEL, self.OnCancel)
+            wx.EVT_SPINCTRL(self, wx.ID_ANY, self.rstMnl)
+
 
         self.cancel_button.SetFocus()
         self.ShowModal()
@@ -709,6 +788,26 @@ class date_time_dialog(wx.Dialog):  # Polemos
 
     def GetValue(self):
         return self.fin_val_po
+
+    def timer_po(self):
+        """Timer for buttons."""
+        self.timer = wx.Timer(self)
+        self.Bind(wx.EVT_TIMER, self.onUpdate, self.timer)
+        self.timer.Start(350)
+
+    def onUpdate(self, event):
+        """Timer actions."""
+        self.smplTextCtrl.SetValue(self.export_date().replace(' ', ', ').replace('-', '/'))
+        modTR = self.mnlTxtCtrl.GetValue()
+        try:
+            modT = modTR.replace(',', '').replace('/', ' ').replace(':', ' ').split(' ')
+            if len(modT) == 6:
+                [x.SetValue(int(y)) for x, y in zip((self.month, self.day, self.year, self.hour, self.min, self.sec), modT)]
+        except: pass
+
+    def rstMnl(self, event):
+        """Reset manual field."""
+        self.mnlTxtCtrl.SetValue('')
 
     def OnCancel(self, event):
         self.fin_val_po = self.datetime

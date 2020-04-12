@@ -1972,12 +1972,12 @@ class ModDetails(wx.Window): # Polemos: fixed bugs, refactored, optimised, recod
             self.infotext = wx.StaticText(self, wx.ID_ANY, u'', dPos, dSize, wx.ALIGN_LEFT|wx.ST_NO_AUTORESIZE)
             self.infotext.Wrap(-1)
             # Toolbar: Restore Button
-            self.restore_btn = wx.BitmapButton(self, wx.ID_ANY, singletons.images['mod.open'].GetBitmap(), dPos, dSize, 0 | wx.BU_AUTODRAW)
+            self.restore_btn = wx.BitmapButton(self, wx.ID_ANY, singletons.images['mod.open'].GetBitmap(), dPos, dSize, 0|wx.BU_AUTODRAW)
             self.restore_btn.SetBitmapSelected(singletons.images['mod.open'].GetBitmap())
             self.restore_btn.SetBitmapHover(singletons.images['mod.open.onhov'].GetBitmap())
             self.restore_btn.SetToolTip(wx.ToolTip(_(u'Restore Mod Order')))
             # Toolbar: Backup Button
-            self.backup_btn = wx.BitmapButton(self, wx.ID_ANY, singletons.images['mod.save'].GetBitmap(), dPos, dSize, 0 | wx.BU_AUTODRAW)
+            self.backup_btn = wx.BitmapButton(self, wx.ID_ANY, singletons.images['mod.save'].GetBitmap(), dPos, dSize, 0|wx.BU_AUTODRAW)
             self.backup_btn.SetBitmapSelected(singletons.images['mod.save'].GetBitmap())
             self.backup_btn.SetBitmapHover(singletons.images['mod.save.onhov'].GetBitmap())
             self.backup_btn.SetToolTip(wx.ToolTip(_(u'Backup Mod Order')))
@@ -1993,6 +1993,10 @@ class ModDetails(wx.Window): # Polemos: fixed bugs, refactored, optimised, recod
             # Modified
             self.modified = wx.TextCtrl(self, wx.NewId(), u'', size=(self.maxSash, -1), style=wx.TE_READONLY)
             self.modified.SetMaxLength(32)
+            self.cpBtn = wx.BitmapButton(self, wx.ID_ANY, singletons.images['mod.datetime.cp'].GetBitmap(), dPos, dSize, wx.BU_AUTODRAW)
+            self.cpBtn.SetToolTip(wx.ToolTip(_(u'Copy Mod Datetime')))
+            self.psBtn = wx.BitmapButton(self, wx.ID_ANY, singletons.images['mod.datetime.ps'].GetBitmap(), dPos, dSize, wx.BU_AUTODRAW)
+            self.psBtn.SetToolTip(wx.ToolTip(_(u'Paste Mod Datetime')))
             # Description
             self.description = wx.TextCtrl(self,wx.NewId(), u'',size=(self.maxSash,130),style=wx.TE_MULTILINE|wx.TE_READONLY)
             self.description.SetMaxLength(256)
@@ -2017,20 +2021,24 @@ class ModDetails(wx.Window): # Polemos: fixed bugs, refactored, optimised, recod
             info_sizer = wx.BoxSizer(wx.VERTICAL)
             info_sizer.Add(self.infotext, 1, wx.EXPAND|wx.RIGHT|wx.LEFT, 5)
             # Toolbar sizer
-            toolbar_sizer = wx.BoxSizer(wx.HORIZONTAL)
-            toolbar_sizer.SetMinSize(wx.Size(170, 24))
-            toolbar_sizer.AddMany([(info_sizer,1,wx.ALIGN_CENTER|wx.RIGHT|wx.LEFT,1),
+            tbarSizer = wx.BoxSizer(wx.HORIZONTAL)
+            tbarSizer.SetMinSize(wx.Size(170, 24))
+            tbarSizer.AddMany([(info_sizer,1,wx.ALIGN_CENTER|wx.RIGHT|wx.LEFT,1),
                     (self.restore_btn, 0, wx.ALIGN_RIGHT|wx.RIGHT|wx.LEFT, 2), (self.backup_btn, 0, wx.ALIGN_RIGHT|wx.RIGHT|wx.LEFT, 2)])
+            # DateTime sizer
+            dtSizer = wx.BoxSizer(wx.HORIZONTAL)
+            dtSizer.AddMany([(self.modified, 1, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5),
+                             (self.cpBtn, 0, wx.ALIGN_CENTER_VERTICAL, 5), (self.psBtn, 0, wx.ALIGN_CENTER_VERTICAL, 5)])
             # Go figure sizers
-            sizer_h0 = wx.BoxSizer(wx.HORIZONTAL)
-            sizer_h0.AddMany([(modText, 0, 0, 4), ((0, 0), 1), (self.version, 0, wx.RIGHT, 4)])
-            sizer_h1 = wx.BoxSizer(wx.HORIZONTAL)
-            sizer_h1.AddMany([((0, 0), 1), (self.save, 0, wx.RIGHT, 4),
+            modSizer = wx.BoxSizer(wx.HORIZONTAL)
+            modSizer.AddMany([(modText, 0, 0, 4), ((0, 0), 1), (self.version, 0, wx.RIGHT, 4)])
+            mstrSizer = wx.BoxSizer(wx.HORIZONTAL)
+            mstrSizer.AddMany([((0, 0), 1), (self.save, 0, wx.RIGHT, 4),
                 (self.master_btn, 0, wx.CENTER, 4), (self.cancel, 0, wx.LEFT, 4), ((0, 0), 1)])
-            sizer = wx.BoxSizer(wx.VERTICAL)
-            self.SetSizer(sizer)
-            sizer.AddMany([(toolbar_sizer, 0, wx.EXPAND, 5),(sizer_h0,0,wx.EXPAND),self.file,self.author,
-                    self.modified,self.description,(self.masters,1,wx.EXPAND),(sizer_h1,0,wx.EXPAND|wx.TOP|wx.ALIGN_CENTER,4)])
+            mainSizer = wx.BoxSizer(wx.VERTICAL)
+            self.SetSizer(mainSizer)
+            mainSizer.AddMany([(tbarSizer, 0, wx.EXPAND, 5),(modSizer,0,wx.EXPAND), self.file, self.author,
+                (dtSizer, 0,wx.EXPAND),self.description,(self.masters,1,wx.EXPAND),(mstrSizer,0,wx.EXPAND|wx.TOP|wx.ALIGN_CENTER,4)])
         if True:  # Events
             self.restore_btn.Bind(wx.EVT_BUTTON, self.restore)
             self.backup_btn.Bind(wx.EVT_BUTTON, self.backup)
@@ -2043,8 +2051,30 @@ class ModDetails(wx.Window): # Polemos: fixed bugs, refactored, optimised, recod
             wx.EVT_RIGHT_DOWN(self.modified, self.OnEditModified)
             wx.EVT_LEFT_DOWN(self.description, self.OnEditDescription)
             wx.EVT_RIGHT_DOWN(self.description, self.OnEditDescription)
+            self.cpBtn.Bind(wx.EVT_BUTTON, self.cpDTbtnAct)
+            self.psBtn.Bind(wx.EVT_BUTTON, self.psDTbtnAct)
             wx.EVT_BUTTON(self, wx.ID_SAVE, self.OnSave)
             wx.EVT_BUTTON(self, wx.ID_CANCEL, self.OnCancel)
+
+        self.clipbrdDatetime = ''
+        self.psBtn.Disable() if not self.clipbrdDatetime else self.psBtn.Enable()
+
+    def cpDTbtnAct(self, event):  # Polemos
+        """Copy datetime button actions."""
+        if not self.modInfo: return
+        datetime = self.modify_time_po(False)
+        if wx.TheClipboard.Open():
+            wx.TheClipboard.SetData(wx.TextDataObject(datetime.replace('-', '/').replace(' ', ', ')))
+            wx.TheClipboard.Close()
+        self.clipbrdDatetime = datetime
+        if self.clipbrdDatetime: self.psBtn.Enable()
+
+    def psDTbtnAct(self, event):  # Polemos
+        """Paste datetime button actions."""
+        if not self.modInfo: return
+        start_time_po = self.modify_time_po(False)
+        if self.clipbrdDatetime and start_time_po:
+            self.OnEditModified(None, self.clipbrdDatetime, start_time_po, False)
 
     def MasterMenu(self, event):  # Polemos
         """Masters button menu."""
@@ -2103,14 +2133,16 @@ class ModDetails(wx.Window): # Polemos: fixed bugs, refactored, optimised, recod
         self.infotext.SetLabel(u'')
         self.timer.Stop()
 
-    def modify_time_po(self):  # Polemos
+    def modify_time_po(self, guiON=True):  # Polemos
         """dialog for editing time."""
-        data_files_po = os.path.join(conf.settings['mwDir'],'Data Files')
+        data_files_po = os.path.join(conf.settings['mwDir'], 'Data Files')
         file_po = os.path.join(data_files_po,(self.modInfo.name))
         start_time_po = formatdate64(int(os.path.getmtime(file_po)))
-        dialog = gui.dialog.date_time_dialog(self, u'Redate Mod', u'Redate selected mod (24h hour format):', start_time_po)
-        newTimeStr_po = dialog.GetValue()
-        return newTimeStr_po, start_time_po
+        if guiON:
+            dialog = gui.dialog.date_time_dialog(self, u'Redate Mod', u'Redate selected mod (24h hour format):', start_time_po)
+            newTimeStr_po = dialog.GetValue()
+            return newTimeStr_po, start_time_po
+        else: return start_time_po
 
     def modify_dialog_po(self, field, failsafe_po=False):  # Polemos
         """Dialog for editing fields."""
@@ -2221,19 +2253,19 @@ class ModDetails(wx.Window): # Polemos: fixed bugs, refactored, optimised, recod
             self.authorStr = authorStr
             self.SetEdited_save_po()
 
-    def OnEditModified(self,event):  # Polemos: Redirect to dialog and more.
+    def OnEditModified(self, event, modifiedStr='', oldtimestr_po='', guiON=True):  # Polemos: Redirect to dialog and more.
         if not self.modInfo: return
-        modifiedStr, oldtimestr_po = self.modify_time_po()
+        if guiON: modifiedStr, oldtimestr_po = self.modify_time_po()
         if modifiedStr == oldtimestr_po: return
         try:
             newTimeTup = time.strptime(modifiedStr,'%m-%d-%Y %H:%M:%S')
             time.mktime(newTimeTup)
         except ValueError:
-            gui.dialog.ErrorMessage(self,_(u'Unrecognized date: %s' % modifiedStr))
+            gui.dialog.ErrorMessage(self, _(u'Unrecognized date: %s' % modifiedStr))
             self.modified.SetValue(self.modifiedStr)
             return
         except OverflowError:
-            gui.dialog.ErrorMessage(self,_(u'Mash cannot handle files dates greater than January 19, 2038.)'))
+            gui.dialog.ErrorMessage(self, _(u'Mash cannot handle files dates greater than January 19, 2038.)'))
             self.modified.SetValue(self.modifiedStr)
             return
         #--Normalize format
@@ -10345,6 +10377,8 @@ def InitImages():  #-# D.C.-G. for SettingsWindow, Polemos addons and changes (s
     singletons.images['mod.open.onhov'] = Image(os.path.join(imgPath, r'open-hov.png'), png)
     singletons.images['mod.save'] = Image(os.path.join(imgPath, r'save.png'), png)
     singletons.images['mod.save.onhov'] = Image(os.path.join(imgPath, r'save-hov.png'), png)
+    singletons.images['mod.datetime.cp'] = Image(os.path.join(imgPath, r'mcopy.png'), png)
+    singletons.images['mod.datetime.ps'] = Image(os.path.join(imgPath, r'mpaste.png'), png)
     singletons.images['master.menu'] = Image(os.path.join(imgPath, r'master.png'), png)
     singletons.images['master.menu.onhov'] = Image(os.path.join(imgPath, r'master.png'), png)
     #--Help browser

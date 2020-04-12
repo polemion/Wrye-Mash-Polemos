@@ -38,8 +38,8 @@ style = {
 
 # Internal per setting styling
 internalStyle = {
-    'big.font':(12, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_LIGHT),
-    'list.background':(220,220,255)
+    'big.font': (12, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_LIGHT),
+    'list.background': (220, 220, 255)
 }
 
 def setIcon(parent, icon=None, text='', type=wx.BITMAP_TYPE_ANY):
