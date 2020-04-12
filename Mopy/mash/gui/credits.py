@@ -17,7 +17,7 @@
 
 # Extension for Wrye Mash Polemos fork ======================================================
 #
-# Credits, Copyright (C) 2018-, Polemos
+# Credits, Copyright (C) 2018~, Polemos
 #
 # Polemos: Write your Mash Legacy here guys...
 #
@@ -36,9 +36,9 @@ bit = bitver.wryeMashBitVer if hasattr(bitver, 'wryeMashBitVer') else ''
 openmw = os.path.exists(os.path.join(os.path.dirname(sys.argv[0]), 'openmw.dat'))
 
 # Version details
-ver = 100
-extraVerInfo = u'' if not openmw else u'Alpha for OpenMW'
-date = u'10/2019'
+ver = 101
+extraVerInfo = u'beta' if not openmw else u'Alpha for OpenMW'
+date = u'4/2020'
 author = u'Polemos fork'
 
 def Current_Version():
@@ -78,10 +78,11 @@ class About:  # Polemos: a much needed "About".
                        (u'Yacoby: ', 'b'),
                        (u'drag and drop functionality, mlox - TES3cmd support, fixes, refactoring and more,\r\n', 'i'),
                        (u'Polemos: ', 'b'),
-                       (u'Toolbar menu, mod order snapshots, better Unicode support, fixes, BSA Archives implementation, OpenMW/TES3mp compability,'
+                       (u'Toolbar menu, mod order snapshots, better Unicode support, fixes, BSA Archives implementation, OpenMW/TES3mp compatibility,'
                         u' TES3lint support, Custom Commands support, new dialogs, theming options, store/restore mod order buttons, interface'
                         u' modernization and streamlining, speed improvements, update notifications, support for people with weak vision, higher'
-                        u' icon res for the status bar, extra functionalities and more.\r\n', 'i'),
+                        u' icon res for the status bar, extra functionalities, multi-language Morrowind support, Animation packages support, MWSE'
+                        u' support and much more.\r\n', 'i'),
                        (u'\r\n', '')))
 
         source.extend(((u'ManaUser: ', 'b'),
@@ -110,7 +111,7 @@ class About:  # Polemos: a much needed "About".
         """License factory."""
         return (
                 (u'Wrye Mash Polemos fork\r\n', 'b'),
-                (u'Copyright (C) 2017-2019 Polemos\r\n', 'b'),
+                (u'Copyright (C) 2017-2020 Polemos\r\n', 'b'),
                 (u'* based on code by Yacoby copyright (C) 2011-2016 Wrye Mash Fork Python version\r\n', 'i'),
                 (u'* based on code by Melchor copyright (C) 2009-2011 Wrye Mash WMSA\r\n', 'i'),
                 (u'* based on code by Wrye copyright (C) 2005-2009 Wrye Mash\r\n', 'i'),
@@ -124,7 +125,7 @@ class About:  # Polemos: a much needed "About".
                 (u'Copyright on any non trivial code modifications or substantial code additions:\r\n', 'b'),
                 (u'2009-2011 Melchor\r\n', 'i'),
                 (u'2011-2016 Yacoby\r\n', 'i'),
-                (u'2017-2019 Polemos\r\n', 'i'),
+                (u'2017-2020 Polemos\r\n', 'i'),
                 (u'\r\n', ''),
 
                 (u'Original Wrye Mash License and Copyright:\r\n', 'b'),

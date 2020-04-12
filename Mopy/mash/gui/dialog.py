@@ -1710,9 +1710,19 @@ class ConfBackup(wx.Dialog):
         else:
             if not self.del_btn.IsEnabled(): self.del_btn.Enable()
 
+    def chkBckDir(self):
+        """Check for confBckDir existence."""
+        if not os.path.isdir(self.confBckDir):  # One final check...
+            os.makedirs(self.confBckDir)
+            if not os.path.isdir(self.confBckDir):  # Failed.
+                ErrorMessage(None, _(u'Access Denied: Unable to create a folder storage for backups!!\n\n'
+                                     u'To proceed you neeed to manually create the following folder first:\n%s' % self.confBckDir))
+                self.OnExit(None)
+
     def confInit(self):
         """Set conf path info."""
         self.confBckDir = profilePaths()['confBcks']
+        self.chkBckDir()
         self.openmw = conf.settings['openmw']
         if not self.openmw:
             self.confFiles = {'Morrowind.ini': os.path.join(conf.settings['mwDir'], 'Morrowind.ini')}
@@ -1722,7 +1732,8 @@ class ConfBackup(wx.Dialog):
 
     def setConfList(self):
         """Creates configuration files list."""
-        rawConfList = {x:os.path.join(self.confBckDir, x) for x in os.listdir(
+        self.chkBckDir()
+        rawConfList = {x: os.path.join(self.confBckDir, x) for x in os.listdir(
             self.confBckDir) if not os.path.isdir(os.path.join(self.confBckDir, x))}
         rawConfIndex = sorted([rawConfList[x] for x in rawConfList], key=os.path.getmtime, reverse=True)
         sortedRawConfList = [x.replace(self.confBckDir, '').replace('\\', '') for x in rawConfIndex]
@@ -1734,6 +1745,7 @@ class ConfBackup(wx.Dialog):
 
     def restore(self, event):
         """Restore actions"""
+        self.chkBckDir()
         fnameS = self.cnfList.GetString(self.cnfList.GetSelections()[0])
         fname = fnameS.split(']')[1]  # Brutal, but efficient
         if fname.lower() == 'morrowind.ini':  # Morrowind
@@ -1769,6 +1781,7 @@ class ConfBackup(wx.Dialog):
 
     def backup(self, event):
         """Backup actions"""
+        self.chkBckDir()
         timeStr = timestamp("%Y-%m-%d_%H-%M-%S")
         for fl in self.confFiles:
             src = self.confFiles[fl]
@@ -1780,6 +1793,7 @@ class ConfBackup(wx.Dialog):
 
     def delete(self, event):
         """Delete actions"""
+        self.chkBckDir()
         for fl in self.cnfList.GetSelections():
             target = os.path.join(self.confBckDir, self.cnfList.GetString(fl))
             try: os.remove(target)
@@ -1789,4 +1803,5 @@ class ConfBackup(wx.Dialog):
 
     def OnExit(self, event):
         """Exit dialog."""
+        self.timer.Destroy()
         self.Destroy()

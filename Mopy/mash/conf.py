@@ -38,7 +38,7 @@
 
 
 import wx
-from unimash import _  # Polemos
+from unimash import _, defaultEncoding as defaultEncoding  # Polemos
 
 
 settings = None
@@ -122,7 +122,7 @@ settingDefaults = {
 
     #-Polemos: Profile
     'profile.active':'Default',
-    'profile.encoding': 'utf-8',
+    'profile.encoding': defaultEncoding,
 
     #-Polemos: Interface Settings
     'active.theme': ('Default theme', None),
