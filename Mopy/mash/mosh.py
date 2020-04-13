@@ -3478,7 +3478,7 @@ class ModInfos(FileInfos):
             if self.circularMasters(stack+[master]): return True
         return False
 
-    def getLoadOrder(self,modNames,asTuple=True): #--Get load order
+    def getLoadOrder(self, modNames, asTuple=True): #--Get load order
         """Sort list of mod names into their load order. ASSUMES MODNAMES ARE UNIQUE!!!"""
         data = self.data
         modNames = list(modNames) #--Don't do an in-place sort.
@@ -3493,7 +3493,7 @@ class ModInfos(FileInfos):
         #  - For each master, if it's masters (mm's) are not already in list,
         #    then place them ahead of master... but in REVERSE order. E.g., last
         #    grandmaster will be first to be added.
-        def preMaster(modName,modDex):
+        def preMaster(modName, modDex):
             """If necessary, move grandmasters in front of master -- but in reverse order."""
             if self.data.has_key(modName):
                 mmNames = list(self.data[modName].masterNames[:])
@@ -3504,8 +3504,8 @@ class ModInfos(FileInfos):
                         #--Move master in front and pre-master it too.
                         if mmDex > modDex:
                             del modNames[mmDex]
-                            modNames.insert(modDex,mmName)
-                            modDex = 1 + preMaster(mmName,modDex)
+                            modNames.insert(modDex, mmName)
+                            modDex = 1 + preMaster(mmName, modDex)
             return modDex
         #--Read through modNames.
         modDex = 1
@@ -3513,12 +3513,12 @@ class ModInfos(FileInfos):
             modName = modNames[modDex]
             if modName[-1].lower() != 'm': break
             if self.circularMasters([modName]): modDex += 1
-            else: modDex = 1 + preMaster(modName,modDex)
+            else: modDex = 1 + preMaster(modName, modDex)
         #--Convert? and return
         if asTuple: return tuple(modNames)
         else: return modNames
 
-    def isLoaded(self,fileName): #--Loading
+    def isLoaded(self, fileName): #--Loading
         """True if fileName is in the the load list."""
         return mwIniFile.isLoaded(fileName)
 

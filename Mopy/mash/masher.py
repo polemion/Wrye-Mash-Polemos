@@ -2095,6 +2095,7 @@ class ModDetails(wx.Window): # Polemos: fixed bugs, refactored, optimised, recod
             gui.dialog.ErrorMessage(self.window, _(u'Couldn\'t find or open the snapshot file.'))
             return
         order_po = [line.rstrip() for line in restore_po]
+        order_po = filter(None, order_po)  # Polemos: This may have problems in Python 3
         if len(order_po) <= 1: return
         mtime_first = 1026943162
         mtime_last = int(time.time())

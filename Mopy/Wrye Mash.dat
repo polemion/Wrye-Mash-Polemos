@@ -2478,8 +2478,10 @@
             Versions</b></a> </span>
       <hr></h2>
     <p><a name="Versions" style="color: rgb(204, 102, 0);"></a></p>
-    <p><b><b>101 beta Polemos [4/13/2020]</b> </b></p>
+    <p><b><b>101 beta Polemos [4/14/2020]</b> </b></p>
     <p><em><strong>-Bugfixes, failsafes and safety additions.</strong></em><br>
+      Fixed a bug in mod order restore when an empty item was included in the
+      list.<br>
       Added more encoding failsafes, for example when changing encodings, to
       abort any operations.<br>
       Added the ability to insert the datetime as a text in the datetime dialog
