@@ -802,9 +802,10 @@ class BSArchivesList(gui.List, gui.ListDragDropMixin):  # Polemos
             os.utime(self.data[x][1], (time.time(), mtime))
             mtime += step
         self.items = items
-        self.Refresh()
         # Polemos: for OpenMW/TES3mp support
         if self.openmw: self.bsafiles.safeSave()
+        self.Refresh()
+
 
 #------------------------------------------------------------------------------
 
