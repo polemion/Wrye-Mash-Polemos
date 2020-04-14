@@ -2166,9 +2166,15 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
         self.DataMods = datamodsListExport
         self.SaveDatamods(datamodsListExport)
 
+    def filterDataMod(self, data):  # Polemos
+        """Returns DataMod path from openmw.xfg config entry."""
+        if not data: return data
+        if type(data) is list: return [x.split('"')[1] for x in data]
+        else: return type(data)([x.split('"')[1] for x in data][0])
+
     def sanitizeDatamods(self, data, repack=True):  # Polemos
         """Sanitize DataDirs entries openmw.cfg)."""
-        filterPaths = [x.split('"')[1] for x in data]
+        filterPaths = self.filterDataMod(data)
         filterDups = self.itmDeDup(filterPaths)
         filterMissing = [x for x in filterDups if os.path.isdir(x)]
         return [u'data="%s"'%os.path.realpath(x).rstrip() for x in filterMissing
@@ -2197,13 +2203,15 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
                 conf_tmp.extend(data)
                 conf_tmp.append('PluginMark')
             else: conf_tmp.extend(data)
-        # No DataMods dirs
+        # No DataMods dirs yet
         if conf_tmp and not self.DataModsDirs:
             self.safeSave('\n'.join([
                 x for x in conf_tmp if not any(['PluginMark' in x, 'ArchiveMark' in x])]))
         #self.StructureChk(datafiles_po) todo: check for cfg abnormalities...
-        self.confLoadLines = conf_tmp
-        self.safeSave()
+        else:
+            self.confLoadLines = conf_tmp
+            self.DataModsDirs = self.filterDataMod(data)
+            self.safeSave()
 
     def StructureChk(self, cfg):  # Polemos: Not enabled. todo: enable openmw.cfg check
         """Last check before saving OpenMW cfg file."""
@@ -2363,12 +2371,12 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
 
             self.bsaFiles = self.chkCase(self.bsaFiles)
             self.loadFiles = self.chkCase(self.loadFiles)
-        except Exception as err:  # Last resort to avoid conf file corruption
+        except Exception as err:  # Last resort to avoid conf file corruption Todo: err debug
             self.flush_conf()
 
     def load_OpenMW_cfg(self):  # Polemos
         """Read plugin data from openmw.cfg"""
-        self.datafiles_po = self.openmw_data_files()[:]
+        self.datafiles_po = self.openmw_data_files()
         reLoadArchiveFiles = re.compile(ur'fallback-archive=(.*)$', re.UNICODE)
         reLoadPluginFiles = re.compile(ur'content=(.*)$', re.UNICODE)
         self.mtime = getmtime(self.path)
@@ -2435,7 +2443,7 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
             self.loadFiles = self.chkCase(self.loadFiles)
             if self.bsaFiles: self.openmw_apply_order(self.bsaFiles, self.datafiles_po)
             if self.loadFiles: self.openmw_apply_order(self.loadFiles, self.datafiles_po)
-        except:  # Last resort to avoid conf file corruption
+        except Exception as err:  # Last resort to avoid conf file corruption Todo: err debug
             self.flush_conf()
 
     def get_active_bsa(self):  # Polemos
@@ -2443,22 +2451,27 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
         if self.hasChanged(): self.loadConf()
         return self.bsaFiles
 
-    def data_files_factory(self, filenames, paths):  # Polemos: OpenMW/TES3mp
+    def data_files_factory(self, filenames):  # Polemos: OpenMW/TES3mp
         """Constructs the data file paths for OpenMW"""
+        paths = self.DataModsDirs
         order_po = []
         real = os.path.realpath
         exists = os.path.exists
         join = os.path.join
-        for filename in filenames:
-            for mod_dir in paths:
-                if exists(real((join(mod_dir, filename)))):
-                    order_po.append(real((join(mod_dir, filename))))
+        # Polemos: Having the folders first in the loop, counts for the DataMods folder order override.
+        # Also, when searching for mods in a DataMods folder we cannot Break to speed things up. If we
+        # do, we risk to omit DataMods with multiple plugins...
+        for mod_dir in paths:
+            for filename in filenames:
+                fpath = real(join(mod_dir, filename))
+                if exists(fpath):
+                    order_po.append(fpath)
         return order_po
 
     def openmw_apply_order(self, order, paths):  # Polemos: OpenMW/TES3mp
         """Handle OpenMW mod ordering when reading openmw.cfg to display on mods panel."""
-        if order or paths == []: return
-        order_po = self.data_files_factory(order, paths)
+        if not order or not paths: return
+        order_po = self.data_files_factory(order)
         # Polemos: For mods and bsas we use mtime to set/get order. Thus we keep compatibility with
         # regular Morrowind mod/bsa ordering and just hijack Wrye Mash system to use with OpenMW.
         if len(order_po) <= 1: return
@@ -2468,12 +2481,12 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
         loadorder_mtime_increment = (mtime_last - mtime_first) / len(order_po)
         mtime = mtime_first
         for filepath in order_po:
-            os.utime(filepath,(-1, mtime))
+            os.utime(filepath, (-1, mtime))
             mtime += loadorder_mtime_increment
 
-    def save_openmw_plugin_factory(self): # Polemos: OpenMW/TES3mp
+    def save_openmw_plugin_factory(self):  # Polemos: OpenMW/TES3mp
         """Prepare plugin file entries for insertion to OpenMW.cfg."""
-        plugins_order = self.data_files_factory(self.loadFiles, self.datafiles_po)[:]
+        plugins_order = self.data_files_factory(self.loadFiles)
         plugins_order.sort(key=lambda x: os.path.getmtime(x))
         plugins_order = [os.path.basename(x) for x in plugins_order]
         plugins_order = self.itmDeDup(plugins_order)
@@ -2483,7 +2496,7 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
 
     def save_openmw_archive_factory(self):  # Polemos: OpenMW/TES3mp
         """Prepare archive file entries for insertion to OpenMW.cfg."""
-        archives_order = self.data_files_factory(self.bsaFiles, self.datafiles_po)[:]
+        archives_order = self.data_files_factory(self.bsaFiles)
         archives_order.sort(key=lambda x: os.path.getmtime(x))
         archives_order = [os.path.basename(x) for x in archives_order]
         archives_order = self.itmDeDup(archives_order)
@@ -3528,10 +3541,10 @@ class ModInfos(FileInfos):
         #--Load masters
         modFileNames = self.keys()
         for x in fileNames:
-            if x not in self.data: continue # Polemos fix: In case a mod is missing
-            for master,size in self[x].tes3.masters:
+            if x not in self.data: continue  # Polemos fix: In case a mod is missing
+            for master, size in self[x].tes3.masters:
                 if master in modFileNames and master != x:
-                    self.load(master,False)
+                    self.load(master, False)
         #--Load self
         mwIniFile.load(fileNames, doSave)
 
