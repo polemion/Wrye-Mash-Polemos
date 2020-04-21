@@ -37,7 +37,7 @@ openmw = os.path.exists(os.path.join(os.path.dirname(sys.argv[0]), 'openmw.dat')
 
 # Version details
 ver = 101
-extraVerInfo = u'beta' if not openmw else u'Alpha for OpenMW'
+extraVerInfo = u'beta2' if not openmw else u'Alpha for OpenMW'
 date = u'4/2020'
 author = u'Polemos fork'
 

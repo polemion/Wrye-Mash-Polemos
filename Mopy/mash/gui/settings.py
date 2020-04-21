@@ -64,6 +64,7 @@ class SettingsWindow(wx.Dialog):  # Polemos: Total reconstruction.
         """Settings Dialog."""
         wx.Dialog.__init__(self, parent=parent, id=id, size=size, pos=pos, style=style)
         self.SetSizeHints(-1, -1)
+        gui.setIcon(self)
 
         # Common:
         self.name_po, self.version_po, self.website_po, self.developers_po, self.license_po = About(conf.settings['openmw']).getData()
@@ -284,9 +285,11 @@ class SettingsWindow(wx.Dialog):  # Polemos: Total reconstruction.
             AboutImageBtn_Sizer, AboutMain_Sizer, AboutURL_Sizer = SizerMany(3, wx.HORIZONTAL)
             AboutImageBtn_Sizer.AddMany([(self.license_button,0,wx.RIGHT|wx.LEFT,5),((11,0),0,0,5),(self.credits_button,0,wx.RIGHT|wx.LEFT,5)])
             AboutURL_Sizer.AddMany([space,(self.home_url,0,wx.RIGHT|wx.LEFT|wx.EXPAND,5),space])
-            AboutImage_Sizer.AddMany([(self.wrye_bad,0,wx.ALL,5),space,(AboutImageBtn_Sizer,0,wx.TOP,5),space,(AboutURL_Sizer,1,wx.EXPAND|wx.TOP,5),space])
+            AboutImage_Sizer.AddMany([(self.wrye_bad,0,wx.ALL,5),space,(
+                AboutImageBtn_Sizer,0,wx.TOP,5),space,(AboutURL_Sizer,1,wx.EXPAND|wx.TOP,5),space])
             AboutMain_Sizer.AddMany([(AboutImage_Sizer,0,wx.EXPAND,5),(self.contents,1,wx.ALL|wx.EXPAND,5)])
-            About_Sizer.AddMany([(self.title,0,wx.EXPAND|wx.RIGHT|wx.LEFT,5),(self.version,0,wx.EXPAND|wx.RIGHT|wx.LEFT,5),(AboutMain_Sizer,1,wx.EXPAND,5)])
+            About_Sizer.AddMany([(self.title,0,wx.EXPAND|wx.RIGHT|wx.LEFT,
+                5),(self.version,0,wx.EXPAND|wx.RIGHT|wx.LEFT,5),(AboutMain_Sizer,1,wx.EXPAND,5)])
             self.about_panel.SetSizer(About_Sizer)
             self.about_panel.Layout()
             About_Sizer.Fit(self.about_panel)

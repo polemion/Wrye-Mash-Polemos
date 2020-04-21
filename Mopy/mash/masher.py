@@ -3707,9 +3707,7 @@ class MashFrame(wx.Frame):  # Polemos: Added a Menubar, OpenMW/TES3mp support, m
         minSize = conf.settings['mash.frameSize.min']
         self.SetSizeHints(minSize[0], minSize[1])
         self.SetTitle()
-        ib = wx.IconBundle()
-        ib.AddIconFromFile(os.path.join('images', 'Wrye Mash.ico'), wx.BITMAP_TYPE_ANY)
-        self.SetIcons(ib)
+        gui.dialog.setIcon(self)
         # Status Bar
         self.SetStatusBar(MashStatusBar(self))
         # Panels
@@ -7778,10 +7776,10 @@ class Mods_TESlint_Config(Link): # Polemos: A TES3lint config dialog.
 class snapshot_po_take(Link):  # Polemos
     """Take snapshot."""
 
-    def AppendToMenu(self,menu,window,data):
+    def AppendToMenu(self, menu, window, data):
         """Add to menu."""
-        Link.AppendToMenu(self,menu,window,data)
-        menuItem = wx.MenuItem(menu,self.id,_(u'Take fast snapshot'))
+        Link.AppendToMenu(self, menu, window, data)
+        menuItem = wx.MenuItem(menu, self.id, _(u'Take fast snapshot'))
         menu.AppendItem(menuItem)
 
     def Execute(self,event):
@@ -7790,23 +7788,23 @@ class snapshot_po_take(Link):  # Polemos
         except: self.window = singletons.modDetails
         srcDir = os.path.join(singletons.MashDir, 'snapshots')
         if not os.path.exists(srcDir): os.makedirs(srcDir)
-        log = mosh.LogFile(cStringIO.StringIO())
-        for num, name in enumerate(mosh.mwIniFile.loadOrder): log('%s' % (name))
-        text = mosh.winNewLines(log.out.getvalue())
+        text = '\n'.join([x for x in mosh.mwIniFile.loadOrder])
         with io.open((os.path.join(srcDir, 'snapshot.txt')), 'w', encoding=conf.settings['profile.encoding']) as f:
-            try: f.write(text)
-            except: f.write(text.decode(conf.settings['profile.encoding']))
-        gui.dialog.InfoMessage(self.window, _(u'Active mods snapshot taken.'))
+            try:
+                f.write(text)
+                msg = _(u'Active mods snapshot taken.')
+            except Exception as err: msg = _(u'Unable to take snapshot. Reason:\n   %s' % err)
+        gui.dialog.InfoMessage(self.window, msg)
 
 #------------------------------------------------------------------------------
 
 class snapshot_po_restore(Link):  # Polemos
     """Restore snapshot."""
 
-    def AppendToMenu(self,menu,window,data):
+    def AppendToMenu(self, menu, window, data):
         """Add to menu."""
-        Link.AppendToMenu(self,menu,window,data)
-        menuItem = wx.MenuItem(menu,self.id,_(u'Restore fast snapshot'))
+        Link.AppendToMenu(self, menu, window, data)
+        menuItem = wx.MenuItem(menu, self.id, _(u'Restore fast snapshot'))
         menu.AppendItem(menuItem)
         if not os.path.isfile((os.path.join(singletons.MashDir, 'snapshots', 'snapshot.txt'))): menuItem.Enable(False)
 
@@ -7820,7 +7818,8 @@ class snapshot_po_restore(Link):  # Polemos
             gui.dialog.ErrorMessage(self.window, _(u'You need to create a snapshot file first.'))
             return
         try:
-            with io.open((os.path.join(srcDir, 'snapshot.txt')), 'r', encoding=conf.settings['profile.encoding']) as f: restore_po = f.readlines()
+            with io.open((os.path.join(srcDir, 'snapshot.txt')), 'r', encoding=conf.settings['profile.encoding']) as f:
+                restore_po = f.readlines()
         except:
             gui.dialog.ErrorMessage(self.window, _(u'Couldn\'t open the snapshot file.'))
             return
@@ -7977,41 +7976,39 @@ class snapshot_po_export(Link):  # Polemos
         if self.type == 'txt': wildcard = u'Snapshot Files (*.txt)|*.txt'
         else: wildcard = '*.*'
         if not os.path.exists(destDir): os.makedirs(destDir)
-        log = mosh.LogFile(cStringIO.StringIO())
-        for num, name in enumerate(mosh.mwIniFile.loadOrder): log(u'%s' % (name))
-        text = mosh.winNewLines(log.out.getvalue())
         destName = 'snapshot.txt'
-        dialog = wx.FileDialog(self.window,_(u'Export snapshot as:'),destDir, destName,wildcard,wx.FD_SAVE|wx.FD_OVERWRITE_PROMPT)
+        dialog = wx.FileDialog(self.window,
+            _(u'Export snapshot as:'), destDir, destName, wildcard, wx.FD_SAVE|wx.FD_OVERWRITE_PROMPT)
         if dialog.ShowModal() != wx.ID_OK:
             dialog.Destroy()
             return
-        (destDir,destName) = os.path.split(dialog.GetPath())
+        (destDir, destName) = os.path.split(dialog.GetPath())
         dialog.Destroy()
+        text = '\n'.join([x for x in mosh.mwIniFile.loadOrder])
         with io.open((os.path.join(destDir, destName)), 'w', encoding=conf.settings['profile.encoding']) as f:
-            try: f.write(text)
-            except: f.write(text.decode(conf.settings['profile.encoding']))
-        gui.dialog.InfoMessage(self.window, _(u'Active mods snapshot exported to: \n%s' % (destDir,)))
+            try:
+                f.write(text)
+                msg = _(u'Active mods snapshot taken and exported to: \n%s' % (destDir,))
+            except Exception as err: msg = _(u'Unable to take/export snapshot. Reason:\n   %s' % err)
+        gui.dialog.InfoMessage(self.window, msg)
 
 #------------------------------------------------------------------------------
 
-class Mods_CopyActive(Link):  # Polemos: added a dialog informing about copying into the clipboard.
+class Mods_CopyActive(Link):  # Polemos: optimized, added a dialog informing about copying into the clipboard.
     """Copy active mods to clipboard."""
 
-    def AppendToMenu(self,menu,window,data):
+    def AppendToMenu(self, menu, window, data):
         """Add to menu."""
-        Link.AppendToMenu(self,menu,window,data)
-        menuItem = wx.MenuItem(menu,self.id,_(u'Copy Active Mods'))
+        Link.AppendToMenu(self, menu, window, data)
+        menuItem = wx.MenuItem(menu, self.id, _(u'Copy Active Mods'))
         menu.AppendItem(menuItem)
 
-    def Execute(self,event): # Polemos fix
+    def Execute(self,event):  # Polemos fix
         """Handle selection."""
         window = singletons.mashFrame
-        caption = _(u'Active Mods:')
-        log = mosh.LogFile(cStringIO.StringIO())
-        log.setHeader(caption)
-        for num, name in enumerate(mosh.mwIniFile.loadOrder): log(u'%03d  %s' % (num+1,name))
+        title = _(u'Active Mods:\n')
+        text = title + '\n'.join([u'%03d  %s' % (num + 1, name) for num, name in enumerate(mosh.mwIniFile.loadOrder)])
         if wx.TheClipboard.Open():
-            text = mosh.winNewLines(log.out.getvalue())
             try: wx.TheClipboard.SetData(wx.TextDataObject(text))
             except: wx.TheClipboard.SetData(wx.TextDataObject(text.decode(conf.settings['profile.encoding'])))
             wx.TheClipboard.Close()
@@ -9309,7 +9306,7 @@ class Saves_ProfilesData(ListEditorData):
 
     def add(self):
         """Adds a new profile."""
-        newName = gui.dialog.TextEntry(self.parent,_(u"Enter profile name:"))
+        newName = gui.dialog.TextEntry(self.parent,_(u'Enter profile name:'))
         if not newName: return False
         if newName in self.getItemList():
             gui.dialog.ErrorMessage(self.parent,_(u'Name must be unique.'))

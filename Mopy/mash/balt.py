@@ -136,9 +136,10 @@ images = {}  #--Singleton for collection of images.
 
 class Image:
     """Wrapper for images, allowing access in various formats/classes.
-
     Allows image to be specified before wx.App is initialized."""
-    def __init__(self,file,type=wx.BITMAP_TYPE_ANY ):
+
+    def __init__(self, file, type=wx.BITMAP_TYPE_ANY ):
+        """Init."""
         self.file = GPath(file)
         self.type = type
         self.bitmap = None
@@ -147,11 +148,13 @@ class Image:
             raise ArgumentError(_(u'Missing resource file: %s.') % (self.file,))
 
     def GetBitmap(self):
+        """Return bitmap."""
         if not self.bitmap:
-            self.bitmap = wx.Bitmap(self.file.s,self.type)
+            self.bitmap = wx.Bitmap(self.file.s, self.type)
         return self.bitmap
 
     def GetIcon(self):
+        """Return icon."""
         if not self.icon:
             self.icon = wx.EmptyIcon()
             self.icon.CopyFromBitmap(self.GetBitmap())
@@ -160,8 +163,8 @@ class Image:
 
 class ImageBundle:
     """Wrapper for bundle of images.
-
     Allows image bundle to be specified before wx.App is initialized."""
+
     def __init__(self):
         self.images = []
         self.iconBundle = None

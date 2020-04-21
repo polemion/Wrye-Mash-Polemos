@@ -64,6 +64,14 @@ def chkChars(text_val, strict=False):
     return text_val.strip(' ')
 
 
+def setIcon(parent, imgPath=None):
+    """Set icon of caller window."""
+    if imgPath is None:
+        appICO = wx.Icon(os.path.join('images', 'Wrye Mash.ico'))
+    else: appICO = wx.Icon(imgPath)
+    parent.SetIcon(appICO)
+
+
 class ProgressDialog(mosh.Progress):  # Polemos: fix for newer wxpythons.
     """Prints progress to file (stdout by default)."""
 
@@ -74,26 +82,31 @@ class ProgressDialog(mosh.Progress):  # Polemos: fix for newer wxpythons.
         mosh.Progress.__init__(self,interval)
         self.isDestroyed = False
 
-    def doProgress(self,progress,message):
+    def doProgress(self, progress, message):
+        """Progress bar."""
         if self.dialog:
-            self.dialog.Update(int(progress*100),message)
+            self.dialog.Update(int(progress*100), message)
             wx.Yield()
-        else: pass # raise gui.InterfaceError,_('Dialog already destroyed.')
+        else: pass
 
     def Destroy(self):
+        """On exit."""
         if self.dialog:
             self.dialog.Destroy()
             self.dialog = None
 
 
 class WaitDialog(wx.BusyInfo, wx.BusyCursor):
+    """A busy dialog."""
 
     def __init__(self, window, message):
+        """Init."""
         disableAll = wx.WindowDisabler()
         wx.BusyInfo.__init__(self, message, window)
         wx.BusyCursor.__init__(self)
 
     def exit(self):
+        """On exit."""
         del self
 
 
@@ -118,7 +131,8 @@ class GaugeDialog(wx.Dialog):  # Polemos
 
         if True: # Layout
             contentsSizer = wx.BoxSizer(wx.VERTICAL)
-            contentsSizer.AddMany([(self.message,0,wx.EXPAND|wx.TOP|wx.RIGHT|wx.LEFT,10),((0,0),1,wx.EXPAND,5),(self.gauge,0,wx.EXPAND|wx.ALL,10)])
+            contentsSizer.AddMany([(self.message,0,wx.EXPAND|wx.TOP|wx.RIGHT|wx.LEFT,10),
+                ((0,0),1,wx.EXPAND,5),(self.gauge,0,wx.EXPAND|wx.ALL,10)])
             mainSizer = wx.BoxSizer(wx.VERTICAL)
             mainSizer.Add(self.mainPanel, 1, wx.EXPAND, 5)
             self.mainPanel.SetSizer(contentsSizer)
@@ -130,9 +144,17 @@ class GaugeDialog(wx.Dialog):  # Polemos
         if True: # Event
             wx.EVT_CLOSE(self, self.OnClose)
 
-    def OnClose(self, event): pass
-    def set_msg(self, msg): self.message.SetLabel(msg)
-    def update(self, num): self.gauge.SetValue(num) if self.max else self.gauge.Pulse()
+    def OnClose(self, event):
+        """On close."""
+        pass
+
+    def set_msg(self, msg):
+        """Set custom message."""
+        self.message.SetLabel(msg)
+
+    def update(self, num):
+        """Update gauge."""
+        self.gauge.SetValue(num) if self.max else self.gauge.Pulse()
 
 
 class netProgressDialog:  # Polemos
@@ -235,7 +257,7 @@ class ConflictDialog(wx.Dialog):  # Polemos
 
 def TextEntry(parent, message, default=''):
     """Shows a text entry dialog and returns result or None if canceled."""
-    dialog = wx.TextEntryDialog(parent,message,default)
+    dialog = wx.TextEntryDialog(parent, message, default)
     if dialog.ShowModal() != wx.ID_OK:
         dialog.Destroy()
         return None
@@ -255,19 +277,17 @@ def askdialog(parent, question, caption, cnl=False):  # Polemos
 
 def DirDialog(parent, message=_(u'Choose a directory.'), defaultPath=''):  # Polemos
     """Shows a modal directory dialog and return the resulting path, or None if canceled."""
-    dialog = wx.DirDialog(parent, message, defaultPath, style=wx.DD_NEW_DIR_BUTTON)
-    dialog.ShowModal()
-    path = dialog.GetPath()
-    dialog.Destroy()
+    with wx.DirDialog(parent, message, defaultPath, style=wx.DD_NEW_DIR_BUTTON) as dialog:
+        dialog.ShowModal()
+        path = dialog.GetPath()
     return None if not path else path
 
 
 def FileDialog(parent, message=_(u'Choose a file.'), defaultPath='', defaultfile='', wildcard=_(u'Executable files (*.exe)|*.exe')):  # Polemos
     """Shows a modal find file dialog and returns the resulting file path and filename or None if canceled."""
-    dialog = wx.FileDialog(parent, message, defaultPath, defaultfile, wildcard, style=wx.FD_OPEN|wx.FD_FILE_MUST_EXIST)
-    dialog.ShowModal()
-    path, filename = dialog.GetPath(), dialog.GetFilename()
-    dialog.Destroy()
+    with wx.FileDialog(parent, message, defaultPath, defaultfile, wildcard, style=wx.FD_OPEN|wx.FD_FILE_MUST_EXIST) as dialog:
+        dialog.ShowModal()
+        path, filename = dialog.GetPath(), dialog.GetFilename()
     return None if not path else (path, filename)
 
 
@@ -314,8 +334,8 @@ def ContinueQuery(parent, tmessage, message, continueKey, title=_(u'Warning'), n
 
 def LogMessage(parent, message, logText,title=u'', style=0, asDialog=True):
     """Query Dialog."""
-    pos = conf.settings.get('mash.message.log.pos',dPos)
-    size = conf.settings.get('mash.message.log.size',(400,400))
+    pos = conf.settings.get('mash.message.log.pos', dPos)
+    size = conf.settings.get('mash.message.log.size', (400, 400))
     if asDialog: window = wx.Dialog(parent,-1,title, pos=pos,size=size,style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER)
     else:
         window = wx.Frame(parent,-1,title,pos=pos,size=(200,300), style=wx.RESIZE_BORDER|wx.CAPTION|wx.SYSTEM_MENU|wx.CLOSE_BOX|wx.CLIP_CHILDREN)
@@ -348,9 +368,9 @@ class WelcomeDialog(wx.Dialog):  # Polemos
             bad_wrye = wx.StaticBitmap(panel, wx.ID_ANY, wx.Bitmap('images/wr_b_mini.png', wx.BITMAP_TYPE_ANY), dPos, dSize, 0)
             headline = wx.StaticText(panel, wx.ID_ANY, headtext, dPos, dSize, 0)
             details = wx.StaticText(panel, wx.ID_ANY, detailstext, dPos, dSize, 0)
-            ok_button = wx.Button(self, wx.ID_OK, _(u'OK'), dPos, Size(65, 23), 0)
+            okBtn = wx.Button(self, wx.ID_OK, _(u'OK'), dPos, Size(65, 23), 0)
 
-        if True:  # Theme
+        if True:  # Theming
             panel.SetBackgroundColour(wx.Colour(255, 255, 255))
             headline.SetForegroundColour(wx.Colour(0, 0, 160))
             headline.SetFont(wx.Font(12, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, u''))
@@ -361,12 +381,10 @@ class WelcomeDialog(wx.Dialog):  # Polemos
             panelSizer = wx.BoxSizer(wx.HORIZONTAL)
             panelSizer.AddMany([(bad_wrye, 0, wx.EXPAND|wx.LEFT, 5),(textSizer, 1, wx.EXPAND|wx.RIGHT|wx.LEFT, 5)])
             buttonSizer = wx.BoxSizer(wx.VERTICAL)
-            buttonSizer.Add(ok_button, 0, wx.ALIGN_RIGHT | wx.ALL, 8)
+            buttonSizer.Add(okBtn, 0, wx.ALIGN_RIGHT|wx.ALL, 8)
             main_sizer = wx.BoxSizer(wx.VERTICAL)
-            main_sizer.AddMany([(panel, 1, wx.EXPAND, 5),(buttonSizer, 0, wx.EXPAND, 5)])
+            main_sizer.AddMany([(panel, 1, wx.EXPAND, 5), (buttonSizer, 0, wx.EXPAND, 5)])
             panel.SetSizer(panelSizer)
-
-        if True:  # Layout
             panel.Layout()
             panelSizer.Fit(panel)
             self.SetSizer(main_sizer)
@@ -377,8 +395,12 @@ class WelcomeDialog(wx.Dialog):  # Polemos
             wx.EVT_BUTTON(self, wx.ID_OK, self.OnOk)
             wx.EVT_CLOSE(self, self.OnCancel)
 
-    def OnCancel(self, event): self.Destroy()
+    def OnCancel(self, event):
+        """On cancel."""
+        self.Destroy()
+
     def OnOk(self, event):
+        """On OK."""
         self.EndModal(True)
         self.Destroy()
 
@@ -506,31 +528,30 @@ class RenameDialog(wx.Dialog):  # Polemos
 
 def InfoMessage(parent, message, title=_(u'Information'), style=(wx.OK|wx.ICON_INFORMATION|wx.STAY_ON_TOP)):
     """Shows a modal information message."""
-    return Message(parent,message,title,style)
+    return Message(parent, message, title, style)
 
 
 def ManualDetectDialog(parent, message, title=u'', style=wx.YES_NO|wx.ICON_EXCLAMATION|wx.STAY_ON_TOP|wx.CANCEL):  # Polemos
     """Manually or autodetect dialog."""
-    dialog = wx.MessageDialog(parent,message,title,style)
-    dialog.SetYesNoLabels(_(u'Try to autodetect'), _(u'Manual search'))
-    result = dialog.ShowModal()
-    dialog.Destroy()
+    with wx.MessageDialog(parent, message, title, style) as dialog:
+        dialog.SetYesNoLabels(_(u'Try to autodetect'), _(u'Manual search'))
+        result = dialog.ShowModal()
     return result
 
 
 def WarningQuery(parent, message, title=u'', style=(wx.YES_NO|wx.ICON_EXCLAMATION|wx.STAY_ON_TOP)):
     """Shows a modal warning message."""
-    return Message(parent,message,title,style)
+    return Message(parent, message, title, style)
 
 
 def WarningMessage(parent, message, title=_(u'Warning'), style=(wx.OK|wx.ICON_EXCLAMATION|wx.STAY_ON_TOP)):
     """Shows a modal warning message."""
-    return Message(parent,message,title,style)
+    return Message(parent, message, title, style)
 
 
 def ErrorQuery(parent, message, title=u'', style=(wx.YES_NO|wx.ICON_HAND|wx.STAY_ON_TOP)):  # Polemos
     """Shows a modal warning/error message."""
-    return Message(parent,message,title,style)
+    return Message(parent, message, title, style)
 
 
 def ErrorMessage(parent, message, title=_(u'Error'), style=(wx.OK|wx.ICON_HAND|wx.STAY_ON_TOP), dtype='error', modal=True):
@@ -540,9 +561,8 @@ def ErrorMessage(parent, message, title=_(u'Error'), style=(wx.OK|wx.ICON_HAND|w
 
 def Message(parent, message, title=u'', style=wx.OK|wx.STAY_ON_TOP):
     """Shows a modal MessageDialog. Use ErrorMessage, WarningMessage or InfoMessage."""
-    dialog = wx.MessageDialog(parent, message, title, style)
-    result = dialog.ShowModal()
-    dialog.Destroy()
+    with wx.MessageDialog(parent, message, title, style) as dialog:
+        result = dialog.ShowModal()
     return result
 
 
@@ -612,7 +632,10 @@ class ScrolledtextMessage(wx.Dialog):  # Polemos
         self.dialog = wx_dialogs_po.ScrolledMessageDialog(window, msg, caption)
         if modal: self.dialog.ShowModal()
         if not modal: self.dialog.Show()
-    def Destroy(self): self.dialog.Destroy()
+
+    def Destroy(self):
+        """On exit."""
+        self.dialog.Destroy()
 
 
 class MaxCharDialog(wx.Dialog):  # Polemos

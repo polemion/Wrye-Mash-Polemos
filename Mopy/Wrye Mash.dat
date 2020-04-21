@@ -7,7 +7,7 @@
   <body style="                        background-color: rgb(255, 242, 204);">
     <hr style="color: white; margin-left: auto; margin-right: auto;">
     <h1><span style="color: rgb(0, 51, 51);"> <b>Polemos's Wrye Mash Fork v101
-          beta</b> </span> </h1>
+          beta2</b> </span> </h1>
     <p><b>Latest Version: <a href="https://www.nexusmods.com/morrowind/mods/45439">Nexus
           </a><br> Discussion: <a href="https://www.nexusmods.com/morrowind/mods/45439?tab=posts">Comments
           section</a></b></p>
@@ -2478,8 +2478,15 @@
             Versions</b></a> </span>
       <hr></h2>
     <p><a name="Versions" style="color: rgb(204, 102, 0);"></a></p>
-    <p><b><b>101 beta Polemos [4/14/2020]</b> </b></p>
+    <p><b><b>101 beta2 Polemos [4/22/2020]</b> </b></p>
     <p><em><strong>-Bugfixes, failsafes and safety additions.</strong></em><br>
+      Optimized "Copy Active Mods" option.<br>
+      Fixed a newly introduced bug in the "Snapshots" functionality. Also
+      optimized and faster. (Thanks KarmicKid)<br>
+      Dialog Refactoring.<br>
+      Fixed the BSA reordering problem in OpenMW implementation.<br>
+      Fixed some bugs in OpenMW implementation which were causing plugins to
+      deselect.<br>
       Fixed a bug in mod order restore when an empty item was included in the
       list.<br>
       Added more encoding failsafes, for example when changing encodings, to

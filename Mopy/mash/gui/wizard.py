@@ -58,6 +58,7 @@ class WizardDialog(wx.Dialog):
         self.MashDate = conf.settings['mash.version']
         self.SetSizeHints(-1, -1)
         self.WMPF_sword = wx.StaticBitmap(self, wx.ID_ANY, wx.Bitmap(u'images/daggerfall.png',wx.BITMAP_TYPE_ANY), dPos, dSize, 0)
+        gui.setIcon(self)
 
         if True:  # Intro Panel
             # Contents
