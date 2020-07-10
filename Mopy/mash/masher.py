@@ -6910,10 +6910,10 @@ class Installer_Delete(balt.Tank_Delete):
 class Installer_Rename(InstallerLink):  # Polemos
     """Renames selected file from tank."""
 
-    def AppendToMenu(self,menu,window,data):
-        Link.AppendToMenu(self,menu,window,data)
+    def AppendToMenu(self, menu, window, data):
+        Link.AppendToMenu(self, menu, window, data)
         self.title = _(u'Rename...')
-        menuItem = wx.MenuItem(menu,self.id,self.title)
+        menuItem = wx.MenuItem(menu, self.id, self.title)
         menu.AppendItem(menuItem)
         menuItem.Enable(self.isSingle())
 
@@ -6921,8 +6921,8 @@ class Installer_Rename(InstallerLink):  # Polemos
         """Handle selection."""
         curName = self.selected[0]
         isdir = self.data.dir.join(curName).isdir()
-        if isdir: root,ext = curName,''
-        else: root,ext = curName.rootExt
+        if isdir: root, ext = curName,''
+        else: root, ext = curName.rootExt
         tmpName = '%s%s' % (root, ext)
         # Check if selected is the special ==Last== marker
         if self.data.lastKey == self.selected[0]:
@@ -6950,25 +6950,25 @@ class Installer_Rename(InstallerLink):  # Polemos
             RefreshNotify()
             return
         # All ok? Continue...
-        try: result = balt.askText(self.gTank,_(u'Rename %s as:') % curName.s, self.title, tmpName.s)
-        except: result = balt.askText(self.gTank,_(u'Rename %s as:') % n_path(curName), self.title, n_path(tmpName))
+        try: result = balt.askText(self.gTank, _(u'Rename %s as:') % curName.s, self.title, tmpName.s)
+        except: result = balt.askText(self.gTank, _(u'Rename %s as:') % n_path(curName), self.title, n_path(tmpName))
         result = (result or '').strip()
         if not result: return
         #--Error checking
         newName = GPath(result).tail
         if not newName.s:
-            balt.showWarning(self.gTank,_(u'%s is not a valid name.') % result)
+            balt.showWarning(self.gTank, _(u'%s is not a valid name.') % result)
             return
         if newName in self.data:
-            balt.showWarning(self.gTank,_(u'%s already exists or the new name is the same as the original.') % newName.s)
+            balt.showWarning(self.gTank, _(u'%s already exists or the new name is the same as the original.') % newName.s)
             return
         if self.data.dir.join(curName).isfile() and curName.cext != newName.cext:
-            balt.showWarning(self.gTank, _(u'%s does not have correct extension (%s).') % (newName.s,curName.ext))
+            balt.showWarning(self.gTank, _(u'%s does not have correct extension (%s).') % (newName.s, curName.ext))
             return
         #--Rename
         try:
             wx.BeginBusyCursor()
-            if not self.data.rename(curName,newName):
+            if not self.data.rename(curName, newName):
                 balt.showError(self.gTank, _(u'Access Denied.'))
                 return
         except:
@@ -7094,10 +7094,10 @@ class Installer_Install(InstallerLink):
         Link.__init__(self)
         self.mode = mode
 
-    def AppendToMenu(self,menu,window,data):
-        Link.AppendToMenu(self,menu,window,data)
+    def AppendToMenu(self, menu, window, data):
+        Link.AppendToMenu(self, menu, window, data)
         self.title = self.mode_title[self.mode]
-        menuItem = wx.MenuItem(menu,self.id,self.title)
+        menuItem = wx.MenuItem(menu, self.id, self.title)
         menu.AppendItem(menuItem)
 
     def chkMarker(self):  # Polemos
@@ -7115,11 +7115,11 @@ class Installer_Install(InstallerLink):
     def Execute(self,event):
         """Handle selection."""
         if self.chkMarker(): return
-        progress = balt.Progress(_(u"Installing..."),'\n'+' '*60)
+        progress = balt.Progress(_(u'Installing...'), '\n'+' '*60)
         try:
             last = (self.mode == 'LAST')
             override = (self.mode != 'MISSING')
-            self.data.install(self.selected,progress,last,override)
+            self.data.install(self.selected, progress, last, override)
         finally:
             progress.Destroy()
             self.data.refresh(what='N')

@@ -371,7 +371,7 @@ class WizardDialog(wx.Dialog):
                 self.openmw_2_panel.Hide()
                 self.openmw_3_panel.Hide()
 
-        if True: # Events
+        if True:  # Events
             self.timer_po()
             self.Bind(wx.EVT_CLOSE, self.OnCancel)
             wx.EVT_BUTTON(self, wx.ID_CANCEL, self.OnCancel)
@@ -389,8 +389,8 @@ class WizardDialog(wx.Dialog):
         if not conf.settings['openmw']:  # Regular Morrowind
             t1 = _(u'Welcome to Wrye Mash %s Configuration Wizard.' % self.MashDate[3])
             t2 = _(u'This wizard will help you configure all the settings needed to use Wrye Mash with Morrowind. ')
-            t3 = _(u"")
-            t4 = _(u"")
+            t3 = _(u'')
+            t4 = _(u'')
             self.line_1.Hide()
             self.line_2.Hide()
             self.detect_Mlox_button.Disable()

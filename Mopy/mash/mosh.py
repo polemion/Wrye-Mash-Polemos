@@ -416,7 +416,7 @@ def iff(bool,trueValue,falseValue):
 
 def invertDict(indict):
     """Invert a dictionary."""
-    return dict([(y,x) for x,y in indict.items()])
+    return {y: x for x, y in indict.items()}
 
 def listFromLines(lines):
     """Generate a list from a string with lines, stripping comments and skipping empty strings."""
@@ -2064,13 +2064,13 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
 
     def saveSetting(self, section, key, value):
         """Changes a single setting in the file."""
-        settings = {section: {key:value}}
+        settings = {section: {key: value}}
         self.saveSettings(settings)
 
     def saveSettings(self,settings):
         """Applies dictionary of settings to ini file. Values in settings dictionary can be
         either actual values or full key=value line ending in newline char."""
-        settings = dict((LString(x),dict((LString(u), v) for u, v in y.iteritems())) for x, y in settings.iteritems())
+        settings = {LString(x): {LString(u): v for u, v in y.iteritems()} for x, y in settings.iteritems()}
         reComment = re.compile(';.*')
         reSection = re.compile(r'^\[\s*(.+?)\s*\]$')
         reSetting = re.compile(r'(.+?)\s*=')
@@ -4488,18 +4488,20 @@ class ResetTempDir:  # Polemos
 class Installer(object):  # Polemos: added MWSE compatibility, optimised, bug fixing, restored lost Bain func on many packages.
     """Object representing an installer archive, its user configuration, and its installation state."""
     #--Member data
-    persistent = ('archive', 'order', 'group', 'modified', 'size', 'crc', 'fileSizeCrcs', 'type', 'isActive', 'subNames', 'subActives',
-                  'dirty_sizeCrc', 'comments', 'readMe', 'packageDoc', 'packagePic', 'src_sizeCrcDate', 'hasExtraData', 'skipVoices', 'espmNots')
-    volatile = ('data_sizeCrc', 'skipExtFiles', 'skipDirFiles', 'status', 'missingFiles', 'mismatchedFiles', 'refreshed', 'mismatchedEspms',
-                'unSize', 'espms', 'underrides')
+    persistent = ('archive', 'order', 'group', 'modified', 'size', 'crc', 'fileSizeCrcs', 'type', 'isActive',
+                  'subNames', 'subActives', 'dirty_sizeCrc', 'comments', 'readMe', 'packageDoc', 'packagePic',
+                  'src_sizeCrcDate', 'hasExtraData', 'skipVoices', 'espmNots')
+    volatile = ('data_sizeCrc', 'skipExtFiles', 'skipDirFiles', 'status', 'missingFiles', 'mismatchedFiles',
+                'refreshed', 'mismatchedEspms', 'unSize', 'espms', 'underrides')
     __slots__ = persistent+volatile
     #--Package analysis/porting.
     docDirs = {'screenshots', 'docs'}
-    dataDirs = {'bookart' , 'fonts', 'icons', 'meshes', 'music', 'shaders', 'sound', 'splash', 'textures', 'video', 'mash plus', 'mits', 'mwse', 'animation'}
+    dataDirs = {'bookart' , 'fonts', 'icons', 'meshes', 'music', 'shaders', 'sound', 'splash', 'textures',
+                'video', 'mash plus', 'mits', 'mwse', 'animation'}
     dataDirsPlus = dataDirs | set()
     dataDirsMinus = {'mash', 'replacers', 'distantland', 'clean'}  #--Will be skipped even if hasExtraData == True.
     reDataFile = re.compile(r'\.(esp|esm|bsa)$',re.I)
-    reReadMe = re.compile(r'^([^\\]*)(dontreadme|read[ _]?me|lisez[ _]?moi)([^\\]*)\.(txt|rtf|htm|html|doc|odt)$',re.I)
+    reReadMe = re.compile(r'^([^\\]*)(dontreadme|read[ _]?me|lisez[ _]?moi)([^\\]*)\.(txt|rtf|htm|html|doc|odt)$', re.I)
     skipExts = {'.dll', '.dlx', '.exe', '.py', '.pyc', '.7z', '.zip', '.rar', '.db'}
     docExts = {'.txt', '.rtf', '.htm', '.html', '.doc', '.odt', '.jpg', '.png', '.pdf', '.css', '.xls'}
     #--Temp Files/Dirs
@@ -4514,7 +4516,7 @@ class Installer(object):  # Polemos: added MWSE compatibility, optimised, bug fi
         """Returns map of real to ghosted files in mods directory."""
         dataDir = dirs['mods']
         ghosts = [x for x in dataDir.list() if x.cs[-6:] == '.ghost']
-        return dict((x.root,x) for x in ghosts if not dataDir.join(x).root.exists())
+        return {x.root: x for x in ghosts if not dataDir.join(x).root.exists()}
 
     @staticmethod
     def clearTemp():
@@ -4525,19 +4527,19 @@ class Installer(object):  # Polemos: added MWSE compatibility, optimised, bug fi
     def sortFiles(files):
         """Utility function. Sorts files by directory, then file name."""
         def sortKey(file):
-            dirFile = file.lower().rsplit('\\',1)
-            if len(dirFile) == 1: dirFile.insert(0,'')
+            dirFile = file.lower().rsplit('\\', 1)
+            if len(dirFile) == 1: dirFile.insert(0, '')
             return dirFile
-        sortKeys = dict((x,sortKey(x)) for x in files)
-        return sorted(files,key=lambda x: sortKeys[x])
+        sortKeys = {x: sortKey(x) for x in files}
+        return sorted(files, key=lambda x: sortKeys[x])
 
     @staticmethod
-    def refreshSizeCrcDate(apRoot,old_sizeCrcDate,progress=None,removeEmpties=False,fullRefresh=False):  # Polemos: fixed crc scan bug, optimized speed, more.
+    def refreshSizeCrcDate(apRoot, old_sizeCrcDate, progress=None, removeEmpties=False, fullRefresh=False):  # Polemos: fixed crc bug, +speed, more.
         """Update old_sizeCrcDate for root directory. This is used both by InstallerProject's and by InstallersData."""
         progress_info = settings['mash.installers.show.progress.info']
-        rootIsMods = (apRoot == dirs['mods']) #--Filtered scanning for mods directory.
+        rootIsMods = (apRoot == dirs['mods'])  #--Filtered scanning for mods directory.
         norm_ghost = (rootIsMods and Installer.getGhosted()) or {}
-        ghost_norm = dict((y,x) for x,y in norm_ghost.iteritems())
+        ghost_norm = {y: x for x, y in norm_ghost.iteritems()}
         rootName = apRoot.stail
         progress = progress or bolt.Progress()
         new_sizeCrcDate = {}
@@ -4547,18 +4549,18 @@ class Installer(object):  # Polemos: added MWSE compatibility, optimised, bug fi
         relPos = len(apRoot.s)+1
         pending = set()
         #--Scan for changed files
-        progress(0,_(u"%s: Pre-Scanning...\n ") % rootName)
+        progress(0, _(u'%s: Pre-Scanning...\n ') % rootName)
         progress.setFull(1)
         dirDirsFiles = []
         emptyDirs = set()
         for asDir, sDirs, sFiles in scandir.walk(asRoot): # Polemos: replaced os.walk which is slow in Python 2.7 and below.
-            progress(0.05,_(u"%s: Pre-Scanning:\n%s") % (rootName,asDir[relPos:]))
+            progress(0.05, _(u'%s: Pre-Scanning:\n%s') % (rootName, asDir[relPos:]))
             if rootIsMods and asDir == asRoot: sDirs[:] = [x for x in sDirs if x.lower() not in Installer.dataDirsMinus]
             dirDirsFiles.append((asDir,sDirs,sFiles))
             if not (sDirs or sFiles): emptyDirs.add(GPath(asDir))
-        progress(0,_(u"%s: Scanning...\n ") % rootName)
+        progress(0, _(u'%s: Scanning...\n ') % rootName)
         progress.setFull(1+len(dirDirsFiles))
-        for index,(asDir,sDirs,sFiles) in enumerate(dirDirsFiles):
+        for index, (asDir, sDirs, sFiles) in enumerate(dirDirsFiles):
             progress(index)
             rsDir = asDir[relPos:]
             inModsRoot = rootIsMods and not rsDir
@@ -4570,13 +4572,13 @@ class Installer(object):  # Polemos: added MWSE compatibility, optimised, bug fi
                 if inModsRoot:
                     if ext in skipExts: continue
                     if not rsDir and sFile.lower() in bethFiles: continue
-                    rpFile = ghost_norm.get(rpFile,rpFile)
+                    rpFile = ghost_norm.get(rpFile, rpFile)
                 isEspm = not rsDir and (ext == '.esp' or ext == '.esm')
                 apFile = apDir.join(sFile)
                 size = apFile.size
                 date = apFile.mtime
-                oSize,oCrc,oDate = old_sizeCrcDate.get(rpFile,(0,0,0))
-                if size == oSize and (date == oDate or isEspm): new_sizeCrcDate[rpFile] = (oSize,oCrc,oDate)
+                oSize, oCrc, oDate = old_sizeCrcDate.get(rpFile, (0, 0, 0))
+                if size == oSize and (date == oDate or isEspm): new_sizeCrcDate[rpFile] = (oSize, oCrc, oDate)
                 else: pending.add(rpFile)
         #--Remove empty dirs?
         if settings['mash.installers.removeEmptyDirs']:
@@ -4588,14 +4590,14 @@ class Installer(object):  # Polemos: added MWSE compatibility, optimised, bug fi
         changed = bool(pending) or (len(new_sizeCrcDate) != len(old_sizeCrcDate))
         #--Update crcs?
         if pending:
-            progress(0,_(u"%s: Calculating CRCs...\n ") % rootName)
+            progress(0,_(u'%s: Calculating CRCs...\n ') % rootName)
             progress.setFull(3+len(pending))
             numndex = 0
-            for index,rpFile in enumerate(sorted(pending)):  # Polemos: Bugfix and also added some extra info...
+            for index, rpFile in enumerate(sorted(pending)):  # Polemos: Bugfix and also added some extra info...
                 if progress_info:
-                    try: string = (_(u"%s: Calculating CRCs...\n%s\nCRC: %s\nSize:  %sKB") %
+                    try: string = (_(u'%s: Calculating CRCs...\n%s\nCRC: %s\nSize:  %sKB') %
                             (rootName, unicode(rpFile.s, sys.getfilesystemencoding()), apFile.crc, (apFile.size/1024)))
-                    except: string = (_(u"%s: Calculating CRCs...\n%s\nCRC:  %s\nSize:  %sKB") %
+                    except: string = (_(u'%s: Calculating CRCs...\n%s\nCRC:  %s\nSize:  %sKB') %
                             (rootName, rpFile.s, apFile.crc, (apFile.size/1024)))
                 if progress_info: progress(index, string)
                 # Polemos: Progress dialogs crawl if they have to show many items continuously. The same seems to
@@ -4605,11 +4607,11 @@ class Installer(object):  # Polemos: added MWSE compatibility, optimised, bug fi
                 # final 9 items which are shown by steps of 1.
                 elif numndex == 10: progress(index)
                 numndex = numndex + 1 if numndex < 10 else 0
-                apFile = apRoot.join(norm_ghost.get(rpFile,rpFile))
+                apFile = apRoot.join(norm_ghost.get(rpFile, rpFile))
                 crc = apFile.crc
                 size = apFile.size
                 date = apFile.mtime
-                new_sizeCrcDate[rpFile] = (size,crc,date)
+                new_sizeCrcDate[rpFile] = (size, crc, date)
         old_sizeCrcDate.clear()
         old_sizeCrcDate.update(new_sizeCrcDate)
         #--Done
@@ -4670,10 +4672,10 @@ class Installer(object):  # Polemos: added MWSE compatibility, optimised, bug fi
         """Used by unpickler to recreate object."""
         self.initDefault()
         setter = object.__setattr__
-        for value,attr in zip(values,self.persistent):
+        for value,attr in zip(values, self.persistent):
             setter(self,attr,value)
         if self.dirty_sizeCrc is None:
-            self.dirty_sizeCrc = {} #--Use empty dict instead.
+            self.dirty_sizeCrc = {}  #--Use empty dict instead.
         self.refreshDataSizeCrc()
 
     def __copy__(self,iClass=None):
@@ -4684,7 +4686,7 @@ class Installer(object):  # Polemos: added MWSE compatibility, optimised, bug fi
         copier = copy.copy
         getter = object.__getattribute__
         setter = object.__setattr__
-        for attr in Installer.__slots__: setter(clone,attr,copier(getter(self,attr)))
+        for attr in Installer.__slots__: setter(clone, attr, copier(getter(self, attr)))
         return clone
 
     def refreshDataSizeCrc(self):
@@ -4703,31 +4705,31 @@ class Installer(object):  # Polemos: added MWSE compatibility, optimised, bug fi
         espmNots = self.espmNots
         skipVoices = self.skipVoices
         off_local = self.off_local
-        if espmNots and not skipVoices: skipEspmVoices = set(x.cs for x in espmNots)
+        if espmNots and not skipVoices: skipEspmVoices = {x.cs for x in espmNots}
         else: skipEspmVoices = None
         skipDistantLOD = settings['mash.installers.skipDistantLOD']
         hasExtraData = self.hasExtraData
         type = self.type
         if type == 2:
             allSubs = set(self.subNames[1:])
-            activeSubs = set(x for x,y in zip(self.subNames[1:],self.subActives[1:]) if y)
+            activeSubs = {x for x, y in zip(self.subNames[1:], self.subActives[1:]) if y}
         #--Init to empty
         self.readMe = self.packageDoc = self.packagePic = None
-        for attr in ('skipExtFiles','skipDirFiles','espms'): object.__getattribute__(self,attr).clear()
+        for attr in ('skipExtFiles', 'skipDirFiles', 'espms'): object.__getattribute__(self, attr).clear()
         data_sizeCrc = {}
         skipExtFiles = self.skipExtFiles
         skipDirFiles = self.skipDirFiles
         espms = self.espms
         dest_src = {}
         #--Bad archive?
-        if type not in (1,2): return dest_src
+        if type not in (1, 2): return dest_src
         #--Scan over fileSizeCrcs
-        for full,size,crc in self.fileSizeCrcs:
+        for full, size, crc in self.fileSizeCrcs:
             file = full #--Default
             if type == 2: #--Complex archive
-                subFile = full.split('\\',1)
+                subFile = full.split('\\', 1)
                 if len(subFile) == 2:
-                    sub,file = subFile
+                    sub, file = subFile
                     if sub not in activeSubs:
                         if sub not in allSubs: skipDirFiles.add(file)
                         continue
@@ -4768,7 +4770,7 @@ class Installer(object):  # Polemos: added MWSE compatibility, optimised, bug fi
                 if pDest in espmNots: continue
             #--Esp related voices (Oblivion?)
             elif skipEspmVoices and fileLower[:12] == 'sound\\voice\\':
-                farPos = file.find('\\',12)
+                farPos = file.find('\\', 12)
                 if farPos > 12 and fileLower[12:farPos] in skipEspmVoices: continue
             #--Docs
             elif rootLower in docDirs: dest = 'Docs\\'+file[rootPos+1:]
@@ -4798,19 +4800,19 @@ class Installer(object):  # Polemos: added MWSE compatibility, optimised, bug fi
         #--Done (return dest_src for install operation)
         return dest_src
 
-    def refreshSource(self,archive,progress=None,fullRefresh=False):
+    def refreshSource(self, archive,progress=None,fullRefresh=False):
         """Refreshes fileSizeCrcs, size, date and modified from source archive/directory."""
         raise AbstractError
 
-    def refreshBasic(self,archive,progress=None,fullRefresh=False):
+    def refreshBasic(self, archive, progress=None, fullRefresh=False):
         """Extract file/size/crc info from archive."""
-        self.refreshSource(archive,progress,fullRefresh)
+        self.refreshSource(archive, progress, fullRefresh)
         def fscSortKey(fsc):
-            dirFile = fsc[0].lower().rsplit('\\',1)
-            if len(dirFile) == 1: dirFile.insert(0,'')
+            dirFile = fsc[0].lower().rsplit('\\', 1)
+            if len(dirFile) == 1: dirFile.insert(0, '')
             return dirFile
         fileSizeCrcs = self.fileSizeCrcs
-        sortKeys = dict((x,fscSortKey(x)) for x in fileSizeCrcs)
+        sortKeys = {x: fscSortKey(x) for x in fileSizeCrcs}
         fileSizeCrcs.sort(key=lambda x: sortKeys[x])
         #--Type, subNames
         reDataFile = self.reDataFile
@@ -4837,10 +4839,10 @@ class Installer(object):  # Polemos: added MWSE compatibility, optimised, bug fi
         self.type = type
         #--SubNames, SubActives
         if type == 2:
-            actives = set(x for x,y in zip(self.subNames,self.subActives) if (y or x == ''))
-            self.subNames = sorted(subNameSet,key=string.lower)
+            actives = {x for x, y in zip(self.subNames, self.subActives) if (y or x == '')}
+            self.subNames = sorted(subNameSet, key=string.lower)
             if len(self.subNames) == 2: #--If only one subinstall, then make it active.
-                self.subActives = [True,True]
+                self.subActives = [True, True]
             else: self.subActives = [(x in actives) for x in self.subNames]
         else:
             self.subNames = []
@@ -4889,8 +4891,8 @@ class Installer(object):  # Polemos: added MWSE compatibility, optimised, bug fi
                 sizeCrc == data_sizeCrc.get(file)):
                 del dirty_sizeCrc[file]
         #--Done
-        (self.status,oldStatus) = (status,self.status)
-        (self.underrides,oldUnderrides) = (underrides,self.underrides)
+        (self.status, oldStatus) = (status, self.status)
+        (self.underrides, oldUnderrides) = (underrides, self.underrides)
         return (self.status != oldStatus or self.underrides != oldUnderrides)
 
     def install(self,archive,destFiles,data_sizeCrcDate,progress=None):
@@ -4950,7 +4952,7 @@ class InstallerArchive(Installer):
                 elif key == u'CRC':
                     try:
                         crc = int(value,16)
-                        if file and not isdir: fileSizeCrcs.append((file,size,crc))
+                        if file and not isdir: fileSizeCrcs.append((file, size, crc))
                     except: pass
                     file = size = crc = isdir = 0
         if not fileSizeCrcs:
@@ -5015,24 +5017,24 @@ class InstallerArchive(Installer):
         destDir = dirs['mods']
         destFiles = set(destFiles)
         data_sizeCrc = self.data_sizeCrc
-        dest_src = dict((x,y) for x,y in self.refreshDataSizeCrc().iteritems() if x in destFiles)
+        dest_src = {x: y for x, y in self.refreshDataSizeCrc().iteritems() if x in destFiles}
         if not dest_src: return 0
         #--Extract
-        progress(0,archive.s+_(u"\nExtracting files..."))
-        self.unpackToTemp(archive,dest_src.values(),SubProgress(progress,0,0.9))
+        progress(0, _(u'%s\nExtracting files...') % archive.s)
+        self.unpackToTemp(archive, dest_src.values(), SubProgress(progress, 0, 0.9))
         #--Move
-        progress(0.9,archive.s+_(u"\nMoving files..."))
+        progress(0.9, _(u'%s\nMoving files...') % archive.s)
         progress.state, progress.full = 0, len(dest_src)
         count = 0
         norm_ghost = Installer.getGhosted()
         tempDir = self.tempDir
-        for dest,src in dest_src.iteritems():
-            size,crc = data_sizeCrc[dest]
+        for dest, src in dest_src.iteritems():
+            size, crc = data_sizeCrc[dest]
             srcFull = tempDir.join(src)
-            destFull = destDir.join(norm_ghost.get(dest,dest))
+            destFull = destDir.join(norm_ghost.get(dest, dest))
             if srcFull.exists():
                 srcFull.moveTo(destFull)
-                data_sizeCrcDate[dest] = (size,crc,destFull.mtime)
+                data_sizeCrcDate[dest] = (size, crc, destFull.mtime)
                 progress.plus()
                 count += 1
         self.clearTemp()
@@ -5098,13 +5100,13 @@ class InstallerProject(Installer):
         self.crc = 0
         self.refreshed = True
 
-    def install(self,name,destFiles,data_sizeCrcDate,progress=None):
+    def install(self, name, destFiles, data_sizeCrcDate, progress=None):
         """Install specified files to Morrowind Data directory."""
         # Note: Installs from the "extracted archive" here.
         destDir = dirs['mods']
         destFiles = set(destFiles)
         data_sizeCrc = self.data_sizeCrc
-        dest_src = dict((x,y) for x,y in self.refreshDataSizeCrc().iteritems() if x in destFiles)
+        dest_src = {x: y for x, y in self.refreshDataSizeCrc().iteritems() if x in destFiles}
         if not dest_src: return 0
         #--Copy Files
         count = 0
@@ -5114,10 +5116,10 @@ class InstallerProject(Installer):
         for dest,src in dest_src.iteritems():
             size,crc = data_sizeCrc[dest]
             srcFull = srcDir.join(src)
-            destFull = destDir.join(norm_ghost.get(dest,dest))
+            destFull = destDir.join(norm_ghost.get(dest, dest))
             if srcFull.exists():
                 srcFull.copyTo(destFull)
-                data_sizeCrcDate[dest] = (size,crc,destFull.mtime)
+                data_sizeCrcDate[dest] = (size, crc, destFull.mtime)
                 progress.plus()
                 count += 1
         return count
@@ -5126,14 +5128,14 @@ class InstallerProject(Installer):
         """Copies specified projFiles from Morrowind\Data files to project directory."""
         srcDir = dirs['mods']
         projFiles = set(projFiles)
-        srcProj = tuple((x,y) for x,y in self.refreshDataSizeCrc().iteritems() if x in projFiles)
-        if not srcProj: return (0,0)
+        srcProj = tuple((x,y) for x, y in self.refreshDataSizeCrc().iteritems() if x in projFiles)
+        if not srcProj: return (0, 0)
         #--Sync Files
         updated = removed = 0
         norm_ghost = Installer.getGhosted()
         projDir = dirs['installers'].join(package)
         for src,proj in srcProj:
-            srcFull = srcDir.join(norm_ghost.get(src,src))
+            srcFull = srcDir.join(norm_ghost.get(src, src))
             projFull = projDir.join(proj)
             if not srcFull.exists():
                 projFull.remove()
@@ -5142,12 +5144,13 @@ class InstallerProject(Installer):
                 srcFull.copyTo(projFull)
                 updated += 1
         self.removeEmpties(package)
-        return (updated,removed)
+        return (updated, removed)
+
 
 class InstallersData(bolt.TankData, DataDict):  # Polemos fixes
     """Installers tank data. This is the data source for."""
-    status_color = {-20:'grey',-10:'red',0:'white',10:'orange',20:'yellow',30:'green'}
-    type_textKey = {1:'BLACK',2:'NAVY'}
+    status_color = {-20: 'grey', -10: 'red', 0: 'white', 10: 'orange', 20: 'yellow', 30: 'green'}
+    type_textKey = {1: 'BLACK', 2: 'NAVY'}
 
     def __init__(self):
         """Initialize."""
@@ -5155,15 +5158,15 @@ class InstallersData(bolt.TankData, DataDict):  # Polemos fixes
         self.dir = dirs['installers']
         self.bashDir = self.dir.join('Bash')
         #--Tank Stuff
-        bolt.TankData.__init__(self,settings)
+        bolt.TankData.__init__(self, settings)
         self.tankKey = 'mash.installers'
         self.tankColumns = settings['mash.installers.cols']
         self.title = _(u'Installers')
         #--Default Params
-        self.defaultParam('columns',self.tankColumns)
-        self.defaultParam('colWidths',settings['mash.installers.colWidths'])
-        self.defaultParam('colAligns',settings['mash.installers.colAligns'])
-        self.defaultParam('colSort',settings['mash.installers.sort'])
+        self.defaultParam('columns', self.tankColumns)
+        self.defaultParam('colWidths', settings['mash.installers.colWidths'])
+        self.defaultParam('colAligns', settings['mash.installers.colAligns'])
+        self.defaultParam('colSort', settings['mash.installers.sort'])
         #--Persistent data
         self.dictFile = PickleDict(self.bashDir.join('Installers.dat'))
         self.data = {}
@@ -5173,17 +5176,17 @@ class InstallersData(bolt.TankData, DataDict):  # Polemos fixes
         self.hasChanged = False
         self.loaded = False
         self.lastKey = GPath('==Last==')
-        self.renamedSizeDate = (0,0)
+        self.renamedSizeDate = (0, 0)
 
     def addMarker(self, name):
         path = GPath(name)
         self.data[path] = InstallerMarker(path)
 
-    def setChanged(self,hasChanged=True):
+    def setChanged(self, hasChanged=True):
         """Mark as having changed."""
         self.hasChanged = hasChanged
 
-    def refresh(self,progress=None,what='DIONS',fullRefresh=False):  # D.C.-G. Modified to avoid system error if installers path is not reachable.
+    def refresh(self,progress=None, what='DIONS', fullRefresh=False):  # D.C.-G. Modified to avoid system error if installers path is not reachable.
         """Refresh info."""
         if not os.access(dirs['installers'].s, os.W_OK): return "noDir"
         progress = progress or bolt.Progress()
@@ -5276,7 +5279,7 @@ class InstallersData(bolt.TankData, DataDict):  # Polemos fixes
         else:
             items.sort()
             attr = column.lower()
-            if column in ('Package','Group'):
+            if column in ('Package', 'Group'):
                 getter = lambda x: object.__getattribute__(data[x],attr).lower()
                 items.sort(key=getter,reverse=reverse)
             else:
@@ -5360,8 +5363,8 @@ class InstallersData(bolt.TankData, DataDict):  # Polemos fixes
             self.refreshOrder()
             self.moveArchives([destName],self.data[item].order+1)
 
-    def rename(self,item,destName,destDir=None):  # Polemos
-        """Rename archive."""
+    def rename(self, item, destName, destDir=None):  # Polemos
+        """Rename archive/folder."""
         if item == self.lastKey: return
         destDir = destDir or self.dir
         apath = self.dir.join(item)
@@ -5604,14 +5607,14 @@ class InstallersData(bolt.TankData, DataDict):  # Polemos fixes
         #--De-activate
         for archive in unArchives: data[archive].isActive = False
         #--Restore files
-        restoreArchives = sorted(set(restores.itervalues()),key=getArchiveOrder,reverse=True)
+        restoreArchives = sorted(set(restores.itervalues()), key=getArchiveOrder, reverse=True)
         if ['mash.installers.autoAnneal'] and restoreArchives:
             progress.setFull(len(restoreArchives))
             for index,archive in enumerate(restoreArchives):
                 progress(index,archive.s)
                 installer = data[archive]
-                destFiles = set(x for x,y in restores.iteritems() if y == archive)
-                if destFiles: installer.install(archive,destFiles,data_sizeCrcDate, SubProgress(progress,index,index+1))
+                destFiles = {x for x, y in restores.iteritems() if y == archive}
+                if destFiles: installer.install(archive, destFiles, data_sizeCrcDate, SubProgress(progress, index, index + 1))
         #--Done
         progress.state = len(removes)
         self.refreshStatus()
@@ -5643,7 +5646,7 @@ class InstallersData(bolt.TankData, DataDict):  # Polemos fixes
                 files = set(installer.data_sizeCrc)
                 myRestores = (removes & files) - set(restores)
                 for file in myRestores:
-                    if installer.data_sizeCrc[file] != data_sizeCrcDate.get(file,(0,0,0))[:2]: restores[file] = package
+                    if installer.data_sizeCrc[file] != data_sizeCrcDate.get(file, (0, 0, 0))[:2]: restores[file] = package
                     removes.discard(file)
         #--Remove files
         emptyDirs = set()
@@ -5652,21 +5655,21 @@ class InstallersData(bolt.TankData, DataDict):  # Polemos fixes
             path = modsDir.join(file)
             path.remove()
             (path+'.ghost').remove()
-            data_sizeCrcDate.pop(file,None)
+            data_sizeCrcDate.pop(file, None)
             emptyDirs.add(path.head)
         #--Remove empties
         for emptyDir in emptyDirs:
             if emptyDir.isdir() and not emptyDir.list():
                 emptyDir.removedirs()
         #--Restore files
-        restoreArchives = sorted(set(restores.itervalues()),key=getArchiveOrder,reverse=True)
+        restoreArchives = sorted(set(restores.itervalues()), key=getArchiveOrder, reverse=True)
         if restoreArchives:
             progress.setFull(len(restoreArchives))
-            for index,package in enumerate(restoreArchives):
+            for index, package in enumerate(restoreArchives):
                 progress(index,package.s)
                 installer = data[package]
-                destFiles = set(x for x,y in restores.iteritems() if y == package)
-                if destFiles: installer.install(package,destFiles,data_sizeCrcDate, SubProgress(progress,index,index+1))
+                destFiles = {x for x, y in restores.iteritems() if y == package}
+                if destFiles: installer.install(package, destFiles, data_sizeCrcDate, SubProgress(progress, index, index+1))
 
     def getConflictReport(self,srcInstaller,mode):
         """Returns report of overrides for specified package for display on conflicts tab.
@@ -6278,7 +6281,7 @@ class FileRefs(FileRep):
         reObjNum = re.compile('[0-9A-Z]{8}$')
         #--Determine which contIds are matched to a reference.
         contIds = set(self.conts_id.keys())
-        matched = dict([(id,False) for id in contIds])
+        matched = {id: False for id in contIds}
         for cell in self.cells:
             objects = cell.getObjects()
             for object in objects.list():
@@ -6300,7 +6303,7 @@ class FileRefs(FileRep):
         #--Delete Records
         self.records = [record for record in self.records if record not in orphans]
         self.conts   = [record for record in self.conts if record not in orphans]
-        self.conts_id = dict([(id,record) for id,record in self.conts_id.iteritems() if matched[id] > 0])
+        self.conts_id = {id: record for id, record in self.conts_id.iteritems() if matched[id] > 0}
         return len(orphans)
 
     def removeRefsById(self,objIds,safeCells=[]):
@@ -7138,30 +7141,30 @@ class FileScripts(FileRep):
     def save(self,outPath=None):
         """Save data to file.
         outPath -- Path of the output file to write to. Defaults to original file path."""
-        if (not self.canSave): raise StateError(_(u"Insufficient data to write file."))
+        if not self.canSave: raise StateError(_(u'Insufficient data to write file.'))
         FileRep.save(self,outPath)
 
-    def loadText(self,textFileName):
+    def loadText(self, textFileName):
         """Replaces dialog text with text read from file."""
         with file(textFileName,'rb') as textFile:
             reHeader = re.compile('^# ([a-zA-Z_0-9]+)')
-            id,lines,changed = None,[],[]
-            id_records = dict((record.id.lower(),record) for record in self.scripts)
+            id, lines, changed = None, [], []
+            id_records = {record.id.lower(): record for record in self.scripts}
             def unBuffer():
                 record = id and id_records.get(id.lower())
                 if record:
                     code = (''.join(lines)).strip()
-                    if code.lower() != record.sctx.data.strip().lower():
-                        record.setCode(code)
+                    if code.lower() != record.sctx.data.strip().lower():  # ?
+                        record.setCode(code)  # ?x2
                         changed.append(id)
             for line in textFile:
                 maHeader = reHeader.match(line)
                 if maHeader:
                     unBuffer()
-                    id,lines = maHeader.group(1),[]
-                elif id:  lines.append(line)
+                    id, lines = maHeader.group(1), []
+                elif id: lines.append(line)
         unBuffer()
-        return sorted(changed,key=string.lower)
+        return sorted(changed, key=string.lower)
 
     def dumpText(self,textFileName):
         """Dumps dialogs to file."""
@@ -7208,7 +7211,7 @@ class CharSetImporter:
         #--Post Parse
         for className,stats in self.classStats.items():
             if len(stats) != 35: raise MoshError(_(u'Bad number of stats for class ') + className)
-            stats = self.classStats[className] = dict(zip(statNames,stats))
+            stats = self.classStats[className] = dict(zip(statNames, stats))
             #--Health
             str00,str30 = stats['Strength']
             end00,end30 = stats['Endurance']

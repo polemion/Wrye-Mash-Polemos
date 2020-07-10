@@ -388,27 +388,26 @@ class Path(object): # Polemos: Unicode fixes.
         try: os.startfile(self._s)
         except: pass  # Todo: Add a msg to inform user
 
-    def copyTo(self,destName):  # Polemos fix
+    def copyTo(self, destName):  # Polemos fix
         """Copy function."""
         destName = GPath(destName)
-        if self.isdir(): shutil.copytree(self._s,destName._s)
+        if self.isdir(): shutil.copytree(self._s, destName._s)
         else:
             if destName._shead and not os.path.exists(destName._shead):
                 os.makedirs(destName._shead)
-            try: shutil.copyfile(self._s,destName._s)
+            try: shutil.copyfile(self._s, destName._s)
             except: pass
             destName.mtime = self.mtime
 
-    def renameTo(self,destName):  # Polemos
+    def renameTo(self, destName):  # Polemos
         """Rename function."""
         destName = GPath(destName)
-        if self.isdir(): os.rename(self._s,destName._s)
-        else:
-            try: os.rename(self._s,destName._s)
-            except: return False
+        try: os.rename(self._s, destName._s)
+        except: return False
+        if not self.isdir():
             try: destName.mtime = self.mtime
             except: pass
-            finally: return True
+        return True
 
     def moveTo(self,destName):  # Polemos fix
         """Move function."""

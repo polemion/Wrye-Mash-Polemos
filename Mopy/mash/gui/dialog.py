@@ -1513,7 +1513,7 @@ class HelpDialog(wx.Dialog):  # Polemos
         singletons.helpBrowser = self
         self.SetIcons(images['mash.main.ico'].GetIconBundle())
         self.SetSizeHints(-1, -1)
-        if True: # Content
+        if True:  # Content
             # Panels
             self.main = wx.SplitterWindow(self, wx.ID_ANY, dPos, dSize, wx.SP_3D|wx.SP_LIVE_UPDATE)
             self.indexPanel = wx.Panel(self.main, wx.ID_ANY, dPos, dSize, wx.TAB_TRAVERSAL)
@@ -1524,7 +1524,7 @@ class HelpDialog(wx.Dialog):  # Polemos
             self.search.Hide()
             self.index = wx.TreeCtrl(self.indexPanel, wx.ID_ANY, dPos, dSize, wx.TR_HIDE_ROOT|wx.TR_NO_LINES)
             self.help = wx.html.HtmlWindow(self.contentPanel, wx.ID_ANY, dPos, dSize, wx.html.HW_SCROLLBAR_AUTO)
-        if True: # Theme
+        if True:  # Theme
             self.SetBackgroundColour(wx.Colour(192, 192, 192))
             self.main.SetBackgroundColour(wx.Colour(192, 192, 192))
             self.indexPanel.SetBackgroundColour(wx.Colour(192, 192, 192))
@@ -1534,7 +1534,7 @@ class HelpDialog(wx.Dialog):  # Polemos
                 self.index.SetForegroundColour(interface.style['lists.font.color'])
             self.contentPanel.SetBackgroundColour(wx.Colour(192, 192, 192))
             self.help.SetBackgroundColour(wx.Colour(255, 255, 255))
-        if True: # Layout
+        if True:  # Layout
             self.main.SetMinimumPaneSize(178)
             self.conText.Wrap(-1)
             indexSizer = wx.BoxSizer(wx.VERTICAL)
@@ -1553,7 +1553,7 @@ class HelpDialog(wx.Dialog):  # Polemos
             mainSizer.Add(self.main, 1, wx.EXPAND|wx.ALL, 5)
             self.SetSizer(mainSizer)
             self.Layout()
-        if True: # Events
+        if True:  # Events
             self.help.Bind(wx.EVT_KEY_DOWN, self.onChar)
             self.help.Bind(wx.html.EVT_HTML_LINK_CLICKED, self.onLink)
             self.help.Bind(wx.EVT_ENTER_WINDOW, self.onHelp)
