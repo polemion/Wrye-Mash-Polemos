@@ -13,7 +13,7 @@
 #  Copyright on the original code 2005-2009 Wrye
 #  Copyright on any non trivial modifications or substantial additions 2009-2011 Melchor
 #  Copyright on any non trivial modifications or substantial additions 2011-2016 Yacoby
-#  Copyright on any non trivial modifications or substantial additions 2017-2019 Polemos
+#  Copyright on any non trivial modifications or substantial additions 2017-2020 Polemos
 #
 # ======================================================================================
 
@@ -40,31 +40,16 @@
 
 # Imports
 import cStringIO
-import io  # Polemos
-import os
-import re
-import shutil
-import stat
-import string
-import sys
-import time
-import warnings
+import io, os, re, shutil, stat, string, sys, time, warnings
 from datetime import date  # Polemos
 from subprocess import PIPE, check_call  # Polemos: KEEP "check_call" !!!
 from threading import Thread  # Polemos
 from types import *
-import scandir
-import wx
-import wx.html
+import scandir, wx, wx.html
 from wx.lib.mixins.listctrl import ListCtrlAutoWidthMixin
-import balt
-import bolt
-import conf
-import gui.dialog
+import balt, bolt, conf, gui.dialog
 import gui.interface as interface  # Polemos
-import plugins.tes3cmd.gui
-import mosh
-import mprofile
+import plugins.tes3cmd.gui, mosh, mprofile
 import nash  # Polemos: Nexus compatibility import.
 import singletons
 from balt import colors, Image, Links, Link, SeparatorLink, MenuLink
@@ -4991,6 +4976,8 @@ class MashApp(wx.App):  # Polemos: Added settings, file check, updates check, ml
         InitSettings()  # conf.settings['...'] are known from here.
         # Set current (true) Wrye Mash dir.
         singletons.MashDir = os.path.dirname(sys.argv[0])
+        # Credits and License
+        self.appInfo()
         # Current Wrye Mash version:
         conf.settings['mash.version'] = Current_Version()
         # OpenMW switch.
@@ -5151,13 +5138,11 @@ class MashApp(wx.App):  # Polemos: Added settings, file check, updates check, ml
         except: downloads = (_(u'"Downloads" folder not found'), None)
         try: openmwprofile = (_(u'OpenMW profile folder not found'), conf.settings['openmwprofile'])
         except: openmwprofile = (_(u'OpenMW profile folder not found'), None)
-
         # Check if TES3mp is enabled.
         if conf.settings['tes3mp']:  # TES3mp enabled?
             openmw_paths = dict((tes3mpdir, openmwDir, mods, downloads, openmwprofile, TES3mpConf,))
         elif not conf.settings['tes3mp']:  # Regular OpenMW.
             openmw_paths = dict((openmwDir, mods, downloads, openmwprofile,))
-
         # Simple or advanced check.
         if mode == 'simple':
             try:
@@ -5167,7 +5152,7 @@ class MashApp(wx.App):  # Polemos: Added settings, file check, updates check, ml
         elif mode == 'advanced':
             return [x for x in openmw_paths if openmw_paths[x] is None or not os.path.exists(openmw_paths[x])]
 
-    def InitData(self): # Polemos: OpenMW/TES3mp support
+    def InitData(self):  # Polemos: OpenMW/TES3mp support
         """Inits variables and Redirects initializations. Called by OnInit()."""
         conf.settings['custom.commands.refresh'] = True
         conf.settings['custom.commands.cache'] = {}
@@ -5175,18 +5160,18 @@ class MashApp(wx.App):  # Polemos: Added settings, file check, updates check, ml
         if not conf.settings['openmw']: self.InitData_regular()
         elif conf.settings['openmw']: self.InitData_openmw()
 
-    def InitData_regular(self): # Polemos: for Morrowind support
+    def InitData_regular(self):  # Polemos: for Morrowind support
         """Initialize all data. Called by OnInit() for regular morrowind."""
         mwDir = conf.settings['mwDir']
         mosh.dirs['app'] = GPath(mwDir)
         mosh.mwIniFile = mosh.MWIniFile(mwDir)
         mosh.mwIniFile.refresh()
-        mosh.modInfos = mosh.ModInfos(os.path.join(mwDir,'Data Files'))
+        mosh.modInfos = mosh.ModInfos(os.path.join(mwDir, 'Data Files'))
         mosh.modInfos.refresh()
         mosh.saveInfos = mosh.SaveInfos(os.path.join(mwDir, 'Saves'))
         mosh.saveInfos.refresh()
 
-    def InitData_openmw(self): # Polemos: for OpenMW/TES3mp support
+    def InitData_openmw(self):  # Polemos: for OpenMW/TES3mp support
         """Initialize all data. Called by OnInit() for openmw/tes3mp."""
         mwDir = conf.settings['openmwDir']
         mosh.dirs['app'] = GPath(mwDir)  #openmw dir location
@@ -5196,6 +5181,21 @@ class MashApp(wx.App):  # Polemos: Added settings, file check, updates check, ml
         mosh.modInfos.refresh()
         mosh.saveInfos = mosh.SaveInfos(os.path.join(conf.settings['openmwprofile'], 'Saves'))
         mosh.saveInfos.refresh()
+
+    def appInfo(self):
+        """Saves/Updates Wrye Mash License and Credits."""
+        from gui.credits import protoLicence, protoSource, protoGNU
+        from stat import S_IWUSR, S_IREAD
+        try:
+            sources = {os.path.join(singletons.MashDir, 'License.txt'): '\n'.join([x[0].rstrip() for x in protoLicence()]),
+                       os.path.join(singletons.MashDir, 'Credits.txt'): '\n'.join([x[0].rstrip() for x in protoSource()]),
+                       os.path.join(singletons.MashDir, 'gpl.txt'): protoGNU()}
+            for src in sources.keys():
+                if os.path.isfile(src):
+                    os.chmod(src, S_IWUSR|S_IREAD)
+                with io.open(src, 'w', encoding='utf8') as fl:
+                    fl.write(sources[src])
+        except: pass
 
     def InitVersion(self):
         """Perform any version to version conversion. Called by OnInit()."""
@@ -5279,7 +5279,6 @@ def RefreshNotify(parent=None, text=u'Installer/package is missing. Click OK to 
     singletons.gInstallers.refreshed = False
     singletons.gInstallers.fullRefresh = False
     singletons.gInstallers.OnShow()
-
 
 # Files Links -----------------------------------------------------------------
 
@@ -7130,26 +7129,26 @@ class Installer_Install(InstallerLink):
 class Installer_Move(InstallerLink):
     """Moves selected installers to desired spot."""
 
-    def AppendToMenu(self,menu,window,data):
-        Link.AppendToMenu(self,menu,window,data)
-        menuItem = wx.MenuItem(menu,self.id,_(u'Move To...'))
+    def AppendToMenu(self, menu, window, data):
+        Link.AppendToMenu(self, menu, window, data)
+        menuItem = wx.MenuItem(menu, self.id, _(u'Move To...'))
         menu.AppendItem(menuItem)
 
-    def Execute(self,event):
+    def Execute(self, event):
         """Handle selection."""
         curPos = min(self.data[x].order for x in self.selected)
-        message = _(u"Move selected archives to what position?\nEnter position number.\nLast: -1; First of Last: -2; Semi-Last: -3.")
-        newPos = balt.askText(self.gTank,message,self.title,`curPos`)
+        message = _(u'Move selected archives to what position?\nEnter position number.\nLast: -1; First of Last: -2; Semi-Last: -3.')
+        newPos = balt.askText(self.gTank, message, self.title, `curPos`)
         if not newPos: return
         newPos = newPos.strip()
-        if not re.match('^-?\d+$',newPos):
-            balt.showError(self.gTank,_(u"Position must be an integer."))
+        if not re.match('^-?\d+$', newPos):
+            balt.showError(self.gTank, _(u'Position must be an integer.'))
             return
         newPos = int(newPos)
         if newPos == -3: newPos = self.data[self.data.lastKey].order
         elif newPos == -2: newPos = self.data[self.data.lastKey].order+1
         elif newPos < 0: newPos = len(self.data.data)
-        self.data.moveArchives(self.selected,newPos)
+        self.data.moveArchives(self.selected, newPos)
         self.data.refresh(what='N')
         self.gTank.RefreshUI()
 
@@ -7162,15 +7161,16 @@ class Installers_Open(balt.Tank_Open):  #-# D.C.-G.:Added to avoid errors when t
         Link.AppendToMenu(self,menu,window,data)
         menuItem = wx.MenuItem(menu,self.id,_(u'Open...'))
         menu.AppendItem(menuItem)
-        if not os.access(mosh.dirs["installers"].s, os.W_OK): menuItem.Enable(False) #-#
+        if not os.access(mosh.dirs["installers"].s, os.W_OK): menuItem.Enable(False)  #-#
         menuItem.Enable(bool(self.selected))
+
 
 class Installer_Open(balt.Tank_Open):
     """Open selected file(s)."""
 
-    def AppendToMenu(self,menu,window,data):
-        Link.AppendToMenu(self,menu,window,data)
-        menuItem = wx.MenuItem(menu,self.id,_(u'Open...'))
+    def AppendToMenu(self, menu, window, data):
+        Link.AppendToMenu(self, menu, window, data)
+        menuItem = wx.MenuItem(menu, self.id, _(u'Open...'))
         menu.AppendItem(menuItem)
         self.selected = [x for x in self.selected if x != self.data.lastKey]
         menuItem.Enable(bool(self.selected))
@@ -10153,16 +10153,16 @@ class App_mlox_po(Link):  # Polemos, new tool (mlox) in status bar.
     def GetBitmapButton(self,window,style=0):
         if not self.id: self.id = wx.NewId()
         button = wx.BitmapButton(window, self.id, singletons.images['mlox'].GetBitmap(), style=style)
-        button.SetToolTip(wx.ToolTip(_(u"Launch Mlox")))
+        button.SetToolTip(wx.ToolTip(_(u'Launch Mlox')))
         wx.EVT_BUTTON(button,self.id,self.Execute)
         return button
 
     def Execute(self,event):
         """Handle menu selection."""
         try:
-            if os.path.isfile(conf.settings["mloxpath"]):
-                os.chdir(os.path.dirname(conf.settings["mloxpath"]))
-                os.spawnl(os.P_NOWAIT, conf.settings["mloxpath"], ' ')
+            if os.path.isfile(conf.settings['mloxpath']):
+                os.chdir(os.path.dirname(conf.settings['mloxpath']))
+                os.spawnl(os.P_NOWAIT, conf.settings['mloxpath'], ' ')
                 gui.dialog.InfoMessage(None, _(u'Click OK when mlox is closed.'))
             else: raise OSError()
         except:
@@ -10188,6 +10188,7 @@ class AutoQuit_Button(Link):
     """Button toggling application closure when launching Morrowind."""
 
     def __init__(self):
+        """Init."""
         Link.__init__(self)
         self.gButton = None
 
@@ -10200,15 +10201,16 @@ class AutoQuit_Button(Link):
             state = not conf.settings.get('mash.autoQuit.on',False)
         conf.settings['mash.autoQuit.on'] = state
         image = singletons.images[('check.off', 'check.on')[state]]
-        tip = (_(u"Auto-Quit Disabled"),_(u"Auto-Quit Enabled"))[state]
+        tip = (_(u'Auto-Quit Disabled'), _(u'Auto-Quit Enabled'))[state]
         self.gButton.SetBitmapLabel(image.GetBitmap())
         self.gButton.SetToolTip(tooltip(tip))
 
-    def GetBitmapButton(self,window,style=0):
+    def GetBitmapButton(self, window, style=0):
+        """Replaces button image after state change."""
         bitmap = singletons.images['check.off'].GetBitmap()
-        gButton = self.gButton = wx.BitmapButton(window,-1,bitmap,style=style)
-        gButton.Bind(wx.EVT_BUTTON,self.Execute)
-        gButton.SetSize((24,24))
+        gButton = self.gButton = wx.BitmapButton(window, -1, bitmap, style=style)
+        gButton.Bind(wx.EVT_BUTTON, self.Execute)
+        gButton.SetSize((24, 24))
         self.SetState()
         return gButton
 

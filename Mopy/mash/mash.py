@@ -13,7 +13,7 @@
 #  Copyright on the original code 2005-2009 Wrye
 #  Copyright on any non trivial modifications or substantial additions 2009-2011 Melchor
 #  Copyright on any non trivial modifications or substantial additions 2011-2016 Yacoby
-#  Copyright on any non trivial modifications or substantial additions 2017-2019 Polemos
+#  Copyright on any non trivial modifications or substantial additions 2017-2020 Polemos
 #
 # ======================================================================================
 
@@ -37,34 +37,52 @@
 #
 # ========================================================================================
 
-import sys
+import sys, io, os
+from datetime import datetime
+from stat import S_IWUSR, S_IREAD
+
+maxLogEntries = 20  # Polemos: Max number of sessions stored in the log.
+
+
+def logChk():
+    """Check and limit log size."""
+    try:
+        os.chmod('WryeMash.log', S_IWUSR|S_IREAD)
+        with io.open('WryeMash.log', 'r') as fl:
+            rawLog = fl.readlines()
+            index = [n for n, x in enumerate(rawLog) if '=== Wrye Mash started. ===' in x]
+        if len(index) >= maxLogEntries:
+            with io.open('WryeMash.log', 'w') as fl:
+                index.reverse()
+                fl.write(''.join(rawLog[index[maxLogEntries-1]:]))
+    except: pass  # Unable to access the log file. C'est La Vie.
 
 
 class ErrorLogger:
     """Class can be used for a writer to write to multiple streams. Duplicated
     in both possible startup files so log can be created without external
     dependencies"""
+
     def __init__(self, outStream):
         """Init."""
         self.outStream = outStream
 
-    def write(self, message):  # Polemos: unicode fix.
-        """Write to outstream."""
-        for s in self.outStream:
-            try: s.write(message)
-            except: s.write(message.encode('utf-8'))
+    def write(self, message):
+        """Write to out-stream."""
+        try: [stream.write(message) for stream in self.outStream]
+        except: pass
 
 
-f = file("WryeMash.log", "w+")
-sys.stdout = ErrorLogger([f, sys.__stdout__])
-sys.stderr = ErrorLogger([f, sys.__stderr__])
-f.write("Wrye Mash Log!\n")
-
+# Logger start
+logChk()
+fl = file('WryeMash.log', 'a+')
+sys.stdout = ErrorLogger((fl, sys.__stdout__))
+sys.stderr = ErrorLogger((fl, sys.__stderr__))
+fl.write('\n%s: # ===================== Wrye Mash started. ===================== #\n' % datetime.now())
 
 # Main
 import masher
-if len(sys.argv) > 1: stdOutCode = int(sys.argv[1])
-else: stdOutCode = -1
-if stdOutCode >= 0: app = masher.MashApp(stdOutCode)
-else: app = masher.MashApp()
+stdOutCode = int(sys.argv[1]) if len(sys.argv) > 1 else -1
+app = masher.MashApp(stdOutCode) if stdOutCode >= 0 else masher.MashApp()
 app.MainLoop()
+fl.close()

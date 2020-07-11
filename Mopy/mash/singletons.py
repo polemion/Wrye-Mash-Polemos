@@ -9,7 +9,7 @@
 #  Copyright on the original code 2005-2009 Wrye
 #  Copyright on any non trivial modifications or substantial additions 2009-2011 Melchor
 #  Copyright on any non trivial modifications or substantial additions 2011-2016 Yacoby
-#  Copyright on any non trivial modifications or substantial additions 2017-2019 Polemos
+#  Copyright on any non trivial modifications or substantial additions 2017-2020 Polemos
 #
 # ======================================================================================
 
