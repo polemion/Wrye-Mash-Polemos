@@ -40,7 +40,6 @@
 import wx
 from unimash import _, defaultEncoding as defaultEncoding  # Polemos
 
-
 settings = None
 
 dataMap = {
@@ -135,6 +134,7 @@ settingDefaults = {
 
     #-Polemos: Advanced Settings
     'advanced.7zipcrc32': True,
+    'advanced.redate.interval': 60,
 
     #-Polemos: Date scheme for version checking (Web)
     'last.check': None,

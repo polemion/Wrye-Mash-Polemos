@@ -1519,10 +1519,11 @@ class HelpDialog(wx.Dialog):  # Polemos
             self.indexPanel = wx.Panel(self.main, wx.ID_ANY, dPos, dSize, wx.TAB_TRAVERSAL)
             self.contentPanel = wx.Panel(self.main, wx.ID_ANY, dPos, dSize, wx.TAB_TRAVERSAL)
             # Content
-            self.conText = wx.StaticText(self.indexPanel, wx.ID_ANY, _(u'Contents:'), dPos, dSize, 0)
+            self.conText = wx.StaticText(self.indexPanel, wx.ID_ANY, _(u'Help Index:'), dPos, dSize, wx.ALIGN_CENTRE_HORIZONTAL)
             self.search = wx.SearchCtrl(self.indexPanel, wx.ID_ANY, '', dPos, dSize, 0)
-            self.search.Hide()
+            self.search.Hide()  # Disabled for now.
             self.index = wx.TreeCtrl(self.indexPanel, wx.ID_ANY, dPos, dSize, wx.TR_HIDE_ROOT|wx.TR_NO_LINES)
+            self.indexInf = wx.StaticText(self.indexPanel, wx.ID_ANY, _(u'Navigate with double clicking.'), dPos, dSize, 0)
             self.help = wx.html.HtmlWindow(self.contentPanel, wx.ID_ANY, dPos, dSize, wx.html.HW_SCROLLBAR_AUTO)
         if True:  # Theme
             self.SetBackgroundColour(wx.Colour(192, 192, 192))
@@ -1538,8 +1539,8 @@ class HelpDialog(wx.Dialog):  # Polemos
             self.main.SetMinimumPaneSize(178)
             self.conText.Wrap(-1)
             indexSizer = wx.BoxSizer(wx.VERTICAL)
-            indexSizer.AddMany([(self.conText,0,wx.ALL|wx.EXPAND,5),
-                (self.search,0,wx.EXPAND|wx.RIGHT|wx.LEFT,5),(self.index,1,wx.EXPAND|wx.TOP|wx.RIGHT|wx.LEFT,5)])
+            indexSizer.AddMany([(self.conText,0,wx.ALL|wx.EXPAND,5), (self.search,0,wx.EXPAND|wx.RIGHT|wx.LEFT,5),
+                (self.index,1,wx.EXPAND|wx.TOP|wx.RIGHT|wx.LEFT,5), (self.indexInf,0,wx.ALL|wx.EXPAND,5)])
             contentSizer = wx.BoxSizer(wx.VERTICAL)
             contentSizer.Add(self.help, 1, wx.EXPAND, 5)
             self.indexPanel.SetSizer(indexSizer)

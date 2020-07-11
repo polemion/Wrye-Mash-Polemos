@@ -46,8 +46,8 @@ from unimash import _
 import conf, singletons
 import gui.dialog as gui
 
-DPOS = wx.DefaultPosition
-DSIZE = wx.DefaultSize
+dPos = wx.DefaultPosition
+dSize = wx.DefaultSize
 
 
 class WxOutputRedirect:
@@ -74,11 +74,11 @@ class ErrorLog(wx.Dialog):  # Polemos
         """Init."""
         self.parent=parent
         if not conf.settings['show.debug.log']: return
-        wx.Dialog.__init__(self, parent, id=wx.ID_ANY, title=_(u'Debug Log'), pos=DPOS, size=(415, 249), style=style)
+        wx.Dialog.__init__(self, parent, id=wx.ID_ANY, title=_(u'Debug Log'), pos=dPos, size=(415, 249), style=style)
         # Contents
-        self.text_log = wx.TextCtrl(self, wx.ID_ANY, '', DPOS, DSIZE, wx.TE_MULTILINE|wx.TE_READONLY|wx.TE_RICH)
-        self.saveBtn = wx.Button(self, wx.ID_ANY, _(u'Save Log'), DPOS, (-1,22), 0)
-        self.fcloseBtn = wx.Button(self, wx.ID_ANY, _(u'Force Close Wrye Mash...'), DPOS, (-1,22), 0)
+        self.text_log = wx.TextCtrl(self, wx.ID_ANY, '', dPos, dSize, wx.TE_MULTILINE|wx.TE_READONLY|wx.TE_RICH)
+        self.saveBtn = wx.Button(self, wx.ID_ANY, _(u'Save Log'), dPos, (-1, 22), 0)
+        self.fcloseBtn = wx.Button(self, wx.ID_ANY, _(u'Force Close Wrye Mash...'), dPos, (-1, 22), 0)
         # Theming
         self.SetForegroundColour(wx.Colour(255, 255, 255))
         self.SetBackgroundColour(wx.Colour(240, 240, 240))

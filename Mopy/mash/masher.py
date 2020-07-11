@@ -5778,7 +5778,7 @@ class File_Redate(Link):  # Polemos fixes
         #--Do it
         for fileInfo in selInfos:
             fileInfo.setMTime(newTime)
-            newTime += 60
+            newTime += conf.settings['advanced.redate.interval']
         #--Refresh
         fileInfos.refreshDoubleTime()
         self.window.Refresh()
