@@ -118,7 +118,7 @@ def protoSource():
                    u' TES3lint support, Custom Commands support, new dialogs, theming options, store/restore mod order buttons, interface'
                    u' modernization and streamlining, speed improvements, update notifications, support for people with weak vision, higher'
                    u' icon res for the status bar, extra functionalities, multi-language Morrowind support, Animation packages support, MWSE'
-                   u' support and much more.\r\n', 'i'),
+                   u' support and much much more.\r\n', 'i'),
     ))
     source.extend(newline)
     source.extend((
@@ -128,19 +128,19 @@ def protoSource():
                     (u'Java code and technical insights into Morrowind files.\r\n', 'i'),
                     (u'FallenWizard: ', 'b'),
                     (u'Key shortcut for deletion in mods and saves tabs from Mash.\r\n', 'i'),
+                    (u'Abot: ', 'b'),
+                    (u'Translations, ideas and coding (like TES3CMD merge, advanced sorting and more).\r\n', 'i'),
     ))
     source.extend(newline)
     source.extend((
                    (u'Beryllium: ', 'b'),
                    (u'EE templates, bug reports and feedback.\r\n', 'i'),
-                   (u'Abot: ', 'b'),
-                   (u'Translations.\r\n', 'i'),
                    (u'Dragon32, Shasta Thorne: ', 'b'),
                    (u'Ref Removers.\r\n', 'i'),
-                   (u'Oooiii, Stahpk, Abot, calemcc, Zikerocks, Valascon, KarmicKid and Pherim: ', 'b'),
+                   (u'Oooiii, Stahpk, Abot, calemcc, Zikerocks, wildbane and Pherim: ', 'b'),
                    (u'Vital bug reports and ideas.\r\n', 'i'),
-                   (u'StaticNation: ', 'b'),
-                   (u'The Wrye Mash bug finder champion.\r\n', 'i'),
+                   (u'StaticNation, KarmicKid and Valascon: ', 'b'),
+                   (u'The Wrye Mash bug finder champions.\r\n', 'i'),
                    (u'KOYK_GR: ', 'b'),
                    (u'New icon and Bug testing.', 'i')
     ))

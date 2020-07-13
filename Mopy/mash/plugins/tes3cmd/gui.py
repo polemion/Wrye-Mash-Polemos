@@ -50,7 +50,7 @@ class OutputParserMixin:  # Polemos fixes
     """This is a mixing to allow unit testing, as we cannot initiate Cleaner without a lot of faf with wx"""
 
     def ParseOutput(self, output, err, file):
-        """ Parses the output for a single mod """
+        """Parses the output for a single mod."""
         stats   = ''
         cleaned = ''
         inStats = False
@@ -110,7 +110,7 @@ class Cleaner(tes3cmdgui.cleaner, OutputParserMixin):
         self.remainingFiles = copy(files)
 
         self.output = {}
-        EVT_DONE(self,self.OnDone)
+        EVT_DONE(self, self.OnDone)
 
     #--------------------------------------------------------------------------
     def Start(self, callback=None):
@@ -134,6 +134,10 @@ class Cleaner(tes3cmdgui.cleaner, OutputParserMixin):
             self.mSkip.Disable()
             self.mStop.Disable()
             if self.endCallback: self.endCallback()
+            # Polemos user friendliness
+            [x.Enable() for x in (self.ok_btn, self.save_log_btn)]
+            [x.Disable() for x in (self.mSkip, self.mStop)]
+            self.EnableCloseButton(True)
             return
 
         self.currentFile = filename = self.remainingFiles.pop()
@@ -197,14 +201,14 @@ class Cleaner(tes3cmdgui.cleaner, OutputParserMixin):
     #--------------------------------------------------------------------------
     # GUI  skip and stop events
     def OnSkip(self, event):
-        """ When the skip button is pressed """
+        """When the skip button is pressed."""
         self.cleaner.stop()
         self.cleaner.join()
         self.StartNext()
         self.clean_mod_info_text.SetLabel(u'Skipped file.')  # Polemos: cosmetic fix
 
     def OnStop(self, event):
-        """ When the stop button is pressed """
+        """When the stop button is pressed."""
         self.cleaner.stop()
         self.cleaner.join()
         self.clean_mod_info_text.SetLabel(u'User aborted.')  # Polemos: cosmetic fix
@@ -212,11 +216,11 @@ class Cleaner(tes3cmdgui.cleaner, OutputParserMixin):
     #--------------------------------------------------------------------------
     # GUI list selection events to view the logs for a file
     def OnSelect(self, event):
-        """ ListBox select, selecting a mod to view the stats of """
+        """ListBox select, selecting a mod to view the stats of."""
         self.Select(event.GetString())
 
     def Select(self, name):
-        """ Sets the details for the given mod name """
+        """Sets the details for the given mod name."""
         item = self.output[name]
         self.mStats.SetLabel(item['stats'])
         self.mLog.SetValue(item['cleaned'])
@@ -225,7 +229,7 @@ class Cleaner(tes3cmdgui.cleaner, OutputParserMixin):
     #--------------------------------------------------------------------------
     # Log functions and save log button event
     def GetLog(self, fileName):  # Polemos fix.
-        """ Gets the log text for the given file name """
+        """Gets the log text for the given file name."""
         log = u''
         try: o = self.output[fileName]
         except: o = {u'output': u'tes3cmd clean skipping Morrowind.esm: Bethesda Master.\r\n Morrowind.esm was not modified\r\n',
@@ -241,7 +245,7 @@ class Cleaner(tes3cmdgui.cleaner, OutputParserMixin):
         return log
 
     def SaveLog(self, fileName):  # Polemos fixes.
-        """ Saves the log information to the given location """
+        """Saves the log information to the given location."""
         try:
             with io.open(fileName, 'w') as log:
                 for fn in self.output.keys():
@@ -251,12 +255,12 @@ class Cleaner(tes3cmdgui.cleaner, OutputParserMixin):
             with io.open(fileName, 'w', encoding='utf-8', errors='replace') as log:
                 for fn in self.output.keys():
                     log.write(u'--%s--\r\n' % fn)
-                    log.write((self.GetLog(fn)).decode('utf-8', errors='ignore').replace('.esp"', '%s"' % fn).replace('.esm"', '%s"' % fn).replace('.esp w', '%s w' % fn).replace('.esm w', '%s w' % fn))
+                    log.write((self.GetLog(fn)).decode('utf-8', errors='ignore').replace(
+                        '.esp"', '%s"' % fn).replace('.esm"', '%s"' % fn).replace('.esp w', '%s w' % fn).replace('.esm w', '%s w' % fn))
 
     def OnSaveLog(self, event):
         """Event executor."""
-        dlg = wx.FileDialog(self, _(u'Save log'), singletons.MashDir, 'tes3cmd.log', '*.log', wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT)
+        dlg = wx.FileDialog(self, _(u'Save log'), singletons.MashDir, 'tes3cmd.log', '*.log', wx.FD_SAVE|wx.FD_OVERWRITE_PROMPT)
         if dlg.ShowModal() == wx.ID_OK:
             fileName = os.path.join(dlg.GetDirectory(), dlg.GetFilename())
             self.SaveLog(fileName)
-

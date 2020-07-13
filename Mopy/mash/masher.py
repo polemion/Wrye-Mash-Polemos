@@ -9260,7 +9260,7 @@ class Mods_custom_menu_item:  # Polemos
             while lg_thread.isAlive(): wx.GetApp().Yield()
         self.log.ShowModal()
 
-    def subprocess(self, id):
+    def subprocess(self, id=None):
         for y in self.target_list:
             for x in self.command_list:
                 ins = Popen(x, stdout=PIPE, stderr=PIPE, shell=True, bufsize=1, universal_newlines=True)

@@ -8,7 +8,7 @@ New help interface, Utilities tab and settings window,
 Yacoby:
 drag and drop functionality, mlox - TES3cmd support, fixes, refactoring and more,
 Polemos:
-Toolbar menu, mod order snapshots, better Unicode support, fixes, BSA Archives implementation, OpenMW/TES3mp compatibility, TES3lint support, Custom Commands support, new dialogs, theming options, store/restore mod order buttons, interface modernization and streamlining, speed improvements, update notifications, support for people with weak vision, higher icon res for the status bar, extra functionalities, multi-language Morrowind support, Animation packages support, MWSE support and much more.
+Toolbar menu, mod order snapshots, better Unicode support, fixes, BSA Archives implementation, OpenMW/TES3mp compatibility, TES3lint support, Custom Commands support, new dialogs, theming options, store/restore mod order buttons, interface modernization and streamlining, speed improvements, update notifications, support for people with weak vision, higher icon res for the status bar, extra functionalities, multi-language Morrowind support, Animation packages support, MWSE support and much much more.
 
 ManaUser:
 Coding (a lot).
@@ -16,16 +16,16 @@ Argent:
 Java code and technical insights into Morrowind files.
 FallenWizard:
 Key shortcut for deletion in mods and saves tabs from Mash.
+Abot:
+Translations, ideas and coding (like TES3CMD merge, advanced sorting and more).
 
 Beryllium:
 EE templates, bug reports and feedback.
-Abot:
-Translations.
 Dragon32, Shasta Thorne:
 Ref Removers.
-Oooiii, Stahpk, Abot, calemcc, Zikerocks, Valascon, KarmicKid and Pherim:
+Oooiii, Stahpk, Abot, calemcc, Zikerocks, wildbane and Pherim:
 Vital bug reports and ideas.
-StaticNation:
-The Wrye Mash bug finder champion.
+StaticNation, KarmicKid and Valascon:
+The Wrye Mash bug finder champions.
 KOYK_GR:
 New icon and Bug testing.

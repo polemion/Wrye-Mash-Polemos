@@ -49,73 +49,77 @@ dSize = wx.DefaultSize
 
 
 class cleanop(wx.Dialog):  # Polemos: This is not implemented.
+    """TES3CMD multichoice GUI."""
 
     def __init__( self, parent, style=wx.DEFAULT_DIALOG_STYLE|wx.STAY_ON_TOP):
-        wx.Dialog.__init__(self, parent, id=wx.ID_ANY, title=_(u"tes3cmd Clean"), pos=dPos, size=wx.Size(429,217), style=style)
-
+        """Init."""
+        wx.Dialog.__init__(self, parent, id=wx.ID_ANY, title=_(u'tes3cmd Clean'), pos=dPos, size=wx.Size(429, 217), style=style)
         self.SetSizeHintsSz(dSize, dSize)
-
-        if True: # Content
-            self.clean_box0 = wx.CheckBox(self, wx.ID_ANY, _(u"clean cell subrecords AMBI,WHGT duped from masters"), dPos, dSize, 0)
-            self.clean_box1 = wx.CheckBox(self, wx.ID_ANY, _(u"clean other complete records duped from masters"), dPos, dSize, 0)
-            self.clean_box2 = wx.CheckBox(self, wx.ID_ANY, _(u"clean Evil GMSTs"), dPos, dSize, 0)
-            self.clean_box3 = wx.CheckBox(self, wx.ID_ANY, _(u"clean object instances from cells when duped from masters"), dPos, dSize, 0)
-            self.clean_box4 = wx.CheckBox(self, wx.ID_ANY, _(u"clean junk cells (no new info from definition in masters)"), dPos, dSize, 0)
-
-            self.cancel_btn = wx.Button(self, wx.ID_ANY, _(u"Cancel"), dPos, dSize, 0)
-            self.clean_selected_btn = wx.Button(self, wx.ID_ANY, _(u"Clean Selected"), dPos, dSize, 0)
-
+        if True:  # Content
+            self.clean_box0 = wx.CheckBox(self, wx.ID_ANY, _(u'clean cell subrecords AMBI,WHGT duped from masters'), dPos, dSize, 0)
+            self.clean_box1 = wx.CheckBox(self, wx.ID_ANY, _(u'clean other complete records duped from masters'), dPos, dSize, 0)
+            self.clean_box2 = wx.CheckBox(self, wx.ID_ANY, _(u'clean Evil GMSTs'), dPos, dSize, 0)
+            self.clean_box3 = wx.CheckBox(self, wx.ID_ANY, _(u'clean object instances from cells when duped from masters'), dPos, dSize, 0)
+            self.clean_box4 = wx.CheckBox(self, wx.ID_ANY, _(u'clean junk cells (no new info from definition in masters)'), dPos, dSize, 0)
+            self.cancel_btn = wx.Button(self, wx.ID_CANCEL, _(u'Cancel'), dPos, dSize, 0)
+            self.clean_selected_btn = wx.Button(self, wx.ID_ANY, _(u'Clean Selected'), dPos, dSize, 0)
             [x.SetValue(True) for x in (self.clean_box0, self.clean_box1, self.clean_box2, self.clean_box3, self.clean_box4)]
-
         if True:  # Sizers
             main_sizer = wx.BoxSizer(wx.VERTICAL)
             button_sizer = wx.BoxSizer(wx.HORIZONTAL)
             button_sizer.AddMany([(self.cancel_btn,0,wx.ALL,5),(self.clean_selected_btn,0,wx.ALL,5)])
             main_sizer.SetMinSize(wx.Size(400, -1))
             main_sizer.AddMany([(self.clean_box0,0,wx.ALL,5),(self.clean_box1,0,wx.ALL,5),(self.clean_box2,0,wx.ALL,5),
-                                (self.clean_box3,0,wx.ALL,5),(self.clean_box4,0,wx.ALL,5),(button_sizer, 1, wx.EXPAND, 5)])
+                (self.clean_box3,0,wx.ALL,5),(self.clean_box4,0,wx.ALL,5),(button_sizer, 1, wx.EXPAND, 5)])
             self.SetSizer(main_sizer)
-
         self.Layout()
         self.Centre(wx.BOTH)
-
         if True:  # Events
             self.cancel_btn.Bind(wx.EVT_BUTTON, self.OnCancel)
             self.clean_selected_btn.Bind(wx.EVT_BUTTON, self.OnCleanClick)
 
-    def OnCancel(self, event): event.Skip()
-    def OnCleanClick(self, event): event.Skip()
+    def OnCancel(self, event):
+        """On cancel event."""
+        event.Skip()
+
+    def OnCleanClick(self, event):
+        """On wtf event."""
+        event.Skip()
 
 
 class cleaner(wx.Frame):  # Polemos
-    def __init__(self, parent, style=wx.CAPTION|wx.CLOSE_BOX|wx.FRAME_FLOAT_ON_PARENT|wx.SYSTEM_MENU|wx.TAB_TRAVERSAL):
-        wx.Frame.__init__(self, parent, id=wx.ID_ANY, title=_(u"tes3cmd Cleaner"), pos=dPos, size=wx.Size(530, 350), style=style)
+    """TES3CMD Cleaner GUI."""
 
+    def __init__(self, parent, style=wx.CAPTION|wx.CLOSE_BOX|wx.FRAME_FLOAT_ON_PARENT|wx.SYSTEM_MENU|wx.TAB_TRAVERSAL):
+        """Init."""
+        wx.Frame.__init__(self, parent, id=wx.ID_ANY, title=_(u'tes3cmd Cleaner'), pos=dPos, size=wx.Size(530, 350), style=style)
         mCleanedModsChoices = []
         self.SetSizeHintsSz(dSize, dSize)
-
         if True: # Content
             self.main_panel = wx.Panel(self, wx.ID_ANY, dPos, dSize, 0)
             self.details_book = wx.Notebook(self.main_panel, wx.ID_ANY, dPos, dSize, 0)
             # Buttons
-            self.mSkip = wx.Button(self.main_panel, wx.ID_ANY, _(u"Skip"), dPos, (70, 26), 0)
-            self.mStop = wx.Button(self.main_panel, wx.ID_ANY, _(u"Stop"), dPos, (70, 26), 0)
-            self.save_log_btn = wx.Button(self.main_panel, wx.ID_ANY, _(u"Save Log"), dPos, dSize, 0)
+            self.mSkip = wx.Button(self.main_panel, wx.ID_ANY, _(u'Skip'), dPos, (70, 26), 0)
+            self.mStop = wx.Button(self.main_panel, wx.ID_ANY, _(u'Stop'), dPos, (70, 26), 0)
+            self.save_log_btn = wx.Button(self.main_panel, wx.ID_ANY, _(u'Save Log'), dPos, dSize, 0)
+            self.ok_btn = wx.Button(self.main_panel, wx.ID_OK, _(u'OK'), dPos, dSize, 0)
+            # Def buttons state
+            [x.Disable() for x in (self.ok_btn, self.save_log_btn)]
+            self.EnableCloseButton(False)
             # Progress
             self.mProgress = wx.Gauge(self.main_panel, wx.ID_ANY, 100, dPos, dSize, wx.GA_HORIZONTAL|wx.GA_SMOOTH)
             # Mod list/actions
             self.mCleanedMods = wx.ListBox(self.main_panel, wx.ID_ANY, dPos, dSize, mCleanedModsChoices, 0)
-            self.clean_mod_info_text = wx.StaticText(self.main_panel, wx.ID_ANY, _(u"Cleaning..."), dPos, dSize, 0)
+            self.clean_mod_info_text = wx.StaticText(self.main_panel, wx.ID_ANY, _(u'Cleaning...'), dPos, dSize, 0)
             self.mStats = wx.StaticText(self.main_panel, wx.ID_ANY, u'', dPos, dSize, 0)
             # Output
             self.output_panel = wx.Panel(self.details_book, wx.ID_ANY, dPos, dSize, wx.TAB_TRAVERSAL)
-            self.details_book.AddPage(self.output_panel, _(u"Output"), True)
+            self.details_book.AddPage(self.output_panel, _(u'Output'), True)
             self.mLog = wx.TextCtrl(self.output_panel, wx.ID_ANY, u'', dPos, dSize, wx.TE_MULTILINE|wx.TE_READONLY)
             # Errors
             self.errors_panel = wx.Panel(self.details_book, wx.ID_ANY, dPos, dSize, wx.TAB_TRAVERSAL)
-            self.details_book.AddPage(self.errors_panel, _(u"Errors"), False)
+            self.details_book.AddPage(self.errors_panel, _(u'Errors'), False)
             self.mErrors = wx.TextCtrl(self.errors_panel, wx.ID_ANY, u'', dPos, dSize, wx.TE_MULTILINE|wx.TE_READONLY)
-
         if True:  # Layout
             self.mCleanedMods.SetMinSize(wx.Size(150, -1))
             self.clean_mod_info_text.Wrap(-1)
@@ -154,8 +158,9 @@ class cleaner(wx.Frame):  # Polemos
             # Buttons
             button_Sizer0 = wx.BoxSizer(wx.HORIZONTAL)
             button_Sizer0.AddMany([(self.mSkip,0,wx.ALL,5),(self.mStop,0,wx.ALL,5),(self.mProgress,1,wx.ALIGN_CENTER_VERTICAL|wx.ALL,5)])
-            button_sizer1 = wx.BoxSizer(wx.VERTICAL)
-            button_sizer1.Add(self.save_log_btn, 0, wx.ALIGN_RIGHT|wx.ALL, 5)
+            button_sizer1 = wx.BoxSizer(wx.HORIZONTAL)
+            button_sizer1.AddMany([(self.ok_btn, 0,
+                wx.ALIGN_RIGHT|wx.ALL, 5), (( 0, 0), 1, wx.EXPAND, 5), (self.save_log_btn, 0, wx.ALIGN_RIGHT|wx.ALL, 5)])
             # SubMain
             sub_main_sizer = wx.FlexGridSizer(3, 1, 0, 0)
             sub_main_sizer.AddGrowableCol(0)
@@ -174,12 +179,28 @@ class cleaner(wx.Frame):  # Polemos
             self.Centre(wx.BOTH)
 
         if True:  # Events
+            self.ok_btn.Bind(wx.EVT_BUTTON, self.OnOk)
             self.mSkip.Bind(wx.EVT_BUTTON, self.OnSkip)
             self.mStop.Bind(wx.EVT_BUTTON, self.OnStop)
             self.mCleanedMods.Bind(wx.EVT_LISTBOX, self.OnSelect)
             self.save_log_btn.Bind(wx.EVT_BUTTON, self.OnSaveLog)
 
-    def OnSkip(self, event): event.Skip()
-    def OnStop(self, event): event.Skip()
-    def OnSelect(self, event): event.Skip()
-    def OnSaveLog(self, event): event.Skip()
+    def OnOk(self, event):
+        """When the OK button is pressed."""
+        self.Destroy()
+
+    def OnSkip(self, event):
+        """When the skip button is pressed."""
+        event.Skip()
+
+    def OnStop(self, event):
+        """When the stop button is pressed."""
+        event.Skip()
+
+    def OnSelect(self, event):
+        """ListBox select, selecting a mod to view the stats of."""
+        event.Skip()
+
+    def OnSaveLog(self, event):
+        """Saves the log information to the given location."""
+        event.Skip()
