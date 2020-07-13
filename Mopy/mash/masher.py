@@ -5452,7 +5452,7 @@ class Mods_Tes3cmd_multipatch(Link): # Polemos: Added Create Multipatch option w
         self.window = window
         menuItem = menu.Append(wx.ID_ANY, _(u'Create MultiPatch'))  # Multiverse...
         menuId = menuItem.GetId()
-        wx.EVT_MENU(window,menuId,self.Execute)
+        wx.EVT_MENU(window, menuId, self.Execute)
         if not tes3cmd.getLocation(): menuItem.Enable(False)
 
     def Execute(self,event):  # Polemos: fixes and more.
@@ -5482,7 +5482,7 @@ class Mods_Tes3cmd_multipatch(Link): # Polemos: Added Create Multipatch option w
         if cmd.out:
             TES3cmd_log.write(_(u'\nOutput:\n--------\n'))
             [TES3cmd_log.write(line) for line in cmd.out]
-            TES3cmd_log.finished()
+        TES3cmd_log.finished()
         # Finished
         TES3cmd_log.ShowModal()
         singletons.mashFrame.RefreshData()
@@ -5744,11 +5744,11 @@ def formatdate64(value): # Polemos: changed the date format to accommodate probl
 #------------------------------------------------------------------------------
 
 class File_Redate(Link):  # Polemos fixes
-    """Move the selected files to start at a specified date."""
+    """Redate selected files from a specified date."""
 
-    def AppendToMenu(self,menu,window,data):
-        Link.AppendToMenu(self,menu,window,data)
-        menuItem = wx.MenuItem(menu,self.id,_(u'Redate...'))
+    def AppendToMenu(self,menu, window, data):
+        Link.AppendToMenu(self, menu, window,data)
+        menuItem = wx.MenuItem(menu, self.id, _(u'Redate...'))
         menu.AppendItem(menuItem)
 
     def Execute(self, event):
@@ -5765,15 +5765,15 @@ class File_Redate(Link):  # Polemos fixes
         dialog = gui.dialog.date_time_dialog(self.window,
             title=_(u'Redate Mod(s)'), caption=_(u'Redate selected mod(s) (24h hour format):'), datetime=start_time_po)
         newTimeStr = dialog.GetValue()
-        if newTimeStr == time.strptime(newTimeStr,'%m-%d-%Y %H:%M:%S'): return
+        if newTimeStr == time.strptime(newTimeStr, '%m-%d-%Y %H:%M:%S'): return
         try:
-            newTimeTup = time.strptime(newTimeStr,'%m-%d-%Y %H:%M:%S')
+            newTimeTup = time.strptime(newTimeStr, '%m-%d-%Y %H:%M:%S')
             newTime = int(time.mktime(newTimeTup))
         except ValueError:
-            gui.dialog.ErrorMessage(self.window,_(u'Unrecognized date: ')+newTimeStr)
+            gui.dialog.ErrorMessage(self.window, _(u'Unrecognized date: ')+newTimeStr)
             return
         except OverflowError:
-            gui.dialog.ErrorMessage(self,_(u'Mash cannot handle dates greater than January 19, 2038.)')) # Polemos todo: Python 2.7
+            gui.dialog.ErrorMessage(self,_(u'Mash can only handle dates in between January 1, 1970 and January 19, 2038.'))
             return
         #--Do it
         for fileInfo in selInfos:
@@ -5783,30 +5783,93 @@ class File_Redate(Link):  # Polemos fixes
         fileInfos.refreshDoubleTime()
         self.window.Refresh()
 
+# ------------------------------------------------------------------------------
+
+class File_Redate_Sys_Time(Link):  # By Abot, adapted by Polemos.
+    """Redate selected files from current system time."""
+
+    def AppendToMenu(self, menu, window, data):
+        Link.AppendToMenu(self, menu, window, data)
+        menuItem = wx.MenuItem(menu, self.id, _(u'Redate from current system time'))
+        menu.AppendItem(menuItem)
+        if len(data) < 1: menuItem.Enable(False)
+
+    def Execute(self,event):
+        """Handle menu selection."""
+        tmsg = _(u'This command will update the time of selected file(s), starting from current system time, keeping the same plugin order.')
+        msg = _(u'It cannot be undone (at least, not in a single step).\n\nIt is meant to be used with files displayed in loading order.\n'
+                    u'If you know what you are doing, this function is great to sort/move entire groups of files that must be loaded last,'
+                    u' keeping the relative loading order (just ctrl+click or shift+click the files to organize).')
+        if gui.dialog.ContinueQuery(self.window,
+            tmsg, msg, 'query.redate.curtime.continue', _(u'Redate from current system time'), False) != wx.ID_OK: return
+        # Scan
+        fileInfos, newTime = self.window.data, time.time()
+        # Do it
+        for fileName in self.data:
+            fileInfos[fileName].setMTime(newTime)
+            newTime += conf.settings['advanced.redate.interval']
+        # Refresh
+        fileInfos.refreshDoubleTime()
+        self.window.Refresh()
+
+#------------------------------------------------------------------------------
+
+class File_Redate_Sel_Time(Link):  # By Abot, adapted by Polemos.
+    """Redate selected files from selected file time."""
+
+    def AppendToMenu(self, menu, window, data):
+        Link.AppendToMenu(self, menu, window, data)
+        menuItem = wx.MenuItem(menu, self.id, _(u'Redate first selected file time'))
+        menu.AppendItem(menuItem)
+        if len(data) < 1: menuItem.Enable(False)
+
+    def Execute(self,event):
+        """Handle menu selection."""
+        tmsg = _(u'This command will update the time of selected files, starting from the time of first selected file, keeping the same file order.')
+        msg = _(u'It cannot be undone (at least, not in a single step).\nIt is meant to be used with files displayed in loading order.\n'
+                u'If you know what you are doing, this function is great to sort/move entire groups of files keeping the relative loading order '
+                u'(just ctrl+click or shift+click the files to organize).')
+        if gui.dialog.ContinueQuery(self.window,
+                tmsg, msg, 'query.redate.fltime.continue', _(u'Redate first selected file time'), False) != wx.ID_OK: return
+        # Scan for earliest date
+        fileInfos = self.window.data
+        newTime = fileInfos[self.data[0]].mtime
+        for fileName in self.data:
+            newTime = min(newTime,fileInfos[fileName].mtime)
+        # Do it
+        for fileName in self.data:
+            fileInfos[fileName].setMTime(newTime)
+            newTime += conf.settings['advanced.redate.interval']
+        # Refresh
+        fileInfos.refreshDoubleTime()
+        self.window.Refresh()
+
 #------------------------------------------------------------------------------
 
 class File_Sort(Link):
     """Sort the selected files."""
 
-    def AppendToMenu(self,menu,window,data):
-        Link.AppendToMenu(self,menu,window,data)
-        menuItem = wx.MenuItem(menu,self.id,_(u'Sort'))
+    def AppendToMenu(self, menu, window, data):
+        Link.AppendToMenu(self, menu, window, data)
+        menuItem = wx.MenuItem(menu, self.id, _(u'Sort'))
         menu.AppendItem(menuItem)
         if len(data) < 2: menuItem.Enable(False)
 
     def Execute(self,event):
         """Handle menu selection."""
-        tmessage = _(u"This command will sort the selected files alphabetically, assigning them dates one minute after each other.")
-        message = _(u"It cannot be undone.\n\nNote that some mods need to be in a specific "
-                    u"order to work correctly, and this sort operation may break that order.")
-        if gui.dialog.ContinueQuery(self.window,tmessage,message,'query.sortMods.continue',_(u'Sort Mods')) != wx.ID_OK: return
+        interval = conf.settings['advanced.redate.interval']
+        tmessage = _(u'This command will sort the selected files alphabetically,'
+                     u' assigning\n them dates %s seconds apart each other.' % interval)
+        message = _(u'It cannot be undone.\n\nNote that some mods need to be '
+                    u'in a specific order to work correctly, and this sort operation may break that order.')
+        if gui.dialog.ContinueQuery(self.window, tmessage, message, 'query.sortMods.continue', _(u'Sort Mods')) != wx.ID_OK: return
         #--Scan for earliest date
         fileInfos = self.window.data
         newTime = min(fileInfos[fileName].mtime for fileName in self.data)
         #--Do it
-        for fileName in sorted(self.data,key=lambda a: a[:-4].lower()):
+        for fileName in sorted(self.data, key=lambda a: a[:-4].lower()):
             fileInfos[fileName].setMTime(newTime)
-            newTime += 60
+            newTime += interval
         #--Refresh
         fileInfos.refreshDoubleTime()
         self.window.Refresh()
@@ -6233,34 +6296,32 @@ class File_Replace_Refs:
 
     def GetItems(self):
         items = self.replacers.keys()
-        items.sort(lambda a,b: cmp(a.lower(),b.lower()))
+        items.sort(lambda a, b: cmp(a.lower(), b.lower()))
         return items
 
-    def AppendToMenu(self,menu,window,data):
+    def AppendToMenu(self, menu, window, data):
         """Append ref replacer items to menu."""
         self.window = window
         self.data = data
-        menu.Append(ID_REPLACERS.EDIT,_(u'Edit Replacers...'))
+        menu.Append(ID_REPLACERS.EDIT, _(u'Edit Replacers...'))
         menu.AppendSeparator()
         ids = iter(ID_REPLACERS)
         enable = (len(data) == 1)
         for item in self.GetItems():
             try:
-                menuItem = wx.MenuItem(menu,ids.next(),item)
+                menuItem = wx.MenuItem(menu, ids.next(), item)
                 menu.AppendItem(menuItem)
                 menuItem.Enable(enable)
             except StopIteration: pass
         #--Events
-        wx.EVT_MENU(window,ID_REPLACERS.EDIT,self.DoData)
-        wx.EVT_MENU_RANGE(window,ID_REPLACERS.BASE,ID_REPLACERS.MAX,self.DoList)
+        wx.EVT_MENU(window, ID_REPLACERS.EDIT, self.DoData)
+        wx.EVT_MENU_RANGE(window, ID_REPLACERS.BASE, ID_REPLACERS.MAX, self.DoList)
 
-    def DoList(self,event): # Polemos: fixes
+    def DoList(self, event): # Polemos: fixes
         """Handle selection of one ref replacers."""
-        #--Continue Query
-        tmessage = _(u'Please Note:')
-        message = _(u"This command will replace all instances of objects listed in the replacer file with other objects.")
-        if gui.dialog.ContinueQuery(self.window,tmessage,message,'query.refReplacers.continue',_(u'Replace Refs by Id...')) != wx.ID_OK:
-            return
+        tmsg = _(u'Please Note:')
+        msg = _(u'This command will replace all instances of objects listed in the replacer file with other objects.')
+        if gui.dialog.ContinueQuery(self.window, tmsg, msg, 'query.refReplacers.continue', _(u'Replace Refs by Id...')) != wx.ID_OK: return
         #--File Refs
         fileName = self.data[0]
         fileInfo = self.window.data[fileName]
@@ -6280,22 +6341,22 @@ class File_Replace_Refs:
                     srcModName = renames[srcModName]
                     refReplacer.srcModName = srcModName
                 else:
-                    gui.dialog.ErrorMessage(self.window,_(u"Source mod %s is not in Data Files folder.") % (srcModName,))
+                    gui.dialog.ErrorMessage(self.window, _(u'Source mod %s is not in Data Files folder.') % (srcModName,))
                     return
-            log.setHeader(_(u"Source Mod"))
-            log(srcModName or _(u"None"))
+            log.setHeader(_(u'Source Mod'))
+            log(srcModName or _(u'None'))
             #--File Refs
-            fileRefs = mosh.FileRefs(fileInfo,log=log,progress=progress)
+            fileRefs = mosh.FileRefs(fileInfo, log=log, progress=progress)
             fileRefs.refresh()
             if not fileRefs.replaceRefsById(refReplacer):
-                gui.dialog.InfoMessage(self.window,_(u"No replacements necessary."))
+                gui.dialog.InfoMessage(self.window, _(u'No replacements necessary.'))
             else:
                 fileRefs.sortRecords()
                 fileRefs.safeSave()
                 fileInfo.refresh()
                 fileInfo.writeAuthorWM()
                 self.window.details.SetFile(fileName)
-                gui.dialog.LogMessage(self.window,u'',log.out.getvalue(),caption)
+                gui.dialog.LogMessage(self.window, u'', log.out.getvalue(), caption)
         finally:
             if progress is not None: progress.Destroy()
             self.window.Refresh(fileName)
@@ -6303,67 +6364,91 @@ class File_Replace_Refs:
     def DoData(self,event):
         """Show ref replacers editing dialog."""
         data = File_Replace_RefsData(self.window)
-        dialog = ListEditorDialog(self.window,-1,_(u'Ref Replacers'),data)
+        dialog = ListEditorDialog(self.window, -1, _(u'Ref Replacers'), data)
         dialog.ShowModal()
         dialog.Destroy()
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+
+class GetLinearList(Link):  # By Abot, adapted by Polemos.
+    """Copy to clipboard a mods linear file list."""
+
+    def AppendToMenu(self, menu, window, data):
+        Link.AppendToMenu(self, menu, window, data)
+        menuItem = wx.MenuItem(menu, self.id, _(u'Copy linear mod list'))
+        menu.AppendItem(menuItem)
+        if len(data) < 1: menuItem.Enable(False)
+
+    def Execute(self, event):
+        """Handle selection."""
+        tmsg = _(u'This command will copy to the clipboard selected mods linear file list.')
+        msg = _(u'For pasting in Windows applications file load dialog boxes (e.g. TESFaith#, TESPCS, etc).')
+        if gui.dialog.ContinueQuery(self.window,
+            tmsg, msg, 'query.linear.file.list', _(u'Copy selected mods linear file list'), False) != wx.ID_OK: return
+        # Scan for earliest date
+        s = s1 = u''
+        for fileName in self.data:
+            s1 += '"%s" ' % fileName
+            if len(s1) > 240:
+                s1 = ''
+                s += '\n"%s"' % fileName
+            else: s += '"%s" ' % fileName
+        # Copy to clipboard
+        if wx.TheClipboard.Open():
+            wx.TheClipboard.SetData(wx.TextDataObject('%s\n\n------------\n%s' % ('\n'.join(self.data), s)))
+            wx.TheClipboard.Close()
+
+# ------------------------------------------------------------------------------
 
 class File_RepairRefs(Link):
-    """Repairs the save game's refs by comparing their type and id against the
-    types and ids of the save game's masters."""
-    def AppendToMenu(self,menu,window,data):
-        Link.AppendToMenu(self,menu,window,data)
-        menuItem = wx.MenuItem(menu,self.id,_(u'Repair Refs'))
+    """Repairs the save game's refs by comparing their type and id against the types and ids of the save game's masters."""
+
+    def AppendToMenu(self, menu, window, data):
+        Link.AppendToMenu(self, menu, window, data)
+        menuItem = wx.MenuItem(menu, self.id, _(u'Repair Refs'))
         menu.AppendItem(menuItem)
         if len(data) != 1: menuItem.Enable(False)
 
-    def Execute(self,event):
+    def Execute(self, event):
         """Handle menu selection."""
         #--File Info
         fileName = self.data[0]
         fileInfo = self.window.data[fileName]
         if fileInfo.getStatus() > 10:
-            gui.dialog.WarningMessage(self.window, _(u"File master list is out of date. Please edit masters before attempting repair."))
+            gui.dialog.WarningMessage(self.window, _(u'File master list is out of date. Please edit masters before attempting repair.'))
             return
-        progress = None
-        dialog = None
+        progress, dialog = None, None
         try:
             #--Log and Progress
-            caption = _(u'Repairing ')+fileName
+            caption = _(u'Repairing ') + fileName
             progress = gui.dialog.ProgressDialog(caption)
             log = mosh.LogFile(cStringIO.StringIO())
             #--World Refs
-            worldRefs = mosh.WorldRefs(log=log,progress=progress)
-            try:
-                worldRefs.addMasters(fileInfo.masterNames)
+            worldRefs = mosh.WorldRefs(log=log, progress=progress)
+            try: worldRefs.addMasters(fileInfo.masterNames)
             except mosh.Tes3RefError, error:
                 progress = progress.Destroy()
-                message = ((
-                    _(u"%s has bad refs and must be repaired first.\n") +
-                    _(u"\nExample Bad Ref from %s:") +
-                    _(u"\n  Cell: %s\n  Object Id: %s\n  Object Index: %d")+
-                    _(u"\n  Mod Index: %d (%s)")) %
-                    (error.inName,error.inName,error.cellId,error.objId,error.iObj,error.iMod,error.masterName))
-                gui.dialog.ErrorMessage(self.window,message)
+                message = _(u'%s has bad refs and must be repaired first.\n\nExample Bad Ref from %s:\nCell: %s\nObject Id: %s\nObject Index: '
+                    u'%d\nMod Index: %d (%s)'% (error.inName, error.inName, error.cellId, error.objId, error.iObj, error.iMod, error.masterName))
+                gui.dialog.ErrorMessage(self.window, message)
                 return
             #--File Refs for Save File
             progress.setBaseScale()
-            fileRefs = mosh.FileRefs(fileInfo,log=log,progress=progress)
+            fileRefs = mosh.FileRefs(fileInfo, log=log, progress=progress)
             fileRefs.refresh()
-            (cntRepaired,cntDeleted,cntUnnamed) = worldRefs.repair(fileRefs)
+            (cntRepaired, cntDeleted, cntUnnamed) = worldRefs.repair(fileRefs)
             #--No problems?
             if not (cntRepaired or cntDeleted or cntUnnamed):
                 progress = progress.Destroy()
-                gui.dialog.InfoMessage(self.window,_(u"No problems found!"))
+                gui.dialog.InfoMessage(self.window, _(u'No problems found!'))
                 return
             #--Save
             fileRefs.safeSave()
             progress = progress.Destroy()
             #--Problem Dialog
-            message = (_(u"Objects repaired: %d.\nObjects deleted: %d.") % (cntRepaired,cntDeleted))
+            message = _(u'Objects repaired: %d.\nObjects deleted: %d.' % (cntRepaired, cntDeleted))
             #InfoMessage(self.window,message)
-            gui.dialog.LogMessage(self.window,message,log.out.getvalue(),caption)
+            gui.dialog.LogMessage(self.window, message, log.out.getvalue(), caption)
         #--Done
         finally:
             if progress is not None: progress.Destroy()
@@ -8345,7 +8430,7 @@ class Mods_Tes3cmd_Fixit():  # Polemos: made compatible with toolbar menu, more.
         if cmd.out:
             TES3cmd_log.write(_(u'\nOutput:\n--------\n'))
             [TES3cmd_log.write(line) for line in cmd.out]
-            TES3cmd_log.finished()
+        TES3cmd_log.finished()
         # Finished
         TES3cmd_log.ShowModal()
         singletons.mashFrame.RefreshData()
@@ -8943,9 +9028,9 @@ class Mod_Import_Scripts(Link):
 class Mod_Tes3cmd_Clean(Link):  # Polemos: Optimized code.
     """TES3cmd clean."""
 
-    def AppendToMenu(self,menu,window,data):
-        Link.AppendToMenu(self,menu,window,data)
-        menuItem = wx.MenuItem(menu,self.id,_(u'Clean with TES3cmd'))
+    def AppendToMenu(self, menu, window, data):
+        Link.AppendToMenu(self, menu, window, data)
+        menuItem = wx.MenuItem(menu, self.id, _(u'Clean with TES3cmd'))
         menu.AppendItem(menuItem)
         if not tes3cmd.getLocation(): menuItem.Enable(False)
 
@@ -8962,7 +9047,44 @@ class Mod_Tes3cmd_Clean(Link):  # Polemos: Optimized code.
                 log.write(self.form.GetLog(fileName))
         self.window.Refresh()
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+
+class Mod_Tes3cmd_Sync(Link):  # By Abot, adapted by Polemos.
+    """Update header field and sync the list of masters."""
+
+    def AppendToMenu(self, menu, window, data):
+        Link.AppendToMenu(self, menu, window, data)
+        menuItem = wx.MenuItem(menu, self.id, _(u'Sync masters'))
+        menu.AppendItem(menuItem)
+        if not tes3cmd.getLocation(): menuItem.Enable(False)
+
+    def Execute(self,event):
+        """Handle menu selection."""
+        tmsg = _(u'Update header field and sync the list of masters.')
+        msg = _(u'This command will Update header field for the number of records in the plugin (if incorrect) and sync the list of masters'
+                u' to the masters installed in "Data Files" by executing "tes3cmd.exe header --synchronize --debug --hide-backups --backup-dir"'
+                u' (debug option is set so information may be displayed, as by default no messages are shown with this command).')
+        if gui.dialog.ContinueQuery(self.window, tmsg,
+            msg, 'query.tes3cmd.sync', _(u'Update header field and sync masters')) != wx.ID_OK: return
+        # Scan
+        cmd = tes3cmd.Basic()
+        t3_thread = Thread(target=cmd.syncMasters, args=[self.data])
+        t3_thread.start()
+        with wx.WindowDisabler():
+            wait = wx.BusyInfo(u'Please wait for TES3CMD to finish (this may take some time)...')
+            while t3_thread.isAlive(): wx.GetApp().Yield()
+        del wait
+        TES3cmd_log = gui.dialog.AdvLog(self.window, _(u'Updating header field and syncing masters'), 'TES3cmd.log', 'HeaderMasterSync')
+        # Stdout (no stderr is needed here)
+        if cmd.out:
+            TES3cmd_log.write(_(u'\nOutput:\n--------\n'))
+            [TES3cmd_log.write(line) for line in cmd.out]
+        TES3cmd_log.finished()
+        # Finished
+        TES3cmd_log.ShowModal()
+        singletons.mashFrame.RefreshData()
+
+# ------------------------------------------------------------------------------
 
 class Mod_TES3lint(Link):  # Polemos
     """Implemented TES3lint."""
@@ -9033,7 +9155,45 @@ class Mod_TES3lint(Link):  # Polemos
                 self.log.write(u'\n')
         self.log.finished()
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+
+class Mod_Tes3cmd_Merge(Link):  # By Abot, adapted by Polemos.
+    """Create an esp containing all records present in selected mods."""
+
+    def AppendToMenu(self, menu, window, data):
+        Link.AppendToMenu(self, menu, window, data)
+        menuItem = wx.MenuItem(menu, self.id, _(u'Merge with TES3CMD'))
+        menu.AppendItem(menuItem)
+        if len(data) < 2 or not tes3cmd.getLocation(): menuItem.Enable(False)
+
+    def Execute(self,event):
+        """Handle menu selection."""
+        tmsg = _(u'This command will merge selected files to create "dumb.esp" containing all records present in the selected mods.')
+        msg = _(u'This command will call "tes3cmd.exe dumb --debug --raw-with-header" passing selected files to create a file named '
+                u'"dumb.esp" containing all records present in the selected mods (debug option is set so information may be displayed,'
+                u' as by default no messages are shown with this command).\n\nPlease note that not all mods are mergable and may not '
+                u'produce any results.')
+        if gui.dialog.ContinueQuery(self.window, tmsg,
+            msg, 'query.tes3cmd.merge', _(u'Dump selected files records to dumb.esp'), False) != wx.ID_OK: return
+        # Scan
+        cmd = tes3cmd.Basic()
+        t3_thread = Thread(target=cmd.merge, args=[self.data])
+        t3_thread.start()
+        with wx.WindowDisabler():
+            wait = wx.BusyInfo(u'Please wait for TES3CMD to finish (this may take some time)...')
+            while t3_thread.isAlive(): wx.GetApp().Yield()
+        del wait
+        TES3cmd_log = gui.dialog.AdvLog(self.window, _(u'Merging records'), 'TES3cmd.log', 'Merge')
+        # Stdout (no stderr is needed here)
+        if cmd.out:
+            TES3cmd_log.write(_(u'\nOutput:\n--------\n'))
+            [TES3cmd_log.write(line) for line in cmd.out]
+        TES3cmd_log.finished()
+        # Finished
+        TES3cmd_log.ShowModal()
+        singletons.mashFrame.RefreshData()
+
+# ------------------------------------------------------------------------------
 
 class Mods_custom_menu_item:  # Polemos
     """Add Custom Commands links."""
@@ -10150,15 +10310,16 @@ class App_mge_xe(Link):  # Polemos: Added MGE XE in status bar.
 class App_mlox_po(Link):  # Polemos, new tool (mlox) in status bar.
     """Launch Mlox, if found."""
 
-    def GetBitmapButton(self,window,style=0):
+    def GetBitmapButton(self, window, style=0):
         if not self.id: self.id = wx.NewId()
         button = wx.BitmapButton(window, self.id, singletons.images['mlox'].GetBitmap(), style=style)
         button.SetToolTip(wx.ToolTip(_(u'Launch Mlox')))
-        wx.EVT_BUTTON(button,self.id,self.Execute)
+        wx.EVT_BUTTON(button, self.id, self.Execute)
         return button
 
     def Execute(self,event):
         """Handle menu selection."""
+
         try:
             if os.path.isfile(conf.settings['mloxpath']):
                 os.chdir(os.path.dirname(conf.settings['mloxpath']))
@@ -10641,35 +10802,38 @@ def InitModLinks():  # Polemos addons and changes.
 def InitModLinks_items(): # Polemos: Different initialization for items links.
     """ModList: Item Links"""
     if Mw(): #--File
-        fileMenu = MenuLink(_(u"File"))
+        fileMenu = MenuLink(_(u'File'))
         fileMenu.links.append(File_Backup())
         fileMenu.links.append(File_Duplicate())
         fileMenu.links.append(File_Snapshot())
         fileMenu.links.append(SeparatorLink())
         fileMenu.links.append(File_Delete())
-        if Mw(): fileMenu.links.append(File_Hide())
-        if Mw(): fileMenu.links.append(File_Redate())
+        fileMenu.links.append(File_Hide())
+        fileMenu.links.append(SeparatorLink())
+        fileMenu.links.append(File_Redate())
+        fileMenu.links.append(File_Redate_Sys_Time())
+        fileMenu.links.append(File_Redate_Sel_Time())
         fileMenu.links.append(File_Sort())
         fileMenu.links.append(SeparatorLink())
         fileMenu.links.append(File_RevertToBackup())
         fileMenu.links.append(File_RevertToSnapshot())
         ModList.itemMenu.append(fileMenu)
     if True: #--Groups
-        groupMenu = MenuLink(_(u"Group"))
+        groupMenu = MenuLink(_(u'Group'))
         groupMenu.links.append(Mod_Groups())
         ModList.itemMenu.append(groupMenu)
     if True: #--Ratings
-        ratingMenu = MenuLink(_(u"Rating"))
+        ratingMenu = MenuLink(_(u'Rating'))
         ratingMenu.links.append(Mod_Ratings())
         ModList.itemMenu.append(ratingMenu)
-    ModList.itemMenu.append(SeparatorLink())
+        ModList.itemMenu.append(SeparatorLink())
     if True: #--Export
-        exportMenu = MenuLink(_(u"Export"))
+        exportMenu = MenuLink(_(u'Export'))
         exportMenu.links.append(Mod_Export_Dialogue())
         exportMenu.links.append(Mod_Export_Scripts())
         ModList.itemMenu.append(exportMenu)
     if True: #--Import
-        importMenu = MenuLink(_(u"Import"))
+        importMenu = MenuLink(_(u'Import'))
         importMenu.links.append(Mod_Import_Dialogue())
         importMenu.links.append(Mod_Import_LCVSchedules())
         importMenu.links.append(Mod_Import_MergedLists())
@@ -10677,11 +10841,14 @@ def InitModLinks_items(): # Polemos: Different initialization for items links.
         importMenu.links.append(SeparatorLink())
         importMenu.links.append(File_Replace_Refs())
         ModList.itemMenu.append(importMenu)
-    ModList.itemMenu.append(SeparatorLink())
-    if Mw(): ModList.itemMenu.append(Mod_Tes3cmd_Clean())  #  TES3cmd
-    if Mw(): ModList.itemMenu.append(Mod_TES3lint())  # TES3lint
-    if Mw():  # Polemos: added "custom commands" menu.
-        custom_menu = MenuLink(_(u"Custom Commands"))
+        ModList.itemMenu.append(GetLinearList())
+        ModList.itemMenu.append(SeparatorLink())
+    if Mw():
+        ModList.itemMenu.append(Mod_Tes3cmd_Clean())
+        ModList.itemMenu.append(Mod_Tes3cmd_Sync())
+        ModList.itemMenu.append(Mod_TES3lint())
+        ModList.itemMenu.append(Mod_Tes3cmd_Merge())
+        custom_menu = MenuLink(_(u'Custom Commands'))
         custom_menu.links.append(Mods_custom_menu_item())
         ModList.itemMenu.append(custom_menu)
     ModList.itemMenu.append(SeparatorLink())

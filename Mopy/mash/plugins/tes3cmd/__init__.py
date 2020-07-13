@@ -75,6 +75,16 @@ class HelperMixin: # Polemos fixes.
         args = ['tes3cmd.exe', 'multipatch ']
         return args
 
+    def syncHeadMastArgs(self, files):  # Polemos: Added Sync Headers/Master ability by Abot.
+        """Args factory"""
+        args = ['tes3cmd.exe', 'header', '--synchronize', '--debug', '--hide-backups', '--backup-dir', 'tes3cmdbck'] + files
+        return args
+
+    def mergeArgs(self, files):  # Polemos: Added Merge records by Abot.
+        """Args factory"""
+        args = ['tes3cmd.exe', 'dumb', '--debug', '--raw-with-header'] + files
+        return args
+
     def buildCleanArgs(self, files, replace, hideBackups, backupDir, cells, dups, gmsts, instances, junk):
         """Args factory"""
         if not (cells or dups or gmsts or instances or junk): raise Exception(u'No options selected')
@@ -82,18 +92,15 @@ class HelperMixin: # Polemos fixes.
         if replace: args.append('--replace')
         if hideBackups: args.append('--hide-backups')
         if backupDir: args += ['--backup-dir', backupDir]
-
-        #if everything is true then we don't need to set any of the options
+        # if everything is true then we don't need to set any of the options
         if cells and dups and gmsts and instances and junk:
             args += files
             return args
-
         if cells: args.append('--cell-params')
         if dups: args.append('--dups')
         if gmsts: args.append('--gmsts')
         if instances: args.append('--instances')
         if junk: args.append('--junk-cells')
-
         args += files
         return args
 
@@ -113,11 +120,23 @@ class Basic(HelperMixin):  # Polemos fixes.
     """Basic."""
 
     def fixit(self, hideBackups=True, backupDir='tes3cmdbck'):
+        """Fixit."""
         args = self.buildFixitArgs(hideBackups, backupDir)
         self.out, self.err = self.getSubprocess(args).communicate()
 
-    def multipatch(self):  # Polemos: Added for multipatch
+    def multipatch(self):  # Polemos
+        """Multipatch."""
         args = self.buildMultipatchArgs()
+        self.out, self.err = self.getSubprocess(args).communicate()
+
+    def syncMasters(self, files):  # Polemos
+        """Header sync masters."""
+        args = self.syncHeadMastArgs(files)
+        self.out, self.err = self.getSubprocess(args).communicate()
+
+    def merge(self, files):  # Polemos
+        """Header sync masters."""
+        args = self.mergeArgs(files)
         self.out, self.err = self.getSubprocess(args).communicate()
 
 
@@ -156,7 +175,7 @@ class Threaded(threading.Thread, HelperMixin):
         self.args = self.buildHeaderArgs(file, hideBackups, backupDir, sync, updateMasters, updateRecordCount)
         self.start()
 
-    def run(self): # Polemos: hackish bugfix (happens for queue to return nothing)
+    def run(self):  # Polemos: hackish bugfix (happens for queue to return nothing)
         """This shouldn't be called directly, use a function like clean that correctly sets the state."""
         p = self.getSubprocess(self.args)
         unfreeze = 0

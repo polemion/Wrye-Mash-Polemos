@@ -105,6 +105,11 @@ settingDefaults = {
     'query.renumberRefs.continue': False,
     'query.removeDebrisCells.continue': False,
     'query.tes3cmd.multipatch': False,
+    'query.redate.curtime.continue': False,
+    'query.redate.fltime.continue': False,
+    'query.linear.file.list': False,
+    'query.tes3cmd.sync': False,
+    'query.tes3cmd.merge': False,
 
     #--Wrye Mash
     'all.ok': True,

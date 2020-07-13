@@ -314,8 +314,8 @@ def ContinueQuery(parent, tmessage, message, continueKey, title=_(u'Warning'), n
     title.SetFont(bold)
     # Layout
     if not nBtn: cnlBtn.Hide()
-    main.SetMinSize(wx.Size(-1, 100))
-    [x.SetMaxSize(wx.Size(380, -1)) for x in (title, main)]
+    main.SetMinSize(wx.Size(-1, 180))
+    [x.SetMaxSize(wx.Size(400, -1)) for x in (title, main)]
     [x.Wrap(-1) for x in (title, main)]
     cntSizer = wx.StaticBoxSizer(cntBox, wx.VERTICAL)
     cntSizer.AddMany([(title,0,wx.ALL|wx.EXPAND|wx.ALIGN_CENTER_HORIZONTAL,5),(main,1,wx.EXPAND|wx.ALIGN_CENTER_HORIZONTAL|wx.RIGHT|wx.LEFT,5)])
@@ -1248,7 +1248,9 @@ class AdvLog(wx.Dialog):  # Polemos
         else:
             self.lineok = '%s%s' % (self.lineok, data)
             self.chkRules(self.lineok, color)
-            self.text_log.WriteText(self.lineok)
+            try:
+                self.text_log.WriteText(self.lineok)
+            except: self.text_log.WriteText(unicode(self.lineok, errors='replace'))
             self.lineok = ''
 
     def chkRules(self, line, color):
