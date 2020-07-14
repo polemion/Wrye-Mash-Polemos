@@ -76,8 +76,7 @@ class ErrorLogger:
 # Logger start
 logChk()
 fl = file('WryeMash.log', 'a+')
-sys.stdout = ErrorLogger((fl, sys.__stdout__))
-sys.stderr = ErrorLogger((fl, sys.__stderr__))
+sys.stdout, sys.stderr = ErrorLogger((fl, sys.__stdout__)), ErrorLogger((fl, sys.__stderr__))
 fl.write('\n%s: # ===================== Wrye Mash started. ===================== #\n' % datetime.now())
 
 # Main

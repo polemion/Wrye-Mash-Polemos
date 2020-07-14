@@ -1448,7 +1448,10 @@ class ModList(gui.List, gui.ListDragDropMixin):  # Polemos: OpenMW/TES3mp suppor
             else: value = ''
             if mode and (colDex == 0): #--Insert/SetString
                 self.list.InsertStringItem(itemDex, value)
-            else: self.list.SetStringItem(itemDex, colDex, value)
+            else:
+                try: self.list.SetStringItem(itemDex, colDex, value)
+                except UnicodeDecodeError:  # Polemos: Korean fix (possibly more)
+                    self.list.SetStringItem(itemDex, colDex, uniChk(value))
         #--Text BG
         if not mosh.mwIniFile.isWellOrdered(fileName):
             self.list.SetItemBackgroundColour(itemDex,colors['mash.doubleTime.load'])
@@ -5015,6 +5018,7 @@ class MashApp(wx.App):  # Polemos: Added settings, file check, updates check, ml
         self.InitVersion()
         #--Locale
         wx.Locale(wx.LOCALE_LOAD_DEFAULT)
+
         #--WMFrame
         frame = MashFrame(pos=conf.settings['mash.framePos'], size=conf.settings['mash.frameSize'])
         self.SetTopWindow(frame)

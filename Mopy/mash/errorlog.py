@@ -42,7 +42,7 @@ The startup code redirects stdin/stderr to a file, so this class allows provides
 """
 
 import sys, wx, os, io
-from unimash import _
+from unimash import _, uniChk as uniChk
 import conf, singletons
 import gui.dialog as gui
 
@@ -63,7 +63,8 @@ class WxOutputRedirect:
         """Return error msgs."""
         wx.CallAfter(self.frame.Show)
         wx.CallAfter(self.frame.Raise)
-        wx.CallAfter(self.log.WriteText, message)
+        try: wx.CallAfter(self.log.WriteText, message)  # Polemos: Korean fix (possibly more)
+        except UnicodeDecodeError: wx.CallAfter(self.log.WriteText, uniChk(message))
         wx.CallAfter(self.std.write, message)
 
 
