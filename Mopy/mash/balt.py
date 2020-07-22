@@ -2,7 +2,7 @@
 
 # Wrye Mash Polemos fork GPL License and Copyright Notice ==============================
 #
-# Wrye Mash, Polemos fork Copyright (C) 2017-2019 Polemos
+# Wrye Mash, Polemos fork Copyright (C) 2017-2020 Polemos
 # * based on code by Yacoby copyright (C) 2011-2016 Wrye Mash Fork Python version
 # * based on code by Melchor copyright (C) 2009-2011 Wrye Mash WMSA
 # * based on code by Wrye copyright (C) 2005-2009 Wrye Mash
@@ -950,11 +950,11 @@ class Tank(wx.Panel):  # Polemos: Edits
 
     def __init__(self, parent, data, icons=None, mainMenu=None, itemMenu=None, details=None, id=-1, style=(wx.LC_REPORT|wx.LC_SINGLE_SEL)):
         """Init."""
-        wx.Panel.__init__(self,parent,id,style=wx.WANTS_CHARS)
+        wx.Panel.__init__(self, parent, id, style=wx.WANTS_CHARS)
         #--Data
         if icons is None: icons = {}
         self.data = data
-        self.icons = icons #--Default to balt image collection.
+        self.icons = icons  #--Default to balt image collection.
         self.mainMenu = mainMenu or self.__class__.mainMenu
         self.itemMenu = itemMenu or self.__class__.itemMenu
         self.details = details
@@ -965,10 +965,10 @@ class Tank(wx.Panel):  # Polemos: Edits
         #--Layout
         sizer = vSizer()
         self.SetSizer(sizer)
-        self.SetSizeHints(50,50)
+        self.SetSizeHints(50, 50)
         #--ListCtrl
         self.gList = gList = Tank.ListCtrl(self, -1, style=style)
-        if self.icons: gList.SetImageList(icons.GetImageList(),wx.IMAGE_LIST_SMALL)
+        if self.icons: gList.SetImageList(icons.GetImageList(), wx.IMAGE_LIST_SMALL)
         #--State info
         self.mouseItem = None
         self.mouseTexts = {}
@@ -979,7 +979,7 @@ class Tank(wx.Panel):  # Polemos: Edits
         self.sortDirty = False
         self.UpdateItems()
         #--Events
-        self.Bind(wx.EVT_SIZE,self.OnSize)
+        self.Bind(wx.EVT_SIZE, self.OnSize)
         #--Events: Items
         gList.Bind(wx.EVT_LEFT_DOWN, self.OnLeftDown)
         gList.Bind(wx.EVT_COMMAND_RIGHT_CLICK, self.DoItemMenu)
@@ -999,11 +999,11 @@ class Tank(wx.Panel):  # Polemos: Edits
         #--Hack: Default text item background color
         self.defaultTextBackground = wx.SystemSettings.GetColour(wx.SYS_COLOUR_WINDOW)
 
-    def GetItem(self,index):
+    def GetItem(self, index):
         """Returns item for specified list index."""
         return self.itemId_item[self.gList.GetItemData(index)]
 
-    def GetId(self,item):
+    def GetId(self, item):
         """Returns id for specified item, creating id if necessary."""
         id = self.item_itemId.get(item)
         if id: return id
@@ -1014,9 +1014,9 @@ class Tank(wx.Panel):  # Polemos: Edits
         self.itemId_item[id] = item
         return id
 
-    def GetIndex(self,item):
+    def GetIndex(self, item):
         """Returns index for specified item."""
-        return self.gList.FindItemData(-1,self.GetId(item))
+        return self.gList.FindItemData(-1, self.GetId(item))
 
     def UpdateIds(self):
         """Updates item/id mappings to account for removed items."""
@@ -1033,8 +1033,8 @@ class Tank(wx.Panel):  # Polemos: Edits
         col_name = data.getParam('colNames',{})
         col_width = data.getParam('colWidths',{})
         col_align = data.getParam('colAligns',{})
-        for index,column in enumerate(columns):
-            name  = col_name.get(column,_(column))
+        for index, column in enumerate(columns):
+            name = col_name.get(column,_(column))
             width = col_width.get(column,30)
             align = wxListAligns[col_align.get(column,'LEFT')]
             if conf.settings['mash.large.fonts']:
@@ -1043,16 +1043,16 @@ class Tank(wx.Panel):  # Polemos: Edits
             self.gList.InsertColumn(index,name,align)
             self.gList.SetColumnWidth(index, width)
 
-    def UpdateItem(self,index,item=None,selected=tuple()):
+    def UpdateItem(self, index, item=None, selected=tuple()):
         """Populate Item for specified item."""
         import gui.interface
         if index < 0: return
-        data,gList = self.data,self.gList
+        data, gList = self.data, self.gList
         item = item or self.GetItem(index)
         for iColumn,column in enumerate(data.getColumns(item)):
-            gList.SetStringItem(index,iColumn,column)
+            gList.SetStringItem(index, iColumn, column)
         gItem = gList.GetItem(index)
-        iconKey,textKey,backKey = data.getGuiKeys(item)
+        iconKey, textKey, backKey = data.getGuiKeys(item)
         if iconKey and self.icons: gItem.SetImage(self.icons[iconKey])
         if textKey:  # Polemos: Theme engine
             if textKey == 'BLACK' and gui.interface.style['lists.font.color'] is not None:
@@ -1064,11 +1064,11 @@ class Tank(wx.Panel):  # Polemos: Edits
             else: gItem.SetTextColour(gui.interface.style['lists.font.color'])
         if backKey: gItem.SetBackgroundColour(colors[backKey])
         else: gItem.SetBackgroundColour(self.defaultTextBackground)
-        gItem.SetState((0,wx.LIST_STATE_SELECTED)[item in selected])
+        gItem.SetState((0, wx.LIST_STATE_SELECTED)[item in selected])
         gItem.SetData(self.GetId(item))
         gList.SetItem(gItem)
 
-    def UpdateItems(self,selected='SAME'):
+    def UpdateItems(self, selected='SAME'):
         """Update all items."""
         gList = self.gList
         items = set(self.data.keys())
@@ -1080,20 +1080,20 @@ class Tank(wx.Panel):  # Polemos: Edits
             item = self.GetItem(index)
             if item not in items: gList.DeleteItem(index)
             else:
-                self.UpdateItem(index,item,selected)
+                self.UpdateItem(index, item, selected)
                 items.remove(item)
                 index += 1
         #--Add remaining new items
         for item in items:
-            gList.InsertStringItem(index,'')
-            self.UpdateItem(index,item,selected)
+            gList.InsertStringItem(index, '')
+            self.UpdateItem(index, item, selected)
             index += 1
         #--Cleanup
         self.UpdateIds()
         self.SortItems()
         self.mouseTexts.clear()
 
-    def SortItems(self,column=None,reverse='CURRENT'):
+    def SortItems(self,column=None, reverse='CURRENT'):
         """Sort items. Real work is done by data object, and that completed
         sort is then "cloned" list through an intermediate cmp function.
 
@@ -1110,18 +1110,18 @@ class Tank(wx.Panel):  # Polemos: Edits
         if self.sortDirty:
             self.sortDirty = False
             (column, reverse) = (None,'CURRENT')
-        curColumn = data.defaultParam('colSort',data.tankColumns[0])
+        curColumn = data.defaultParam('colSort', data.tankColumns[0])
         column = column or curColumn
-        curReverse = data.defaultParam('colReverse',{}).get(column,False)
+        curReverse = data.defaultParam('colReverse', {}).get(column,False)
         if reverse == 'INVERT' and column == curColumn: reverse = not curReverse
-        elif reverse in ('INVERT','CURRENT'): reverse = curReverse
+        elif reverse in ('INVERT', 'CURRENT'): reverse = curReverse
         data.updateParam('colReverse')[column] = reverse
         self.isReversed = reverse  # Polemos: Get reverse flag.
-        data.setParam('colSort',column)
+        data.setParam('colSort', column)
         #--Sort
         items = self.data.getSorted(column,reverse)
-        sortDict = dict((self.item_itemId[y],x) for x,y in enumerate(items))
-        self.gList.SortItems(lambda x,y: cmp(sortDict[x],sortDict[y]))
+        sortDict = dict((self.item_itemId[y], x) for x, y in enumerate(items))
+        self.gList.SortItems(lambda x, y: cmp(sortDict[x], sortDict[y]))
         #--Done
         self.mouseTexts.clear()
 
@@ -1132,7 +1132,7 @@ class Tank(wx.Panel):  # Polemos: Edits
     def RefreshReport(self):
         """(Optionally) Shows a report of changes after a data refresh."""
         report = self.data.getRefreshReport()
-        if report: showInfo(self,report,self.data.title)
+        if report: showInfo(self, report, self.data.title)
 
     def RefreshUI(self,items='ALL',details='SAME'):
         """Refreshes UI for specified file."""
@@ -1307,7 +1307,7 @@ class Link:
         """Init."""
         self.id = None
 
-    def AppendToMenu(self,menu,window,data):
+    def AppendToMenu(self, menu, window, data):
         """Append self to menu as menu item."""
         if isinstance(window, Tank):
             self.gTank = window

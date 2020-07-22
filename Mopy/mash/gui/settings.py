@@ -4,7 +4,7 @@
 #
 # This file is part of Wrye Mash Polemos fork.
 #
-# Wrye Mash, Polemos fork Copyright (C) 2017-2019 Polemos
+# Wrye Mash, Polemos fork Copyright (C) 2017-2020 Polemos
 # * based on code by Yacoby copyright (C) 2011-2016 Wrye Mash Fork Python version
 # * based on code by Melchor copyright (C) 2009-2011 Wrye Mash WMSA
 # * based on code by Wrye copyright (C) 2005-2009 Wrye Mash
@@ -389,7 +389,7 @@ class SettingsWindow(wx.Dialog, SettingsTabs):  # Polemos: Total reconstruction.
             self.license_button.Bind(wx.EVT_BUTTON, self.license_txt)
             self.credits_button.Bind(wx.EVT_BUTTON, self.credits_txt)
 
-    def timer_po(self): # Polemos a simple wx timer.
+    def timer_po(self):
         """A simple timer to check for problems in settings."""
         self.timer = wx.Timer(self)
         self.Bind(wx.EVT_TIMER, self.onUpdate, self.timer)

@@ -2,7 +2,7 @@
 
 # Wrye Mash Polemos fork GPL License and Copyright Notice ==============================
 #
-# Wrye Mash, Polemos fork Copyright (C) 2017-2019 Polemos
+# Wrye Mash, Polemos fork Copyright (C) 2017-2020 Polemos
 # * based on code by Yacoby copyright (C) 2011-2016 Wrye Mash Fork Python version
 # * based on code by Melchor copyright (C) 2009-2011 Wrye Mash WMSA
 # * based on code by Wrye copyright (C) 2005-2009 Wrye Mash
@@ -181,7 +181,7 @@ class Path(object): # Polemos: Unicode fixes.
         return len(self._s)
 
     def __repr__(self):
-        return "bolt.Path(%s)" % `self._s`  # Polemos: fix
+        return "bolt.Path(%s)" % `self._s`
 
     #--Properties--------------------------------------------------------
     #--String/unicode versions.
@@ -295,7 +295,7 @@ class Path(object): # Polemos: Unicode fixes.
         """Calculates and returns xxhash value for self."""
         xxhs = xxhash.xxh32()
         with self.open('rb', 65536) as ins:
-            for x in range((self.size / 65536) + 1):
+            for x in xrange((self.size / 65536) + 1):
                 xxhs.update(ins.read(65536))
         return xxhs.intdigest()
 

@@ -4,7 +4,7 @@
 #
 # This file is part of Wrye Mash Polemos fork.
 #
-# Wrye Mash, Polemos fork Copyright (C) 2017-2019 Polemos
+# Wrye Mash, Polemos fork Copyright (C) 2017-2020 Polemos
 # * based on code by Yacoby copyright (C) 2011-2016 Wrye Mash Fork Python version
 # * based on code by Melchor copyright (C) 2009-2011 Wrye Mash WMSA
 # * based on code by Wrye copyright (C) 2005-2009 Wrye Mash
@@ -183,6 +183,12 @@ class List(wx.Panel):  # Polemos: Additions.
             [self.list.SetItemTextColour(x, interface.style['lists.font.color']) for x in xrange(self.list.GetItemCount())]
             self.fontDefaultColor = interface.style['lists.font.color']
         else: self.fontDefaultColor = wx.SystemSettings.GetColour(wx.SYS_COLOUR_LISTBOXTEXT)
+        self.list.Bind(wx.EVT_ENTER_WINDOW, self.hoverInCtrl)
+
+    def hoverInCtrl(self, event):  # Polemos
+        """On hover, focus on calling control."""
+        ctrl = event.GetEventObject()
+        ctrl.SetFocus()
 
     def OnMouse(self, event):  # Polemos
         """Mouse hover/leaving actions."""
@@ -377,6 +383,11 @@ class List(wx.Panel):  # Polemos: Additions.
 
 class NotebookPanel(wx.Panel):
     """Parent class for notebook panels."""
+
+    def hoverInCtrl(self, event):  # Polemos
+        """On hover, focus on calling control."""
+        ctrl = event.GetEventObject()
+        ctrl.SetFocus()
 
     def SetStatusCount(self):
         """Sets status bar count field."""

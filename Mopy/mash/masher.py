@@ -4,7 +4,7 @@
 #
 # This file is part of Wrye Mash Polemos fork.
 #
-# Wrye Mash, Polemos fork Copyright (C) 2017-2019 Polemos
+# Wrye Mash, Polemos fork Copyright (C) 2017-2020 Polemos
 # * based on code by Yacoby copyright (C) 2011-2016 Wrye Mash Fork Python version
 # * based on code by Melchor copyright (C) 2009-2011 Wrye Mash WMSA
 # * based on code by Wrye copyright (C) 2005-2009 Wrye Mash
@@ -71,8 +71,10 @@ from merrors import MashError as MashError  # Polemos
 DETACHED_PROCESS = 0x00000008       # Polemos: No console window.
 warnings.filterwarnings('ignore')   # Polemos: Filter unneeded warnings.
 # Polemos: Constants for wxPython
-dPos = wx.DefaultPosition
-dSize = wx.DefaultSize
+DPOS = wx.DefaultPosition
+DSIZE = wx.DefaultSize
+ADRW = wx.BU_AUTODRAW
+NBIT = wx.NullBitmap
 
 # Polemos: That's a no no (Use only on .py versions):
 '''#  - Make sure that python root directory is in PATH, so can access dll's.
@@ -351,14 +353,14 @@ installercons.data.extend({
 
 class SashTankPanel(gui.NotebookPanel):
     """Subclass of a notebook panel designed for a two pane tank panel."""
-    def __init__(self,data,parent):
+    def __init__(self, data, parent):
         """Initialize."""
-        wx.Panel.__init__(self, parent,-1)
+        wx.Panel.__init__(self, parent, -1)
         self.data = data
         self.detailsItem = None
-        sashPos = data.getParam('sashPos',370)
-        self.left = leftSash(self,defaultSize=(sashPos,100),onSashDrag=self.OnSashDrag)
-        self.right = wx.Panel(self,style=wx.NO_BORDER)
+        sashPos = data.getParam('sashPos', 370)
+        self.left = leftSash(self, defaultSize=(sashPos, 100), onSashDrag=self.OnSashDrag)
+        self.right = wx.Panel(self, style=wx.NO_BORDER)
         #--Events
         self.Bind(wx.EVT_SIZE,self.OnSize)
 
@@ -367,15 +369,15 @@ class SashTankPanel(gui.NotebookPanel):
         if self.gList.data.refresh(): self.gList.RefreshUI()
         self.SetStatusCount()
 
-    def OnSashDrag(self,event):
+    def OnSashDrag(self, event):
         """Handle sash moved."""
-        wMin,wMax = 80,self.GetSizeTuple()[0]-80
-        sashPos = max(wMin,min(wMax,event.GetDragRect().width))
-        self.left.SetDefaultSize((sashPos,10))
+        wMin, wMax = 80, self.GetSizeTuple()[0] - 80
+        sashPos = max(wMin, min(wMax, event.GetDragRect().width))
+        self.left.SetDefaultSize((sashPos, 10))
         wx.LayoutAlgorithm().LayoutWindow(self, self.right)
-        self.data.setParam('sashPos',sashPos)
+        self.data.setParam('sashPos', sashPos)
 
-    def OnSize(self,event=None):
+    def OnSize(self, event=None):
         wx.LayoutAlgorithm().LayoutWindow(self, self.right)
 
     def OnCloseWindow(self):
@@ -602,10 +604,10 @@ class BSArchivesList(gui.List, gui.ListDragDropMixin):  # Polemos
     def set_status(self):  # Polemos fix for Mods tab.
         """GUI toolbar status."""
         if not self.openmw:  # Polemos: Regular Morrowind support
-            text = _(u" Mods: %d/%d   |  BSAs: %d/%d") % (
+            text = _(u' Mods: %d/%d | BSAs: %d/%d') % (
                 len(mosh.mwIniFile.loadFiles), len(mosh.modInfos.data), self.active_bsa, len(self.items))
         if self.openmw:  # Polemos: OpenMW/TES3mp support
-            text = _(u" Plugins: %d/%d   |  BSAs: %d/%d") % (
+            text = _(u' Plugins: %d/%d | BSAs: %d/%d') % (
                 len(mosh.mwIniFile.loadFiles), len(mosh.modInfos.data), self.active_bsa, len(self.items))
         singletons.statusBar.SetStatusField(text, 2)
 
@@ -1386,7 +1388,7 @@ class ModList(gui.List, gui.ListDragDropMixin):  # Polemos: OpenMW/TES3mp suppor
         self.list.Bind(wx.EVT_LEFT_DCLICK, self.OnDoubleClick)
         self.list.Bind(wx.EVT_KEY_DOWN, self.OnKeyDown)
 
-    def Refresh(self,files='ALL',detail='SAME'):
+    def Refresh(self,files='ALL', detail='SAME'):
         """Refreshes UI for specified file. Also calls saveList.Refresh()!"""
         if self.OpenMW: self.data.refresh()
         #--Details
@@ -1404,11 +1406,11 @@ class ModList(gui.List, gui.ListDragDropMixin):  # Polemos: OpenMW/TES3mp suppor
     def set_status(self):  # Polemos
         """Fix for Mods tab."""
         if not self.OpenMW:  # Polemos: Regular Morrowind support
-            text = _(u" Mods: %d/%d  | BSAs: %d/%d") % (
+            text = _(u'Mods: %d/%d | BSAs: %d/%d') % (
                 len(mosh.mwIniFile.loadFiles),len(mosh.modInfos.data),
                 len(mosh.mwIniFile.get_active_bsa()), len(singletons.BSArchives.Archives.items))
         if self.OpenMW:  # Polemos: OpenMW/TES3mp support
-            text = _(u" Plugins: %d/%d  | BSAs: %d/%d") % (
+            text = _(u'Plugins: %d/%d | BSAs: %d/%d') % (
                 len(mosh.mwIniFile.loadFiles), len(mosh.modInfos.data),
                 len(mosh.mwIniFile.get_active_bsa()), len(singletons.BSArchives.Archives.items))
         singletons.statusBar.SetStatusField(text, 2)
@@ -1941,7 +1943,7 @@ class ModdataList(gui.List, gui.ListDragDropMixin):  # Polemos
 
 #------------------------------------------------------------------------------
 
-class ModDetails(wx.Window): # Polemos: fixed bugs, refactored, optimised, recoded. Every change gives a dialog. Dialogs are saved with "ok", bypassing "Save" button.
+class ModDetails(wx.Window): # Polemos: fixed bugs, refactored, optimised, addons. Change invokes dialog. Dialogs saved with "ok", bypassing "Save" btn.
     """Right panel details for Mod/Plugins Tab."""
 
     def __init__(self,parent):
@@ -1956,35 +1958,35 @@ class ModDetails(wx.Window): # Polemos: fixed bugs, refactored, optimised, recod
         self.dtform = '%x, %H:%M:%S'
         self.modInfo = None
         self.edited = False
-        if True: # Content
+        if True:  # Content
             # Toolbar: Info text label
-            self.infotext = wx.StaticText(self, wx.ID_ANY, u'', dPos, dSize, wx.ALIGN_LEFT|wx.ST_NO_AUTORESIZE)
+            self.infotext = wx.StaticText(self, wx.ID_ANY, u'', DPOS, DSIZE, wx.ALIGN_LEFT|wx.ST_NO_AUTORESIZE)
             self.infotext.Wrap(-1)
             # Toolbar: Restore Button
-            self.restore_btn = wx.BitmapButton(self, wx.ID_ANY, singletons.images['mod.open'].GetBitmap(), dPos, dSize, 0|wx.BU_AUTODRAW)
+            self.restore_btn = wx.BitmapButton(self, wx.ID_ANY, singletons.images['mod.open'].GetBitmap(), DPOS, DSIZE, 0|ADRW)
             self.restore_btn.SetBitmapSelected(singletons.images['mod.open'].GetBitmap())
             self.restore_btn.SetBitmapHover(singletons.images['mod.open.onhov'].GetBitmap())
             self.restore_btn.SetToolTip(wx.ToolTip(_(u'Restore Mod Order')))
             # Toolbar: Backup Button
-            self.backup_btn = wx.BitmapButton(self, wx.ID_ANY, singletons.images['mod.save'].GetBitmap(), dPos, dSize, 0|wx.BU_AUTODRAW)
+            self.backup_btn = wx.BitmapButton(self, wx.ID_ANY, singletons.images['mod.save'].GetBitmap(), DPOS, DSIZE, 0|ADRW)
             self.backup_btn.SetBitmapSelected(singletons.images['mod.save'].GetBitmap())
             self.backup_btn.SetBitmapHover(singletons.images['mod.save.onhov'].GetBitmap())
             self.backup_btn.SetToolTip(wx.ToolTip(_(u'Backup Mod Order')))
             # File/Version Static Text
             self.version = wx.StaticText(self, -1, u'v0.0')
-            modText = wx.StaticText(self,-1,_(u'Morrowind Mod File'))
+            modText = wx.StaticText(self, -1, _(u'Morrowind Mod File'))
             # File Name
-            self.file = wx.TextCtrl(self,wx.NewId(), u'',size=(self.maxSash,-1), style=wx.TE_READONLY)
+            self.file = wx.TextCtrl(self, wx.NewId(), u'', size=(self.maxSash,-1), style=wx.TE_READONLY)
             self.file.SetMaxLength(200)
             # Author
-            self.author = wx.TextCtrl(self,wx.NewId(), u'',size=(self.maxSash,-1), style=wx.TE_READONLY)
+            self.author = wx.TextCtrl(self, wx.NewId(), u'', size=(self.maxSash,-1), style=wx.TE_READONLY)
             self.author.SetMaxLength(32)
             # Modified
             self.modified = wx.TextCtrl(self, wx.NewId(), u'', size=(self.maxSash, -1), style=wx.TE_READONLY)
             self.modified.SetMaxLength(32)
-            self.cpBtn = wx.BitmapButton(self, wx.ID_ANY, singletons.images['mod.datetime.cp'].GetBitmap(), dPos, dSize, wx.BU_AUTODRAW)
+            self.cpBtn = wx.BitmapButton(self, wx.ID_ANY, singletons.images['mod.datetime.cp'].GetBitmap(), DPOS, DSIZE, ADRW)
             self.cpBtn.SetToolTip(wx.ToolTip(_(u'Copy Mod Datetime')))
-            self.psBtn = wx.BitmapButton(self, wx.ID_ANY, singletons.images['mod.datetime.ps'].GetBitmap(), dPos, dSize, wx.BU_AUTODRAW)
+            self.psBtn = wx.BitmapButton(self, wx.ID_ANY, singletons.images['mod.datetime.ps'].GetBitmap(), DPOS, DSIZE, ADRW)
             self.psBtn.SetToolTip(wx.ToolTip(_(u'Paste Mod Datetime')))
             # Description
             self.description = wx.TextCtrl(self,wx.NewId(), u'',size=(self.maxSash,130),style=wx.TE_MULTILINE|wx.TE_READONLY)
@@ -1992,7 +1994,7 @@ class ModDetails(wx.Window): # Polemos: fixed bugs, refactored, optimised, recod
             # Masters
             singletons.modsMastersList = self.masters = MasterList(self, None)
             # Master Menu Button
-            self.master_btn = wx.BitmapButton(self, wx.ID_ANY, singletons.images['master.menu'].GetBitmap(), dPos, dSize, wx.BU_AUTODRAW)
+            self.master_btn = wx.BitmapButton(self, wx.ID_ANY, singletons.images['master.menu'].GetBitmap(), DPOS, DSIZE, ADRW)
             self.master_btn.SetBitmapSelected(singletons.images['master.menu'].GetBitmap())
             self.master_btn.SetBitmapHover(singletons.images['master.menu.onhov'].GetBitmap())
             self.master_btn.SetToolTip(wx.ToolTip(_(u'Masters Menu')))
@@ -2002,10 +2004,10 @@ class ModDetails(wx.Window): # Polemos: fixed bugs, refactored, optimised, recod
             self.cancel = wx.Button(self, wx.ID_CANCEL, size=wx.Size(90, 21))
             self.save.Disable()
             self.cancel.Disable()
-        if True: # Theming
-            #e.g: self.restore_btn.SetBackgroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_3DLIGHT))
+        if True:  # Theming
+            # e.g: self.restore_btn.SetBackgroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_3DLIGHT))
             pass
-        if True: # Layout
+        if True:  # Layout
             # Info sizer
             info_sizer = wx.BoxSizer(wx.VERTICAL)
             info_sizer.Add(self.infotext, 1, wx.EXPAND|wx.RIGHT|wx.LEFT, 5)
@@ -2013,11 +2015,11 @@ class ModDetails(wx.Window): # Polemos: fixed bugs, refactored, optimised, recod
             tbarSizer = wx.BoxSizer(wx.HORIZONTAL)
             tbarSizer.SetMinSize(wx.Size(170, 24))
             tbarSizer.AddMany([(info_sizer,1,wx.ALIGN_CENTER|wx.RIGHT|wx.LEFT,1),
-                    (self.restore_btn, 0, wx.ALIGN_RIGHT|wx.RIGHT|wx.LEFT, 2), (self.backup_btn, 0, wx.ALIGN_RIGHT|wx.RIGHT|wx.LEFT, 2)])
+                (self.restore_btn, 0, wx.ALIGN_RIGHT|wx.RIGHT|wx.LEFT, 2), (self.backup_btn, 0, wx.ALIGN_RIGHT|wx.RIGHT|wx.LEFT, 2)])
             # DateTime sizer
             dtSizer = wx.BoxSizer(wx.HORIZONTAL)
             dtSizer.AddMany([(self.modified, 1, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5),
-                             (self.cpBtn, 0, wx.ALIGN_CENTER_VERTICAL, 5), (self.psBtn, 0, wx.ALIGN_CENTER_VERTICAL, 5)])
+                (self.cpBtn, 0, wx.ALIGN_CENTER_VERTICAL, 5), (self.psBtn, 0, wx.ALIGN_CENTER_VERTICAL, 5)])
             # Go figure sizers
             modSizer = wx.BoxSizer(wx.HORIZONTAL)
             modSizer.AddMany([(modText, 0, 0, 4), ((0, 0), 1), (self.version, 0, wx.RIGHT, 4)])
@@ -2073,19 +2075,13 @@ class ModDetails(wx.Window): # Polemos: fixed bugs, refactored, optimised, recod
     def restore(self, event):  # Polemos
         """Restore Mod order."""
         # Open backup browser
-        BckList = mosh.GetBckList().bckList
-        backupFile = gui.dialog.SimpleListDialog(self, BckList, _(u"Choose a backup to restore:")).Selection
+        BckList = mosh.GetBckList('datasnap').bckList
+        backupFile = gui.dialog.SimpleListDialog(self, BckList, _(u'Choose a backup to restore:')).Selection
         if backupFile is None: return
-        srcDir = os.path.join(singletons.MashDir, 'snapshots')
-        try:
-            with io.open((os.path.join(srcDir, 'datasnap%s.txt'%backupFile)), 'r', encoding=self.encod) as f:
-                restore_po = f.readlines()
-        except:
-            gui.dialog.ErrorMessage(self.window, _(u'Couldn\'t find or open the snapshot file.'))
-            return
-        order_po = [line.rstrip() for line in restore_po]
-        order_po = filter(None, order_po)  # Polemos: This may have problems in Python 3
-        if len(order_po) <= 1: return
+        # Mod data
+        order_po = mosh.LoadModOrder(backupFile, fname='datasnap').modData
+        if len(order_po) <= 1 or not order_po: return
+        # Redate
         mtime_first = 1026943162
         mtime_last = int(time.time())
         if mtime_last < 1228683562: mtime_last = 1228683562  # Sun Dec  7 14:59:56 CST 2008
@@ -2107,9 +2103,9 @@ class ModDetails(wx.Window): # Polemos: fixed bugs, refactored, optimised, recod
     def backup(self, event):  # Polemos
         """Save Mod order."""
         log = mosh.LogFile(cStringIO.StringIO())
-        for num, name in enumerate(mosh.mwIniFile.loadOrder): log('%s' % (name))
+        [log('%s' % name) for num, name in enumerate(mosh.mwIniFile.loadOrder)]
         modOrder = mosh.winNewLines(log.out.getvalue())
-        if mosh.SaveModOrder(modOrder, 'simple').status: self.showInfo(_(u'Plugins Order Saved...'))
+        if mosh.SaveModOrder(modOrder, 'plugins', 'datasnap').status: self.showInfo(_(u'Plugins Order Saved...'))
 
     def showInfo(self, msg):  # Polemos
         """Inform user about actions."""
@@ -2373,11 +2369,11 @@ class ModPanel(gui.NotebookPanel):  # Polemos: OpenMW/TES3mp support, fixes and 
         self.openmw = conf.settings['openmw']
         if True:  # Content
             # Panels
-            self.main = wx.SplitterWindow(self, wx.ID_ANY, dPos, dSize, wx.SP_3D|wx.SP_LIVE_UPDATE)
-            self.leftPanel = wx.Panel(self.main, wx.ID_ANY, dPos, dSize, wx.TAB_TRAVERSAL)
-            self.rightPanel = wx.Panel(self.main, wx.ID_ANY, dPos, dSize, wx.TAB_TRAVERSAL)
+            self.main = wx.SplitterWindow(self, wx.ID_ANY, DPOS, DSIZE, wx.SP_3D|wx.SP_LIVE_UPDATE)
+            self.leftPanel = wx.Panel(self.main, wx.ID_ANY, DPOS, DSIZE, wx.TAB_TRAVERSAL)
+            self.rightPanel = wx.Panel(self.main, wx.ID_ANY, DPOS, DSIZE, wx.TAB_TRAVERSAL)
             # Main Window
-            self.Adv_book = wx.Notebook(self.rightPanel, wx.ID_ANY, dPos, dSize, 0)
+            self.Adv_book = wx.Notebook(self.rightPanel, wx.ID_ANY, DPOS, DSIZE, 0)
             self.modDetails = ModDetails(self.Adv_book)
             self.BSArchives = BSArchives(self.Adv_book)
             # Globals
@@ -2411,17 +2407,17 @@ class ModPanel(gui.NotebookPanel):  # Polemos: OpenMW/TES3mp support, fixes and 
             self.rightSash = conf.settings['mash.sash.window.size'][0] - self.savedSash
             self.maxSash = conf.settings['mash.max.sash']
         if True:  # Events
-            wx.EVT_SIZE(self, self.OnSize)
+            self.Bind(wx.EVT_SIZE, self.OnSize)
             self.main.Bind(wx.EVT_SPLITTER_SASH_POS_CHANGED, self.OnSashChanged)
 
     def SetStatusCount(self):
         """Sets mod count in last field."""
         try:
             if not self.openmw:  # Polemos: Regular Morrowind support
-                text = _(u' Mods: %d/%d  | BSAs: %d/%d') % (len(mosh.mwIniFile.loadFiles),
+                text = _(u'Mods: %d/%d | BSAs: %d/%d') % (len(mosh.mwIniFile.loadFiles),
                     len(mosh.modInfos.data), singletons.BSArchives.Archives.active_bsa, len(singletons.BSArchives.Archives.items))
             if self.openmw:  # Polemos: OpenMW/TES3mp support
-                text = _(u' Plugins: %d/%d  | BSAs: %d/%d') % (len(mosh.mwIniFile.loadFiles), len(mosh.modInfos.data),
+                text = _(u'Plugins: %d/%d | BSAs: %d/%d') % (len(mosh.mwIniFile.loadFiles), len(mosh.modInfos.data),
                     len(mosh.mwIniFile.get_active_bsa()), len(singletons.BSArchives.Archives.items))
         except: text = _(u'Config file is corrupt.')
         singletons.statusBar.SetStatusField(text, 2)
@@ -2649,7 +2645,7 @@ class SaveDetails(wx.Window): # Polemos: fixed old bugs, refactored, optimized, 
             #--Masters
             singletons.savesMastersList = self.masters = MasterList(self, None)
             # Master Menu Button
-            self.master_btn = wx.BitmapButton(self, wx.ID_ANY, singletons.images['master.menu'].GetBitmap(), dPos, dSize, wx.BU_AUTODRAW)
+            self.master_btn = wx.BitmapButton(self, wx.ID_ANY, singletons.images['master.menu'].GetBitmap(), DPOS, DSIZE, ADRW)
             self.master_btn.SetBitmapSelected(singletons.images['master.menu'].GetBitmap())
             self.master_btn.SetBitmapHover(singletons.images['master.menu.onhov'].GetBitmap())
             self.master_btn.SetToolTip(wx.ToolTip(_(u'Masters Menu')))
@@ -2879,9 +2875,9 @@ class SavePanel(gui.NotebookPanel): # Polemos: refactored, adjustable width.
         self.openmw = conf.settings['openmw']
         if True:  # Content
             # Panels
-            self.main = wx.SplitterWindow(self, wx.ID_ANY, dPos, dSize, wx.SP_3D|wx.SP_LIVE_UPDATE)
-            self.leftPanel = wx.Panel(self.main, wx.ID_ANY, dPos, dSize, wx.TAB_TRAVERSAL)
-            self.rightPanel = wx.Panel(self.main, wx.ID_ANY, dPos, dSize, wx.TAB_TRAVERSAL)
+            self.main = wx.SplitterWindow(self, wx.ID_ANY, DPOS, DSIZE, wx.SP_3D|wx.SP_LIVE_UPDATE)
+            self.leftPanel = wx.Panel(self.main, wx.ID_ANY, DPOS, DSIZE, wx.TAB_TRAVERSAL)
+            self.rightPanel = wx.Panel(self.main, wx.ID_ANY, DPOS, DSIZE, wx.TAB_TRAVERSAL)
             # Main Window
             self.SaveList = SaveList(self.leftPanel)
             self.SaveDetails = SaveDetails(self.rightPanel)
@@ -2918,7 +2914,7 @@ class SavePanel(gui.NotebookPanel): # Polemos: refactored, adjustable width.
 
     def SetStatusCount(self):
         """Sets mod count in last field."""
-        text = _(u"Saves: %d") % (len(mosh.saveInfos.data))
+        text = _(u'Saves: %d') % (len(mosh.saveInfos.data))
         singletons.statusBar.SetStatusField(text, 2)
 
     def OnSashChanged(self, event):  # Polemos
@@ -2943,9 +2939,9 @@ class SavePanel(gui.NotebookPanel): # Polemos: refactored, adjustable width.
 class InstallersList(balt.Tank, gui.ListDragDropMixin): # Polemos: refactored, optimised, fixes, addons.
     """The list of installed packages. Subclass of balt.Tank to allow reordering etal."""
 
-    def __init__(self,parent,data,icons=None,mainMenu=None,itemMenu=None, details=None,id=-1,style=(wx.LC_REPORT|wx.LC_SINGLE_SEL)):
+    def __init__(self,parent, data, icons=None, mainMenu=None, itemMenu=None, details=None, id=-1, style=(wx.LC_REPORT|wx.LC_SINGLE_SEL)):
         """Init."""
-        balt.Tank.__init__(self,parent,data,icons,mainMenu,itemMenu, details,id,style|wx.LC_EDIT_LABELS)
+        balt.Tank.__init__(self, parent, data, icons, mainMenu, itemMenu, details, id, style|wx.LC_EDIT_LABELS)
         gui.ListDragDropMixin.__init__(self, self.gList)
         singletons.gInstList = self
         # Events
@@ -2989,10 +2985,10 @@ class InstallersList(balt.Tank, gui.ListDragDropMixin): # Polemos: refactored, o
             if len(selected) < 1: return
             orderKey = lambda x: self.data.data[x].order
             maxPos = max(self.data.data[x].order for x in self.data.data)
-            if event.GetKeyCode() == wx.WXK_DOWN: # Down
+            if event.GetKeyCode() == wx.WXK_DOWN:  # Down
                 moveMod = 1 if not self.isReversed else -1
                 visibleIndex = self.GetIndex(sorted(self.GetSelected(), key=orderKey)[-1]) + 2
-            else: # Up
+            else:  # Up
                 moveMod = -1 if not self.isReversed else 1
                 visibleIndex = self.GetIndex(sorted(self.GetSelected(), key=orderKey)[0]) - 2
             for thisFile in sorted(self.GetSelected(), key=orderKey, reverse=(moveMod != -1)):
@@ -3015,115 +3011,207 @@ class InstallersList(balt.Tank, gui.ListDragDropMixin): # Polemos: refactored, o
                 self.DeleteSelected()
         else: event.Skip()
 
-    def OnDClick(self,event):
+    def OnDClick(self, event):
         """Double click, open the installer."""
-        (hitItem,hitFlag) = self.gList.HitTest(event.GetPosition())
+        (hitItem, hitFlag) = self.gList.HitTest(event.GetPosition())
         if hitItem < 0: return
         path = self.data.dir.join(self.GetItem(hitItem))
         if path.exists(): path.start()
 
 #------------------------------------------------------------------------------
 
-class InstallersPanel(SashTankPanel): # Polemos: Refactored, changes.
+class InstallersPanel(SashTankPanel):  # Polemos: Refactored, changes, store/restore order, additions.
     """Panel for InstallersTank."""
     mainMenu = Links()
     itemMenu = Links()
 
-    def __init__(self,parent):
+    def __init__(self, parent):
         """Init."""
         singletons.gInstallers = self
         data = mosh.InstallersData()
         SashTankPanel.__init__(self, data, parent)
-        left,right = self.left,self.right
-        #--Refreshing
+        left, right = self.left, self.right
+        btnPanel = wx.Panel(right, wx.ID_ANY, DPOS, DSIZE, 0)
+        self.instTimer = wx.Timer(self)
+        self.instWatch = wx.StopWatch()
+        self.instRefr()
+        if True:  # Content
+            self.gList = InstallersList(left, data, installercons,
+                InstallersPanel.mainMenu, InstallersPanel.itemMenu, details=self, style=wx.LC_REPORT)
+            self.gList.SetSizeHints(100, 100)
+            # Buttons/Status Bar
+            oStatus = _(u'Refreshing...') if conf.settings['mash.installers.enabled'] else _(u'Deactivated...')
+            self.gPackage = wx.StaticText(btnPanel, -1, oStatus, style=wx.TE_READONLY|wx.NO_BORDER)
+            self.statusLastMsg = self.gPackage.GetLabel()
+            self.statusChanged = False
+            self.rPackBtn = wx.BitmapButton(btnPanel, wx.ID_ANY, singletons.images['mod.open'].GetBitmap(), DPOS, DSIZE, 0|ADRW)
+            self.rPackBtn.SetBitmapSelected(singletons.images['mod.open'].GetBitmap())
+            self.rPackBtn.SetBitmapHover(singletons.images['mod.open.onhov'].GetBitmap())
+            self.rPackBtn.SetToolTip(wx.ToolTip(_(u'Restore Order')))
+            self.sPackBtn = wx.BitmapButton(btnPanel, wx.ID_ANY, singletons.images['mod.save'].GetBitmap(), DPOS, DSIZE, 0|ADRW)
+            self.sPackBtn.SetBitmapSelected(singletons.images['mod.save'].GetBitmap())
+            self.sPackBtn.SetBitmapHover(singletons.images['mod.save.onhov'].GetBitmap())
+            self.sPackBtn.SetToolTip(wx.ToolTip(_(u'Save Order')))
+            self.btnList = [(self.gPackage, 1, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5), (self.rPackBtn, 0, wx.ALIGN_CENTER_VERTICAL, 5),
+                (self.sPackBtn, 0, wx.ALIGN_CENTER_VERTICAL, 5)]
+            # Info Tabs
+            self.gNotebook = wx.Notebook(right, style=wx.NB_MULTILINE)
+            self.infoPages = []
+            infoTitles = (
+                    ('gGeneral', _(u'General')),
+                    ('gMatched', _(u'Matched')),
+                    ('gMissing', _(u'Missing')),
+                    ('gMismatched', _(u'Mismatched')),
+                    ('gConflicts', _(u'Conflicts')),
+                    ('gUnderrides', _(u'Underridden')),
+                    ('gDirty', _(u'Dirty')),
+                    ('gSkipped', _(u'Skipped')),)
+            for name, title in infoTitles:
+                gPage = wx.TextCtrl(self.gNotebook, wx.ID_ANY, style=wx.TE_MULTILINE|wx.TE_READONLY|wx.HSCROLL, name=name)
+                self.gNotebook.AddPage(gPage, title)
+                self.infoPages.append([gPage, False])
+            self.gNotebook.SetSelection(conf.settings['mash.installers.page'])
+            # Sub-Intallers
+            self.gSubList = wx.CheckListBox(right, -1)
+            # Espms
+            self.espms = []
+            self.gEspmList = wx.CheckListBox(right, -1)
+            # Comments
+            self.gCommentstxt = staticText(right, _(u'You may add comments (for the selected Installer) in the field below:'))
+            self.gComments = wx.TextCtrl(right, -1, style=wx.TE_MULTILINE)
+        if True:  # Layout
+            btnSizer = wx.BoxSizer(wx.HORIZONTAL)
+            btnSizer.AddMany(self.btnList)
+            btnPanel.SetSizer(btnSizer)
+            btnPanel.Layout()
+            btnSizer.Fit(btnPanel)
+            right.SetSizer(vSizer(
+                (btnPanel, 0, wx.EXPAND, 5),
+                (self.gNotebook, 2, wx.GROW|wx.TOP, 0),
+                (hSizer(
+                    (vSizer(
+                        (staticText(right, _(u'Sub-Packages:')),),
+                        (self.gSubList, 1, wx.GROW|wx.TOP, 4),
+                    ), 1, wx.GROW),
+                    (vSizer(
+                        (staticText(right, _(u'Esp/m Filter:')),),
+                        (self.gEspmList, 1, wx.GROW|wx.TOP, 4),
+                    ), 1, wx.GROW|wx.LEFT, 2),
+                ), 1, wx.GROW|wx.TOP, 4),
+                (self.gCommentstxt, 0, wx.TOP, 4),
+                (self.gComments, 1, wx.GROW|wx.TOP, 4), ))
+            wx.LayoutAlgorithm().LayoutWindow(self, right)
+            self.gComments.Disable()
+        if True:  # Theming
+            self.gPackage.SetBackgroundColour(self.GetBackgroundColour())
+            btnPanel.SetBackgroundColour(self.GetBackgroundColour())
+            [x[0].Disable() for x in self.btnList]
+        if True:  # Events
+            self.Bind(wx.EVT_TIMER, self.onUpdate, self.instTimer)
+            self.instTimer.Start(300)
+            self.rPackBtn.Bind(wx.wx.EVT_BUTTON, self.onInstOrdR)
+            self.sPackBtn.Bind(wx.wx.EVT_BUTTON, self.onInstOrdS)
+            self.gList.gList.Bind(wx.EVT_LIST_COL_RIGHT_CLICK, self.DoColumnMenu)
+            self.gNotebook.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED, self.OnShowInfoPage)
+            [x[0].Bind(wx.EVT_ENTER_WINDOW, self.hoverInCtrl) for x in self.infoPages]
+            singletons.gInstList.gList.Bind(wx.EVT_ENTER_WINDOW, self.hoverInCtrl)
+            self.gSubList.Bind(wx.EVT_CHECKLISTBOX, self.OnCheckSubItem)
+            self.gEspmList.Bind(wx.EVT_CHECKLISTBOX, self.OnCheckEspmItem)
+            self.Bind(wx.EVT_SIZE, self.OnSize)
+
+    def onUpdate(self, event):  # Polemos
+        """Timer events."""
+        if conf.settings['mash.page'] == 1:  # Installers page
+            if conf.settings['mash.installers.enabled']:
+                [x[0].Enable() for x in self.btnList if not x[0].IsEnabled()]
+            else: [x[0].Disable() for x in self.btnList if x[0].IsEnabled()]
+            if self.statusChanged:
+                if self.instWatch.Time() > 4000:
+                    self.statusChanged = False
+                    self.instWatch.Pause()
+                    self.gPackage.SetLabel(self.statusLastMsg)
+        else: self.gPackage.SetLabel(self.statusLastMsg)
+
+    def onInstOrdR(self, event):  # Polemos
+        """On restoring installers order."""
+        # Open backup browser
+        BckList = mosh.GetBckList('paksnap').bckList
+        backupFile = gui.dialog.SimpleListDialog(self, BckList, _(u'Choose a backup to restore:')).Selection
+        if backupFile is None: return
+        # Installers data
+        instData = mosh.LoadModOrder(backupFile, fname='paksnap').modData
+        if not instData: return
+        # Apply order
+        for index, archive in enumerate([x[1] for x in instData]):
+            self.data[archive].order = index
+        singletons.gInstallers.data.setChanged()
+        singletons.gInstallers.data.refresh(what='N')
+        singletons.gInstList.RefreshUI()
+        # Notify
+        self.instStatusCh(_(u'Restored Installers Order...'))
+        # Re-install packages?
+        if gui.dialog.askdialog(self, _(u'Installers order has been Restored. Re-install your packages using your restored order?\n\n'
+            u'Your packages need to be re-installed to sync the overriding conflicts with the new ordering.\n\nIf you click "Yes", then Wrye '
+                u'Mash will automatically install your packages, sequentially, starting from the last package in your order, and continuing'
+                    u' up to the first package (to respect overrides).\nOnly the packages present in the restored list and which were '
+                        u'installed when the list was created will be re-installed, the rest will be ignored.\n\nClick "No" to skip'
+                            u' the process.'), _(u'Re-install packages?')) == wx.ID_NO: return
+        # Re-install packages
+        toInstall = [x[1] for x in instData if x[2]]
+        progress = balt.Progress(_(u'Installing...'), '\n' + ' ' * 60)
+        try: singletons.gInstallers.data.install(toInstall, progress, False, True)
+        finally:
+            progress.Destroy()
+            singletons.gInstallers.data.refresh(what='N')
+            singletons.gInstallers.RefreshUIMods()
+        # Notify
+        self.instStatusCh(_(u'Synced restored order...'))
+
+    def onInstOrdS(self, event):  # Polemos
+        """On storing installers order."""
+        instList = [(x, singletons.gInstList.gList.GetItemText(x, 0), 1 if singletons.gInstList.data.getGuiKeys(
+            singletons.gInstList.GetItem(x))[0].split('.')[0] == 'on' else 0) for x in range(singletons.gInstList.gList.GetItemCount())]
+        if mosh.SaveModOrder(instList, 'installers', 'paksnap').status: self.instStatusCh(_(u'Stored Installers Order...'))
+        else: self.instStatusCh(_(u'Failed...'))
+
+    def instStatusCh(self, msg):  # Polemos
+        """Set a temporal status message."""
+        self.statusChanged = True
+        self.gPackage.SetLabel(msg)
+        self.instWatch.Start()
+
+    def instRefr(self):  # Polemos
+        """Refreshing."""
         self.refreshed = False
         self.refreshing = False
         self.frameActivated = False
         self.fullRefresh = False
-        if True:  # Content
-            self.gList = InstallersList(left, data, installercons, InstallersPanel.mainMenu, InstallersPanel.itemMenu, details=self, style=wx.LC_REPORT)
-            self.gList.SetSizeHints(100,100)
-            #--Package
-            self.gPackage = wx.TextCtrl(right, -1, style=wx.TE_READONLY|wx.NO_BORDER)
-            # --Info Tabs
-            self.gNotebook = wx.Notebook(right, style=wx.NB_MULTILINE)
-            self.infoPages = []
-            infoTitles = (
-                    ('gGeneral',_(u"General")),
-                    ('gMatched',_(u"Matched")),
-                    ('gMissing',_(u"Missing")),
-                    ('gMismatched',_(u"Mismatched")),
-                    ('gConflicts',_(u"Conflicts")),
-                    ('gUnderrides',_(u"Underridden")),
-                    ('gDirty',_(u"Dirty")),
-                    ('gSkipped',_(u"Skipped")),)
-            for name, title in infoTitles:
-                gPage = wx.TextCtrl(self.gNotebook,-1,style=wx.TE_MULTILINE|wx.TE_READONLY|wx.HSCROLL,name=name)
-                self.gNotebook.AddPage(gPage,title)
-                self.infoPages.append([gPage,False])
-            self.gNotebook.SetSelection(conf.settings['mash.installers.page'])
-            #--Sub-Intallers
-            self.gSubList = wx.CheckListBox(right,-1)
-            #--Espms
-            self.espms = []
-            self.gEspmList = wx.CheckListBox(right,-1)
-            #--Comments
-            # Polemos: Changed "Comments" field text and color (user friendly)
-            self.gCommentstxt = staticText(right,_(u'You may add comments, for the selected Installer, in the field below:'))
-            self.gComments = wx.TextCtrl(right,-1,style=wx.TE_MULTILINE)
-            self.gCommentstxt.Disable()
-        if True: # Theming
-            self.gPackage.SetBackgroundColour(self.GetBackgroundColour())
-        if True: # Layout
-            right.SetSizer(vSizer(
-                (self.gPackage,0,wx.GROW|wx.TOP|wx.LEFT,4),
-                (self.gNotebook,2,wx.GROW|wx.TOP,0),
-                (hSizer(
-                    (vSizer(
-                        (staticText(right,_(u'Sub-Packages')),),
-                        (self.gSubList,1,wx.GROW|wx.TOP,4),
-                        ),1,wx.GROW),
-                    (vSizer(
-                        (staticText(right,_(u'Esp/m Filter')),),
-                        (self.gEspmList,1,wx.GROW|wx.TOP,4),
-                        ),1,wx.GROW|wx.LEFT,2),
-                    ),1,wx.GROW|wx.TOP,4),
-                (self.gCommentstxt,0,wx.TOP,4),
-                (self.gComments,1,wx.GROW|wx.TOP,4),))
-            wx.LayoutAlgorithm().LayoutWindow(self, right)
-            self.gComments.Disable()
-        if True: # Events
-            self.gList.gList.Bind(wx.EVT_LIST_COL_RIGHT_CLICK, self.DoColumnMenu)
-            self.gNotebook.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED, self.OnShowInfoPage)
-            self.gSubList.Bind(wx.EVT_CHECKLISTBOX, self.OnCheckSubItem)
-            self.gEspmList.Bind(wx.EVT_CHECKLISTBOX, self.OnCheckEspmItem)
-            self.Bind(wx.EVT_SIZE,self.OnSize)
 
     def DoColumnMenu(self, event): #-# D.C.-G.
         """Modified to avoid system error if installers path is not reachable."""
-        if not os.access(mosh.dirs["installers"].s, os.W_OK): pass
+        if not os.access(mosh.dirs['installers'].s, os.W_OK): pass
         self.gList.DoColumnMenu(event)
 
     def OnShow(self):  # Polemos: Typos plus reflect new menu.
         """Panel is shown. Update self.data."""
-        if conf.settings.get('mash.installers.isFirstRun',True):
+        if conf.settings.get('mash.installers.isFirstRun', True):
             conf.settings['mash.installers.isFirstRun'] = False
             message = _(u'Do you want to enable "Installers"? If you do, Mash will first need to initialize some data. '
                         u'If you have many mods installed, this may take on the order of five minutes.\n\nIf you prefer '
                         u'to not enable "Installers" at this time, you can always enable it later on from the menu.')
-            conf.settings['mash.installers.enabled'] = balt.askYes(self,fill(message,80),self.data.title)
+            conf.settings['mash.installers.enabled'] = balt.askYes(self, fill(message, 80), self.data.title)
         if not conf.settings['mash.installers.enabled']: return
         if self.refreshing: return
         data = self.gList.data
         if not self.refreshed or (self.frameActivated and (data.refreshRenamedNeeded() or data.refreshInstallersNeeded())):
             self.refreshing = True
-            progress = balt.Progress(_(u"Refreshing Installers..."),'\n'+' '*60)
+            progress = balt.Progress(_(u'Refreshing Installers...'), '\n'+' '*60)
             try:
-                what = ('DIS','I')[self.refreshed]
+                what = ('DIS', 'I')[self.refreshed]
                 modified = data.refresh(progress,what,self.fullRefresh)
                 if modified: self.gList.RefreshUI()
-                if modified == "noDir": gui.dialog.WarningMessage(self, _(u"'%s' cannot be accessed."
-                        u"\nThis path is possibly on a remote drive, or misspelled, or non writable." % mosh.dirs["installers"].s))
+                if modified == "noDir": gui.dialog.WarningMessage(self, _(u'"%s" cannot be accessed.'
+                        u'\nThis path is possibly on a remote drive, or misspelled, or non writable.' % mosh.dirs['installers'].s))
                 self.fullRefresh = False
                 self.frameActivated = False
                 self.refreshing = False
@@ -3132,13 +3220,13 @@ class InstallersPanel(SashTankPanel): # Polemos: Refactored, changes.
                 if progress is not None: progress.Destroy()
         self.SetStatusCount()
 
-    def OnShowInfoPage(self,event):
+    def OnShowInfoPage(self, event):
         """A specific info page has been selected."""
         if event.GetId() == self.gNotebook.GetId():
             index = event.GetSelection()
             gPage,initialized = self.infoPages[index]
             if self.detailsItem and not initialized:
-                self.RefreshInfoPage(index,self.data[self.detailsItem])
+                self.RefreshInfoPage(index, self.data[self.detailsItem])
             event.Skip()
 
     def SetStatusCount(self):
@@ -3163,7 +3251,7 @@ class InstallersPanel(SashTankPanel): # Polemos: Refactored, changes.
             del mosh.modInfos.mtimesReset[:]
             singletons.modList.Refresh('ALL')
 
-    def enableGUI(self): # Polemos
+    def enableGUI(self):  # Polemos
         """Enables disabled gui elements if an item is selected."""
         if not self.gComments.IsEnabled():
             self.gCommentstxt.Enable()
@@ -3171,7 +3259,7 @@ class InstallersPanel(SashTankPanel): # Polemos: Refactored, changes.
             self.gComments.SetBackgroundColour(wx.Colour(255, 255, 255))
             self.gComments.Refresh()
 
-    def RefreshDetails(self,item=None):
+    def RefreshDetails(self, item=None):
         """Refreshes detail view associated with data from item."""
         if item not in self.data: item = None
         if item is not None: self.enableGUI()
@@ -3181,35 +3269,36 @@ class InstallersPanel(SashTankPanel): # Polemos: Refactored, changes.
         if item:
             installer = self.data[item]
             #--Name
-            self.gPackage.SetValue(item.s)
+            self.gPackage.SetLabel(item.s if not (item.s.startswith('==') or item.s.endswith('==')) else _(u'Please select a package...'))
             #--Info Pages
             currentIndex = self.gNotebook.GetSelection()
-            for index,(gPage,state) in enumerate(self.infoPages):
+            for index, (gPage, state) in enumerate(self.infoPages):
                 self.infoPages[index][1] = False
-                if (index == currentIndex): self.RefreshInfoPage(index,installer)
+                if (index == currentIndex): self.RefreshInfoPage(index, installer)
                 else: gPage.SetValue('')
             #--Sub-Packages
             self.gSubList.Clear()
             if len(installer.subNames) <= 2: self.gSubList.Clear()
-            else: balt.setCheckListItems(self.gSubList, [x.replace('&','&&') for x in installer.subNames[1:]], installer.subActives[1:])
+            else: balt.setCheckListItems(self.gSubList, [x.replace('&', '&&') for x in installer.subNames[1:]], installer.subActives[1:])
             #--Espms
             if not installer.espms: self.gEspmList.Clear()
             else:
                 names = self.espms = sorted(installer.espms)
                 names.sort(key=lambda x: x.cext != '.esm')
-                balt.setCheckListItems(self.gEspmList, [x.s.replace('&','&&') for x in names], [x not in installer.espmNots for x in names])
+                balt.setCheckListItems(self.gEspmList, [x.s.replace('&', '&&') for x in names], [x not in installer.espmNots for x in names])
             #--Comments
             self.gComments.SetValue(installer.comments)
         else:
-            self.gPackage.SetValue('')
-            for index,(gPage,state) in enumerate(self.infoPages):
+            self.gPackage.SetLabel(_(u'Please select a package...'))
+            for index, (gPage, state) in enumerate(self.infoPages):
                 self.infoPages[index][1] = True
                 gPage.SetValue('')
             self.gSubList.Clear()
             self.gEspmList.Clear()
             self.gComments.SetValue('')
+        self.statusLastMsg = self.gPackage.GetLabel()
 
-    def RefreshInfoPage(self,index,installer):  # Polemos: fixes
+    def RefreshInfoPage(self,index, installer):  # Polemos: fixes
         """Refreshes notebook page."""
         gPage,initialized = self.infoPages[index]
         if initialized: return
@@ -3217,10 +3306,10 @@ class InstallersPanel(SashTankPanel): # Polemos: Refactored, changes.
         pageName = gPage.GetName()
         sNone = _(u'[None]')
         def sortKey(file):
-            dirFile = file.lower().rsplit('\\',1)
-            if len(dirFile) == 1: dirFile.insert(0,'')
+            dirFile = file.lower().rsplit('\\', 1)
+            if len(dirFile) == 1: dirFile.insert(0, '')
             return dirFile
-        def dumpFiles(files,default='',header='',isPath=False):
+        def dumpFiles(files,default='', header='', isPath=False):
             if files:
                 if isPath: files = [x.s for x in files]
                 else: files = list(files)
@@ -3233,29 +3322,29 @@ class InstallersPanel(SashTankPanel): # Polemos: Refactored, changes.
             elif header: return header+'\n'
             else: return ''
         if pageName == 'gGeneral':
-            info = _(u"== Overview\n")
-            info += _(u"Type: ")
-            info += (_(u'Archive'),_(u'Project'))[isinstance(installer, mosh.InstallerProject)]
+            info = _(u'== Overview\n')
+            info += _(u'Type: ')
+            info += (_(u'Archive'), _(u'Project'))[isinstance(installer, mosh.InstallerProject)]
             info += '\n'
-            if installer.type == 1: info += _(u"Structure: Simple\n")
+            if installer.type == 1: info += _(u'Structure: Simple\n')
             elif installer.type == 2:
-                if len(installer.subNames) == 2: info += _(u"Structure: Complex/Simple\n")
-                else: info += _(u"Structure: Complex\n")
-            elif installer.type < 0: info += _(u"Structure: Corrupt/Incomplete\n")
-            else: info += _(u"Structure: Unrecognized\n")
+                if len(installer.subNames) == 2: info += _(u'Structure: Complex/Simple\n')
+                else: info += _(u'Structure: Complex\n')
+            elif installer.type < 0: info += _(u'Structure: Corrupt/Incomplete\n')
+            else: info += _(u'Structure: Unrecognized\n')
             nConfigured = len(installer.data_sizeCrc)
             nMissing = len(installer.missingFiles)
             nMismatched = len(installer.mismatchedFiles)
-            info += _(u"Compressed: %s kb\n") % formatInteger(installer.size/1024)
-            info += _(u"Files: %s\n") % formatInteger(len(installer.fileSizeCrcs))
-            info += _(u"Configured: %s (%s kb)\n") % (formatInteger(nConfigured), formatInteger(installer.unSize/1024))
-            info += _(u"  Matched: %s\n") % formatInteger(nConfigured-nMissing-nMismatched)
-            info += _(u"  Missing: %s\n") % formatInteger(nMissing)
-            info += _(u"  Conflicts: %s\n") % formatInteger(nMismatched)
+            info += _(u'Compressed: %s kb\n') % formatInteger(installer.size/1024)
+            info += _(u'Files: %s\n') % formatInteger(len(installer.fileSizeCrcs))
+            info += _(u'Configured: %s (%s kb)\n') % (formatInteger(nConfigured), formatInteger(installer.unSize/1024))
+            info += _(u'  Matched: %s\n') % formatInteger(nConfigured-nMissing-nMismatched)
+            info += _(u'  Missing: %s\n') % formatInteger(nMissing)
+            info += _(u'  Conflicts: %s\n') % formatInteger(nMismatched)
             info += '\n'
             #--Infoboxes
             try:
-                gPage.SetValue(info+dumpFiles(installer.data_sizeCrc,sNone, _(u"== Configured Files"), isPath=True))
+                gPage.SetValue(info+dumpFiles(installer.data_sizeCrc, sNone, _(u'== Configured Files'), isPath=True))
             except: pass
         elif pageName == 'gMatched':
             try:gPage.SetValue(dumpFiles(set(installer.data_sizeCrc) - installer.missingFiles - installer.mismatchedFiles, isPath=True))
@@ -3264,34 +3353,34 @@ class InstallersPanel(SashTankPanel): # Polemos: Refactored, changes.
             try:gPage.SetValue(dumpFiles(installer.missingFiles, isPath=True))
             except: pass
         elif pageName == 'gMismatched':
-            try:gPage.SetValue(dumpFiles(installer.mismatchedFiles,sNone, isPath=True))
+            try:gPage.SetValue(dumpFiles(installer.mismatchedFiles, sNone, isPath=True))
             except: pass
         elif pageName == 'gConflicts':
-            try:gPage.SetValue(self.data.getConflictReport(installer,'OVER'))
+            try:gPage.SetValue(self.data.getConflictReport(installer, 'OVER'))
             except: pass
         elif pageName == 'gUnderrides':
-            try:gPage.SetValue(self.data.getConflictReport(installer,'UNDER'))
+            try:gPage.SetValue(self.data.getConflictReport(installer, 'UNDER'))
             except: pass
         elif pageName == 'gDirty':
             try:gPage.SetValue(dumpFiles(installer.dirty_sizeCrc, isPath=True))
             except: pass
         elif pageName == 'gSkipped':
-            try:gPage.SetValue('\n'.join((
-                dumpFiles(installer.skipExtFiles,sNone,_(u'== Skipped (Extension)')),
-                dumpFiles(installer.skipDirFiles,sNone,_(u'== Skipped (Dir)')),)) or sNone)
+            try: gPage.SetValue('\n'.join((
+                dumpFiles(installer.skipExtFiles, sNone, _(u'== Skipped (Extension)')),
+                dumpFiles(installer.skipDirFiles, sNone, _(u'== Skipped (Dir)')),)) or sNone)
             except: pass
 
-    def refreshCurrent(self,installer):
+    def refreshCurrent(self, installer):
         """Refreshes current item while retaining scroll positions."""
         installer.refreshDataSizeCrc()
         installer.refreshStatus(self.data)
-        subScrollPos  = self.gSubList.GetScrollPos(wx.VERTICAL)
+        subScrollPos = self.gSubList.GetScrollPos(wx.VERTICAL)
         espmScrollPos = self.gEspmList.GetScrollPos(wx.VERTICAL)
         self.gList.RefreshUI(self.detailsItem)
         self.gSubList.ScrollLines(subScrollPos)
         self.gEspmList.ScrollLines(espmScrollPos)
 
-    def OnCheckSubItem(self,event):
+    def OnCheckSubItem(self, event):
         """Handle check/uncheck of item."""
         selected = self.gSubList.GetSelections()
         installer = self.data[self.detailsItem]
@@ -3300,7 +3389,7 @@ class InstallersPanel(SashTankPanel): # Polemos: Refactored, changes.
         self.refreshCurrent(installer)
         for i in selected: self.gSubList.Select(i)
 
-    def OnCheckEspmItem(self,event):
+    def OnCheckEspmItem(self, event):
         """Handle check/uncheck of item."""
         installer = self.data[self.detailsItem]
         espmNots = installer.espmNots
@@ -3326,22 +3415,22 @@ class DataModsPanel(gui.NotebookPanel):  # Polemos
             singletons.ModdataList = ModdataList(self)
             singletons.ModdataList.SetMinSize(wx.Size(350, -1))
             # Toolbar: Info text label
-            self.infotext = wx.StaticText(self, wx.ID_ANY, u'', dPos, dSize, wx.ALIGN_LEFT|wx.ST_NO_AUTORESIZE)
+            self.infotext = wx.StaticText(self, wx.ID_ANY, u'', DPOS, DSIZE, wx.ALIGN_LEFT|wx.ST_NO_AUTORESIZE)
             self.infotext.Wrap(-1)
             # Toolbar: Restore Button
-            self.restore_btn = wx.BitmapButton(self, wx.ID_ANY, singletons.images['mod.open'].GetBitmap(), dPos, dSize, wx.BU_AUTODRAW)
+            self.restore_btn = wx.BitmapButton(self, wx.ID_ANY, singletons.images['mod.open'].GetBitmap(), DPOS, DSIZE, ADRW)
             self.restore_btn.SetBitmapSelected(singletons.images['mod.open'].GetBitmap())
             self.restore_btn.SetBitmapHover(singletons.images['mod.open.onhov'].GetBitmap())
             self.restore_btn.SetToolTip(wx.ToolTip(_(u'Restore Mod Order')))
             # Toolbar: Backup Button
-            self.backup_btn = wx.BitmapButton(self, wx.ID_ANY, singletons.images['mod.save'].GetBitmap(), dPos, dSize, wx.BU_AUTODRAW)
+            self.backup_btn = wx.BitmapButton(self, wx.ID_ANY, singletons.images['mod.save'].GetBitmap(), DPOS, DSIZE, ADRW)
             self.backup_btn.SetBitmapSelected(singletons.images['mod.save'].GetBitmap())
             self.backup_btn.SetBitmapHover(singletons.images['mod.save.onhov'].GetBitmap())
             self.backup_btn.SetToolTip(wx.ToolTip(_(u'Backup Mod Order')))
             # Packages list
             singletons.ModPackageList = ModPackageList(self)
             singletons.ModPackageList.SetMinSize(wx.Size(110, -1))
-            self.hid_chkBox = wx.CheckBox(self, wx.ID_ANY, _(u'Show Hidden'), dPos, dSize, 0)
+            self.hid_chkBox = wx.CheckBox(self, wx.ID_ANY, _(u'Show Hidden'), DPOS, DSIZE, 0)
         if True:  # Theming
             self.SetBackgroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_3DLIGHT))
             singletons.ModdataList.SetForegroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_WINDOWTEXT))
@@ -3352,7 +3441,7 @@ class DataModsPanel(gui.NotebookPanel):  # Polemos
             # Mods list
             moddata_sizer = wx.BoxSizer(wx.HORIZONTAL)
             moddata_sizer.SetMinSize(wx.Size(350, -1))
-            moddata_sizer.Add(singletons.ModdataList, 1, wx.ALL | wx.EXPAND, 1)
+            moddata_sizer.Add(singletons.ModdataList, 1, wx.ALL|wx.EXPAND, 1)
             # Info sizer
             info_sizer = wx.BoxSizer(wx.VERTICAL)
             info_sizer.Add(self.infotext, 1, wx.ALL|wx.EXPAND, 5)
@@ -3367,7 +3456,7 @@ class DataModsPanel(gui.NotebookPanel):  # Polemos
             # Packages list sizer
             packages_sizer = wx.BoxSizer(wx.VERTICAL)
             packages_sizer.SetMinSize(wx.Size(270, -1))
-            packages_sizer.AddMany([(singletons.ModPackageList, 1, wx.ALL | wx.EXPAND, 1), (packageTsizer, 0, wx.EXPAND, 5)])
+            packages_sizer.AddMany([(singletons.ModPackageList, 1, wx.ALL|wx.EXPAND, 1), (packageTsizer, 0, wx.EXPAND, 5)])
             # Packages Sizer
             packagesDetails_sizer = wx.BoxSizer(wx.VERTICAL)
             packagesDetails_sizer.SetMinSize(wx.Size(170, -1))
@@ -3397,11 +3486,11 @@ class DataModsPanel(gui.NotebookPanel):  # Polemos
     def restore(self, event):
         """Restore Mod order."""
         # Open backup browser
-        BckList = mosh.GetBckList(dirmod=True).bckList
-        backupFile = gui.dialog.SimpleListDialog(self, BckList, _(u"Choose a backup to restore:")).Selection
+        BckList = mosh.GetBckList('modsnap').bckList
+        backupFile = gui.dialog.SimpleListDialog(self, BckList, _(u'Choose a backup to restore:')).Selection
         if backupFile is None: return
         # Mod, plugin and archive data
-        modData = mosh.LoadModOrder(backupFile, dirmod=True).modData
+        modData = mosh.LoadModOrder(backupFile, 'modsnap').modData
         activePlugins = mosh.mwIniFile.loadOrder[:]
         activeBSA = [x for x in singletons.ArchivesList.items if singletons.ArchivesList.data[x][2]]
         self.showInfo(_(u'Mod Order Loaded...'))
@@ -3433,7 +3522,7 @@ class DataModsPanel(gui.NotebookPanel):  # Polemos
     def backup(self, event):
         """Save Mod order."""
         modOrder = [singletons.ModdataList.data[x] for x in singletons.ModdataList.items]
-        if mosh.SaveModOrder(modOrder, dirmod=True).status: self.showInfo(_(u'Mods Order Saved...'))
+        if mosh.SaveModOrder(modOrder, 'mods', 'modsnap').status: self.showInfo(_(u'Mods Order Saved...'))
 
     def showInfo(self, msg):
         """Inform user about actions."""
@@ -3602,11 +3691,11 @@ class MashNotebook(wx.Notebook):   #-# D.C.-G. MashNotebook modified for utils p
         wx.Notebook.__init__(self, parent, id)
         # Set notebook pages
         if not conf.settings['openmw']:  # Polemos: Regular Morrowind support
-            self.AddPage(UtilsPanel(self),_(u'Utilities'))
-            self.AddPage(InstallersPanel(self),_(u'Installers'))
-            self.AddPage(ModPanel(self),_(u'Mods'))
-            self.AddPage(SavePanel(self),_(u'Saves'))
-            self.AddPage(ScreensPanel(self),_(u'Screenshots'))
+            self.AddPage(UtilsPanel(self), _(u'Utilities'))
+            self.AddPage(InstallersPanel(self), _(u'Installers'))
+            self.AddPage(ModPanel(self), _(u'Mods'))
+            self.AddPage(SavePanel(self), _(u'Saves'))
+            self.AddPage(ScreensPanel(self), _(u'Screenshots'))
         if conf.settings['openmw']:  # Polemos: OpenMW/TES3mp support
             self.AddPage(UtilsPanel(self), _(u'Utilities'))
             self.AddPage(DataModsPanel(self), _(u'Mods'))
@@ -3622,9 +3711,10 @@ class MashNotebook(wx.Notebook):   #-# D.C.-G. MashNotebook modified for utils p
         # Event
         self.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED, self.OnShowPage)
 
-    def OnShowPage(self, event): # Polemos: Hooked menu changes here.
+    def OnShowPage(self, event):  # Polemos: Hooked menu and page global id update.
         """Call page's OnShow command."""
         if event.GetId() == self.GetId():
+            conf.settings['mash.page'] = event.GetSelection()
             self.GetPage(event.GetSelection()).OnShow()
             MenuBar((event.GetSelection()))
             event.Skip()
@@ -3682,27 +3772,29 @@ class MashFrame(wx.Frame):  # Polemos: Added a Menubar, OpenMW/TES3mp support, m
     """Main application frame."""
     mincush = False
 
-    def __init__(self, parent=None, pos=wx.DefaultPosition, size=(400, 500), style=wx.DEFAULT_FRAME_STYLE):
+    def __init__(self, parent=None, pos=wx.DefaultPosition, size=(885, 550), style=wx.DEFAULT_FRAME_STYLE):
         """Initialization."""
+        wx.Frame.__init__(self, parent, -1, u'Wrye Mash', pos, size, style)
         # The One
         singletons.mashFrame = self
         # Data
         self.knownCorrupted = set()
         self.OpenMW = conf.settings['openmw']
-        # Content
-        wx.Frame.__init__(self, parent, -1, u'Wrye Mash', pos, size,style)
-        if conf.settings['mash.virgin']: self.Centre(wx.BOTH)
-        minSize = conf.settings['mash.frameSize.min']
-        self.SetSizeHints(minSize[0], minSize[1])
+        # MainFrame
         self.SetTitle()
         gui.dialog.setIcon(self)
         # Status Bar
         self.SetStatusBar(MashStatusBar(self))
-        # Panels
-        self.notebook = notebook = MashNotebook(self,-1)
-        # MenuBar init
+        # Content
+        self.notebook = notebook = MashNotebook(self, -1)
+        # MenuBar
         MenuBar()
         # Layout
+        if conf.settings['mash.virgin']: self.Centre(wx.BOTH)
+        minSize = conf.settings['mash.frameSize.min']
+        self.SetSizeHints(minSize[0], minSize[1])
+        if self.GetSize()[0] < minSize[0]: self.SetSize([minSize[0], conf.settings['mash.frameSize'][1]])
+        if self.GetSize()[1] < minSize[1]: self.SetSize([conf.settings['mash.frameSize'][0], minSize[1]])
         self.sizer = wx.BoxSizer(wx.VERTICAL)
         self.sizer.Add(notebook, 1, wx.GROW)
         self.SetSizer(self.sizer)
@@ -3720,7 +3812,7 @@ class MashFrame(wx.Frame):  # Polemos: Added a Menubar, OpenMW/TES3mp support, m
 
     def SetTitle(self, title=None):  # Polemos: Small cosmetic change. Todo: Part of possible "full" profile solution.
         """Set title. Set to default if no title supplied."""
-        if title is None: title = u"Wrye Mash %s" % (conf.settings['mash.version'][1],)
+        if title is None: title = u'Wrye Mash %s' % (conf.settings['mash.version'][1],)
         wx.Frame.SetTitle(self, title)
 
     def SetStatusCount(self):
@@ -4131,7 +4223,7 @@ class MenuBar:  # Polemos
         self.mods_build_load()
         self.PanelMenu.AppendMenu(wx.ID_ANY, _(u'&Load'), self.sub_PanelMenu0)
         self.PanelMenu.AppendSeparator()
-        self.ID_plugins_CopyActive = self.PanelMenu.Append(wx.ID_ANY, _(u"Copy Active Mods"), _(u"Copy Active Mods in clipboard."))
+        self.ID_plugins_CopyActive = self.PanelMenu.Append(wx.ID_ANY, _(u"Copy Active Mods List"), _(u"Copy Active Mods List in clipboard."))
         if True:  # "Snapshots" sub-items:
             self.ID_snapshot_po_take = self.sub_PanelMenu1.Append(wx.ID_ANY, _(u"Take fast snapshot"),
                                                                   _(u"Take a fast snapshot of your mod order."))
@@ -4250,7 +4342,7 @@ class MenuBar:  # Polemos
             self.mods_build_load()
             self.PanelMenu.AppendMenu(wx.ID_ANY, _(u'&Load'), self.sub_PanelMenu0)
         self.PanelMenu.AppendSeparator()
-        self.ID_Mods_CopyActive = self.PanelMenu.Append(wx.ID_ANY, _(u"Copy Active Mods"), _(u"Copy Active Mods in clipboard."))
+        self.ID_Mods_CopyActive = self.PanelMenu.Append(wx.ID_ANY, _(u"Copy Active Mods List"), _(u"Copy Active Mods List in clipboard."))
         if True: # "Snapshots" sub-items:
             self.ID_snapshot_po_take = self.sub_PanelMenu1.Append(wx.ID_ANY, _(u"Take fast snapshot"), _(u"Take a fast snapshot of your mod order."))
             self.ID_snapshot_po_restore = self.sub_PanelMenu1.Append(wx.ID_ANY, _(u"Restore fast snapshot"),
@@ -5722,22 +5814,22 @@ class File_Hide(Link):
 class File_MoveTo(Link):
     """Hide the file(s). I.e., move it/them to user selected directory."""
 
-    def AppendToMenu(self,menu,window,data):
-        Link.AppendToMenu(self,menu,window,data)
-        menu.AppendItem(wx.MenuItem(menu,self.id,_(u'Move To...')))
+    def AppendToMenu(self, menu, window, data):
+        Link.AppendToMenu(self, menu, window, data)
+        menu.AppendItem(wx.MenuItem(menu, self.id, _(u'Move To...')))
 
-    def Execute(self,event):
+    def Execute(self, event):
         """Handle menu selection."""
-        destDir = os.path.join(self.window.data.dir,conf.settings['mosh.fileInfo.hiddenDir'])
-        destDir = gui.dialog.DirDialog(self.window,_(u'Move To...'), destDir)
+        destDir = os.path.join(self.window.data.dir, conf.settings['mosh.fileInfo.hiddenDir'])
+        destDir = gui.dialog.DirDialog(self.window, _(u'Move To...'), destDir)
         if not destDir: return
         #--Do it
         fileInfos = self.window.data
         for fileName in self.data:
-            if not self.window.data.moveIsSafe(fileName,destDir):
+            if not self.window.data.moveIsSafe(fileName, destDir):
                 message = (_(u'A file named %s already exists in the destination directory. Overwrite it?') % (fileName,))
-                if gui.dialog.WarningQuery(self.window,message,_(u'Hide Files')) != wx.ID_YES: continue
-            self.window.data.move(fileName,destDir)
+                if gui.dialog.WarningQuery(self.window, message,_(u'Hide Files')) != wx.ID_YES: continue
+            self.window.data.move(fileName, destDir)
         #--Refresh stuff
         self.window.Refresh()
 
@@ -5950,7 +6042,7 @@ class File_RevertToSnapshot(Link):
             dialog = wx.MessageDialog(self.window,message,_(u'Revert to Snapshot'), style=wx.YES_NO|wx.ICON_EXCLAMATION)
         except:
             message = (_(u"Revert to snapshot dated %s?") % (formatDate(mosh.getmtime(snapPath))))
-            dialog = wx.MessageDialog(self.window, message, _(u'Revert to Snapshot'), style=wx.YES_NO | wx.ICON_EXCLAMATION)
+            dialog = wx.MessageDialog(self.window, message, _(u'Revert to Snapshot'), style=wx.YES_NO|wx.ICON_EXCLAMATION)
         if dialog.ShowModal() != wx.ID_YES:
             dialog.Destroy()
             return
@@ -6569,7 +6661,7 @@ class File_Stats(Link):
         fileInfo = self.window.data[fileName]
         fileInfo.getStats()
         frame = wx.Frame(self.window,-1,fileName,size=(200,300),
-            style= (wx.RESIZE_BORDER | wx.CAPTION | wx.SYSTEM_MENU | wx.CLOSE_BOX | wx.CLIP_CHILDREN))
+            style= (wx.RESIZE_BORDER|wx.CAPTION|wx.SYSTEM_MENU|wx.CLOSE_BOX|wx.CLIP_CHILDREN))
         frame.SetIcons(singletons.images['mash.main.ico'].GetIconBundle())
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(File_StatsList(frame,fileInfo.stats),1,wx.EXPAND)
@@ -6739,13 +6831,13 @@ class Installers_ConflictsReportShowsLower(Link):  # Polemos: made compatible wi
 class Installers_AvoidOnStart(Link):
     """Ensures faster Mash startup by preventing Installers from being startup tab."""
 
-    def AppendToMenu(self,menu,window,data):
-        Link.AppendToMenu(self,menu,window,data)
-        menuItem = wx.MenuItem(menu,self.id,_(u'Avoid at Startup'),kind=wx.ITEM_CHECK)
+    def AppendToMenu(self, menu, window, data):
+        Link.AppendToMenu(self, menu, window, data)
+        menuItem = wx.MenuItem(menu, self.id, _(u'Avoid at Startup'), kind=wx.ITEM_CHECK)
         menu.AppendItem(menuItem)
         menuItem.Check(conf.settings['mash.installers.fastStart'])
 
-    def Execute(self,event):
+    def Execute(self, event):
         """Handle selection."""
         conf.settings['mash.installers.fastStart'] ^= True
         if conf.settings['mash.menubar.enabled']: singletons.MenuBar.installers_settings_cond()
@@ -6766,14 +6858,14 @@ class Installers_Import(Link):  # Polemos
         if package is None: return
         sourcePath, pakFile = package
         # Move or copy?
-        mc_query = gui.dialog.askdialog(None , _(u'Remove the original file after importing it?\n\n'
+        mc_query = gui.dialog.askdialog(None, _(u'Remove the original file after importing it?\n\n'
             u'If you click Yes the original file will be deleted (after it is copied into the Installers directory).\n'
                 u'If the file fails to be copied, the deletion will be aborted automatically.'), _(u'Remove original file?'), True)
         if mc_query == wx.ID_CANCEL: return
         # Check if a file with the same name exists
         targPath = os.path.join(conf.settings['sInstallersDir'], pakFile)
         if os.path.isfile(targPath):
-            overwrite = gui.dialog.askdialog(None , _(u'A package with the same name already exists in the Installers directory.\n\n'
+            overwrite = gui.dialog.askdialog(None, _(u'A package with the same name already exists in the Installers directory.\n\n'
                 u'Click Yes to overwrite the existing package or click No to abort the import process.'), _(u'Overwrite file?'))
             if overwrite == wx.ID_NO: return
         # Copy/overwrite file to destination
@@ -6790,7 +6882,7 @@ class Installers_Import(Link):  # Polemos
         # Delete source?
         if mc_query == wx.ID_YES:
             try: os.remove(sourcePath)
-            except: gui.dialog.WarningMessage(None, _(u'The package was succesfully imported into the Installers '
+            except: gui.dialog.WarningMessage(None, _(u'The package was successfully imported into the Installers '
                 u'directory but Wrye Mash wasn\'t able to delete the original file. You may have to delete the source file manually.'))
 
 #------------------------------------------------------------------------------
@@ -6948,9 +7040,9 @@ class InstallerLink(Link):
 class Installer_Anneal(InstallerLink):
     """Anneal all packages."""
 
-    def AppendToMenu(self,menu,window,data):
-        Link.AppendToMenu(self,menu,window,data)
-        menuItem = wx.MenuItem(menu,self.id,_(u'Anneal'))
+    def AppendToMenu(self, menu, window, data):
+        Link.AppendToMenu(self, menu, window, data)
+        menuItem = wx.MenuItem(menu, self.id, _(u'Anneal'))
         menu.AppendItem(menuItem)
 
     def chkMarker(self):  # Polemos
@@ -6967,7 +7059,7 @@ class Installer_Anneal(InstallerLink):
     def Execute(self,event):
         """Handle selection."""
         if self.chkMarker(): return
-        progress = balt.Progress(_(u"Annealing..."),'\n'+' '*60)
+        progress = balt.Progress(_(u'Annealing...'), '\n'+' '*60)
         try: self.data.anneal(self.selected,progress)
         finally:
             progress.Destroy()
@@ -7235,7 +7327,7 @@ class Installer_Move(InstallerLink):
             return
         newPos = int(newPos)
         if newPos == -3: newPos = self.data[self.data.lastKey].order
-        elif newPos == -2: newPos = self.data[self.data.lastKey].order+1
+        elif newPos == -2: newPos = self.data[self.data.lastKey].order + 1
         elif newPos < 0: newPos = len(self.data.data)
         self.data.moveArchives(self.selected, newPos)
         self.data.refresh(what='N')
@@ -8089,7 +8181,7 @@ class Mods_CopyActive(Link):  # Polemos: optimized, added a dialog informing abo
     def AppendToMenu(self, menu, window, data):
         """Add to menu."""
         Link.AppendToMenu(self, menu, window, data)
-        menuItem = wx.MenuItem(menu, self.id, _(u'Copy Active Mods'))
+        menuItem = wx.MenuItem(menu, self.id, _(u'Copy Active Mods List'))
         menu.AppendItem(menuItem)
 
     def Execute(self,event):  # Polemos fix
@@ -10397,7 +10489,7 @@ class App_Settings(Link): # Added D.C.-G. for SettingsWindow. Polemos: Changes, 
 
     def Execute(self,event):
         """Handle menu selection."""
-        singletons.settingsWindow = SettingsWindow(pos=conf.settings['mash.settings.pos'])
+        singletons.settingsWindow = SettingsWindow(parent=singletons.mashFrame, pos=conf.settings['mash.settings.pos'])
         singletons.settingsWindow.ShowModal()
         singletons.mashFrame.Refresh_StatusBar()
 
@@ -10646,11 +10738,12 @@ def InitUtilsLinks_items():  # Polemos: Different initialization for items links
 
 def InitInstallerLinks():  # Polemos: Added open installers dir, enable extra info in progress bar, added new sorting items.
     """Initialize Installer tab menus."""
-    # --Add new
+    # Add new
+    InstallersPanel.mainMenu.append(Installers_Import())
     InstallersPanel.mainMenu.append(Installers_Import())
     InstallersPanel.mainMenu.append(SeparatorLink())
-    #--Sorting
-    sortMenu = MenuLink(_(u"Sort by"))
+    # Sorting
+    sortMenu = MenuLink(_(u'Sort by'))
     sortMenu.links.append(Installers_SortActive())
     sortMenu.links.append(Installers_SortProjects())
     sortMenu.links.append(SeparatorLink())

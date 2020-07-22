@@ -2,11 +2,11 @@
 
 # Wrye Mash Polemos fork GPL License and Copyright Notice ==============================
 #
-# Wrye Mash, Polemos fork Copyright (C) 2017-2019 Polemos
+# Wrye Mash, Polemos fork Copyright (C) 2017-2020 Polemos
 # * based on code by Yacoby copyright (C) 2011-2016 Wrye Mash Fork Python version
 # * based on code by Melchor copyright (C) 2009-2011 Wrye Mash WMSA
 # * based on code by Wrye copyright (C) 2005-2009 Wrye Mash
-# License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
+# License: http: //www.gnu.org/licenses/gpl.html GPL version 2 or higher
 #
 #  Copyright on the original code 2005-2009 Wrye
 #  Copyright on any non trivial modifications or substantial additions 2009-2011 Melchor
@@ -76,7 +76,7 @@ settingDefaults = {
     'mgexe.detected': False,
     'mgexe.dir': '',
     #-Polemos: mlox dir
-    'mloxpath':'',
+    'mloxpath': '',
 
     #-Polemos: OpenMW/TES3mp settings
     'openmw': False,
@@ -118,14 +118,14 @@ settingDefaults = {
     'mash.menubar.enabled': True,
     'mash.col.menu.enabled': True,
     'mash.framePos': wx.DefaultPosition,
-    'mash.frameSize': (885, 500),
-    'mash.frameSize.min': (400, 500),
+    'mash.frameSize': (885, 550),
+    'mash.frameSize.min': (400, 560),
     'mash.page': 2,
     'mash.window.sizes': {},
     'mash.bit.ver': '',
 
     #-Polemos: Profile
-    'profile.active':'Default',
+    'profile.active': 'Default',
     'profile.encoding': defaultEncoding,
 
     #-Polemos: Interface Settings
@@ -149,7 +149,7 @@ settingDefaults = {
 
     #-Polemos: Common Sash Settings (Mod, Plugins, Saves Tabs)
     'mash.max.sash': 400,
-    'mash.sash.window.size':(867, 395),
+    'mash.sash.window.size': (867, 395),
 
     #--Wrye Mash: Load Lists
     'mash.loadLists.data': {
@@ -164,87 +164,87 @@ settingDefaults = {
     'mash.loadLists.need.refresh': False,
 
     #--Wrye Mash: Statistics
-    'mash.fileStats.cols': ['Type','Count','Size'],
+    'mash.fileStats.cols': ['Type', 'Count', 'Size'],
     'mash.fileStats.sort': 'Type',
     'mash.fileStats.colReverse': {
-        'Count':1,
-        'Size':1,
+        'Count': 1,
+        'Size': 1,
         },
     'mash.fileStats.colWidths': {
-        'Type':50,
-        'Count':50,
-        'Size':75,
+        'Type': 50,
+        'Count': 50,
+        'Size': 75,
         },
     'mash.fileStats.colAligns': {
-        'Count':1,
-        'Size':1,
+        'Count': 1,
+        'Size': 1,
         },
 
     #--Polemos: TESlint implementation.
     'tes3lint.pos': wx.DefaultPosition,
-    'tes3lint.location':'',
-    'tes3lint.perl':'',
-    'tes3lint.last':[1,[],False,False],
-    'tes3lint.command.result':u'',
-    'tes3lint.refresh':True,
+    'tes3lint.location': '',
+    'tes3lint.perl': '',
+    'tes3lint.last': [1, [], False, False],
+    'tes3lint.command.result': u'',
+    'tes3lint.refresh': True,
 
     #--Polemos: Added for Utilities page.
-    'mash.utils.page':0,
-    'mash.utils.cols': ['ID','File'], #, 'Flag'],  # Polemos: Leave the 'ID' alone.
+    'mash.utils.page': 0,
+    'mash.utils.cols': ['ID', 'File'], #, 'Flag'],  # Polemos: Leave the 'ID' alone.
     'mash.utils.colWidths': {
-        'File':150,
-        'ID':35,
-        'Flag':50,
+        'File': 150,
+        'ID': 35,
+        'Flag': 50,
         },
     'mash.utils.colAligns': {},
     'mash.utils.colReverse': {
-            'File':1,
+            'File': 1,
             },
     'mash.utils.sort': 'File',
     'mash.utils.sashPos': 237,
 
     #--Installers
-    'mash.installers.cols': ['Package','Order','Modified','Size','Files'],
-    'mash.installers.page':1,
+    'mash.installers.cols': ['Package', 'Order', 'Modified', 'Size', 'Files'],
+    'mash.installers.page': 1,
     'mash.installers.isFirstRun': True,
     'mash.installers.enabled': True,
     'mash.installers.autoAnneal': True,
     'mash.installers.fastStart': True,
-    'mash.installers.removeEmptyDirs':True,
-    'mash.installers.skipDistantLOD':False,
-    'mash.installers.sortProjects':False,
-    'mash.installers.sortActive':False,
-    'mash.installers.sortStructure':False,
-    'mash.installers.conflictsReport.showLower':True,
-    'mash.installers.conflictsReport.showInactive':False,
-    'mash.installers.show.progress.info':False,
+    'mash.installers.removeEmptyDirs': True,
+    'mash.installers.skipDistantLOD': False,
+    'mash.installers.sortProjects': False,
+    'mash.installers.sortActive': False,
+    'mash.installers.sortStructure': False,
+    'mash.installers.conflictsReport.showLower': True,
+    'mash.installers.conflictsReport.showInactive': False,
+    'mash.installers.show.progress.info': False,
     'mash.installers.markers': [],
     'mash.installers.sort': 'Order',
     'mash.installers.colReverse': {},
     'mash.installers.colWidths': {
-        'Package':142,
-        'Order':43,
-        'Group':60,
-        'Modified':60,
-        'Size':60,
-        'Files':45
+        'Package': 142,
+        'Order': 43,
+        'Group': 60,
+        'Modified': 60,
+        'Size': 60,
+        'Files': 45
         },
     'mash.installers.colAligns': {
-        'Order':'RIGHT',
-        'Size':'RIGHT',
-        'Files':'RIGHT',
-        'Modified':'RIGHT'
+        'Order': 'RIGHT',
+        'Size': 'RIGHT',
+        'Files': 'RIGHT',
+        'Modified': 'RIGHT'
         },
 
     #--Wrye Mash: Screenshots
     'mash.screens.cols': ['Image', 'Size'],
     'mash.screens.sort': 'Image',
     'mash.screens.colReverse': {
-        'Image':1,
+        'Image': 1,
         },
     'mash.screens.colWidths': {
-        'Image':150,
-        'Size':55,
+        'Image': 150,
+        'Size': 55,
         },
     'mash.screens.colAligns': {},
     'mash.screens.sashPos': 212,
@@ -267,7 +267,7 @@ settingDefaults = {
                          'Resource',
                          'Sound',
                          'MWSE'],
-    'mash.mods.ratings': ['+','1','2','3','4','5','=','~'],
+    'mash.mods.ratings': ['+', '1', '2', '3', '4', '5', '=', '~'],
 
     #--Wrye Mash: RefRemovers
     'mash.refRemovers.data': {
@@ -323,11 +323,11 @@ settingDefaults = {
     'mash.Packages.sort': 'Package',
     'mash.Packages.colReverse': {},
     'mash.Packages.colWidths': {
-        'Package':200,
-        'Size':37,
+        'Package': 200,
+        'Size': 37,
         },
     'mash.Packages.colAligns': {
-        '#':1,
+        '#': 1,
         },
 
     #--Polemos: BSArchives
@@ -335,148 +335,148 @@ settingDefaults = {
     'mash.Archives.sort': '#',
     'mash.Archives.colReverse': {},
     'mash.Archives.colWidths': {
-        'Archive':113,
-        '#':30,
-        'Size':27,
+        'Archive': 113,
+        '#': 30,
+        'Size': 27,
         },
     'mash.Archives.colAligns': {
-        '#':1,
+        '#': 1,
         },
 
     #--Wrye Mash: Masters
-    'mash.masters.cols': ['Master','#'],
+    'mash.masters.cols': ['Master', '#'],
     'mash.masters.esmsFirst': 1,
     'mash.masters.selectedFirst': 0,
     'mash.masters.sort': 'Load Order',
     'mash.masters.colReverse': {},
     'mash.masters.colWidths': {
-        'Master':150,
-        '#':35,
+        'Master': 150,
+        '#': 35,
         },
     'mash.masters.colAligns': {
-        '#':1,
+        '#': 1,
         },
 
     #--Wrye Mash: Help Browser
     'mash.help.show': False,
-    'mash.help.pos': (-1,-1),
+    'mash.help.pos': (-1, -1),
     'mash.help.size': (1036, 600),
-    'mash.help.sash':178,
+    'mash.help.sash': 178,
 
     #--Wrye Mash: Mod Notes
     'mash.modNotes.show': False,
-    'mash.modNotes.size': (200,300),
+    'mash.modNotes.size': (200, 300),
     'mash.modNotes.pos': wx.DefaultPosition,
 
     #--Wrye Mash: Mod Docs
     'mash.modDocs.show': False,
     'openmw.modDocs.show': False,
-    'mash.modDocs.size': (700,400),
+    'mash.modDocs.size': (700, 400),
     'mash.modDocs.pos': wx.DefaultPosition,
     'mash.modDocs.dir': None,
 
     #--Wrye Mash: Mods (Morrowind)
-    'mash.mods.cols': ['File','#','Rating','Group','Modified','Size','Author'],
+    'mash.mods.cols': ['File', '#', 'Rating', 'Group', 'Modified', 'Size', 'Author'],
     'mash.mods.esmsFirst': 1,
     'mash.mods.selectedFirst': 0,
     'mash.mods.sort': 'Modified',
     'mash.mods.colReverse': {},
     'mash.mods.colWidths': {
-        '#':30,
-        'File':200,
-        'Group':20,
-        'Rating':20,
-        'Modified':140,
-        'Size':75,
-        'Author':140,
+        '#': 30,
+        'File': 200,
+        'Group': 20,
+        'Rating': 20,
+        'Modified': 140,
+        'Size': 75,
+        'Author': 140,
         },
     'mash.mods.colAligns': {
-        'Size':1,
+        'Size': 1,
         },
     'mash.mods.renames': {},
     'mash.mods.sashPos': 655,
 
     #--Polemos: Plugins (OpenMW)
-    'openmw.mods.cols': ['File','#','Rating','Group','Size','Author'],
+    'openmw.mods.cols': ['File', '#', 'Rating', 'Group', 'Size', 'Author'],
     'openmw.mods.esmsFirst': 1,
     'openmw.mods.selectedFirst': 0,
     'openmw.mods.sort': '#',
     'openmw.mods.colReverse': {},
     'openmw.mods.colWidths': {
-        '#':30,
-        'File':340,
-        'Group':20,
-        'Rating':20,
-        'Size':75,
-        'Author':140,
+        '#': 30,
+        'File': 340,
+        'Group': 20,
+        'Rating': 20,
+        'Size': 75,
+        'Author': 140,
         },
     'openmw.mods.colAligns': {
-        'Size':1,
+        'Size': 1,
         },
     'openmw.mods.renames': {},
 
     # Polemos: OpenMW DataMods
-    'mash.DataMods.packages.showHidden':False,
-    'mash.datamods.cols': ['Mod Name','#','Flags','Version','Category'],
+    'mash.DataMods.packages.showHidden': False,
+    'mash.datamods.cols': ['Mod Name', '#', 'Flags', 'Version', 'Category'],
     'mash.datamods.esmsFirst': 0,
     'mash.datamods.selectedFirst': 0,
     'mash.datamods.sort': '#',
     'mash.datamods.colReverse': {},
     'mash.datamods.colWidths': {
-        'Mod Name':360,
-        '#':30,
-        'Flags':40,
-        'Version':60,
-        'Category':90,
+        'Mod Name': 360,
+        '#': 30,
+        'Flags': 40,
+        'Version': 60,
+        'Category': 90,
         },
     'mash.datamods.colAligns': {
-        'Size':1,
+        'Size': 1,
         },
     'mash.datamods.renames': {},
 
     #--Wrye Mash: Journal
     'mash.journal.show': False,
-    'mash.journal.size': (300,400),
+    'mash.journal.size': (300, 400),
     'mash.journal.pos': wx.DefaultPosition,
 
     #--Wrye Mash: Saves
     'mash.saves.sets': [],
-    'mash.saves.cols': ['File','Modified','Size','Save Name','Player','Cell'],
+    'mash.saves.cols': ['File', 'Modified', 'Size', 'Save Name', 'Player', 'Cell'],
     'mash.saves.sort': 'Modified',
     'mash.saves.colReverse': {
-        'Modified':1,
+        'Modified': 1,
         },
     'mash.saves.colWidths': {
-        'File':128,
-        'Modified':133,
-        'Size':65,
-        'Save Name':110,
-        'Player':80,
-        'Cell':111,
-        'Day':30,
+        'File': 128,
+        'Modified': 133,
+        'Size': 65,
+        'Save Name': 110,
+        'Player': 80,
+        'Cell': 111,
+        'Day': 30,
         },
     'mash.saves.colAligns': {
-        'Size':1,
+        'Size': 1,
         },
     'mash.saves.sashPos': 655,
 
     #--Polemos Mash: OpenMW Saves
-    'OpenMW.saves.cols': ['File','Modified','Size','Save Name','Player'],
-    'mash.worldMap.gridLines':True,
+    'OpenMW.saves.cols': ['File', 'Modified', 'Size', 'Save Name', 'Player'],
+    'mash.worldMap.gridLines': True,
     'OpenMW.saves.sort': 'Modified',
     'OpenMW.saves.colReverse': {
-        'Modified':1,
+        'Modified': 1,
         },
     'OpenMW.saves.colWidths': {
-        'File':189,
-        'Modified':133,
-        'Size':65,
-        'Save Name':160,
-        'Player':80,
-        'Day':30,
+        'File': 189,
+        'Modified': 133,
+        'Size': 65,
+        'Save Name': 160,
+        'Player': 80,
+        'Day': 30,
         },
     'OpenMW.saves.colAligns': {
-        'Size':1,
+        'Size': 1,
         }
 
     }

@@ -4,7 +4,7 @@
 #
 # This file is part of Wrye Mash Polemos fork.
 #
-# Wrye Mash, Polemos fork Copyright (C) 2017-2019 Polemos
+# Wrye Mash, Polemos fork Copyright (C) 2017-2020 Polemos
 # * based on code by Yacoby copyright (C) 2011-2016 Wrye Mash Fork Python version
 # * based on code by Melchor copyright (C) 2009-2011 Wrye Mash WMSA
 # * based on code by Wrye copyright (C) 2005-2009 Wrye Mash
@@ -501,26 +501,30 @@ class RenameDialog(wx.Dialog):  # Polemos
             mainSizer.AddMany([(contentSizer, 1, wx.EXPAND, 5),(btnSizer, 0, wx.ALIGN_RIGHT, 5)])
             self.SetSizer(mainSizer)
             self.Layout()
-        if True: # Actions
+        if True:  # Actions
             self.rename_btn.Bind(wx.EVT_BUTTON, self.OnRename)
             self.field.SetLabel(oldName)
             self.timer_po()
             self.ShowModal()
 
     def timer_po(self):
+        """Init timer."""
         self.timer = wx.Timer(self)
         self.Bind(wx.EVT_TIMER, self.onUpdate, self.timer)
         self.timer.Start(100)
 
     def onUpdate(self, event):
+        """Timer events."""
         if self.field.GetValue() == u'' or self.field.GetValue().lower() == self.oldName.lower(): self.rename_btn.Disable()
         else: self.rename_btn.Enable()
 
     def OnCancel(self, event):
+        """On cancel."""
         self.timer.Stop()
         self.Destroy()
 
     def OnRename(self, event):
+        """On rename."""
         self.GetModName = chkChars(self.field.GetValue(), True)
         self.timer.Stop()
         self.Destroy()
@@ -845,7 +849,7 @@ class SimpleListDialog(wx.Dialog):  # Polemos
     """A simple modal list dialog."""
     Selection = None
 
-    def __init__(self, parent, choices, msg=_(u'Choose an item:'), title=_(u'Select item'), size=Size(350, 190)):
+    def __init__(self, parent, choices, msg=_(u'Choose an item:'), title=_(u'Select item'), size=Size(380, 230)):
         """Init."""
         wx.Dialog.__init__(self, parent, id=wx.ID_ANY, title=title, pos=dPos, size=size, style=wx.DEFAULT_DIALOG_STYLE|wx.STAY_ON_TOP)
         self.SetSizeHints(-1, -1)

@@ -4,7 +4,7 @@
 #
 # This file is part of Wrye Mash Polemos fork.
 #
-# Wrye Mash, Polemos fork Copyright (C) 2017-2019 Polemos
+# Wrye Mash, Polemos fork Copyright (C) 2017-2020 Polemos
 # * based on code by Yacoby copyright (C) 2011-2016 Wrye Mash Fork Python version
 # * based on code by Melchor copyright (C) 2009-2011 Wrye Mash WMSA
 # * based on code by Wrye copyright (C) 2005-2009 Wrye Mash
@@ -2136,7 +2136,7 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
         renameFile(tmpPath,self.path, True)
         self.mtime = getmtime(self.path)
 
-    def itmDeDup(self, itms):
+    def itmDeDup(self, itms):  # Polemos
         """Item de-duplication."""
         the_set = set()
         the_set_add = the_set.add
@@ -2161,19 +2161,19 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
 
     def updateDatamods(self, DataOrder):  # Polemos
         """Update DataDirs order (active or not - OpenMW)."""
-        DataOrderF = [u'data="%s"' % os.path.realpath(x) for x in DataOrder]
+        DataOrderF = [u'data="%s"' % os.path.realpath(x[1]) for x in DataOrder]
         datamodsListExport = [x for x in DataOrderF if x in self.DataMods]
         self.DataMods = datamodsListExport
         self.SaveDatamods(datamodsListExport)
 
     def filterDataMod(self, data):  # Polemos
-        """Returns DataMod path from openmw.xfg config entry."""
+        """Returns DataMod path from openmw.cfg config entry."""
         if not data: return data
         if type(data) is list: return [x.split('"')[1] for x in data]
         else: return type(data)([x.split('"')[1] for x in data][0])
 
     def sanitizeDatamods(self, data, repack=True):  # Polemos
-        """Sanitize DataDirs entries openmw.cfg)."""
+        """Sanitize DataDirs entries (openmw.cfg)."""
         filterPaths = self.filterDataMod(data)
         filterDups = self.itmDeDup(filterPaths)
         filterMissing = [x for x in filterDups if os.path.isdir(x)]
@@ -4356,13 +4356,12 @@ class GetBckList:  # Polemos
     """Formulate backup files list."""
     bckList = []
 
-    def __init__(self, dirmod=False):
+    def __init__(self, fname=False):
         """Init."""
         self.bckList = []
         self.max = settings['backup.slots']
         self.snapdir = os.path.join(MashDir, 'snapshots')
-        self.bckfiles = [os.path.join(self.snapdir, 'datasnap%s.txt' % x) for x in range(self.max)] if not dirmod else [
-                os.path.join(self.snapdir, 'modsnap%s.txt' % x) for x in range(self.max)]
+        self.bckfiles = [os.path.join(self.snapdir, '%s%s.txt' % (fname, x)) for x in range(self.max)]
         self.listFactory()
 
     def dtFactory(self, DateTime):
@@ -4382,18 +4381,24 @@ class LoadModOrder:  # Polemos
     """Restore Datamods order and status."""
     modData = []
 
-    def __init__(self, num, dirmod=False):
+    def __init__(self, num, fname):
         """Init."""
+        self.mode = fname
         self.encod = settings['profile.encoding']
-        bckfile = os.path.join(MashDir, 'snapshots', 'datasnap%s.txt' % num) if not dirmod else os.path.join(MashDir, 'snapshots', 'modsnap%s.txt' % num)
+        bckfile = os.path.join(MashDir, 'snapshots', '%s%s.txt' % (fname, num))
         self.parseBck(bckfile)
 
     def dataFactory(self, rawData):
         """Restore data from container."""
-        self.modData = [x.rstrip().split(',') for x in rawData]
-        for num, x in enumerate(self.modData):
-            if self.modData[num][0] == u'True': self.modData[num][0] = True
-            else: self.modData[num][0] = False
+        if self.mode == 'modsnap':
+            self.modData = [x.rstrip().split('"') for x in rawData]
+            for num, x in enumerate(self.modData):
+                self.modData[num][0] = True if self.modData[num][0] == u'True' else False
+        elif self.mode == 'datasnap':
+            self.modData = [line.rstrip() for line in rawData]
+            self.modData = filter(None, self.modData)  # Polemos: This may have problems in Python 3
+        elif self.mode == 'paksnap':
+            self.modData = [(int(x[0]), GPath(x[1].replace('"', '')), int(x[2])) for x in [y.split(':') for y in rawData]]
 
     def parseBck(self, bckFile):
         """Save backup file."""
@@ -4403,20 +4408,20 @@ class LoadModOrder:  # Polemos
 # -----------------------------------------------------------------------------
 
 class SaveModOrder:  # Polemos
-    """Backup of Datamods order and status."""
+    """Backup of items order and status."""
     status = False
 
-    def __init__(self, modData, mode='advanced', dirmod=False):
+    def __init__(self, modData, mode, fname):
         """Init."""
         self.encod = settings['profile.encoding']
         self.mode = mode
         self.modData = modData
         self.max = settings['backup.slots']
         self.snapdir = os.path.join(MashDir, 'snapshots')
-        self.bckfiles = [os.path.join(self.snapdir, 'datasnap%s.txt' % x) for x in range(self.max)] if not dirmod else [
-            os.path.join(self.snapdir, 'modsnap%s.txt' % x) for x in range(self.max)]
+        self.bckfiles = [os.path.join(self.snapdir, '%s%s.txt' % (fname, x)) for x in range(self.max)]
         if not os.path.isdir(self.snapdir):
             try: os.makedirs(self.snapdir)
+            except IOError: return  # todo: add access denied error
             except: return
         self.initbck()
 
@@ -4438,16 +4443,21 @@ class SaveModOrder:  # Polemos
         for item in ids:
             if item-1 == -1: break
             os.rename(self.bckfiles[item-1], self.bckfiles[item])
-        self.saveBck(self.bckfiles[0])
+        try: self.saveBck(self.bckfiles[0])
+        except IOError: return  # todo: add access denied error
 
     def saveBck(self, bckFile):
         """Save backup file."""
         with io.open(bckFile, 'w', encoding=self.encod) as bck:
-            if self.mode == 'advanced':
-                for x in ['%s,%s\n'%(x[5],x[6]) for x in self.modData]: bck.write(x)
-            else:
-                try: bck.write(self.modData)
-                except: bck.write(self.modData.decode(self.encod))
+            if self.mode == 'mods':
+                for x in ['%s"%s\n' % (x[5], x[6]) for x in self.modData]: bck.write(x)
+            elif self.mode == 'plugins':
+                try: bck.write(self.modData.decode(self.encod))
+                except: pass  # todo: add fail error
+            elif self.mode == 'installers':
+                for x in self.modData:
+                    try: bck.write('%s:"%s":%s\n' % (x[0], x[1], x[2]))
+                    except: pass  # todo: add fail error
         self.status = True
 
 # -----------------------------------------------------------------------------
@@ -4902,18 +4912,18 @@ class Installer(object):  # Polemos: added MWSE compatibility, optimised, bug fi
 
 class InstallerMarker(Installer):
     """Represents a marker installer entry. Currently only used for the '==Last==' marker"""
-    __slots__ = tuple() #--No new slots
+    __slots__ = tuple()  #--No new slots
 
-    def __init__(self,archive):
+    def __init__(self, archive):
         """Initialize."""
-        Installer.__init__(self,archive)
+        Installer.__init__(self, archive)
         self.modified = time.time()
 
-    def refreshSource(self,archive,progress=None,fullRefresh=False):
+    def refreshSource(self, archive, progress=None, fullRefresh=False):
         """Refreshes fileSizeCrcs, size, date and modified from source archive/directory."""
         pass
 
-    def install(self,name,destFiles,data_sizeCrcDate,progress=None):
+    def install(self, name, destFiles, data_sizeCrcDate, progress=None):
         """Install specified files to Morrowind\Data files directory."""
         pass
 
@@ -5199,8 +5209,8 @@ class InstallersData(bolt.TankData, DataDict):  # Polemos fixes
             progress(0,_(u'Loading Data...\n'))
             self.dictFile.load()
             data = self.dictFile.data
-            self.data = data.get('installers',{})
-            self.data_sizeCrcDate = data.get('sizeCrcDate',{})
+            self.data = data.get('installers', {})
+            self.data_sizeCrcDate = data.get('sizeCrcDate', {})
             self.updateDictFile()
             self.loaded = True
             changed = True
@@ -5292,17 +5302,17 @@ class InstallersData(bolt.TankData, DataDict):  # Polemos fixes
         if settings['mash.installers.sortProjects']: items.sort(key=lambda x: not isinstance(data[x], InstallerProject))
         return items
 
-    def getColumns(self,item=None): #--Item Info
+    def getColumns(self, item=None): #--Item Info
         """Returns text labels for item or for row header if item is None."""
         columns = self.getParam('columns')
         if item is None: return columns[:]
-        labels,installer = [],self.data[item]
+        labels, installer = [],self.data[item]
         for column in columns:
             if column == 'Package': labels.append(item.s)
             elif column == 'Files': labels.append(formatInteger(len(installer.fileSizeCrcs)))
             else:
-                value = object.__getattribute__(installer,column.lower())
-                if column in ('Package','Group'): pass
+                value = object.__getattribute__(installer, column.lower())
+                if column in ('Package', 'Group'): pass
                 elif column == 'Order': value = `value`
                 elif column == 'Modified': value = formatDate(value)
                 elif column == 'Size':
@@ -5513,21 +5523,21 @@ class InstallersData(bolt.TankData, DataDict):  # Polemos fixes
         return changed
 
     #--Operations -------------------------------------------------------------
-    def moveArchives(self,moveList,newPos):
+    def moveArchives(self, moveList, newPos):
         """Move specified archives to specified position."""
         moveSet = set(moveList)
         data = self.data
         numItems = len(data)
         orderKey = lambda x: data[x].order
-        oldList = sorted(data,key=orderKey)
+        oldList = sorted(data, key=orderKey)
         newList = [x for x in oldList if x not in moveSet]
         moveList.sort(key=orderKey)
         newList[newPos:newPos] = moveList
-        for index,archive in enumerate(newList):
+        for index, archive in enumerate(newList):
             data[archive].order = index
         self.setChanged()
 
-    def install(self,archives,progress=None,last=False,override=True):
+    def install(self, archives, progress=None, last=False, override=True):
         """Install selected archives.
         what:
             'MISSING': only missing files.
@@ -5536,7 +5546,7 @@ class InstallersData(bolt.TankData, DataDict):  # Polemos fixes
         progress = progress or bolt.Progress()
         #--Mask and/or reorder to last
         mask = set()
-        if last: self.moveArchives(archives,len(self.data))
+        if last: self.moveArchives(archives, len(self.data))
         else:
             maxOrder = max(self[x].order for x in archives)
             for installer in self.data.itervalues():
