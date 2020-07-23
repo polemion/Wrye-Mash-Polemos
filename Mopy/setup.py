@@ -117,6 +117,7 @@ prog_resources = ['.\\7zip\\x86\\7z.exe',
                   'Credits.txt',
                   'License.txt',
                   'cacert.pem',
+                  'gpl.txt',
                   ] + wxDlls + msvcDlls
 
 # Remove old 'build' folder
