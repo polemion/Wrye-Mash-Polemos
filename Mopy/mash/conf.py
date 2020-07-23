@@ -138,7 +138,7 @@ settingDefaults = {
     'show.debug.log': True,
 
     #-Polemos: Advanced Settings
-    'advanced.7zipcrc32': True,
+    'advanced.7zipcrc32b': False,
     'advanced.redate.interval': 60,
 
     #-Polemos: Date scheme for version checking (Web)

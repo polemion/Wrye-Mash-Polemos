@@ -596,7 +596,7 @@ class SettingsWindow(wx.Dialog, SettingsTabs):  # Polemos: Total reconstruction.
             conf.settings['mloxpath'] = self.fldmlox.GetValue()
             conf.settings['sInstallersDir'] = self.fldInst.GetValue()
             conf.settings['mgexe.dir'] = self.fldMGEXE.GetValue()
-            conf.settings['advanced.7zipcrc32'] = self.a7zcrcOn.GetValue()
+            conf.settings['advanced.7zipcrc32b'] = self.a7zcrcOn.GetValue()
             conf.settings['advanced.redate.interval'] = self.modIntervFld.GetValue()
         if self.openmw:  # OpenMW/Tes3MP Settings:
             conf.settings['openmwDir'] = self.fldOpenMWloc.GetValue()
@@ -673,7 +673,7 @@ class SettingsWindow(wx.Dialog, SettingsTabs):  # Polemos: Total reconstruction.
                 except: pass
             # Misc
             self.OnDetectTES3cmd()
-            self.a7zcrcOn.SetValue(conf.settings['advanced.7zipcrc32'])
+            self.a7zcrcOn.SetValue(conf.settings['advanced.7zipcrc32b'])
             self.modIntervFld.SetValue(conf.settings['advanced.redate.interval'])
         if self.openmw:  # OpenMW/Tes3MP Settings
             # Paths

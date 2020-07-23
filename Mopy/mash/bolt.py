@@ -302,7 +302,7 @@ class Path(object): # Polemos: Unicode fixes.
     @property
     def crc(self):  # Polemos: Optimized. It went from 23 sec to 6 sec in a 6700k system.
         """Calculates and returns crc value for self."""
-        if conf.settings['advanced.7zipcrc32'] and self.size > 16777216:
+        if conf.settings['advanced.7zipcrc32b'] and self.size > 16777216:
             #  7z is faster on big files
             args = ushlex.split('7z.exe h "%s"' % self.s)
             ins = Popen(args, bufsize=-1, stdout=PIPE, creationflags=DETACHED_PROCESS)
