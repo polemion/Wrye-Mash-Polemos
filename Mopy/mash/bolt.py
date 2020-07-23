@@ -780,7 +780,7 @@ class MetaParse:  # Polemos
 #------------------------------------------------------------------------------
 
 class ModInstall:  # Polemos
-    """File tree manipulations."""
+    """File tree manipulations (OpenMW)."""
 
     def __init__(self, parent, mod_name, modsfolder, source_dir, target_dir, filesLen):
         """Init."""
@@ -850,10 +850,8 @@ class ModInstall:  # Polemos
         source_dir = self.source_dir
         target_dir = self.target_dir
         if not os.path.isdir(self.target_dir): os.makedirs(self.target_dir)
-        num = 0
-        for root, dirs, files in scandir.walk(source_dir, topdown=False):
-            for fname in files:
-                num += 1
+        for root, dirsn, files in scandir.walk(source_dir, topdown=False):
+            for num, fname in enumerate(files, 1):
                 self.dialog.update(num)
                 relsource = os.path.relpath(root, source_dir)
                 if relsource == '.': relsource = ''

@@ -43,26 +43,15 @@
 
 import locale
 import time
+from threading import Thread as Thread # Polemos
 from subprocess import PIPE, check_call  # Polemos
 from sfix import Popen  # Polemos
 import io, ushlex, scandir  # Polemos
 from unimash import uniChk, encChk, _  # Polemos
-import array
-import cPickle
-import cStringIO
-import copy
-import math
-import os
-import re
-import shutil
-import string
-import struct
-import sys
-import stat
-import bolt
+import array, cPickle, cStringIO, copy, math, os, re, shutil, string
+import struct, sys, stat,bolt
 from bolt import LString, GPath, DataDict, SubProgress
-import compat
-import mush
+import compat, mush
 # Exceptions
 from merrors import mError as MoshError, Tes3Error as Tes3Error
 from merrors import AbstractError as AbstractError, ArgumentError as ArgumentError, StateError as StateError
@@ -3669,7 +3658,7 @@ class ReplJournalDate:
 
 #------------------------------------------------------------------------------
 
-class SaveInfo(FileInfo): # Polemos: Fixed a small (ancient again) bug with the journal.
+class SaveInfo(FileInfo):  # Polemos: Fixed a small (ancient again) bug with the journal.
     """Representation of a savegame file."""
 
     def getStatus(self):
@@ -3678,37 +3667,30 @@ class SaveInfo(FileInfo): # Polemos: Fixed a small (ancient again) bug with the 
         status = FileInfo.getStatus(self)
         masterOrder = self.masterOrder
         #--File size?
-        if status > 0 or len(masterOrder) > len(mwIniFile.loadOrder):
-            return status
+        if status > 0 or len(masterOrder) > len(mwIniFile.loadOrder): return status
         #--Current ordering?
-        if masterOrder != mwIniFile.loadOrder[:len(masterOrder)]:
-            return status
-        elif masterOrder == mwIniFile.loadOrder:
-            return -20
-        else:
-            return -10
+        if masterOrder != mwIniFile.loadOrder[:len(masterOrder)]: return status
+        elif masterOrder == mwIniFile.loadOrder: return -20
+        else: return -10
 
     def getJournal(self):
         """Returns the text of the journal from the savegame in slightly
         modified html format."""
-        if 'journal' in self.extras:
-            return self.extras['journal']
+        if 'journal' in self.extras: return self.extras['journal']
         #--Default
         self.extras['journal'] = _(u'[No Journal Record Found.]')
         #--Open save file and look for journal entry
         inPath = os.path.join(self.dir,self.name)
-        ins = Tes3Reader(self.name,file(inPath,'rb'))
+        ins = Tes3Reader(self.name, file(inPath, 'rb'))
         #--Raw data read
         while not ins.atEnd():
             #--Get record info and handle it
-            (name,size,delFlag,recFlag) = ins.unpackRecHeader()
-            if name != 'JOUR':
-                ins.seek(size,1,name)
+            (name, size, delFlag, recFlag) = ins.unpackRecHeader()
+            if name != 'JOUR': ins.seek(size, 1, name)
             #--Journal
             else:
                 (subName,subSize) = ins.unpackSubHeader('JOUR')
-                if subName != 'NAME':
-                    self.extras['journal'] = _(u'[Error reading file.]') # Polemos: fix: removed double '='
+                if subName != 'NAME': self.extras['journal'] = _(u'[Error reading file.]')  # Polemos fix: removed double '='
                 else:
                     reDate = re.compile(r'<FONT COLOR="9F0000">(.+?)</FONT><BR>')
                     reTopic = re.compile(r'@(.*?)#')
@@ -3719,8 +3701,8 @@ class SaveInfo(FileInfo): # Polemos: Fixed a small (ancient again) bug with the 
                 break
         #--Done
         ins.close()
-
-        #print self.extras['journal']  <== Polemos: the journal bug (easy to happen), it was present at least since Melchior's version up to Yakoby's.
+        # print self.extras['journal']  <== Polemos: the journal bug (easy to happen),
+        # it was present at least since Melchior's version up to Yakoby's.
         return self.extras['journal']
 
     def getScreenshot(self):  # Polemos fixes
@@ -4329,7 +4311,7 @@ class Packages_Factory:  # Polemos
 
 #------------------------------------------------------------------------------
 
-class PackagesData(DataDict, Packages_Factory): # Polemos
+class PackagesData(DataDict, Packages_Factory):  # Polemos
     """PackageData factory."""
     data = {}
 
@@ -4461,6 +4443,82 @@ class SaveModOrder:  # Polemos
         self.status = True
 
 # -----------------------------------------------------------------------------
+
+class CopyTree:  # Polemos
+    """File tree copy (generic)."""
+    accessErr = False
+
+    def __init__(self, parent, source_dir, target_dir):
+        """Init."""
+        self.parent = parent
+        self.source_dir = source_dir
+        self.target_dir = target_dir
+        if self.chkTarg(): return
+        self.filesLen = self.cntItms()
+        self.title = u'Overwriting...' if os.path.isdir(self.target_dir) else u'Copying...'
+        self.copyAct()
+
+    def chkTarg(self):
+        """Check if copying to itself."""
+        result = self.source_dir == self.target_dir
+        if result:
+            import gui.dialog as gui
+            gui.ErrorMessage(self.parent, _(u'Operation aborted: Thou shall not copy a directory unto itself...'))
+        return result
+
+    def copyAct(self):
+        """Thread Copy Tree."""
+        import wx
+        import gui.dialog as gui
+        self.dialog = gui.GaugeDialog(self.parent, self.target_dir, self.title, self.filesLen)
+        self.dialog.Show()
+        thrTreeOp = Thread(target=self.treeOp)
+        thrTreeOp.start()
+        with wx.WindowDisabler():
+            while thrTreeOp.isAlive(): wx.GetApp().Yield()
+        if self.accessErr: gui.ErrorMessage(self.parent, _(u'Operation failed: Access denied. Unable to write on the destination.'))
+
+    def cntItms(self):
+        """Count directory contents for progress status."""
+        itms = 0
+        for root, dirsn, files in os.walk(self.source_dir):
+            itms += len(files)  # We will use only the len of files for the progress status
+        return itms
+
+    def treeOp(self):  # Polemos: This is a very fast implementation. Todo: post it on stackoverflow
+        """Filetree operations."""
+        source_dir = self.source_dir
+        target_dir = self.target_dir
+        if not os.path.isdir(self.target_dir): os.makedirs(self.target_dir)
+        # Commence
+        try:
+            cnt = 0
+            for root, dirsn, files in scandir.walk(source_dir, topdown=False):
+                for status, fname in enumerate(files, 1):
+                    if self.filesLen < 41: self.dialog.update(status)
+                    else:
+                        cnt += 1
+                        if cnt >= 10:
+                            self.dialog.update(status)
+                            cnt = 0
+                    relsource = os.path.relpath(root, source_dir)
+                    if relsource == '.': relsource = ''
+                    source = os.path.join(root, fname)
+                    target = os.path.join(target_dir, relsource, fname)
+                    target_file_dir = os.path.join(target_dir, relsource)
+                    if not os.path.isdir(target_file_dir): os.makedirs(target_file_dir)
+                    buffer = min(10485760, os.path.getsize(source))
+                    if buffer == 0: buffer = 1024
+                    with open(source, 'rb') as fsource:
+                        with open(target, 'wb') as fdest:
+                            shutil.copyfileobj(fsource, fdest, buffer)
+        except IOError: self.accessErr = True
+        finally:
+            self.dialog.update(self.filesLen)
+            self.dialog.set_msg(_(u'Finished...'))
+            time.sleep(2)  # Give some time for system file caching.
+            self.dialog.Destroy()
+
 
 class ResetTempDir:  # Polemos
     """Reset/clear Mash Temp dir."""
@@ -4971,7 +5029,7 @@ class InstallerArchive(Installer):
                 u' unable to read archive %s.\nTry extracting it and then repacking it before trying again.' % (archive.s)))
             return
 
-    def unpackToTemp(self,archive,fileNames,progress=None):  # Polemos fixes and addons.
+    def unpackToTemp(self, archive, fileNames, progress=None):  # Polemos fixes and addons.
         """Erases all files from self.tempDir and then extracts specified files from archive to self.tempDir.Note: fileNames = File names (not paths)."""
         # Not counting the unicode problems, there were some strange bugs here, wonder why. - Polemos
         try: check = fileNames

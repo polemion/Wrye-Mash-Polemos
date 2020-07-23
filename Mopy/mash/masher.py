@@ -40,7 +40,7 @@
 
 # Imports
 import cStringIO
-import io, os, re, shutil, stat, string, sys, time, warnings
+import io, os, re, shutil, stat, string, sys, time, warnings, ntpath
 from datetime import date  # Polemos
 from subprocess import PIPE, check_call  # Polemos: KEEP "check_call" !!!
 from threading import Thread  # Polemos
@@ -2939,7 +2939,7 @@ class SavePanel(gui.NotebookPanel): # Polemos: refactored, adjustable width.
 class InstallersList(balt.Tank, gui.ListDragDropMixin): # Polemos: refactored, optimised, fixes, addons.
     """The list of installed packages. Subclass of balt.Tank to allow reordering etal."""
 
-    def __init__(self,parent, data, icons=None, mainMenu=None, itemMenu=None, details=None, id=-1, style=(wx.LC_REPORT|wx.LC_SINGLE_SEL)):
+    def __init__(self, parent, data, icons=None, mainMenu=None, itemMenu=None, details=None, id=-1, style=(wx.LC_REPORT|wx.LC_SINGLE_SEL)):
         """Init."""
         balt.Tank.__init__(self, parent, data, icons, mainMenu, itemMenu, details, id, style|wx.LC_EDIT_LABELS)
         gui.ListDragDropMixin.__init__(self, self.gList)
@@ -2977,8 +2977,9 @@ class InstallersList(balt.Tank, gui.ListDragDropMixin): # Polemos: refactored, o
         self.data.refresh(what='I')
         self.RefreshUI()
 
-    def OnChar(self, event): # Polemos: Added del button for deletions and a check if installers are ordered by "Load Order", optimized
+    def OnChar(self, event):  # Polemos: Added del => delete, CTRL + A/b +> de/select all, check if ordered by "Load Order", optimized
         """Character events."""
+        # CTRL + UP, CTRL + DOWN
         if event.ControlDown() and event.GetKeyCode() in (wx.WXK_UP, wx.WXK_DOWN):
             if not self.chkSort(): return
             selected = self.GetSelected()
@@ -3000,15 +3001,21 @@ class InstallersList(balt.Tank, gui.ListDragDropMixin): # Polemos: refactored, o
             # clamp between 0 and maxpos
             visibleIndex = max(0, min(maxPos, visibleIndex))
             self.gList.EnsureVisible(visibleIndex)
-        # Enter - Open selected Installer
+        # ENTER - Open selected Installer
         elif event.GetKeyCode() in (wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER):
             if len(self.GetSelected()):
                 path = self.data.dir.join(self.GetSelected()[0])
                 if path.exists(): path.start()
         # Del - Delete Installer
         elif event.GetKeyCode() == wx.WXK_DELETE:
-            if len(self.GetSelected()):
-                self.DeleteSelected()
+            if len(self.GetSelected()): self.DeleteSelected()
+        # CTRL + A - Select all items
+        elif event.GetKeyCode() == wx.WXK_CONTROL_A:
+            [self.gList.Select(x) for x in range(self.gList.GetItemCount())]
+        # CTRL + D - Deselect all items
+        elif event.GetKeyCode() == wx.WXK_CONTROL_D:
+            [self.gList.Select(x, 0) for x in range(self.gList.GetItemCount())]
+        # Else skip event
         else: event.Skip()
 
     def OnDClick(self, event):
@@ -3039,6 +3046,7 @@ class InstallersPanel(SashTankPanel):  # Polemos: Refactored, changes, store/res
             self.gList = InstallersList(left, data, installercons,
                 InstallersPanel.mainMenu, InstallersPanel.itemMenu, details=self, style=wx.LC_REPORT)
             self.gList.SetSizeHints(100, 100)
+            self.DragAndDrop()  # Polemos: Enable Drag and Drop
             # Buttons/Status Bar
             oStatus = _(u'Refreshing...') if conf.settings['mash.installers.enabled'] else _(u'Deactivated...')
             self.gPackage = wx.StaticText(btnPanel, -1, oStatus, style=wx.TE_READONLY|wx.NO_BORDER)
@@ -3121,16 +3129,53 @@ class InstallersPanel(SashTankPanel):  # Polemos: Refactored, changes, store/res
 
     def onUpdate(self, event):  # Polemos
         """Timer events."""
+        if singletons.gInstList.gList.droppedItms:  # Drag and Drop
+            toDrop = singletons.gInstList.gList.droppedItms
+            singletons.gInstList.gList.droppedItms = False
+            self.importDraggedItms(toDrop)
         if conf.settings['mash.page'] == 1:  # Installers page
-            if conf.settings['mash.installers.enabled']:
+            if conf.settings['mash.installers.enabled']:  # Buttons disable/enable
                 [x[0].Enable() for x in self.btnList if not x[0].IsEnabled()]
             else: [x[0].Disable() for x in self.btnList if x[0].IsEnabled()]
-            if self.statusChanged:
+            if self.statusChanged:  # Messages, time to stay
                 if self.instWatch.Time() > 4000:
                     self.statusChanged = False
                     self.instWatch.Pause()
                     self.gPackage.SetLabel(self.statusLastMsg)
-        else: self.gPackage.SetLabel(self.statusLastMsg)
+        else: self.gPackage.SetLabel(self.statusLastMsg)  # When changing Tab
+
+    def importDraggedItms(self, fPaths):  # Polemos
+        """Import Drag and Dropped files to installers dir."""
+        if gui.dialog.askdialog(self, _(u'Import Installers?\n\nClick "Yes" to copy the dragged and dropped installers into the'
+            u' "Installers" directory.\nClick "No" to cancel the operation.'), _(u'Import package(s)?')) == wx.ID_NO: return
+        actions = 0
+        for sourcePath in fPaths:
+            fpath, fname = ntpath.split(sourcePath)
+            if os.path.isfile(sourcePath):  # Importing a file
+                if os.path.isfile(os.path.join(conf.settings['sInstallersDir'], fname)):
+                    if gui.dialog.askdialog(self, _(u'A file with the same name already '
+                        u'exists. Overwrite "%s"?' % fname), _(u'Overwrite file?')) == wx.ID_NO: continue
+                # Copy/overwrite file to destination
+                actions += 1
+                try: shutil.copyfile(sourcePath, os.path.join(conf.settings['sInstallersDir'], fname))
+                except shutil.Error:
+                    gui.dialog.ErrorMessage(None, _(u'Operation aborted:'
+                        u' You cannot import a package from Installers directory on the Installers directory.'))
+                except IOError:
+                    gui.dialog.ErrorMessage(None, _(u'Operation failed: Access denied. Unable to write on the destination.'))
+                    return
+            elif os.path.isdir(sourcePath):  # Importing a directory
+                if os.path.isdir(os.path.join(conf.settings['sInstallersDir'], fname)):
+                    if gui.dialog.askdialog(self, _(u'A directory with the same name already '
+                        u'exists. Overwrite "%s"?' % fname), _(u'Overwrite directory?')) == wx.ID_NO: continue
+                # Copy/overwrite directory to destination
+                actions += 1
+                mosh.CopyTree(self, sourcePath, os.path.join(conf.settings['sInstallersDir'], fname))
+        # Refresh GUI
+        if actions:
+            singletons.gInstallers.refreshed = False
+            singletons.gInstallers.fullRefresh = False
+            singletons.gInstallers.OnShow()
 
     def onInstOrdR(self, event):  # Polemos
         """On restoring installers order."""
@@ -3186,6 +3231,12 @@ class InstallersPanel(SashTankPanel):  # Polemos: Refactored, changes, store/res
         self.refreshing = False
         self.frameActivated = False
         self.fullRefresh = False
+
+    def DragAndDrop(self):  # Polemos
+        """"Enable Drag and Drop."""
+        dragDrop = self.enableFileDragDrop(singletons.gInstList.gList)
+        singletons.gInstList.gList.SetDropTarget(dragDrop)
+        singletons.gInstList.gList.droppedItms = False
 
     def DoColumnMenu(self, event): #-# D.C.-G.
         """Modified to avoid system error if installers path is not reachable."""
@@ -5685,15 +5736,15 @@ class Files_Unhide(Link): # Polemos: made compatible with Menu bar.
 class File_Delete(Link):
     """Delete the file and all backups."""
 
-    def AppendToMenu(self,menu,window,data):
-        Link.AppendToMenu(self,menu,window,data)
-        menu.AppendItem(wx.MenuItem(menu,self.id,_(u'Delete')))
+    def AppendToMenu(self, menu, window, data):
+        Link.AppendToMenu(self, menu, window, data)
+        menu.AppendItem(wx.MenuItem(menu, self.id, _(u'Delete')))
 
-    def Execute(self,event):
+    def Execute(self, event):
         """Handle menu selection."""
         message = _(ur'Delete these files? This operation cannot be undone.')
         message += '\n* ' + '\n* '.join(sorted(self.data))
-        dialog = wx.MessageDialog(self.window,message,_(u'Delete Files'),
+        dialog = wx.MessageDialog(self.window, message, _(u'Delete Files'),
             style=wx.YES_NO|wx.ICON_EXCLAMATION)
         if dialog.ShowModal() != wx.ID_YES:
             dialog.Destroy()
@@ -6871,7 +6922,7 @@ class Installers_Import(Link):  # Polemos
         # Copy/overwrite file to destination
         try: shutil.copyfile(sourcePath, targPath)
         except shutil.Error:
-            gui.dialog.ErrorMessage(None, _(u'Operation failed: You may not import a package from Installers into the Installers.'))
+            gui.dialog.ErrorMessage(None, _(u'Operation aborted: You cannot import a package from Installers into the Installers.'))
             return
         except IOError:
             gui.dialog.ErrorMessage(None, _(u'Operation failed: Access denied. Unable to write on the destination.'))
@@ -6890,18 +6941,18 @@ class Installers_Import(Link):  # Polemos
 class Installers_Refresh(Link):
     """Refreshes all Installers data."""
 
-    def __init__(self,fullRefresh=False):
+    def __init__(self, fullRefresh=False):
         Link.__init__(self)
         self.fullRefresh = fullRefresh
 
-    def AppendToMenu(self,menu,window,data):
+    def AppendToMenu(self, menu, window, data):
         if not conf.settings['mash.installers.enabled']: return
-        Link.AppendToMenu(self,menu,window,data)
-        self.title = (_(u'Refresh Data'),_(u'Full Refresh'))[self.fullRefresh]
-        menuItem = wx.MenuItem(menu,self.id,self.title)
+        Link.AppendToMenu(self, menu, window, data)
+        self.title = (_(u'Refresh Data'), _(u'Full Refresh'))[self.fullRefresh]
+        menuItem = wx.MenuItem(menu, self.id, self.title)
         menu.AppendItem(menuItem)
 
-    def Execute(self,event):
+    def Execute(self, event):
         """Handle selection."""
         try: test = self.gTank
         except: # Polemos: made compatible with menubar.
@@ -7686,13 +7737,13 @@ class HomePage_Mod(Link):  # Polemos
 class Install_Package(Link):  # Polemos
     """Install selected package."""
 
-    def AppendToMenu(self,menu,window,data):
-        Link.AppendToMenu(self,menu,window,data)
+    def AppendToMenu(self, menu, window, data):
+        Link.AppendToMenu(self, menu, window, data)
         menuItem = wx.MenuItem(menu, self.id, _(u'Install...'))
         menu.AppendItem(menuItem)
         menuItem.Enable(len(self.data) == 1)  # Polemos, todo: multiple installs?
 
-    def Execute(self,event):
+    def Execute(self, event):
         """Handle menu selection."""
         package = os.path.join(conf.settings['downloads'], self.data[0])
         singletons.ModPackageList.UnpackPackage(package)

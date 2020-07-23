@@ -63,6 +63,7 @@ class ListDragDropMixin:
     move the item in the list and leaves it up to the implementation of
     OnDrop to do that work
     """
+
     def __init__(self, listCtrl):
         listCtrl.Bind(wx.EVT_LIST_BEGIN_DRAG, self._DoStartDrag)
         self.listCtrl = listCtrl
@@ -381,8 +382,27 @@ class List(wx.Panel):  # Polemos: Additions.
         event.Skip()
 
 
+class FileDrop(wx.FileDropTarget):  # Polemos
+    """Add file drag and drop functionality for Installers."""
+
+    def __init__(self, window):
+        """Init."""
+        wx.FileDropTarget.__init__(self)
+        self.window = window
+
+    def OnDropFiles(self, x, y, filenames):
+        """On file drop."""
+        if not filenames: return False
+        self.window.droppedItms = filenames
+        return True
+
+
 class NotebookPanel(wx.Panel):
     """Parent class for notebook panels."""
+
+    def enableFileDragDrop(self, window):  # Polemos
+        """Enable Drag and drop file(s) for ctrl."""
+        return FileDrop(window)
 
     def hoverInCtrl(self, event):  # Polemos
         """On hover, focus on calling control."""
