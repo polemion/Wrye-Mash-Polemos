@@ -7,7 +7,7 @@
   <body style="                        background-color: rgb(255, 242, 204);">
     <hr style="color: white; margin-left: auto; margin-right: auto;">
     <h1><span style="color: rgb(0, 51, 51);"> <b>Polemos's Wrye Mash Fork v101
-          beta2</b> </span> </h1>
+          beta4</b> </span> </h1>
     <p><b>Latest Version: <a href="https://www.nexusmods.com/morrowind/mods/45439">Nexus
           </a><br> Discussion: <a href="https://www.nexusmods.com/morrowind/mods/45439?tab=posts">Comments
           section</a></b></p>
@@ -2478,8 +2478,71 @@
             Versions</b></a> </span>
       <hr></h2>
     <p><a name="Versions" style="color: rgb(204, 102, 0);"></a></p>
-    <p><b><b>101 beta2 Polemos [4/22/2020]</b> </b></p>
+    <p><b><b>101 beta4 Polemos [11/2/2020]</b> </b></p>
     <p><em><strong>-Bugfixes, failsafes and safety additions.</strong></em><br>
+      Reverted, temporarily, the new file-drop functionality in the Installers
+      since it is conflicting with the internal drag and drop.<br>
+      Fixed a bug in the Settings dialog which was not resizing the elements
+      (options) correctly.<br>
+      Updated the pickle implementation to use binary so it can be slightly more
+      efficient, compatible with newer pickle protocols and it will (supposedly)
+      minimize the EOF error which plagues many users (in all of Wrye Mash
+      forks) in many instances. The change is implemented with being backward
+      compatible with the older settings format (which after first execution
+      gets upgraded). Pickle is also set to use the latest protocol available
+      (also supposedly more efficient). Extra care has been taken to avoid
+      corruption of any pickle file if an error occurs (unless it is
+      catastrophic).<br>
+      Fixed a regression bug with the "Installers" being enabled without user
+      approval. (Thanks StormcloakViking)<br>
+      Fixed a regression bug with the "Updaters" list not being loaded, late
+      night mistakes... (Thanks KarmicKid)<br>
+      Added a very fast Copy Tree class in Wrye Mash. It is currently used when
+      Dragging and Dropping in the Installers but it will also be implemented
+      elsewhere in the future.<br>
+      Added Drag and Drop functionality for the Installers list. You may drag
+      packages and folders directly on the Installers list to import them.<br>
+      Added Ctrl+A and Ctrl+D to select/deselect all items in the Installers
+      list.<br>
+      Added a store/restore button set on the Installers tab, for
+      storing/restoring Installers order. It will store the order of the
+      installers and their active state. On restoring the order, a choice
+      appears for the user to either sync the restored order, by re-installing
+      the installers, or do nothing.<br>
+      Refactored/optimized store/restore functionality for mod/plugins order.<br>
+      All lists will focus now on mouse hover allowing to mouse scroll without
+      clicking on them (user friendliness).<br>
+      Cosmetic fixes and GUI user friendliness additions on the Installers tab.<br>
+      Fixed a locale problem with wxpython. Tested with Korean locale but it
+      should work with other locales also.<br>
+      Credits updated.<br>
+      Fixed/refactored/updated TES3CMD clean window. More stable and user
+      friendly.<br>
+      Fixed a bug which threw an exception when running saved custom commands.<br>
+      Added Abot's "'tes3cmd.exe dump --raw-with-header dump.esp [selected
+      files]'" option as "Merge with TES3CMD".<br>
+      Added Abot's "Update header field and sync the list of masters." option as
+      "Sync Masters".<br>
+      Fixed a possible Unicode exception with when show logs of external
+      programs (e.g: TES3CMD).<br>
+      Fixed a possible freeze situation with "Fixit (all active)" and "Create
+      MultiPatch" commands."<br>
+      Added Abot's "Copy linear mod list" option.<br>
+      Added Abot's "Redate selected files from selected file time" option.<br>
+      Added Abot's "Redate from current system time" option.<br>
+      Fixed "sort" command dialog text.<br>
+      Added the ability to set the mod redate interval in seconds (default of
+      60") in the settings.<br>
+      Refactored settings module.<br>
+      Updated credits and credits module.<br>
+      Upgraded/refactored the logging functions. Now "WryeMash.log" is saving up
+      to 20 logging sessions in a Queue/Dequeue fashion. It was not working
+      correctly since before the days of my fork. Now it will finally have some
+      use.<br>
+      A lot of speed optimizations in the installers module.<br>
+      Optimization: Increased "Refresh" speed in the installers.<br>
+      Fixed a bug preventing renaming folders in the installers tab. (Thanks
+      wildbane)<br>
       Optimized "Copy Active Mods" option.<br>
       Fixed a newly introduced bug in the "Snapshots" functionality. Also
       optimized and faster. (Thanks KarmicKid)<br>

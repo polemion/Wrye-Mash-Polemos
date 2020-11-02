@@ -42,8 +42,8 @@ openmw = os.path.exists(os.path.join(os.path.dirname(sys.argv[0]), 'openmw.dat')
 
 # Version details
 ver = 101
-extraVerInfo = u'beta3' if not openmw else u'Alpha for OpenMW'
-date = u'7/2020'  # This updates the date of the fork in the credits (brutally below). You will need to change it below for your fork. Respect the dates.
+extraVerInfo = u'beta4' if not openmw else u'Alpha for OpenMW'
+date = u'11/2020'  # This updates the date of the fork in the credits (brutally below). You will need to change it below for your fork. Respect the dates.
 author = u'Polemos fork'
 
 def protoLicence():
