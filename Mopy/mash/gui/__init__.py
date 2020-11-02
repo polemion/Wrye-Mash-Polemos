@@ -87,7 +87,7 @@ class ListDragDropMixin:
             if idx == -1: break
             selected.append(self.listCtrl.GetItemText(idx))
         data = wx.CustomDataObject('ListItems%d' % self.listCtrl.GetId())
-        data.SetData(cPickle.dumps(selected))  #  Polemos: Used to be pickle
+        data.SetData(cPickle.dumps(selected), -1)  # Polemos: Used to be pickle
         ds = wx.DropSource(self.listCtrl)
         ds.SetData(data)
         ds.DoDragDrop(True)
@@ -117,7 +117,7 @@ class ListDragDropMixin:
                 self.listCtrl.Select(idx)
 
 
-class ListDrop(wx.PyDropTarget):
+class ListDrop(wx.DropTarget):
     """ Drop target for simple lists. """
 
     def __init__(self, dataId, setFn):
@@ -125,7 +125,7 @@ class ListDrop(wx.PyDropTarget):
         dataId - The id of the list, this ensures that we can't dragdrop between lists
         setFn - Function to call on drop.
         """
-        wx.PyDropTarget.__init__(self)
+        wx.DropTarget.__init__(self)
         self.setFn = setFn
         # specify the type of data we will accept
         self.data = wx.CustomDataObject('ListItems%d' % dataId)
@@ -144,7 +144,10 @@ class ListDrop(wx.PyDropTarget):
 
 
 class ListCtrl(wx.ListCtrl, ListCtrlAutoWidthMixin):
+    """Listctrl overload."""
+
     def __init__(self, parent, ID, pos=wx.DefaultPosition, size=wx.DefaultSize, style=0):
+        """Init."""
         wx.ListCtrl.__init__(self, parent, ID, pos, size, style=style)
         ListCtrlAutoWidthMixin.__init__(self)
 
@@ -400,7 +403,7 @@ class FileDrop(wx.FileDropTarget):  # Polemos
 class NotebookPanel(wx.Panel):
     """Parent class for notebook panels."""
 
-    def enableFileDragDrop(self, window):  # Polemos
+    def enableFileDragDrop(self, window):  # Polemos, disabled for now, the implementation conflicts with drag and drop
         """Enable Drag and drop file(s) for ctrl."""
         return FileDrop(window)
 

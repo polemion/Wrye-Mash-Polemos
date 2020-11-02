@@ -102,13 +102,12 @@ class SettingsTabs:
         IntOpt0_Sizer, IntOpt1_Sizer, IntOpt2_Sizer, IntOpt3_Sizer = SizerMany(4, wx.HORIZONTAL)
         IntOpt0_Sizer.AddMany([(self.HovHigh, 0, wx.ALL, 5),space,(self.LrgFont, 0, wx.ALL, 5)])
         IntOpt1_Sizer.AddMany([(self.MinOnClose, 0, wx.ALL, 5), ((0, 0), 1, wx.EXPAND, 5), (self.ShowErr, 0, wx.ALL, 5)])
-        IntOpt2_Sizer.AddMany([(self.InterfaceStatic, 0, wx.ALIGN_CENTER|wx.ALL, 5), ((30, 0), 0, 0, 5),(self.ThemeChoice, 1, wx.ALL, 5)])
-        IntOpt3_Sizer.AddMany([(self.EncodStatic, 0, wx.ALIGN_CENTER|wx.ALL, 5), ((30, 0), 0, 0, 5),(self.EncodChoice, 1, wx.ALL, 5)])
-        Interface_Sizer.AddMany([(IntOpt0_Sizer, 1, wx.EXPAND, 5),
+        IntOpt2_Sizer.AddMany([(self.InterfaceStatic, 0, wx.ALIGN_CENTER|wx.ALL, 5), ((30,0),0,0,5),(self.ThemeChoice, 1, wx.ALL, 5)])
+        IntOpt3_Sizer.AddMany([(self.EncodStatic, 0, wx.ALIGN_CENTER|wx.ALL, 5), ((30,0),0,0,5),(self.EncodChoice, 1, wx.ALL, 5)])
+        Interface_Sizer.AddMany([(IntOpt0_Sizer, 0, wx.EXPAND, 5),
             (IntOpt1_Sizer, 0, wx.EXPAND, 5),(IntOpt2_Sizer, 0, wx.EXPAND, 5),(IntOpt3_Sizer, 0, wx.EXPAND, 5)])
         General_Sizer = wx.BoxSizer(wx.VERTICAL)
-        General_Sizer.AddMany([(Menu_Sizer, 0, wx.EXPAND|wx.ALL,5),
-            (Update_Sizer,0,wx.EXPAND|wx.ALL,5),((0,0),1,0,5),(Interface_Sizer,1,wx.EXPAND|wx.ALL,5)])
+        General_Sizer.AddMany([(Menu_Sizer,0,wx.EXPAND|wx.ALL,5),(Update_Sizer,0,wx.EXPAND|wx.ALL,5),(Interface_Sizer,0,wx.EXPAND|wx.ALL,5)])
         self.general_panel.SetSizer(General_Sizer)
         self.general_panel.Layout()
         General_Sizer.Fit(self.general_panel)
@@ -120,7 +119,7 @@ class SettingsTabs:
         MainPaths_Sizer = wx.StaticBoxSizer(MainPathsBox, wx.VERTICAL)
         OptionalPathsBox = wx.StaticBox(self.paths_panel, wx.ID_ANY, _(u'Optional Paths:'))
         OptionalPaths_Sizer = wx.StaticBoxSizer(OptionalPathsBox, wx.VERTICAL)
-        self.Paths_Sizer = wx.BoxSizer(wx.VERTICAL)
+        Paths_Sizer = wx.BoxSizer(wx.VERTICAL)
 
         if not self.openmw:  # Regular Morrowind support
             # Main Paths: Morrowind
@@ -158,7 +157,7 @@ class SettingsTabs:
                     ((11,0),0,0,5),(self.TES3cmd_static1,1,wx.TOP|wx.RIGHT,5),(self.btnRechkT3cmd,0,wx.LEFT,5)])
             MainPaths_Sizer.AddMany([(Morrowind_Sizer,0,wx.EXPAND,5),(Installers_Sizer,0,wx.EXPAND,5)])
             OptionalPaths_Sizer.AddMany([(Mlox_Sizer,0,wx.EXPAND,5),(MGEXE_Sizer,0,wx.EXPAND,5), (TES3cmd_Sizer,0,wx.EXPAND,5)])
-            self.Paths_Sizer.AddMany([(MainPaths_Sizer,0,wx.EXPAND|wx.ALL,5),((0,0),1,0,5),(OptionalPaths_Sizer,0,wx.EXPAND|wx.ALL,5)])
+            Paths_Sizer.AddMany([(MainPaths_Sizer,0,wx.EXPAND|wx.ALL,5),((0,0),1,0,5),(OptionalPaths_Sizer,0,wx.EXPAND|wx.ALL,5)])
 
         if self.openmw:  #  OpenMW/TES3mp support
             # Main Paths: OpenMW/TES3mp
@@ -210,7 +209,12 @@ class SettingsTabs:
             MainPaths_Sizer.AddMany([(OpenMWTES3mp_Sizer,0,wx.EXPAND,5),(Downloads_Sizer,0,wx.EXPAND,5),
                             (Mods_Sizer,0,wx.EXPAND,5),(OpenMWconf_Sizer,0,wx.EXPAND,5)])
             OptionalPaths_Sizer.AddMany([(DataFiles_Sizer,0,wx.EXPAND,5),(TES3mpconf_Sizer,0,wx.EXPAND,5),(Mlox64_Sizer,0,wx.EXPAND,5)])
-            self.Paths_Sizer.AddMany([(MainPaths_Sizer,0,wx.EXPAND|wx.ALL,5),((0,0),1,0,5),(OptionalPaths_Sizer,0,wx.EXPAND|wx.ALL,5)])
+            self.Paths_Sizer.AddMany([(MainPaths_Sizer,0,wx.EXPAND|wx.ALL,5),(OptionalPaths_Sizer,0,wx.EXPAND|wx.ALL,5)])
+
+        # Common Layout
+        self.paths_panel.SetSizer(Paths_Sizer)
+        self.paths_panel.Layout()
+        Paths_Sizer.Fit(self.paths_panel)
 
     def defaultsTab(self):
         """Defaults Panel."""
@@ -241,7 +245,7 @@ class SettingsTabs:
 
         if not self.openmw:  # Regular Morrowind support
             self.a7zcrcOn = wx.CheckBox(advitmsBox, wx.ID_ANY,
-                    u'  Use 7zip to calculate crc32 for large files (may give 2%-20% faster "Refresh")', dPos, dSize, 0)
+                    u'  Use 7zip to calculate crc32 for large files (experimental)', dPos, dSize, 0)
             self.modIntervTxt = wx.StaticText(advitmsBox, wx.ID_ANY, u'Mod redating time interval, in seconds (Default: 60):', dPos, dSize, 0)
             self.modIntervFld = wx.SpinCtrl(advitmsBox, wx.ID_ANY, u'', dPos,
                     (65, 20), wx.SP_ARROW_KEYS|wx.SP_WRAP|wx.ALIGN_CENTER_HORIZONTAL, 1, 999, 0)
@@ -251,6 +255,7 @@ class SettingsTabs:
         if self.openmw:  # OpenMW/TES3mp support
             advinfo = wx.StaticText(advitmsBox, wx.ID_ANY, _(u'Nothing here yet!'), dPos, dSize, 0)
             advitms_Sizer.AddMany([(advinfo, 0, 0, 5)])
+
         # Common Layout
         adv_Sizer = wx.BoxSizer(wx.VERTICAL)
         adv_Sizer.Add(advitms_Sizer, 1, wx.EXPAND|wx.ALL, 5)
@@ -280,7 +285,7 @@ class SettingsTabs:
         AboutImageBtn_Sizer.AddMany([(self.license_button,0,wx.RIGHT|wx.LEFT,5),((11,0),0,0,5),(self.credits_button,0,wx.RIGHT|wx.LEFT,5)])
         AboutURL_Sizer.AddMany([space,(self.home_url,0,wx.RIGHT|wx.LEFT|wx.EXPAND,5),space])
         AboutImage_Sizer.AddMany([(self.wrye_bad,0,wx.ALL,5),space,(
-            AboutImageBtn_Sizer,0,wx.TOP,5),space,(AboutURL_Sizer,1,wx.EXPAND|wx.TOP,5),space])
+            AboutImageBtn_Sizer,0,wx.TOP,5),(AboutURL_Sizer,1,wx.EXPAND|wx.TOP,5)])
         AboutMain_Sizer.AddMany([(AboutImage_Sizer,0,wx.EXPAND,5),(self.contents,1,wx.ALL|wx.EXPAND,5)])
         About_Sizer.AddMany([(self.title,0,wx.EXPAND|wx.RIGHT|wx.LEFT,
             5),(self.version,0,wx.EXPAND|wx.RIGHT|wx.LEFT,5),(AboutMain_Sizer,1,wx.EXPAND,5)])
@@ -293,11 +298,11 @@ class SettingsWindow(wx.Dialog, SettingsTabs):  # Polemos: Total reconstruction.
     """Class for the settings Dialog."""
     settings = None
 
-    def __init__(self, parent=None, id=-1, size=(470,361), pos=dPos, style=wx.STAY_ON_TOP|wx.DEFAULT_DIALOG_STYLE, settings=None):
+    def __init__(self, parent=None, id=wx.ID_ANY, size=(-1, -1), pos=dPos, style=wx.STAY_ON_TOP|wx.DEFAULT_DIALOG_STYLE, settings=None):
         """Settings Dialog."""
         wx.Dialog.__init__(self, parent=parent, id=id, size=size, pos=pos, style=style)
         SettingsTabs.__init__(self)
-        self.SetSizeHints(-1, -1)
+        self.SetSizeHints(-1, -1, -1, -1)
         gui.setIcon(self)
         # Common:
         self.name_po, self.version_po, self.website_po, self.developers_po, self.license_po = About(conf.settings['openmw']).getData()
@@ -366,9 +371,6 @@ class SettingsWindow(wx.Dialog, SettingsTabs):  # Polemos: Total reconstruction.
             # ==================== Disabled Items ====================== #
         if True:  # Common
             # Layout
-            self.paths_panel.SetSizer(self.Paths_Sizer)
-            self.paths_panel.Layout()
-            self.Paths_Sizer.Fit(self.paths_panel)
             self.settings_notebook.AddPage(self.general_panel, _(u'General'), True)
             self.settings_notebook.AddPage(self.paths_panel, _(u'Paths'), False)
             self.settings_notebook.AddPage(self.defaults_panel, _(u'Defaults'), False)
@@ -378,6 +380,9 @@ class SettingsWindow(wx.Dialog, SettingsTabs):  # Polemos: Total reconstruction.
             main_Sizer.AddMany([(self.settings_notebook,1,wx.EXPAND|wx.ALL,5),(Buttons_Sizer,0,wx.RIGHT|wx.LEFT|wx.EXPAND,5)])
             self.SetSizer(main_Sizer)
             self.Layout()
+            self.SetSizer(main_Sizer)
+            self.Layout()
+            main_Sizer.Fit(self)
         if True:  # Events:
             self.timer_po()
             self.Bind(wx.EVT_CLOSE, self.OnClose)

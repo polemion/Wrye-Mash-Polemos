@@ -351,7 +351,13 @@ class Path(object): # Polemos: Unicode fixes.
             os.makedirs(self._shead)
         return open(self._s,*args)
 
-    def codecs_open(self,*args):  # Polemos: a new manipulation.
+    def parsePath(self):  # Polemos
+        """Return a file path."""
+        if self._shead and not os.path.exists(self._shead):
+            os.makedirs(self._shead)
+        return self._s
+
+    def codecs_open(self,*args):  # Polemos
         """Open a unicode file function."""
         if self._shead and not os.path.exists(self._shead):
             os.makedirs(self._shead)
@@ -1301,6 +1307,9 @@ class PickleDict:
                     ins.close()
                     return 1 + (path == self.backup)
                 except EOFError:
+                    if ins: ins.close()
+                except Exception as e:
+                    print(e)
                     if ins: ins.close()
         #--No files and/or files are corrupt
         return 0

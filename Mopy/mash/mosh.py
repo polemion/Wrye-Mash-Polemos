@@ -118,7 +118,7 @@ class Settings:  # Polemos: Added revert to backup configuration.
             shutil.copyfile(os.path.join(MashDir, self.path + '.bak'), os.path.join(MashDir, self.path))
         # --Load
         if os.path.exists(self.path):
-            inData = compat.uncpickle(open(self.path.encode('utf-8')))
+            inData = compat.uncpickle(self.path.encode('utf-8'))
             self.data.update(inData)
 
     def loadDefaults(self,defaults):
@@ -132,8 +132,7 @@ class Settings:  # Polemos: Added revert to backup configuration.
         #--Data file exists?
         filePath = self.path.encode('utf-8')
         if os.path.exists(filePath):
-            with open(filePath) as ins:
-                outData = compat.uncpickle(ins)
+            outData = compat.uncpickle(filePath)
             #--Delete some data?
             for key in self.deleted:
                 if key in outData: del outData[key]
@@ -142,7 +141,7 @@ class Settings:  # Polemos: Added revert to backup configuration.
         for key in self.changed: outData[key] = self.data[key]
         #--Pickle it
         tempPath = ('%s.tmp' % filePath).encode('utf-8')
-        cPickle.dump(outData,open(tempPath.encode('utf-8'),'w'))
+        cPickle.dump(outData,open(tempPath.encode('utf-8'),'wb'), -1)
         renameFile(tempPath.encode('utf-8'),filePath.encode('utf-8'),True)
 
     def setChanged(self,key):
@@ -228,8 +227,7 @@ class Table:
         self.hasChanged = False
         #--Load
         if os.path.exists(self.path):
-            ins = open(self.path)
-            inData = compat.uncpickle(ins)
+            inData = compat.uncpickle(self.path)
             self.data.update(inData)
 
     def save(self):  # Polemos: Unicode fix. Strange one. Was it mine? Questions, questions, questions... (a)
@@ -239,7 +237,7 @@ class Table:
             tempPath = '%s.tmp' % filePath
             fileDir = os.path.split(filePath)[0]
             if not os.path.exists(fileDir): os.makedirs(fileDir)
-            cPickle.dump(self.data,open(tempPath,'w'))
+            cPickle.dump(self.data,open(tempPath,'wb'), -1)
             renameFile(tempPath,filePath,True)
             self.hasChanged = False
 
@@ -329,13 +327,8 @@ class PickleDict(bolt.PickleDict):
         """
         result = bolt.PickleDict.load(self)
         if not result and self.oldPath.exists():
-            ins = None
-            try:
-                with self.oldPath.open('r') as ins:
-                    self.data.update(compat.uncpickle(ins))
-                result = 1
-            except EOFError:
-                if ins: ins.close()
+            self.data.update(compat.uncpickle(self.oldPath.parsePath()))
+            result = 1
         #--Done
         return result
 
@@ -3618,8 +3611,7 @@ class ModInfos(FileInfos):
         ins, path = False, os.path.join(self.dir,settings['mosh.modInfos.objectMaps'])
         try:
             if os.path.exists(path):
-                ins = open(path,'rb')
-                self.objectMaps = compat.uncpickle(ins)
+                self.objectMaps = compat.uncpickle(path)
         except EOFError:  # Polemos: Fix for corrupted Updaters pkl
             import gui.dialog, wx
             if ins: ins.close()
@@ -3638,7 +3630,7 @@ class ModInfos(FileInfos):
         path = os.path.join(self.dir,settings['mosh.modInfos.objectMaps'])
         outDir = os.path.split(path)[0]
         if not os.path.exists(outDir): os.makedirs(outDir)
-        cPickle.dump(self.objectMaps,open(path,'wb'),2)
+        cPickle.dump(self.objectMaps,open(path,'wb'),-1)
 
 #------------------------------------------------------------------------------
 
@@ -4485,7 +4477,7 @@ class CopyTree:  # Polemos
             itms += len(files)  # We will use only the len of files for the progress status
         return itms
 
-    def treeOp(self):  # Polemos: This is a very fast implementation. Todo: post it on stackoverflow
+    def treeOp(self):  # Polemos: This is a very fast implementation. Todo: post it on stackoverflow?
         """Filetree operations."""
         source_dir = self.source_dir
         target_dir = self.target_dir

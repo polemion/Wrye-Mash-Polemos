@@ -58,8 +58,26 @@ def findClass(module, name):
     klass = getattr(mod, name)
     return klass
 
-def uncpickle(f):
+def uncpickle(fPath):  # Polemos: Compatibility fix
     """Same as cPickle.loads(f) but does module name translation"""
-    pickleObj = cPickle.Unpickler(f)
-    pickleObj.find_global = findClass
-    return pickleObj.load()
+    if type(fPath) is unicode or type(fPath) is str:
+        try:
+            with open(fPath, 'rb') as f:
+                pickleObj = cPickle.Unpickler(f)
+                pickleObj.find_global = findClass
+                return pickleObj.load()
+        except:
+            with open(fPath, 'r') as f:
+                # Polemos: The Python 2.x version of pickle has a
+                # bug when in binary (slightly more efficient but
+                # also needed for newer protocols), thus besides
+                # compatibility with older saved Wrye Mash settings
+                # it is needed as a failover. More info:
+                # https://bugs.python.org/issue11564
+                pickleObj = cPickle.Unpickler(f)
+                pickleObj.find_global = findClass
+                return pickleObj.load()
+    else:
+        pickleObj = cPickle.Unpickler(fPath)
+        pickleObj.find_global = findClass
+        return pickleObj.load()

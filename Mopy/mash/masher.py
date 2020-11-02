@@ -3046,7 +3046,7 @@ class InstallersPanel(SashTankPanel):  # Polemos: Refactored, changes, store/res
             self.gList = InstallersList(left, data, installercons,
                 InstallersPanel.mainMenu, InstallersPanel.itemMenu, details=self, style=wx.LC_REPORT)
             self.gList.SetSizeHints(100, 100)
-            self.DragAndDrop()  # Polemos: Enable Drag and Drop
+            self.DragAndDrop()  # Polemos: Enable file Drag and Drop
             # Buttons/Status Bar
             oStatus = _(u'Refreshing...') if conf.settings['mash.installers.enabled'] else _(u'Deactivated...')
             self.gPackage = wx.StaticText(btnPanel, -1, oStatus, style=wx.TE_READONLY|wx.NO_BORDER)
@@ -3232,10 +3232,10 @@ class InstallersPanel(SashTankPanel):  # Polemos: Refactored, changes, store/res
         self.frameActivated = False
         self.fullRefresh = False
 
-    def DragAndDrop(self):  # Polemos
-        """"Enable Drag and Drop."""
-        dragDrop = self.enableFileDragDrop(singletons.gInstList.gList)
-        singletons.gInstList.gList.SetDropTarget(dragDrop)
+    def DragAndDrop(self):  # Polemos, diasabled for now, todo: re-enable
+        """"Enable File Drag and Drop."""
+        #dragDrop = self.enableFileDragDrop(singletons.gInstList.gList)
+        #singletons.gInstList.gList.SetDropTarget(dragDrop)
         singletons.gInstList.gList.droppedItms = False
 
     def DoColumnMenu(self, event): #-# D.C.-G.
@@ -3896,7 +3896,8 @@ class MashFrame(wx.Frame):  # Polemos: Added a Menubar, OpenMW/TES3mp support, m
                 mosh.mwIniFile.FullRefresh()
                 singletons.ModPackageList.Refresh()
             # Check Archives.
-            singletons.ArchivesList.Refresh()
+            if singletons.ArchivesList:
+                singletons.ArchivesList.Refresh()
             # Repopulate Morrowind Mods.
             if popMods: singletons.modList.Refresh(popMods)
             # --Will repop saves too.
@@ -3909,7 +3910,8 @@ class MashFrame(wx.Frame):  # Polemos: Added a Menubar, OpenMW/TES3mp support, m
                         self.Refresh_StatusBar()
             #--Current notebook panel
             if singletons.gInstallers: singletons.gInstallers.frameActivated = True
-            self.notebook.GetPage(self.notebook.GetSelection()).OnShow()
+            if self.notebook:
+                self.notebook.GetPage(self.notebook.GetSelection()).OnShow()
             # Duplicate entries found in configuration files?
             if mosh.mwIniFile.loadFilesDups:
                 mosh.mwIniFile.safeSave()

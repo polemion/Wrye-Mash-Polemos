@@ -78,7 +78,7 @@ def compileTranslator(txtPath, pklPath):
     #--Write translator to pickle
     filePath = pklPath
     tempPath = filePath+'.tmp'
-    cPickle.dump(translator, open(tempPath, 'w'))
+    cPickle.dump(translator, open(tempPath, 'wb'), -1)
     if os.path.exists(filePath): os.remove(filePath)
     os.rename(tempPath, filePath)
 
@@ -98,7 +98,7 @@ if os.path.exists(languageTxt) and (not os.path.exists(languagePkl) or (os.path.
 
 #--Use dictionary from pickle as translator
 if os.path.exists(languagePkl):
-    with open(languagePkl) as pklFile:
+    with open(languagePkl, 'rb') as pklFile:
         _translator = cPickle.load(pklFile)
     def _(text): return _translator.get(text, text)
 else:
