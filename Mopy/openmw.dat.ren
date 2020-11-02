@@ -1,0 +1,1215 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <title>Help</title>
+  </head>
+  <body style="                        background-color: rgb(255, 242, 204);">
+    <hr style="color: white; margin-left: auto; margin-right: auto;">
+    <h1><span style="color: rgb(0, 51, 51);"> <b>Polemos's Wrye Mash Fork v101
+          alpha for OpenMW</b> </span> </h1>
+    <p><b>Latest Version: <a href="https://www.nexusmods.com/morrowind/mods/45439">Nexus
+          </a><br> Discussion: <a href="https://www.nexusmods.com/morrowind/mods/45439?tab=posts">Comments
+          section</a></b></p>
+    <hr style="color: white; margin-left: auto; margin-right: auto;">
+    <p>Tested mainly in Win7 x64. It is also lightly tested and running in Win
+      XP* and Win 10 x64 (tested with various encodings).</p>
+    <p>*Only the x86 version is tested in Win XP.</p>
+    <p><br>
+    </p>
+    <p> <i> </i></p>
+    <p><i>"I am not a magician so you will obviously find bugs. Please bear in
+        mind that Wrye Mash has a huge tool set and even though I checked
+        thoroughly, I surely missed some.", Polemos<br>
+      </i></p>
+    <p><strong><span style="color: rgb(255, 0, 0);">Note: The help file for
+          OpenMW/TES3mp is not ready. So not many things here yet.</span></strong><i><br>
+      </i></p>
+    <p>What's new? Click here to find out: <a href="#Versions">Versions</a>.</p>
+    <p> <br>
+    </p>
+    <ul>
+    </ul>
+    <p> <a name="Versions" style="color: rgb(204, 102, 0);"><b><br>
+        </b></a></p>
+    <a name="15" style="color: rgb(204, 102, 0);"></a>
+    <p> </p>
+    <ul>
+    </ul>
+    <h2>
+      <hr><span style="color: rgb(204, 102, 0);"><a name="Versions"><b>15.
+            Versions</b></a> </span>
+      <hr></h2>
+    <p><a name="Versions" style="color: rgb(204, 102, 0);"></a></p>
+    <p><b><b><b>101 alpha Polemos [4/14/2020]</b> </b> </b></p>
+    <p><em><strong>-Bugfixes, failsafes and safety additions.</strong></em><br>
+      Fixed a bug in mod order restore when an empty item was included in the
+      list.<br>
+      Added more encoding failsafes, for example when changing encodings, to
+      abort any operations.<br>
+      Added the ability to insert the datetime as a text in the datetime dialog
+      (where you change the date and time of a mod).<br>
+      Added a copy and a paste button next to the datetime field, on the mod
+      details (right sidebar). You may use them if you wish to make a fast
+      copy/paste of datetime between mods.<br>
+      Wrye Mash will auto-correct capitalization (based on existing filenames)
+      of OpenMW configuration entries.<br>
+      Implemented de-duplication for esp, esm, bsa, omwgame, omwaddon for
+      OpenMWconfig file entries.<br>
+      Fixed BSA archives bugging out when no no Datamods folders are selected in
+      OpenMW.<br>
+      Fixed a BSA archive enumeration bug in the status bar.<br>
+      Fixed OpenMW plugin extension parsing to be case insensitive.<br>
+      Refactored and optimized OpenMW Data-mods implementation.<br>
+      Fixed a bug where (in some scenarios) OpenMW config files were increasing
+      by one empty line every time they were parsed.<br>
+      Wrye Mash will auto-correct capitalization (based on existing filenames)
+      of manual Morrowind configuration entries.<br>
+      Implemented de-duplication for esp, esm, bsa for Morrowind config file
+      entries.<br>
+      Fixed some archaic problems with MashError exceptions.<br>
+      Added a manual backup/restore menu option for Morrowind.ini (and
+      OpenMW.cfg/pluginlist.json) (besides the automatic one).<br>
+      Updated the profile engine.<br>
+      Updated codec open with io.<br>
+      Fixed the problems with special characters on multilingual morrowind.ini
+      (Tested on French steam version) It should work with all translations
+      (Russian, Polish, etc), but the user needs to select the correct encoding
+      for their language from the settings.<br>
+      Fixed some newly introduced bugs with the error messages.<br>
+      Wrye Mash was saving, unnecessarily, twice the 'morrowind.ini' (or
+      'openmw.cfg'). This is now fixed.<br>
+      Reinforced a fail-safe which reverts to the last 'morrowind.ini' (or
+      'openmw.cfg') backup in case of fatal errors.<br>
+      Various encoding fail-safes.</p>
+    <p><b>100 Polemos [</b><b><b>10/8/2019</b>]</b></p>
+    <p><em><strong>-Mainly a bugfix and optimization version</strong></em><br>
+      Added a notification when using Mashed Patch and having TES3cmd installed
+      which suggests the use of Multipatch instead (User-friendly).<br>
+      Implemented a self reset of "Updaters" data in case it gets corrupted
+      (asks the user first).<br>
+      TES3cmd is shown if it is detected correctly in the Paths section of the
+      Settings dialog (to avoid user confusions).<br>
+      TES3cmd was, in some cases, erroneously detected as active when it was
+      outside "Data Files" folder, this is now fixed.<br>
+      Refactored/optimised various wxpython dialogs.<br>
+      Fixed the "Open..." option menu in the Installers to show information if
+      no package is selected in Menubar or be disabled in the Old Menu.<br>
+      Added a new menu option "Import Package.." which imports packages to the
+      Installers directory (User-friendly).<br>
+      Added the option to disable the new "7zip crc32 calculation on big files"
+      in the settings (just in case).<br>
+      Added a new "Advanced" tab on the settings dialog.<br>
+      Fixed a bug in Master Tab (thanks praisejebus732 and Jaiysaun!).<br>
+      Cleaned the settings module code.<br>
+      Increased the size of the start-up wizard dialog.<br>
+      OpenMW implementation additions and fixes. =&gt; OpenMW/TES3mp<br>
+      Updated the help file.<br>
+      Refactored MGE XE and mlox statusbar implementation.<br>
+      Added the option to set MGE XE path in settings. Will still try to auto
+      detect the path if not already set.<br>
+      Finalized Wrye Mash alpha (as in before beta) v100 for OpenMW. =&gt;
+      OpenMW/TES3mp<br>
+      Optimized TESLint and Custom Commands, log dialogs.<br>
+      Optimized TES3CMD Fixit and Multipatch functions. Wrye Mash will no longer
+      freeze while TES3CMD is working.<br>
+      Fixed a regression bug in the query dialogs.<br>
+      Time is shown in 24h format now (in lists). Date remains locale specific.<br>
+      Fixed a bug in the newly updated query dialog (the one with the check
+      mark).<br>
+      Added a warning when changing masters with unknown encodings in a save .
+      The action is cancelled before any changes are made.<br>
+      Optimized installers full refresh. A full refresh of 1.34GB installers
+      (and Data Files) takes 5.6 sec in my system<br>
+      Implemented 7z crc32 calculation for big files. Depending on the size of
+      the scanned files there is a 2%-20% speed increase.<br>
+      Implemented xxhash algorithm in place of crc32 for installer packages (for
+      the packages not their contents), which decreased by 30% the scan time of
+      packages.<br>
+      Fixed the toolbar not refreshing when editing mlox in the settings.<br>
+      Mash will now try to revert to the backup settings configuration if
+      settings.pkl is missing.<br>
+      Structure refactoring.<br>
+      Fixed a bug in Tes3lint implementation which was preventing to exit the
+      output dialog.<br>
+      Added a new Tab in the Settings dialog named "Defaults". In there you can
+      enable/disable Mash warning prompts and also reset the column widths of
+      Mash lists (e.g. Mods list) into their default widths).<br>
+      Optimized and refactored the query dialogs for high resolutions.<br>
+      Optimized conf backup (morrowind.ini or openmw.cfg) fail-safe
+      auto-restoration.<br>
+      Improved conf file saving for better compatibility with Morrowind/OpenMW.<br>
+      Added a filename detection for possible problems with filename encodings.
+      It warns the user when a filename might cause problems with
+      Morrowind/OpenMW or Wrye Mash.<br>
+      Refactored Menubar to wxpython Phoenix standards.<br>
+      Added chardet support for the mod/plugin description field.<br>
+      The High Contrast theme applies to the Help File contents list color now.<br>
+      Added a warning when changing Morrowind directory in settings for the need
+      to restart Wrye Mash.<br>
+      Added encoding options in the settings dialog.<br>
+      Mash first time use Wizard is now allowed to be resized.<br>
+      Some code refactoring in the Mash Wizard also added encoding choices (for
+      translated version of Morrowind).<br>
+      Added a warning when changing masters with unknown encodings in a
+      mod/plugin . The action is cancelled before any changes are made.<br>
+      Added a warning when a master is automatically deselected in the masters
+      list in saves and mod/plugins (when missing or of wrong encoding).<br>
+      Fixed problem in masters list when a file contains unknown characters. It
+      will not bug out but it will deselect the problematic master. (Thanks
+      KarmicKid)<br>
+      Fixed a mistake which was preventing rearranging the mods order in the
+      mods tab. (Thanks KarmicKid)<br>
+      Fixed a fail-safe in morrowind.ini and openmw.cfg parsing<br>
+      Added an extra safety check for unrecognized characters in morrowind.ini
+      and openmw.cfg.<br>
+      Added marker checkups in the installers tab.<br>
+      Added ability to rename markers in Installers. (thanks MOB2).<br>
+      Fixed positioning on renaming in Installers.<br>
+      Small speed improvement in package installations. =&gt; OpenMW/TES3mp<br>
+      Added a check on open if there is already an instance of Wrye Mash
+      running.<br>
+      <strong>First 64bit release.</strong><br>
+      Code updates preparing transition to wxpython Phoenix.<br>
+      Fixed another Unicode bug, (thanks movomo!).<br>
+      Optimized "Full Refresh" speed in Installers by around 75%!! You got to
+      see to believe it! It went from 23" to 5" in my system.<br>
+      Added option to force close Wrye Mash if it is stuck ad infinitum in the
+      debug log.<br>
+      Optimized author, description, mod name fields dialog code and datetime
+      dialog (thanks Valascon).<br>
+      Fixed an attribute overload bug in mod/bsa enumeration, (thanks Stahpk).<br>
+      Added existence check on "Rename", "Duplicate", "Delete", "Repack",
+      "Refresh"... actions on installers. This fixes throwing an error in case
+      there was a deletion Mash hasn't detected.<br>
+      "Repack" option in installers tab now repacks rar archives (into .7z).<br>
+      Fixed a bug in Masters mini tab column ordering when clicking a column to
+      reorder (sorry, late night mistakes...).<br>
+      Optimized the way Wrye Mash finds itself. Safer and fixes problems when
+      having multiple Mash installations.<br>
+      Fixed a bug in Installers highlight color.<br>
+      Added animation package support. Wrye Mash will recognize animation
+      packages now.<b></b><b><br>
+      </b></p>
+    <p><b>99&nbsp; Polemos [10/16/2018]</b></p>
+    <p>Added a notification when changing paths in settings to restart Wrye
+      Mash.<br>
+      Fixed "syncing or repairing saves" bug which was preventing syncing or
+      repairing saves.<br>
+      Fixed a bug in updates check in settings which wasn't allowing to set less
+      than 15 days (in effect also blocking saving manual entries below 15).<br>
+      Made DateTime dialog fields and the dialog itself a little bigger to
+      accommodate user variety of scrollbar sizes.<br>
+      Made Details (mod info, name ...) dialog a little bit larger to
+      accommodate user variety of scrollbar sizes.<br>
+      Added sort by name or by order for Masters list both by clicking the
+      columns and in the masters menu.<br>
+      Right hand details panel in Mods Tab has now adjustable width (easier to
+      read Masters list).<br>
+      Right hand details panel in Saves Tab has now adjustable width (easier to
+      read Masters list).<br>
+      Fixed a Unicode bug in Installers "Duplicate" function.<br>
+      Fixed a bug in Installers "Duplicate" function which happened when
+      inputting an illegal char.<br>
+      Added 'Rename..." action in Installers tab.<br>
+      Fixed a highlight effect bug in Installers Tab.<br>
+      Disabled drag and drop on reversed list. It was never supported (even on
+      Yakoby's version) and I don't intend to add support. On the other hand,
+      moving items with the Keyboard is supported on reversed lists. Bonus: I
+      optimized keyboard movement on reversed lists, by reversing up/down
+      arrows, try and see.<br>
+      Added the ability to delete Installer packages when pressing the button
+      DEL in the installers tab.<br>
+      Fixed an unintended behavior in Installers which prevented using any
+      keyboard key if installers were not sorted by "Load order".<br>
+      Added the ability to restore the mod order from a saved game (ess) file.
+      In the saves tab under the masters mini tab select 'Restore mod order from
+      save'.<br>
+      Added a menu button in masters mini tab on both Plugins and Saves tabs.<br>
+      Installers dated out of Unix Epoch will show start of Epoch instead of
+      throwing an error.<br>
+      Fixed a bug in archive explorer.<br>
+      Changed default "Docs" behavior in the Installers. Now when installing,
+      all dirs and files under the "Docs" dir will also be installed.<br>
+      Created first Wrye Mash theme: "Black fonts for windows High Contrast
+      theme". It only changes the lists font color though to black...<br>
+      Created theme engine. For now, only the font color of lists can be changed
+      and the font hover color.<br>
+      Fixed "Enable Highlight on Hover in Lists". It will not reset line colors
+      anymore. Also Added color option in the theme engine.<br>
+      Optimized, refactored "Load" menu" item in Mods Tab.<br>
+      Fixed an age-old bug in Mods Tab when selecting "Load" menu to load a
+      saved list. It was throwing an error if a mod in the list was missing.
+      (Thanks Valascon)<br>
+      Fixed a bug in repack engine affecting some installers<br>
+      Fixed a bug in archive explorer which was throwing an error on some
+      installers<br>
+      Made "Comments" field in the Installers Tab friendlier to the end user.<br>
+      Added "Minimize to Systray" option in the Settings.<br>
+      Fixed a bug plaguing Wrye Mash at least since Melchior's version, with
+      some installer packages not displaying sub-packages when containing a
+      "Docs" folder. (Thanks Valascon)<br>
+      Further optimized settings dialog, also made strings translatable.<br>
+      Added an option in settings to disable showing the error log.<br>
+      Recoded and further optimized the MenuBar<br>
+      Fixed a problem with the MenuBar "View" sub-menu which wasn't allowing to
+      reverse the active sorting. (thanks Abot)<br>
+      Fixed a bug in the MenuBar, which when clicking "Reset Bethesda Dates",
+      the BSA Mini Tab was not getting refreshed .<br>
+      Fixed BSA list enumeration bug. Now enumeration goes according to datetime
+      order (as it supposed to).<br>
+      Recoded the Help browser. Now supports copy, select all, hotkeys. It is
+      also more colorful among other things.<br>
+      Complete update of the help file. Fixed spellings, removed obsolete
+      material, updated images, fixed typos and some more.<br>
+      Updated credits and licenses<br>
+      Cleaned up unused icons in code and in files, changed the default icons
+      and increased their resolution on the statusbar.<br>
+      Added a "Use Big Fonts on Lists" option in the settings dialog, for people
+      with tired eyes.<br>
+      Fixed a bug in esm line color on Mods Tab.<br>
+      Fixed a newly introduced bug in mod enumeration.<br>
+      Added a new "Sort by" menu in Installers Tab.<br>
+      The Installers are allowed to move only when set to "By order" from now
+      own (like Wrye Bash does).<br>
+      The Installers list does not not allow any movement anymore when "Sort by
+      Active" or "Projects first" are set. If this creates problems please say
+      so<br>
+      Fixed 2 bugs in TES3cmd restore. One opening the wrong tes3cmd backup dir,
+      and one which allowed restoring from Data files to Data FIles.<br>
+      Added a small toolbar with a save and a restore button, above mod details
+      in Mods Tab (like MO), for storing/restoring the plugins order.<br>
+      Added a simple junk filter for the "Repack" option in the installers.<br>
+      Added a "Repack" option for the installers. It opens the new Archive
+      Explorer and the user may select which folder is the "Data Files" folder,
+      of the installer. Afterwards it automatically creates a new "repacked"
+      archive from it.<br>
+      Added an Archives Explorer for the Installers Tab which shows the archive
+      contents to the user. For now it runs only when selecting the new
+      "Repack." option.<br>
+      Basic .omwaddon and .omwgame support added to Wrye Mash (no Mashed patch
+      for those yet). =&gt; OpenMW/TES3mp <br>
+      Added a dialog (which can be set to not appear) after TES3cmd fixit which
+      asks if the user likes to redate ESMs and ESPs in continuous dates
+      (aesthetics).<br>
+      Added a dialog after TES3cmd fixit which checks if Bethesda masters are
+      earlier in the mod order from other masters and asks if the user wants to
+      move bethesda masters in front of the other masters.<br>
+      Optimized and refactored mlox implementation.<br>
+      Check for updates now takes into account if Mash is a beta version.<br>
+      Fixed statusbar field not being reset to profile text after selecting a
+      menubar item.<br>
+      Fixed a newly introduced bug which was throwing errors when installers Tab
+      was empty (thanks StaticNation).<br>
+      Fixed a bug in Screenshots column when resizing the columns (thanks
+      StaticNation).<br>
+      Fixed a bug when showing a screenshot from a save in the Saves Tab which
+      had corrupted image information (thanks StaticNation).<br>
+      Optimized selecting (not activating/deactivating) multiple items(or all)
+      in Mods Tab list. Now it is almost instantaneous even on huge lists. <br>
+      Optimized selecting multiple items(or all) in Saves Tab. Now it is almost
+      instantaneous even on huge lists. <br>
+      Added CTRL+A to select all saves on Saves Tab.<br>
+      Restored asking to delete a mod by pressing DEL button in Mods Tab list
+      (which was disabled in Yacoby's version).<br>
+      Fixed a bug in TES3cmd clean which on some rare occasions was prevented
+      from finishing.<br>
+      Fixed a bug in TES3cmd implementation (v99beta2) which it was not updating
+      the mod order on the GUI (thanks StaticNation).<br>
+      ESM files buggy behavior when dragging and dropping them is fixed.<br>
+      Recoded drag and drop in Mod/Bsa lists. Now long lists are faster with
+      slightly different behavior (Using ctrl+arrows has the old behavior).<br>
+      Optimized and refactored mod, bsa, plugin lists.<br>
+      Fixed a bug in mod enumeration. Now it is also faster.<br>
+      Fixed 2 unicode bugs on the Mods Tab info fields. (thanks StaticNation).<br>
+      Fixed line endings on saved logs (TES3lint, multipatch, TES3cmd Fixit,
+      etc). They look nice now on Windows OSes. (thanks StaticNation).<br>
+      Basic context menu items are ready (when selecting items) in OpenMW Tabs.
+      =&gt; OpenMW/TES3mp <br>
+      Basic Menu items (MenuBar and Columns Menu) are ready for OpenMW Tabs.
+      =&gt; OpenMW/TES3mp <br>
+      Refactored and optimized Save/Mods/Plugins details, also cosmetic changes.<br>
+      Added Alphanumeric search key presses on BSA archives mini Tab.<br>
+      "Run Custom" remembers last used command now.<br>
+      Added special color rulesets for TES3lint, multipatch, TES3cmd Fixit when
+      shown in the log dialog.<br>
+      Optimized speed of TES3lint, multipatch, TES3cmd Fixit, Custom Commands
+      and any Adv. log functionality. Now they run fast...<br>
+      Fixed a bug in TES3lint implementation where it was always using -n flag
+      regardless of settings (thanks calemcc).<br>
+      Added a small cosmetic effect (font highlight on hover) on Tab lists, can
+      be switched off.<br>
+      Fixed a MWSE "missing files" icon bug (thanks Pherim for beta testing).<br>
+      Added Restore/Backup buttons in Mods Tab (like MO) to restore/backup mod
+      order. =&gt; OpenMW/TES3mp <br>
+      Installers bugfixes (age old). <br>
+      Refactored MenuBar code, also made MenuBar strings translatable.<br>
+      Added basic context menu for the packages miniTab in OpenMW/TES3mp. =&gt;
+      OpenMW/TES3mp <br>
+      Added ability to visit a mod's webpage in Nexus on the Downloads Tab for
+      OpenMW/TES3mp (only Nexus for now). =&gt; OpenMW/TES3mp <br>
+      Added basic context menu on Downloads Tab (remove, rename) for
+      OpenMW/TES3mp. =&gt; OpenMW/TES3mp <br>
+      Fixed a bug in Columns Sort sub-menu.<br>
+      Added column alignment filters for tab lists.<br>
+      Completed mod installer for OpenMW/TES3mp (Merge, replace, rename, copy,
+      move functions+). =&gt; OpenMW/TES3mp <br>
+      Created a junk filter for OpenMW/TES3mp mod installer. =&gt; OpenMW/TES3mp
+      <br>
+      Extract Nexus mod page and version from mods filename. =&gt; OpenMW/TES3mp
+      <br>
+      Auto-detect Data Files root from Packages added. =&gt; OpenMW/TES3mp <br>
+      Created a Package explorer for Mod Packages, choose what folder to
+      install. =&gt; OpenMW/TES3mp<br>
+      Optimized the first use Wizard for OpenMW/TES3mp. =&gt; OpenMW/TES3mp<br>
+      Created a first use Wizard for regular Wrye Mash.<br>
+      A sudden epiphany =&gt; small speed improvement in Installers (timed as
+      always).<br>
+      Created a new welcome dialog.<br>
+      A lot of code refactoring, optimizations and cleaning.<br>
+      Added MWSE support, Installers Tab recognize 'MWSE' from packages and
+      install contents into 'Data Files/MWSE.'<br>
+      Total reconstruction for the Settings window. Now it is able to
+      accommodate all the new settings.<br>
+      Small fixes in Utilities Tab.<br>
+      Fixed an issue where selecting a mod by pressing the first letter of the
+      mod's name wasn't scrolling the window to the mod's position in the list
+      (Thanks Abot). </p>
+    <p><b>98 Polemos [5/23/2018]</b></p>
+    <p>Added a safety switch which in case of fatal error, auto restores the
+      last Morrowind.ini/openMW.cfg backup.<br>
+      Added the ability to select a mod by typing its first letter in the Mods
+      Tab (which was missing in the Yakobys version) (thanks Zikerocks)<br>
+      Fixed alphabetical sorting on Mods Tab (thanks Zikerocks)<br>
+      Optimized Morrowind.ini parsing (faster when having a lot of mods)<br>
+      Optimized OpenMW.cfg parsing<br>
+      Implemented BSA support for OpenMW</p>
+    <p><b> 97 Polemos [5/6/2018]</b> </p>
+    <p>Bugfix Version (thanks Oooiii), fixed a bug in Installers unpacking<br>
+      Speed improvement in Installers<br>
+      Some code optimizations<br>
+      Updated Credits</p>
+    <p><b> 96 Polemos [5/4/2018]</b> </p>
+    <p>Optimized mlox auto detection x5 faster<br>
+      Cosmetic Change in Installers Tab (display KB, MB, GB in sizes)<br>
+      Small speed improvements all around but mainly in Installers Tab<br>
+      Optimized default window settings (For new/clean installations)<br>
+      No need to restart Wrye Mash anymore when there are changes in StatusBar
+      (like when adding mlox location)<br>
+      Fixed a bug in Settings which didn't allow to fire some Settings
+      notifications<br>
+      Fixed a bug in Installers Menubar<br>
+      Optimized Error log, added option to save log<br>
+      Added Archives mini Tab, Wrye Mash can fully handle BSA files now<br>
+      Various code optimizations/refactorings and cosmetic fixes all around<br>
+      Added option to Restore Default Dates for Official Bethesda Masters and
+      Archives (Helps with problems in Steam)<br>
+      Added "Create Mashed Patch" which automates creation, enabling and list
+      importing for Mashed Patch<br>
+      Added TES3lint implementation. In a way a GUI for TES3lint within Wrye
+      Mash<br>
+      Fixed a rare bug in Mods Tab<br>
+      New better live logging of interface actions<br>
+      Added Custom Commands menu option. You may save custom commands and
+      execute them on items you select in Mods Tab<br>
+      Refactored and optimized TES3cmd implementation (+one Unicode fix in
+      TES3cmd log)<br>
+      Cosmetic changes and the ability to save the log for TES3cmd "fixit"
+      function<br>
+      Added "Create MultiPatch" option for TES3cmd<br>
+      Unicode bugfix in Utilities Tab<br>
+      Code optimizations in Utilities Tab<br>
+      Refactored Screenshots and added 'Size' attribute in Screenshots Tab</p>
+    <p><b> 95 Polemos [3/29/2018]</b> </p>
+    <p>Cosmetic fixes in TES3cmd Cleaning window<br>
+      Fixed a bug in TES3cmd implementation which prevented cleaning files if
+      they had a space in their filename (thanks Oooiii)<br>
+      Optimized TES3cmd implementation code<br>
+      Fixed * Open "Data Files dir"- in Menubar to open Data Files instead of
+      Morrowind dir<br>
+      Many general bugfixes (Omissions in Yakoby's code and before).<br>
+      Fixed a bug in Installers which prevented uninstalling active mods<br>
+      Fixed 2 bugs in Menubar<br>
+      Small improvements in speed all around Wrye Mash interface<br>
+      Code optimizations in Installers, small speed improvements all
+      around(timed)<br>
+      Improved Installers speed (full refresh) by up to 50% (timed) by changing
+      default progress<br>
+      Fixed a bug in installers (key error).<br>
+      Optimized About dialog.<br>
+      Many Unicode bugfixes for the regular Morrowind version.<br>
+      Mash.ini has been removed for now. It produced more bugs than benefits, it
+      will come back again in the future as an option in settings.<br>
+      Wrye Mash can merge leveled lists now and create a Mashed list patch for
+      OpenMW <br>
+      OpenMW mod data folders are shown in the Downloads tab. Unload/load data
+      mod is ready. <br>
+      Full Profiles solution basis is complete (working but not allowed
+      creating/changing yet)<br>
+      Cosmetic, addons and code optimizations in the Setttings dialog<br>
+      Opening wizard for OpenMW is complete <br>
+      Downloads tab (beta) is complete (replaces installers in OpenMW/TES3mp
+      mode) </p>
+    <p><b> 94 Polemos [3/2/2018]</b> </p>
+    <p>Wrye Mash will notify user when a new Wrye Mash version is released
+      (configurable in settings and asked on first run).<br>
+      Changed Mlox browse dialog, from a dir dialog to a file dialog in
+      settings.<br>
+      Added a welcome message on first run for newbies.<br>
+      Added a dialog to run when Installers dir is not defined on start.<br>
+      OpenMW/TES3mp:Added auto-detect/browse function for OpenMW profile dir
+      (where openmw.cfg, saves dir, etc are contained)<br>
+      OpenMW/TES3mp:Created the entries for the Settings menu (OpenMW)<br>
+      Settings dialog remembers position now.<br>
+      Mash.ini is now an override. You do not need to have it. If you create
+      one, it will override installers setting. You can use it when you need the
+      Installers in a remote or relative directory.<br>
+      Optimized mlox path setting/detection.<br>
+      Another bugfix/check in installers.<br>
+      Fixed all progress indicators in Installers tab.<br>
+      Optimised the way "Installers" deleted files (fix errors when deleting
+      folders containing many files).<br>
+      7z console popups are now hidden.<br>
+      OpenMW/TES3mp:Basis for setting regular/openmw-tes3mp switch in Wrye Mash.<br>
+      OpenMW/TES3mp:Wrye is able to read openmw mod config (openmw.cfg).<br>
+      OpenMW/TES3mp:Wrye is able to to read and show in mods tab, the esps and
+      esms from openMW virtual data folders.<br>
+      OpenMW/TES3mp:Load order synchronization with openmw.cfg is complete.<br>
+      Possible fix of a -universal Wrye editions- bug (Hey Stahpk)</p>
+    <p><b> 93 Polemos [2/6/2018]</b> </p>
+    <p>Fixed an ages old bug in the installers which plagued Wrye Mashes from
+      times immemorial.<br>
+      (It prevented in some instances to install directly from an archive)<br>
+      Fixed a bug in balt progress bar<br>
+      Some optimizations in installers code <br>
+      Added varius informative dialogs for bugs in installers<br>
+      Fixed a unicode bug in installers (thanks stahpk for reporting it)<br>
+      Basis for setting regural/openmw-tes3mp switch in Wrye Mash<br>
+      Wrye is able to read openmw mod config (code in, not enabled)</p>
+    <p><b> 92b Polemos [1/22/2018]</b></p>
+    <p> Added a Menubar<br>
+      Added help text for menu items in the statusbar 2nd field (needs better
+      text in places)<br>
+      Added context menu (which was missing) for selected items in Utilitie tab
+      <br>
+      Fixed pickle file creation bugs (hackish)<br>
+      Wrye Mash starts with some better predefined settings<br>
+      Added support for windows XP<br>
+      Changed the way Wrye Mash finds the help file<br>
+      Added option to disable the new menubar or the old column bar in settings<br>
+      Code optimizations<br>
+      General Bug fixing<br>
+      Can now import non unicode morrowind.ini mod order from previous versions
+      of Wrye Mash<br>
+      Updated Wrye Mash Help file (need help on that)</p>
+    <p><b> 91 Polemos [1/15/2018] (not released)</b></p>
+    <p> Added mod order "#" number in the mod tabs columns<br>
+      Can change mod order both with "modified" and "#" now<br>
+      Added "About" button in toolbar<br>
+      Added/fixed missing "delete" function in screenshots tab<br>
+      Added remaining character count in dialogs needing one<br>
+      Better date/time dialog.<br>
+      Added a real time log when TES3cmd is run (Instead of waiting to finish
+      before showing any info). Good for the nerves<br>
+      Finally fixed a long hunted unicode folder bug<br>
+      General bug fixes (few regression bugs also)<br>
+      some code refactoring</p>
+    <p><b> 90 Polemos [12/31/2017] (not released)</b></p>
+    <p> Cosmetic change in Progress dialog (Installers) displays more
+      information<br>
+      Small cosmetic changes here and there<br>
+      Fixed unicode bug in "Copy active mods" (how did I miss that?)<br>
+      Added new functionality "Snapshots" for active mod order. Users can save
+      and exchange mod order easily now<br>
+      Replaced in mods tab: clicking the text fields (right) and editing with
+      new dialogs. Click ok in the dialogs also saves any changes directly<br>
+      Replaced date/time field with a dialog. Better. Clicking OK saves<br>
+      Fix: Clicking "masters" field or any other field without selecting a
+      mod/save no longer produces any actions<br>
+      Fixed mlox implementation. It also now works only with the exe of mlox<br>
+      Added option in settings to define mlox directory<br>
+      Removed sort order with mlox from mods context menu. This is implemented
+      in running it from the menu<br>
+      Added automatic insertion of mlox icon in the toolbar after mlox directory
+      is defined (needs restart)<br>
+      Implemented "revert last changes" for mlox in menu (talking about the exe
+      now)<br>
+      Fixed TES3cmd implementation<br>
+      When TES3cmd is installed in data files it is automatically identified by
+      Wrye Mash<br>
+      Added "Restore modified files" for TES3cmd<br>
+      Added MGE XE identification. When installed a new icon of MGE XE will be
+      automatically added in the toolbar (needs restart)<br>
+      General Bug fixes (some regression bugs also)</p>
+    <p><b> 89 Polemos [12/25/2017] (not released)</b> </p>
+    <p>Further improved unicode handling, utilities tab<br>
+      Replaced name input with auto generated one. It now uses an auto generated
+      ID<br>
+      Fixed utilities bugs<br>
+      Some cosmetic changes:<br>
+      -mods tab color (removed white highlight, mods with no problems default to
+      grey),<br>
+      -screenshots display image fills window (missing in Yacoby's)<br>
+      -Saves tab journal artifact is fixed and map notes display in a more
+      cosmetically nice dialog<br>
+      When you run Wrye Mash for the first time sort "by modified" is the
+      default<br>
+      Fixed Yacoby's "editing the file header" bug<br>
+      Fixed Progress dialog to work as intended in many places</p>
+    <p><b> 88 Polemos [12/18/2017] (not released)</b> </p>
+    <p>Further improved unicode handling, installers tab<br>
+      Fixed installers bugs<br>
+      Implemented a python unicode bug fix into the code (yeap python has bugs
+      too)<br>
+      Updated 7zip, updated code to handle it<br>
+      Changed the way "information" is transfered inside the structure. Better
+      unicode sandwich.<br>
+      Decided against unicode identifying in favor of unicode tolerance (heh heh
+      go figure)<br>
+      Improved Yacoby's drag and drop function<br>
+      Added PNG image capability in screenshots tab (why was it missing?)<br>
+      Clarified the text in some dialogs/menus<br>
+      Added the ability to recreate "mash_default.ini" instead of crashing (and
+      mash.ini)<br>
+      Fixed a lot of typos<br>
+      Installers default directory is set inside morrowind dir<br>
+      Added "Open Installers dir" in installers tab<br>
+      Personalized "Open {your tab} dir" in every tab</p>
+    <p><b> 87 Polemos [11/11/2017] (not released)</b> </p>
+    <p>Using latest (2.x) unicode wxpython and python with Yacoby's latest dev
+      source<br>
+      Improved unicode handling, unicode names in mods tabs do not produce any
+      problems any more<br>
+      Wrye Mash can be installed in any unicode named folder without any
+      byproducts anymore<br>
+      Updated code to handle newer python/wxpython<br>
+      Many (many) bug fixes (in general but mainly in mods tab)</p>
+    <p><b> 86 Yacoby [In Development]</b> </p>
+    <p>Fixed output logging<br>
+      Added drag and drop for mods and installers tab<br>
+      Fixed "Avoid at startup" option<br>
+      Allowed settings to be transfered from previous versions<br>
+      Improved unicode handling - File names are now stored as unicode<br>
+      Disabled marker renaming</p>
+    <p><b> 85 Yacoby [05/11/2011]</b> </p>
+    <p>Merged changes with Wrye Mash Standalone<br>
+      Added Ctrl Based mod sorting<br>
+      You can now toggle mods with the space bar<br>
+      Improved startup logging<br>
+      Added a "Load All" method (SCOs changes)<br>
+      Totally trashed the help browser trying to remove wx.lib.ie dependacy<br>
+      Fixed bug with utilites panel and programs not starting<br>
+      Added Mlox integration<br>
+      Added tes3cmd intergration<br>
+      Fixed issue with installer and read only files<br>
+      Installer files now open on double click<br>
+      Added Ctrl based sorting to the installers tab<br>
+      Fixed the odd unicode errors<br>
+      Changed the icon<br>
+      Added markers to the installer<br>
+      A lot of code refactoring<br>
+      Moved code out of masher.py<br>
+      Settings now is in settings.py<br>
+      Globals are in a file called globals.py (so it is easier to tell if a var
+      is global)</p>
+    <p><b> 84 DCG 0.0.2 [8/9/2010]</b> </p>
+    <p>Key shortcut for deletion in mods and saves tabs.<br>
+      Installers Tab improved (support for remote drives).<br>
+      Settings Window improved: added the installers path field.</p>
+    <p><b> 84 DCG 0.0.1 [7/14/2010]</b> </p>
+    <p>Utilities Tab improved with functions for creating/editing/deleting
+      utilities.<br>
+      Settings Window added: allow user to change some settings of Mash.</p>
+    <p><b> 84 DCG 0.0.0 [6/17/2010] (not released)</b> </p>
+    <p>Utilities Tab added: allow user to launch programs and commands from Wrye
+      Mash.<br>
+      Changed the help file interface: it looks like .chm ones now.<br>
+      Wrye Mash is now a stand alone program: users who don't want to modify it
+      don't have to download and install a bunch of Python libraries.<br>
+      The sources are available in the sources.zip archive.</p>
+    <p><b> 84 [2/5/2009]</b> </p>
+    <p>Installers Tab: Fix a bug with espm filtering of aliased mods.<br>
+      Baltization: Switch some code to balt.<br>
+      Add Screens tab.</p>
+    <p><b> 83 [2/5/2009]</b> </p>
+    <p>Baltization: Switch some code to balt.</p>
+    <p><b> 82 [2/4/2009]</b> </p>
+    <p>Bugfix: Include new/updated icons.<br>
+      Baltization: Switch some code to balt.</p>
+    <p><b> 81 [2/4/2009]</b> </p>
+    <p>Installers Tab Betaish!<br>
+      Please see discussion topic.</p>
+    <p><b> 80 [12/24/2008]</b> </p>
+    <p>Minor code performance tweak.<br>
+      Script import no longer zeros out variable data. (Still need to
+      recompile.)<br>
+      Fixed some "bash" stuff in the install instructions.</p>
+    <p><b> 79 [2/13/2008]</b> </p>
+    <p>Bash to Mash Retrofit.<br>
+      Update Doc Browser.<br>
+      Add autoquit button.<br>
+      Refactor bish<br>
+      Settings: 'wrye.mash' &gt;&gt; 'mash'<br>
+      Misc. Changes<br>
+      Changed dialog to export by topic.<br>
+      New: Export/Import Scripts<br>
+      Updated German translation by DWS.</p>
+    <p><b> 0.78 [2/18/2007]</b></p>
+    <p> Bugfixes/Tweaks<br>
+      Fix post2038 dates for python 2.5.<br>
+      WikiText: CSS tag.</p>
+    <p><b> 0.77 German, Misc. [1/27/2007]</b></p>
+    <p> Tweaks<br>
+      Improved install debugging help.<br>
+      Allow shorter internal link specification.<br>
+      Foreign Language Support<br>
+      German (by DWS)<br>
+      Italian tweaks (by Abot)</p>
+    <p><b> 0.76 [1/26/2007]</b></p>
+    <p> Fixed a tiny little bug that broke the code. </p>
+    <p><b> 0.75 [1/25/2007]</b> </p>
+    <p>Foreign Language Support<br>
+      Bugfix for translation file reading.<br>
+      Italian (99% Complete) (by Abot)</p>
+    <p><b> 0.74 [1/24/2007]</b> </p>
+    <p>Foreign Language Support <br>
+      Minor tweak to bish's dumpTranslation function<br>
+      Italian (98% Complete) (by Abot)</p>
+    <p><b> 0.73 [1/21/2007]</b></p>
+    <p> Python 2.5 compatibility.<br>
+      Tweaked shortcuts to be more generic.<br>
+      Wiki Text Html Generation.<br>
+      Added support for Internationalization.<br>
+      Allow No Gridlines on World Map Updating.<br>
+      Updated/Added Ref Removers:<br>
+      Pirate Lord Creatures (by Dragon32)<br>
+      Caits Critters Unleashed (by Dragon32)</p>
+    <p><b> 0.72 [1/5/2007]</b></p>
+    <p> New/Improved<br>
+      Tweaked list merging so that chance none is set to the chance none of the
+      last mod to load rather than to the mimimum chance none. Tweak needed for
+      MCA 5.1 Lighter to work with Mash.<br>
+      Added remover for Fireflies by Thaedyn Vyr (remover by Shasta Thorne).</p>
+    <p><b> 0.71 [12/10/2006]</b></p>
+    <p> New/Improved<br>
+      Modified remover creation to accept multiple files. <br>
+      Removed "Beth All", "Wrye All" and "Wrye Creatures" removers (since these
+      can now be recreated as multi-file remover.<br>
+      Added many new removers (by Dragon32 and Shasta Thorne) to Data\Removers
+      directory.</p>
+    <p><b> 0.70 [11/4/2006]</b></p>
+    <p> New/Improved<br>
+      Removed "blue" mod masters. (Blue is not relevant for mod masters).<br>
+      Tweaked sorting by name to ignore extension.<br>
+      Tweaked snapshot file wildcard filter.<br>
+      Added "Overriding List" check for Repair All on savegames.</p>
+    <p><b> 0.69 [10/17/2006]</b></p>
+    <p> New/Improved<br>
+      LCV Schedule generator upgrades (see LCV 03-13)<br>
+      Added "INI Tweaks..." function.</p>
+    <p><b> 0.68 [10/12/2006]</b></p>
+    <p> New/Improved<br>
+      LCV Schedule generator upgrades (see LCV 03-12). <br>
+      Bug fix<br>
+      Ignore directories that are named like mods (e.g. "xxx.esp".)<br>
+      Fix bugs associated with merging lists where a list is being deleted.</p>
+    <p><b> 0.67 [10/9/2006]</b></p>
+    <p> New/Improved<br>
+      LCV Schedule generator upgrades (see LCV 03-08 through 03-12).</p>
+    <p><b> 0.66 [9/26/2006]</b></p>
+    <p> New/Improved<br>
+      Finally fixed zombie progress bars! (I think.)<br>
+      Profile name is now included in app title.<br>
+      Added purple color for perfectly synced savegames.<br>
+      Bug fix<br>
+      Fixed a minor bug related to declining to remove a profile.<br>
+      Fixed a minor bug with error handling during leveled list merging.</p>
+    <p><b> 0.65 Bug fix [7/14/2006]</b></p>
+    <p> Bug fix<br>
+      Fix bug with help button setting.</p>
+    <p><b> 0.64 Misc. [7/14/2006]</b></p>
+    <p> New/Improved<br>
+      Added help button.<br>
+      Added savegame profiles.<br>
+      Mash now semi-expects to be installed under Morrowind directory.<br>
+      Added "Redate" reordering function.<br>
+      Added exclusion groups ala Bash.<br>
+      Added save game screenshots.<br>
+      Moved doc and journal browsing to context menu commands and eliminated the
+      previous document buttons.<br>
+      Removed static text headers from mod and save details panels.<br>
+      Use temp files more often to avoid power fail related file corruption.<br>
+      Fixes/Cleanup<br>
+      Fixed an error reporting bug for replacers.<br>
+      Prevent 'DaysPassed' global from being deleted. (Apparently, like
+      MonthsToRespawn, it's automatically added by the game engine.)<br>
+      Cleaned up some vestigial code. (NotesBrowser.)</p>
+    <p><b> 0.63 Misc. [1/19/2006]</b></p>
+    <p> Fixes/Cleanup<br>
+      Fixed a new bug that broke ref removers.</p>
+    <p><b> 0.62 Misc. [1/10/2006]</b></p>
+    <p> New/Improved<br>
+      Doc Editing Minor bug fix and improvement to make it easier to add/edit <br>
+      new doc files.</p>
+    <p><b> 0.61 Misc. [1/9/2006]</b></p>
+    <p> New/Improved<br>
+      Ratings: Specify ratings (i.e., score, grade) for mods.<br>
+      Hiding Files: Hide will now first try to hide to sub-directory named for
+      author, if it exists.<br>
+      Edit Docs: Can now edit text document files.<br>
+      Library Generator: Feature for generating library books. (CLI only.)<br>
+      Fixes/Cleanup<br>
+      Fixed bug with list merging that caused incorrect number of records to be
+      written. Only a problem if you then attempted to edit file with Enchanted
+      Editor, which would give an odd error and then truncate the merged esp
+      file.<br>
+      Complete representation of: BOOK, INFO, GLOB records. <br>
+      Useful for programmatically modifying these records. See mish.py for
+      examples.<br>
+      Misc. code cleanup.</p>
+    <p><b> 0.60 Object Index Renumbering [11/9/2005]</b></p>
+    <p> ObjectIndex Renumbering<br>
+      Experimental feature to renumber object indices reduce likelihood of local
+      ref conflicts between mods.</p>
+    <p><b> 0.59 Bugfix [10/16/2005]</b></p>
+    <p> Fixes/Cleanup<br>
+      Make sure backup directories exist before attempting to clean them.</p>
+    <p><b> 0.58 Misc. [10/9/2005]</b></p>
+    <p> Fixes/Cleanup<br>
+      Fix bug with hiding files that hadn't been assigned to a group.<br>
+      Backup directories now cleaned on application exit.</p>
+    <p><b> 0.57 Resource Replacers [10/2/2005]</b></p>
+    <p> Fixes/Cleanup<br>
+      Resource Replacers: <br>
+      Add progress dialog on apply.<br>
+      Add file types: kf, bmp. <br>
+      Fix makedirs bug.</p>
+    <p><b> 0.56 Resource Replacers [9/30/2005]</b></p>
+    <p> New/Improved<br>
+      Resource Replacers: Easily apply/remove resource replacers.<br>
+      Remove: Debris Cells for saves.<br>
+      Clean renamers dictionary on quit.</p>
+    <p><b> 0.55 Repair Map [9/17/2005]</b></p>
+    <p> New/Improved<br>
+      Improved Repair Map function.</p>
+    <p><b> 0.54 Repair Map [9/15/2005]</b></p>
+    <p> New/Improved<br>
+      Workable version of map repair. Still needs some work.<br>
+      Fixes/Cleanup<br>
+      Fix UI to upgrade correctly after mod select/unselect.</p>
+    <p><b> 0.53 Misc. [9/8/2005]</b></p>
+    <p> New/Improved<br>
+      Alpha sort multiple mods!<br>
+      When duplicating saves, now specify the save name, rather than the file
+      name.<br>
+      After mod or save duplication, selection will jump to duplicate.<br>
+      Can now skip warning when clicking on masters list.<br>
+      Hide now hides to Mash\Hidden\[GroupName] if group is specified for the
+      the file and the directory exists.<br>
+      Fixes/Cleanup<br>
+      Refactored UI updating. All file changes should now update UI correctly.<br>
+      Comment out a print statement during global ref remapping.<br>
+      Cleaned out some junk code; refactored other code.</p>
+    <p><b> 0.52 Misc. [8/16/2005]</b></p>
+    <p> Fixes<br>
+      Fix error.file bug.</p>
+    <p><b> 0.51 Misc. [8/8/2005]</b></p>
+    <p> Fixes<br>
+      Mash will now remap global script references as part of Repair All and
+      master file updating process.<br>
+      Updated Extras\ESTemplate.ini with SCPT.RNAM data.<br>
+      Added Review function for saves.</p>
+    <p><b> 0.50 Misc. [8/3/2005]</b></p>
+    <p> New/Improved<br>
+      Renamed Genre -&gt; Group, and added editing of group names.<br>
+      Added a (very minimal!) ref replacer for MCA 4.1. Only works with mods
+      designed to use it. (E.g., LCV Wolverine Hall.)<br>
+      For save games, Repair All now replaces Repair Refs, and includes Remove:
+      Orphan Contents.<br>
+      Fixes<br>
+      Fixed a bug with Genres that broke Ref Replacer importing.</p>
+    <p><b> 0.49 Misc. [7/31/2005]</b></p>
+    <p> New/Improved<br>
+      Can now specify genre for any mod.<br>
+      Added dummy marker mods (XXX ===.esp) to Extras folder.<br>
+      Schedules now supports projects and imports.<br>
+      Fixes<br>
+      Ref Removers and Replacers menu items are now disabled if more than one
+      file is selected.<br>
+      Internal<br>
+      Prep for internationalization.<br>
+      Refactor unpack of structs, and record and subrecord headers.<br>
+      Refactor Tes3Error handling.</p>
+    <p><b> 0.48 Misc. [7/27/2005]</b></p>
+    <p> New/Improved<br>
+      Tes3Error's should now print problem file.<br>
+      Fixes/Tweaks<br>
+      Repair All will no longer remove MonthsToRespawn global.</p>
+    <p><b> 0.47 Ref Replacers [7/26/2005]</b></p>
+    <p> New/Improved<br>
+      Added ref replacer ability and replacer file for NOM.</p>
+    <p><b> 0.46 Mashed Lists [7/23/2005]</b></p>
+    <p> Mashed Lists<br>
+      Added support for creating merged, resequenced lists.<br>
+      Misc.<br>
+      Add LEVI and LEVC to types of debris items removed during Repair All.</p>
+    <p><b> 0.45 Misc. Fixes and Tweaks [7/22/2005]</b></p>
+    <p> LCV Script Generator<br>
+      More support for off schedule NPCs.<br>
+      Support for initialization of NPCs through hello dialogs in each town.<br>
+      Fixes<br>
+      Tweak default and minimum window sizes to fix infinite looping that some
+      people have seen.<br>
+      Auto-add python root directory to os.environ['PATH'] so that activex dlls
+      will be found.<br>
+      Auto-create Data Files\Mash and Saves\Mash directories for tables and
+      object maps.<br>
+      Misc.<br>
+      Tweak journal text display.</p>
+    <p><b> 0.44 Journal Browser, Repair All [7/16/2005]</b></p>
+    <p> Journal Browser<br>
+      Can now browse the journal for any save file.<br>
+      Repair All vs. Repair Refs<br>
+      Repair Refs no longer removes Orphan Contents. Instead...<br>
+      New Repair All does Repair Refs, but also removes Orphan Contents and <br>
+      Debris (GLOBs, BOOKs, CREAs and NPC_s) in save games left over from
+      previous games that are no longer associated with save game.<br>
+      Misc.<br>
+      More intelligent updater creation. If you try to create an updater when
+      one is not necessary, you'll get a message saying as much and no updater
+      will be created.<br>
+      Fixes<br>
+      Fix possible bug in script generation.<br>
+      Fix a bug that prevented user from turning off "Lock Times".</p>
+    <p><b> 0.43 Misc. Fixes [7/12/2005]</b></p>
+    <p> New<br>
+      Finally added "Revert to Snapshot" command!<br>
+      LCV Schedule generator now checks for SC_offSchedule item.<br>
+      Fixes<br>
+      Fixed a problem where snapshot wasn't resetting the file date after
+      updating the version info in the file's description header.<br>
+      Fixed a problem where some mtimes were being saved even though "Lock
+      Times" was turned off.<br>
+      Fixed a problem where mod and save details were not updating correctly
+      after a mod file date change.</p>
+    <p><b> 0.42 Doc Browser [7/3/2005]</b></p>
+    <p> Doc Browser<br>
+      Docs for mod files can now be accessed easily from within Mash.<br>
+      Internal<br>
+      MTime info is now saved in Data Files\Mash\Table.pkl, along with doc
+      names,<br>
+      and (in the future) other mod specific data<br>
+      Misc. code cleanup.</p>
+    <p><b> 0.41 Misc. Upgrades [7/1/2005]</b></p>
+    <p> Ref Removers<br>
+      The remove objects by id function added to the CLI in version 0.38 is now
+      available in the GUI.<br>
+      Lock Times<br>
+      Lock Times (formerly "Remember Times", formerly "Auto-set Times") will now
+      forget memorized times if you turn it off. This prevents Lock Times from
+      overriding changes made by other load ordering utilities.<br>
+      Internal<br>
+      Added doc strings.<br>
+      Misc. code cleanup.</p>
+    <p><b> 0.40 Misc. Upgrades [6/29/2005]</b></p>
+    <p> Masters List: Copy List<br>
+      Copy the masters list to the clipboard for forum posts, etc.<br>
+      Masters List Numbering<br>
+      Masters list now shows the load order (modIndex) for each master.<br>
+      Import: LCV Schedules<br>
+      Tweak to fix problem with sleep scripts.<br>
+      Miscellaneous<br>
+      Upper limit (255) on number of load files is now enforced.<br>
+      Added Quick Start section to this doc.<br>
+      Added continue warning for Sort Records.<br>
+      Fixed master list sorting.<br>
+      Items added to master list are now sorted.<br>
+      Mish<br>
+      etxtToHtml command now included.<br>
+      Internal<br>
+      Renamed link classes.<br>
+      Added doc strings.</p>
+    <p><b> 0.39 Misc. Upgrades [6/25/2005]</b></p>
+    <p> Import LCV Schedules<br>
+      Imports LCV schedules into a mod file.<br>
+      Map Notes<br>
+      Extracts map notes from save file.<br>
+      Remove Orphan Contents<br>
+      Removes content records that have become "orphaned" -- i.e., no longer
+      matched to a cell reference.<br>
+      Sort Records<br>
+      Sorts mod file records for easier searching in TESCS Details view.<br>
+      Statistics<br>
+      You can now view the statistics for more than one file at a time. (I.e.,
+      statistics are now shown in a non-modal window.)<br>
+      Miscellaneous<br>
+      Menus have been reordered slightly.<br>
+      This docment has been rearranged and updated.</p>
+    <p><b> 0.38 Misc. Upgrades [5/30/2005]</b></p>
+    <p> Mish: Misc<br>
+      LCV Schedule Generator<br>
+      Remove Objects<br>
+      Sort Records<br>
+      Save: Unspawn<br>
+      New save file command resets all spawn points. Great for resetting<br>
+      game after changing your spawned creature lists.<br>
+      Misc.<br>
+      Rearrange Masters link list.</p>
+    <p><b> 0.37 Window Closing Bugfix [3/13/2005]</b></p>
+    <p> Closing While Minimized<br>
+      Previously, if Mash were closed while minimized, it would save a bogus
+      frame position in settings, which would prevent it from opening correctly
+      on next use. This is fixed now. </p>
+    <p><b>0.36 Misc. Improvements [2/25/2005]</b> </p>
+    <p>Circular Masters Mash was going into infinite loop if masters were
+      circular. This is fixed<br>
+      now.<br>
+      Sync to Load ESMs will no longer allow you to create circular masters.</p>
+    <p><b> 0.35 Misc. Improvements [2/13/2005]</b></p>
+    <p> Dialog Export/Import<br>
+      Deleted dialogs no longer cause a problem.<br>
+      Entries are now better sorted.<br>
+      Some characters are now replaced or deleted. (@, #, curly quotes,
+      ellipses, extra spaces).</p>
+    <p><b> 0.34 ObjectIndex Mapping, Dialog Export/Import, Misc. Fixes
+        [2/5/2005]</b></p>
+    <p> ObjectIndex Remapping<br>
+      Mash now does ObjectIndex remapping, thus completing its program for
+      preventing/fixing doubling.<br>
+      Dialog Export/Import<br>
+      Can now export and import dialog.<br>
+      Snapshot Modifications<br>
+      Snapshot numbers can now only be preceded by a '-'.<br>
+      Is Snapshot command has been removed.<br>
+      Interior Cells with Water<br>
+      Mash was misidentifying interior cells with water as exterior cells. This
+      may have resulted in excessive reference deletion on repair. This is
+      corrected now.</p>
+    <p><b> 0.33 Minor Fixes and Improvements [1/29/2005]</b></p>
+    <p> Minor Bugfixes<br>
+      Mash was throwing an error when you right clicked on a master that didn't
+      exist. This is fixed now.<br>
+      Mash was throwing an error when you tried to "Load Masters" when one or
+      more of the masters didn't exist. Mash now gives you a warning message.<br>
+      Misc. Improvements<br>
+      Add support for '+' at end of version numbers in descriptions (e.g., <br>
+      "Version 1.2.3+". Use this as a note that file has changed since snapshot
+      was taken.</p>
+    <p><b> 0.32 Minor Bug Fix [1/27/2005]</b></p>
+    <p> Bugfix: New Lines in Mod Descriptions <br>
+      Mash was writing descriptions with unix style new lines when it should
+      have been using windows style new lines. This is fixed now.<br>
+      If you have a lot of files contaminated with this error, you can use the
+      mish temp3 function to fix it. Ask on the forums for more info if you need
+      it.<br>
+      AFAIK, this produced no run time problems -- it just messed up your
+      description display in TESCS. </p>
+    <p><b>0.31 New Features, Minor Fixes [1/27/2005]</b></p>
+    <p> Copy to Esm/Esp <br>
+      You can now copy an esp to an esm and vice versa. Look for new command on
+      Mod items context menu.<br>
+      Editing Masters <br>
+      Change menu item name from "Edit" to "Update".<br>
+      No more warning if select from menu. But clicking anywhere in list will
+      trigger Update query.<br>
+      For esps/esms, change "Sync to Load Files" to "Sync to Load ESMs". <br>
+      Can now directly "Sync to Load Files/ESMs". I.e., don't have to "Update<br>
+      Masters" first.<br>
+      Snapshot Improvements<br>
+      New Is Snapshot command for versioned mods.<br>
+      Version number is now written to description field if description has a
+      pre-existing "Version N.M" line.<br>
+      Minor Bug Fixes <br>
+      Mash was failing to remove masters when the user attempted to uncheck them
+      in the master list. This works now.<br>
+      Miscellaneous <br>
+      You can now sort mods by file version.<br>
+      Mash now deletes backups and temp files while deleting files.
+      However,&nbsp; it does not delete snapshots or hidden files.</p>
+    <p><b> 0.30 Itty Bitty Fix [1/24/2005]</b></p>
+    <p> Minor Bug Fix <br>
+      Fix a key not found error that showed up on some Ref Repairs.</p>
+    <p><b> 0.29 Misc. Improvements and Fixes [1/23/2005]</b></p>
+    <p> Major Bug Fix: Refs Repair on Exterior Cells <br>
+      Mash was misidentifying exterior cells, and as a result erroneously
+      marking a change refs in those cells as BAD::NO MASTER, when they were
+      fine. This is fixed now.<br>
+      Repair Refs on Mods <br>
+      You can now use Repair Refs on mods.<br>
+      Also a (hopefully) rare bug on editing masters of esps has been fixed.<br>
+      Improved Error Checking <br>
+      Mash now checks read size for reasonableness before attempting to read.
+      This fixes the slowness problem mentioned in File Corruption Handing for
+      version 0.28.<br>
+      During Repair Refs, Mash now generates useful error messages if a&nbsp;
+      master needs to be repaired first.<br>
+      Mash now checks for second NAM0 records in cells.<br>
+      Minor Bug Fixes <br>
+      Mash would sometimes crash if a mod file was deleted or renamed from
+      outside Mash. It now handles handles this correctly.</p>
+    <p><b> 0.28 Minor Fixes and Features [1/22/2005]</b></p>
+    <p> Major Bug Fix <br>
+      Mash was failing on manually unselecting files. (This is a recent "break
+      something while fixing something" bug.) This is fixed now.<br>
+      More File Corruption Handling <br>
+      Added a new handler for another type of file corruption, but it seems to
+      move pretty slowly (if such a corrupted file is present). Better than
+      nothing, I guess.<br>
+      Bugfix: Morrowind.ini <br>
+      Mash could enter an infinite loop at startup if the Morrowind.ini file had
+      been altered by hand in certain ways. <br>
+      Now, Mash handle most (all?) legitimate changes to the Morrowind.ini file.
+      However, a missing [Game Files] section will still result in a
+      failure/exit on startup. </p>
+    <p><b>0.27 Major Bugfix [1/21/2005]</b></p>
+    <p> Bugfix: File Version <br>
+      Mash was reading the file version in as a float, but writing it out as an
+      int! This in fact, was the cause of the death animation problem as well as
+      the character's attire becoming confused after header editing.<br>
+      Now, Mash writes file version as a float and no longer uses the current
+      animation deletion "fix" from version 0.26.<br>
+      Also, Mash now displays file version in both mod and save details views.<br>
+      Files with version 0.0 are mostly likely corrupted and should be reverted
+      to backup or first backup.<br>
+      Bugfix: Corrupted Headers <br>
+      Mash crashed on startup if you had mod or save files with missing or
+      corrupted headers.&nbsp; Now, Mash warns you and ignores the damaged
+      files.<br>
+      Bugfix: Y2038 Bug <br>
+      Mash crashed on startup if you had files with modification dates greater
+      than 1/19/2038 (Unix Epoch rollover! Welcome to Y2038!). Now, Mash resets
+      the modification dates of those files to around 1/1/2037 and notifies you
+      of the change.</p>
+    <p><b>0.26 Major Bugfix [1/20/2005]</b></p>
+    <p> Header Editing <br>
+      Instead of blowing away all leveled creatures, I now blow away all current
+      animations. This seems to be a full solution.<br>
+      Drawbacks: NPCs may stand around for a little while before resuming their
+      normal activities. Also, corpses will repeat their death animations.<br>
+      Ref Repair <br>
+      Fixed an MVRF bug before I saw it.<br>
+      ESTemplate.ini <br>
+      This is the Enchanted Editor template that I'm currently using. It has a
+      number of additions related to save files. It has not been massively
+      tested (but that's true for the original templates too, of course). Still,
+      use at your own risk. Includes some additions from Beryllium as well.</p>
+    <p><b> 0.25 Partial Bugfixes [1/19/2005]</b></p>
+    <p> ESM Ordering <br>
+      Reworked this in an effort to mimic Bethesda's ordering. Seems to be
+      correct now...<br>
+      Header Editing (Partial Bug Fix) <br>
+      After editing headers, creature corpses are not able to find their death
+      animations. Living creatures are fine, as are creatures that you kill
+      after the editing. Also, it doesn't seem to be a problem for NPCS -- just
+      for creatures.<br>
+      As a temporary partial solution, I'm resetting all LVCR references. This
+      is basically safe -- it will just cause those points to respawn. But this
+      still leaves the problems of non-spawned creatures (many of whom are
+      crucial to various quests.)<br>
+      Repair Refs <br>
+      Maintain original ordering of functions.<br>
+      Note: This may also suffer from creature death animation bug.<br>
+      EE Wrye 0.0.ini <br>
+      Enchanted Editor template file with my personal updates.</p>
+    <p><b> 0.24 Repair Refs, etc. [1/15/2005]</b></p>
+    <p> New <br>
+      Repair Refs Function <br>
+      MenuItem: Backup<br>
+      Improvements <br>
+      Progress dialog for master save.<br>
+      Reordered File submenu.<br>
+      Fixes <br>
+      Changed temp file names to remove potential problem with Morrowind
+      launcher.<br>
+      Disable Backup menu items on multi-select.</p>
+    <p><b> 0.23 First release with docs!</b></p>
+    <p><br>
+      <span style="color: rgb(204, 102, 0);"><b> </b></span></p>
+    <p><span style="color: rgb(204, 102, 0);"></span></p>
+    <h2>
+      <hr><span style="color: rgb(204, 102, 0);"><b><a name="16"></a>16.
+          Credits/Thanks</b></span>
+      <hr></h2>
+    <p><span style="color: rgb(204, 102, 0);"></span></p>
+    <p><i>"Every modder and utility developer in the Morrowind community stands
+        on the collective shoulders of everyone who preceded them, contributing
+        time, talent, and inspiration. So, thanks to all the past developers and
+        folks in the forums!", Wrye.</i></p>
+    <p><b>Wrye</b>: the original creator of Wrye everything, </p>
+    <p><b>Melchor</b>: New help interface, Utilities tab and settings window, </p>
+    <p><b>Yacoby</b>: drag and drop functionality, mlox TES3cmd support, fixes,
+      refactoring and more, </p>
+    <p><b>Polemos</b>: Toolbar menu, mod order snapshots, better Unicode
+      support, fixes, BSA Archives implementation, OpenMW/TES3mp compability,
+      TES3lint support, Custom Commands support, new dialogs, theming options,
+      store/restore mod order buttons, interface modernization and streamlining,
+      speed improvements, update notifications, support for people with weak
+      vision, higher icon res for the status bar, extra functionalities,
+      complete update of the help file and more. </p>
+    <p><b>ManaUser</b>: Coding (a lot). </p>
+    <p><b>Argent</b>: Java code and technical insights into Morrowind files. </p>
+    <p><b>FallenWizard</b>: Key shortcut for deletion in mods and saves tabs
+      from Bash. </p>
+    <p><b>Beryllium</b>: EE templates, bug reports and feedback. </p>
+    <p><b>Abot</b>: Translations. </p>
+    <p><b>Dragon32</b>, <b>Shasta Thorne</b>: Ref Removers. </p>
+    <p><b>Oooiii, Stahpk, Abot, StaticNation, calemcc, Zikerocks, Valascon and
+        Pherim</b>: Vital bug reports and ideas. </p>
+    <p><b>StaticNation</b>: The Wrye Mash bug finder champion. </p>
+    <p><b>KOYK_GR</b>: New icon and Bug testing. </p>
+    <p><span style="color: rgb(204, 102, 0);"><b><br>
+        </b></span></p>
+    <p><span style="color: rgb(204, 102, 0);"></span></p>
+    <h2>
+      <hr><span style="color: rgb(204, 102, 0);"><b><a name="17"></a>17. Contact</b></span>
+      <hr></h2>
+    <p><span style="color: rgb(204, 102, 0);"></span></p>
+    <p> <i>The way to reach me is through the Nexus. Write a comment.</i></p>
+    <p><i> Python and wxPython specific questions should be directed to online
+        communities. Check also <a href="https://stackoverflow.com/">https://stackoverflow.com/</a>.</i></p>
+    <p> <b style="color: rgb(204, 102, 0);"><br>
+      </b></p>
+    <h2>
+      <hr><span style="color: rgb(204, 102, 0);"><b><a name="18"></a>18. License</b>
+      </span>
+      <hr></h2>
+    <p><b>Wrye Mash Polemos fork GPL License and Copyright Notice<br>
+        Wrye Mash Polemos fork Copyright (C) 2017-2018 Polemos</b><br>
+      based on code by Yacoby copyright (C) 2011-2016 Wrye Mash Fork Python
+      version<br>
+      &nbsp; based on code by Melchor copyright (C) 2009-2011 Wrye Mash WMSA<br>
+      &nbsp; based on code by Wrye copyright (C) 2005-2009 Wrye Mash<br>
+      <b>License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher</b><br>
+      Copyright on the original code 2005-2009 Wrye<br>
+      Copyright on any non trivial modifications or substantial additions
+      2009-2011 Melchor<br>
+      Copyright on any non trivial modifications or substantial additions
+      2011-2016 Yacoby<br>
+      Copyright on any non trivial modifications or substantial additions
+      2017-2018 Polemos</p>
+    <p> <b>Wrye Mash License and Copyright Notice</b><br>
+      Wrye Mash is free software; you can redistribute it and/or<br>
+      modify it under the terms of the GNU General Public License<br>
+      as published by the Free Software Foundation; either version 2<br>
+      of the License, or (at your option) any later version.<br>
+      <b>Wrye Bolt is distributed in the hope that it will be useful,</b><br>
+      but WITHOUT ANY WARRANTY; without even the implied warranty of<br>
+      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the<br>
+      GNU General Public License for more details.<br>
+      You should have received a copy of the GNU General Public License<br>
+      along with Wrye Mash; if not, write to the Free Software Foundation,<br>
+      Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.<br>
+      <b>Wrye Mash copyright (C) 2005, 2006, 2007, 2008, 2009 Wrye</b></p>
+    <p> <b>This software contains other softwares which fall under different
+        Licenses:</b><br>
+      <b>7zip </b>is licenced under LGPL<br>
+      <b>Python </b><a href="https://www.python.org/download/releases/2.7/license/">https://www.python.org/download/releases/2.7/license/</a><br>
+      <b>wxPython </b><a href="https://wxpython.org/pages/license/">https://wxpython.org/pages/license/</a><br>
+      <b>Cole Bemis for icon Pack Feather,</b> CC BY 3.0, <a href="https://creativecommons.org/licenses/by/3.0/">https://creativecommons.org/licenses/by/3.0/</a><br>
+      <b>Rafiqul Hassan for Blogger Iconset,</b> Freeware, <a href="%20http://www.iconarchive.com/show/blogger-icons-by-rafiqul-hassan.html">
+        http://www.iconarchive.com/show/blogger-icons-by-rafiqul-hassan.html</a><br>
+      <b>bobsobol for TES3 - Morrowind icon on DeviantArt,</b> Creative Commons
+      Attribution-Share Alike 3.0 License, <a href="https://www.deviantart.com/bobsobol/art/TES3-Morrowind-209901409">https://www.deviantart.com/bobsobol/art/TES3-Morrowind-209901409</a></p>
+    <p style="text-align: center;"><img src="images/wrye_bad.png" alt=""></p>
+  </body>
+</html>
