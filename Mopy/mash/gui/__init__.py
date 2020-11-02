@@ -87,7 +87,7 @@ class ListDragDropMixin:
             if idx == -1: break
             selected.append(self.listCtrl.GetItemText(idx))
         data = wx.CustomDataObject('ListItems%d' % self.listCtrl.GetId())
-        data.SetData(cPickle.dumps(selected), -1)  # Polemos: Used to be pickle
+        data.SetData(cPickle.dumps(selected))  # Polemos: Used to be pickle
         ds = wx.DropSource(self.listCtrl)
         ds.SetData(data)
         ds.DoDragDrop(True)

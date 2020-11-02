@@ -85,6 +85,7 @@ if sys.prefix not in set(os.environ['PATH'].split(';')):
 try: import wx.lib.iewin  # Polemos: Todo: Need to replace this. => [iewin]
 except: pass
 
+
 def openmw_enabled():  # Polemos
     """Check if openmw.dat exists and return True if it does."""
     return os.path.exists(os.path.join(singletons.MashDir, 'openmw.dat'))
@@ -3246,11 +3247,12 @@ class InstallersPanel(SashTankPanel):  # Polemos: Refactored, changes, store/res
     def OnShow(self):  # Polemos: Typos plus reflect new menu.
         """Panel is shown. Update self.data."""
         if conf.settings.get('mash.installers.isFirstRun', True):
-            conf.settings['mash.installers.isFirstRun'] = False
-            message = _(u'Do you want to enable "Installers"? If you do, Mash will first need to initialize some data. '
-                        u'If you have many mods installed, this may take on the order of five minutes.\n\nIf you prefer '
-                        u'to not enable "Installers" at this time, you can always enable it later on from the menu.')
-            conf.settings['mash.installers.enabled'] = balt.askYes(self, fill(message, 80), self.data.title)
+            conf.settings['mash.installers.isFirstRun'] = conf.settings['mash.installers.enabled'] = False
+            message = _(u'Do you wish to enable "Installers"?\n\nIf you do, Mash will first need to initialize some data. '
+                        u'If you have many mods installed, this may take on the order of five minutes or more.\nIf you'
+                        u' prefer to not enable "Installers" at this time, you can always enable it later on from the menu.')
+            result = gui.dialog.askdialog(None, message, self.data.title)
+            conf.settings['mash.installers.enabled'] = True if result == wx.ID_YES else False
         if not conf.settings['mash.installers.enabled']: return
         if self.refreshing: return
         data = self.gList.data
@@ -6802,8 +6804,8 @@ class Installers_Enabled(Link):  # Polemos: made compatible with menubar.
             self.title = u'Installers'
             self.gTank = singletons.gInstallers.gList
         enabled = conf.settings['mash.installers.enabled']
-        message = _(u"Do you want to enable Installers? If you do, Mash will first need to initialize some data. "
-                    u"If there are many new mods to process, then this may take on the order of five minutes.")
+        message = _(u'Do you wish to enable "Installers"? If you do, Mash will first need to initialize some data. '
+                    u'If there are many new mods to process this may take on the order of five minutes or more.')
         if not enabled and not balt.askYes(self.gTank,fill(message,80),self.title):
             singletons.MenuBar.installers_settings_cond()
             return
