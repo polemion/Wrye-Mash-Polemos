@@ -1182,9 +1182,13 @@ class Cell(Record):
             for record in objRecords:
                 #--FRMR/NAME placeholder?
                 if isinstance(record, Cell_Frmr):
-                    out.pack('4si','FRMR',4)
-                    out.write(struct.pack('i',iObj)[:3])
-                    out.pack('B',iMod)
+                    if iMod > 255:
+                        out.pack('4si', 'FRMR', 8)
+                        out.write(struct.pack('2i', (iMod, iObj)))
+                    else:
+                        out.pack('4si', 'FRMR', 4)
+                        out.write(struct.pack('i', iObj)[:3])
+                        out.pack('B', iMod)
                     out.packSub0('NAME',objId)
                 else:
                     record.getSize()
