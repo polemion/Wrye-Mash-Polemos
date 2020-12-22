@@ -1068,11 +1068,20 @@ class Cell(Record):
                     bytesRead += 8 + size
                 #--New Record?
                 else:
-                    if size != 4: raise Tes3SizeError(self.inName,'CELL.FRMR',size,4,True)
-                    rawData = ins.read(4,'CELL.FRMR')
-                    iMod = struct.unpack('3xB',rawData)[0]
-                    iObj = struct.unpack('i',rawData[:3]+'\x00')[0]
-                    bytesRead  += 12
+                    # MWSE can change the size of this field to 8 bytes for more than 255 mods.
+                    iMod = 0
+                    iObj = 0
+                    if size == 4:
+                        rawData = ins.read(4,'CELL.FRMR')
+                        iMod = struct.unpack('3xB',rawData)[0]
+                        iObj = struct.unpack('i',rawData[:3]+'\x00')[0]
+                        bytesRead  += 12
+                    elif size == 8:
+                        rawData = ins.read(8,'CELL.FRMR')
+                        (iMod,iObj) = struct.unpack('2i',rawData)
+                        bytesRead  += 16
+                    else:
+                        raise Tes3SizeError(self.inName,'CELL.FRMR',size,4,True)
                     (name,size) = ins.unpackSubHeader('CELL','NAME')
                     objId = cstrip(ins.read(size,'CELL.NAME_NEXT'))
                     bytesRead += 8 + size
@@ -1787,15 +1796,23 @@ class Scpt(Record):
         """Returns reference data for a global script."""
         rnam = self.rnam
         if not rnam or rnam.data == chr(255)*4: return None
-        if rnam.size != 4: raise Tes3Error(self.inName,(_(u'SCPT.RNAM'),rnam.size,4,True))
-        iMod = struct.unpack('3xB',rnam.data)[0]
-        iObj = struct.unpack('i',rnam.data[:3]+'\x00')[0]
-        return (iMod,iObj)
+        # MWSE adds an 8-byte variant for supporting more than 255 mods.
+        if rnam.size == 4:
+            iMod = struct.unpack('3xB',rnam.data)[0]
+            iObj = struct.unpack('i',rnam.data[:3]+'\x00')[0]
+            return (iMod,iObj)
+        elif rnam.size == 8:
+            return struct.unpack('2i',rnam.data)
+        else:
+            raise Tes3Error(self.inName,(_(u'SCPT.RNAM'),rnam.size,4,True))
 
     def setRef(self,reference):
         """Set reference data for a global script."""
         (iMod,iObj) = reference
-        self.rnam.setData(struct.pack('i',iObj)[:3] + struct.pack('B',iMod))
+        if iMod > 255:
+            self.rnam.setData(struct.pack('2i',(iMod,iObj)))
+        else:
+            self.rnam.setData(struct.pack('i',iObj)[:3] + struct.pack('B',iMod))
         self.setChanged()
 
     def setCode(self,code):
