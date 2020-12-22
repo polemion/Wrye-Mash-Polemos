@@ -6265,8 +6265,11 @@ class FileRefs(FileRep):
         newObject = (newIMod,newIObj)+object[2:]
         if objRecords and objRecords[0].name == 'MVRF':
             data = cStringIO.StringIO()
-            data.write(struct.pack('i',newIObj)[:3])
-            data.write(struct.pack('B',newIMod))
+            if newIMod > 255:
+                data.write(struct.pack('2i', (newIMod, newIObj)))
+            else:
+                data.write(struct.pack('i',newIObj)[:3])
+                data.write(struct.pack('B',newIMod))
             objRecords[0].data = data.getvalue()
             objRecords[0].setChanged(False)
             data.close()
