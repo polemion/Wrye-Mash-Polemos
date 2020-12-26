@@ -1184,7 +1184,7 @@ class Cell(Record):
                 if isinstance(record, Cell_Frmr):
                     if iMod > 255:
                         out.pack('4si', 'FRMR', 8)
-                        out.write(struct.pack('2i', (iMod, iObj)))
+                        out.write(struct.pack('2i', iMod, iObj))
                     else:
                         out.pack('4si', 'FRMR', 4)
                         out.write(struct.pack('i', iObj)[:3])
@@ -1814,7 +1814,7 @@ class Scpt(Record):
         """Set reference data for a global script."""
         (iMod,iObj) = reference
         if iMod > 255:
-            self.rnam.setData(struct.pack('2i',(iMod,iObj)))
+            self.rnam.setData(struct.pack('2i',iMod,iObj))
         else:
             self.rnam.setData(struct.pack('i',iObj)[:3] + struct.pack('B',iMod))
         self.setChanged()
@@ -6266,7 +6266,7 @@ class FileRefs(FileRep):
         if objRecords and objRecords[0].name == 'MVRF':
             data = cStringIO.StringIO()
             if newIMod > 255:
-                data.write(struct.pack('2i', (newIMod, newIObj)))
+                data.write(struct.pack('2i', newIMod, newIObj))
             else:
                 data.write(struct.pack('i',newIObj)[:3])
                 data.write(struct.pack('B',newIMod))
