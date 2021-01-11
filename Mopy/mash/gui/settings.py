@@ -251,7 +251,10 @@ class SettingsTabs:
                     (65, 20), wx.SP_ARROW_KEYS|wx.SP_WRAP|wx.ALIGN_CENTER_HORIZONTAL, 1, 999, 0)
             intervSizer = wx.BoxSizer(wx.HORIZONTAL)
             intervSizer.AddMany([(self.modIntervTxt, 1, 0, 5), (self.modIntervFld, 0, 0, 5)])
-            advitms_Sizer.AddMany([(self.a7zcrcOn, 0, wx.DOWN, 5), (intervSizer, 0, wx.EXPAND|wx.RIGHT|wx.DOWN, 5)])
+            self.plugMore = wx.CheckBox(advitmsBox, wx.ID_ANY,
+                    u'  Add support for up to 1024 plugins (beta), default is 256, MWSE required.', dPos, dSize, 0)
+            advitms_Sizer.AddMany([(self.a7zcrcOn, 0, wx.DOWN, 5),
+                    (intervSizer, 0, wx.EXPAND|wx.RIGHT|wx.DOWN|wx.UP, 5), (self.plugMore, 0, wx.DOWN, 5)])
         if self.openmw:  # OpenMW/TES3mp support
             advinfo = wx.StaticText(advitmsBox, wx.ID_ANY, _(u'Nothing here yet!'), dPos, dSize, 0)
             advitms_Sizer.AddMany([(advinfo, 0, 0, 5)])
@@ -602,6 +605,7 @@ class SettingsWindow(wx.Dialog, SettingsTabs):  # Polemos: Total reconstruction.
             conf.settings['sInstallersDir'] = self.fldInst.GetValue()
             conf.settings['mgexe.dir'] = self.fldMGEXE.GetValue()
             conf.settings['advanced.7zipcrc32b'] = self.a7zcrcOn.GetValue()
+            conf.settings['mash.extend.plugins'] = self.plugMore.GetValue()
             conf.settings['advanced.redate.interval'] = self.modIntervFld.GetValue()
         if self.openmw:  # OpenMW/Tes3MP Settings:
             conf.settings['openmwDir'] = self.fldOpenMWloc.GetValue()
@@ -680,6 +684,7 @@ class SettingsWindow(wx.Dialog, SettingsTabs):  # Polemos: Total reconstruction.
             self.OnDetectTES3cmd()
             self.a7zcrcOn.SetValue(conf.settings['advanced.7zipcrc32b'])
             self.modIntervFld.SetValue(conf.settings['advanced.redate.interval'])
+            self.plugMore.SetValue(conf.settings['mash.extend.plugins'])
         if self.openmw:  # OpenMW/Tes3MP Settings
             # Paths
             for x, y in zip((self.fldOpenMWloc,self.flddatamods,self.fldDownloads,self.fldOpenMWConf,self.fldDataFiles,self.fldTES3mpConf,self.fldmlox64),

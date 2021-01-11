@@ -1,5 +1,5 @@
 Wrye Mash Polemos fork
-Copyright (C) 2017-2020 Polemos
+Copyright (C) 2017-2021 Polemos
 * based on code by Yacoby copyright (C) 2011-2016 Wrye Mash Fork Python version
 * based on code by Melchor copyright (C) 2009-2011 Wrye Mash WMSA
 * based on code by Wrye copyright (C) 2005-2009 Wrye Mash
@@ -11,7 +11,7 @@ Copyright on the original code:
 Copyright on any non trivial code modifications or substantial code additions:
 2009-2011 Melchor
 2011-2016 Yacoby
-2017-2020 Polemos
+2017-2021 Polemos
 
 Original Wrye Mash License and Copyright:
 Wrye Mash is free software; you can redistribute it and/or

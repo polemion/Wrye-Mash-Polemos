@@ -7,7 +7,7 @@
   <body style="                        background-color: rgb(255, 242, 204);">
     <hr style="color: white; margin-left: auto; margin-right: auto;">
     <h1><span style="color: rgb(0, 51, 51);"> <b>Polemos's Wrye Mash Fork v101
-          beta4</b> </span> </h1>
+          beta5</b> </span> </h1>
     <p><b>Latest Version: <a href="https://www.nexusmods.com/morrowind/mods/45439">Nexus
           </a><br> Discussion: <a href="https://www.nexusmods.com/morrowind/mods/45439?tab=posts">Comments
           section</a></b></p>
@@ -2274,8 +2274,49 @@
           and wxPython</b></span>
       <hr></h2>
     <p><span style="color: rgb(204, 102, 0);"></span></p>
-    <p><b>(By Wrye, kept for historical reasons information is not accurate
-        anymore in a lot of places)</b></p>
+    <p><b>Create an executable for Wry Mash Polemos' fork, by Polemos:</b></p>
+    <p>I<i> will eventually fill this section with more information. Sorry for
+        the delay people.</i></p>
+    <p>The requirements for creating the executable are the following:</p>
+    <p>altgraph==0.14<br>
+      backports-abc==0.5<br>
+      beautifulsoup4==4.6.0<br>
+      cchardet==2.1.1<br>
+      certifi==2018.1.18<br>
+      chardet==3.0.4<br>
+      comtypes==0.6.2<br>
+      crc32c==1.5<br>
+      dis3==0.1.1<br>
+      future==0.16.0<br>
+      idna==2.6<br>
+      lxml==4.1.1<br>
+      macholib==1.8<br>
+      path.py==11.0<br>
+      pefile==2017.11.5<br>
+      pubsub==0.1.2<br>
+      py2exe==0.6.9<br>
+      pyhashxx==0.1.3<br>
+      Pypubsub==4.0.0<br>
+      pywin32==221<br>
+      requests==2.18.4<br>
+      scandir==1.7<br>
+      singledispatch==3.4.0.3<br>
+      six==1.11.0<br>
+      snakeviz==0.4.2<br>
+      subprocess32==3.5.2<br>
+      tornado==4.5.3<br>
+      typing==3.6.2<br>
+      urllib3==1.22<br>
+      ushlex==0.99<br>
+      xxhash==1.3.0<br>
+      wxpython '2.9.5.0 msw (classic)'<br>
+      <br>
+      After satisfying the above requirements you may execute the setup.py
+      included in the source files to create your executable.</p>
+    <p><b><br>
+      </b></p>
+    <p><b>The following are from </b><b><b>Wrye and</b> kept for historical
+        reasons, information is not accurate anymore in a lot of places:</b></p>
     <p><b>Python </b> </p>
     <p>I've programmed in something like 20-30 different languages and of those,
       Python is by far the easiest and most powerful. I strongly recommend it

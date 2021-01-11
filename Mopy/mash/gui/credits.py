@@ -42,8 +42,8 @@ openmw = os.path.exists(os.path.join(os.path.dirname(sys.argv[0]), 'openmw.dat')
 
 # Version details
 ver = 101
-extraVerInfo = u'beta4' if not openmw else u'Alpha for OpenMW'
-date = u'11/2020'  # This updates the date of the fork in the credits (brutally below). You will need to change it below for your fork. Respect the dates.
+extraVerInfo = u'beta5' if not openmw else u'Alpha for OpenMW'
+date = u'1/2021'  # This updates the date of the fork in the credits (brutally below). You will need to change it below for your fork. Respect the dates.
 author = u'Polemos fork'
 
 def protoLicence():
@@ -130,6 +130,8 @@ def protoSource():
                     (u'Key shortcut for deletion in mods and saves tabs from Mash.\r\n', 'i'),
                     (u'Abot: ', 'b'),
                     (u'Translations, ideas and coding (like TES3CMD merge, advanced sorting and more).\r\n', 'i'),
+                    (u'NullCascade, Greatness7: ', 'b'),
+                    (u'For working/extending the maximum plugins that Wrye Mash can handle (up to 1024 from 256).\r\n', 'i'),
     ))
     source.extend(newline)
     source.extend((

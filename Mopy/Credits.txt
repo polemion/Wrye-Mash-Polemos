@@ -18,6 +18,8 @@ FallenWizard:
 Key shortcut for deletion in mods and saves tabs from Mash.
 Abot:
 Translations, ideas and coding (like TES3CMD merge, advanced sorting and more).
+NullCascade, Greatness7:
+For working/extending the maximum plugins that Wrye Mash can handle (up to 1024 from 256).
 
 Beryllium:
 EE templates, bug reports and feedback.

@@ -123,6 +123,7 @@ settingDefaults = {
     'mash.page': 2,
     'mash.window.sizes': {},
     'mash.bit.ver': '',
+    'mash.extend.plugins': False,
 
     #-Polemos: Profile
     'profile.active': 'Default',
