@@ -3912,16 +3912,16 @@ class MashFrame(wx.Frame):  # Polemos: Added a Menubar, OpenMW/TES3mp support, m
                         self.Refresh_StatusBar()
                 # Notify about MWSE 1024 plugin option support
                 if not conf.settings['query.mwse.max.plugins']:
+                    conf.settings['query.mwse.max.plugins'] = True
                     if os.path.isfile(os.path.join(conf.settings['mwDir'], 'MWSE.dll')):
-                        result = gui.dialog.askdialog(self, _(u"MWSE detected on Morrowind's installation!\n"
-                            u"Thanks to Nullcascade and Greatness7 Wrye Mash now support the MWSE's 1024 "
+                        result = gui.dialog.askdialog(self, _(u"MWSE detected on Morrowind's installation!\n\n"
+                            u"Thanks to Nullcascade and Greatness7, Wrye Mash now supports the MWSE's 1024 "
                             u"raised plugin limit! Please do note that the implementation is still in beta "
                             u"and that any plugin manipulation moving forward, will take this change into "
-                            u"account.\n Any bug reports should also be forwarded on the MWSE team.\n"
+                            u"account.\nAny bug reports should also be forwarded on the MWSE team.\n\n"
                             u"Click YES if you wish to enable MWSE 1024 plugin support (this can always be "
                             u"changed later the advanced options of the settings). Click NO if you do not "
                             u"wish to change anything."), _(u'MWSE detected!'))
-                        conf.settings['query.mwse.max.plugins'] = True
                         if result == wx.ID_YES: conf.settings['mash.extend.plugins'] = True
             #--Current notebook panel
             if singletons.gInstallers: singletons.gInstallers.frameActivated = True
