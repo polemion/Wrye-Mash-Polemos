@@ -1068,11 +1068,20 @@ class Cell(Record):
                     bytesRead += 8 + size
                 #--New Record?
                 else:
-                    if size != 4: raise Tes3SizeError(self.inName,'CELL.FRMR',size,4,True)
-                    rawData = ins.read(4,'CELL.FRMR')
-                    iMod = struct.unpack('3xB',rawData)[0]
-                    iObj = struct.unpack('i',rawData[:3]+'\x00')[0]
-                    bytesRead  += 12
+                    # MWSE can change the size of this field to 8 bytes for more than 255 mods.
+                    iMod = 0
+                    iObj = 0
+                    if size == 4:
+                        rawData = ins.read(4,'CELL.FRMR')
+                        iMod = struct.unpack('3xB',rawData)[0]
+                        iObj = struct.unpack('i',rawData[:3]+'\x00')[0]
+                        bytesRead  += 12
+                    elif size == 8:
+                        rawData = ins.read(8,'CELL.FRMR')
+                        (iMod,iObj) = struct.unpack('2i',rawData)
+                        bytesRead  += 16
+                    else:
+                        raise Tes3SizeError(self.inName,'CELL.FRMR',size,4,True)
                     (name,size) = ins.unpackSubHeader('CELL','NAME')
                     objId = cstrip(ins.read(size,'CELL.NAME_NEXT'))
                     bytesRead += 8 + size
@@ -1173,9 +1182,13 @@ class Cell(Record):
             for record in objRecords:
                 #--FRMR/NAME placeholder?
                 if isinstance(record, Cell_Frmr):
-                    out.pack('4si','FRMR',4)
-                    out.write(struct.pack('i',iObj)[:3])
-                    out.pack('B',iMod)
+                    if iMod > 255:
+                        out.pack('4si', 'FRMR', 8)
+                        out.write(struct.pack('2i', iMod, iObj))
+                    else:
+                        out.pack('4si', 'FRMR', 4)
+                        out.write(struct.pack('i', iObj)[:3])
+                        out.pack('B', iMod)
                     out.packSub0('NAME',objId)
                 else:
                     record.getSize()
@@ -1787,15 +1800,23 @@ class Scpt(Record):
         """Returns reference data for a global script."""
         rnam = self.rnam
         if not rnam or rnam.data == chr(255)*4: return None
-        if rnam.size != 4: raise Tes3Error(self.inName,(_(u'SCPT.RNAM'),rnam.size,4,True))
-        iMod = struct.unpack('3xB',rnam.data)[0]
-        iObj = struct.unpack('i',rnam.data[:3]+'\x00')[0]
-        return (iMod,iObj)
+        # MWSE adds an 8-byte variant for supporting more than 255 mods.
+        if rnam.size == 4:
+            iMod = struct.unpack('3xB',rnam.data)[0]
+            iObj = struct.unpack('i',rnam.data[:3]+'\x00')[0]
+            return (iMod,iObj)
+        elif rnam.size == 8:
+            return struct.unpack('2i',rnam.data)
+        else:
+            raise Tes3Error(self.inName,(_(u'SCPT.RNAM'),rnam.size,4,True))
 
     def setRef(self,reference):
         """Set reference data for a global script."""
         (iMod,iObj) = reference
-        self.rnam.setData(struct.pack('i',iObj)[:3] + struct.pack('B',iMod))
+        if iMod > 255:
+            self.rnam.setData(struct.pack('2i',iMod,iObj))
+        else:
+            self.rnam.setData(struct.pack('i',iObj)[:3] + struct.pack('B',iMod))
         self.setChanged()
 
     def setCode(self,code):
@@ -2342,7 +2363,7 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
                 if maLoadPluginFiles:
                     plugin = maLoadPluginFiles.group(1).rstrip()
                     loadPluginPath, loadPluginExt = self.getSrcFilePathInfo(plugin), self.getExt(plugin)
-                    if len(self.loadFiles) == 255: self.loadFilesExtra.append(plugin)
+                    if len(self.loadFiles) == 1023: self.loadFilesExtra.append(plugin)
                     elif loadPluginPath and re.match('^\.es[pm]$', loadPluginExt): self.loadFiles.append(plugin)
                     else: self.loadFilesBad.append(plugin)
 
@@ -2651,8 +2672,8 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
         """Load only if morrowind.ini/openmw.cfg has changed."""
         hasChanged = self.hasChanged()
         if hasChanged: self.loadConf()
-        if len(self.loadFiles) > 255:
-            del self.loadFiles[255:]
+        if len(self.loadFiles) > 1023:
+            del self.loadFiles[1023:]
             self.safeSave()
         return hasChanged
 
@@ -2702,7 +2723,7 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
 
     def isMaxLoaded(self):
         """True if load list is full."""
-        return len(self.loadFiles) >= 255
+        return len(self.loadFiles) >= 1023
 
     def isLoaded(self,modFile):
         """True if modFile is in load list."""
@@ -6244,8 +6265,11 @@ class FileRefs(FileRep):
         newObject = (newIMod,newIObj)+object[2:]
         if objRecords and objRecords[0].name == 'MVRF':
             data = cStringIO.StringIO()
-            data.write(struct.pack('i',newIObj)[:3])
-            data.write(struct.pack('B',newIMod))
+            if newIMod > 255:
+                data.write(struct.pack('2i', newIMod, newIObj))
+            else:
+                data.write(struct.pack('i',newIObj)[:3])
+                data.write(struct.pack('B',newIMod))
             objRecords[0].data = data.getvalue()
             objRecords[0].setChanged(False)
             data.close()
