@@ -110,6 +110,7 @@ settingDefaults = {
     'query.linear.file.list': False,
     'query.tes3cmd.sync': False,
     'query.tes3cmd.merge': False,
+    'query.mwse.max.plugins': False,
 
     #--Wrye Mash
     'all.ok': True,

@@ -178,7 +178,7 @@ class check_version: # Polemos
             u'\n\nClick Yes to enable checking every 15 days (recommended).\nIf you click No you can always enable it later'
                         u' in the settings (and also change how often it checks).'), _(u'Wrye Mash Updates?'))
         conf.settings['asked.check'] = True
-        if result == wx.ID_YES: # If YES:
+        if result == wx.ID_YES:  # If YES:
             conf.settings['enable.check'] = True
             conf.settings['timeframe.check'] = 15
             conf.settings['last.check'] = date.today()
@@ -3889,7 +3889,7 @@ class MashFrame(wx.Frame):  # Polemos: Added a Menubar, OpenMW/TES3mp support, m
             if mosh.modInfos.mtimesReset:
                 resetList = '\n* '.join(mosh.modInfos.mtimesReset)
                 del mosh.modInfos.mtimesReset[:]
-                gui.dialog.InfoMessage(self,_(u'Modified dates have been reset for some mod files:\n\n* %s' % resetList))
+                gui.dialog.InfoMessage(self, _(u'Modified dates have been reset for some mod files:\n\n* %s' % resetList))
                 popMods = 'ALL'
             # --Check savegames directory...
             if mosh.saveInfos.refresh(): popSaves = 'ALL'
@@ -3904,12 +3904,25 @@ class MashFrame(wx.Frame):  # Polemos: Added a Menubar, OpenMW/TES3mp support, m
             if popMods: singletons.modList.Refresh(popMods)
             # --Will repop saves too.
             elif popSaves: singletons.saveList.Refresh(popSaves)
-            # Is MGE XE in Morrowind Dir?
             if not self.OpenMW:
+                # Is MGE XE in Morrowind Dir?
                 if not conf.settings['mgexe.detected']:
                     if os.path.isfile(os.path.join(conf.settings['mwDir'], 'MGEXEgui.exe')):
                         conf.settings['mgexe.detected'] = True
                         self.Refresh_StatusBar()
+                # Notify about MWSE 1024 plugin option support
+                if not conf.settings['query.mwse.max.plugins']:
+                    if os.path.isfile(os.path.join(conf.settings['mwDir'], 'MWSE.dll')):
+                        result = gui.dialog.askdialog(self, _(u"MWSE detected on Morrowind's installation!\n"
+                            u"Thanks to Nullcascade and Greatness7 Wrye Mash now support the MWSE's 1024 "
+                            u"raised plugin limit! Please do note that the implementation is still in beta "
+                            u"and that any plugin manipulation moving forward, will take this change into "
+                            u"account.\n Any bug reports should also be forwarded on the MWSE team.\n"
+                            u"Click YES if you wish to enable MWSE 1024 plugin support (this can always be "
+                            u"changed later the advanced options of the settings). Click NO if you do not "
+                            u"wish to change anything."), _(u'MWSE detected!'))
+                        conf.settings['query.mwse.max.plugins'] = True
+                        if result == wx.ID_YES: conf.settings['mash.extend.plugins'] = True
             #--Current notebook panel
             if singletons.gInstallers: singletons.gInstallers.frameActivated = True
             if self.notebook:
@@ -8600,10 +8613,10 @@ class Mods_Tes3cmd_Fixit():  # Polemos: made compatible with toolbar menu, more.
 
     def simpleReorder(self):
         """Ask to redate all mods with continuous dates."""
-        tmessage = _(u'Would you like to redate your mod order with continuous dates?')
+        tmessage = _(u'Would you like to re-date your mod order with continuous dates?')
         message = _(u'Note: This might not be necessary. Do it only if you wish to avoid having ESMs '
                     u'and ESPs sharing the same time stamps (aesthetics).')
-        if gui.dialog.ContinueQuery(self.window, tmessage, message, 'query.fixit.order', _(u'Redate Order?')) != wx.ID_OK: return
+        if gui.dialog.ContinueQuery(self.window, tmessage, message, 'query.fixit.order', _(u'Re-date Order?')) != wx.ID_OK: return
         self.applyOrder(self.modItems)
 
     def reorderESM(self):
