@@ -315,7 +315,7 @@ class Path(object): # Polemos: Unicode fixes.
 
     #--Path stuff -------------------------------------------------------
     #--New Paths, subpaths
-    def __add__(self,other):
+    def __add__(self, other):
         return GPath(self._s + Path.getNorm(other))
 
     def join(*args):
@@ -331,7 +331,7 @@ class Path(object): # Polemos: Unicode fixes.
         """Like os.walk."""
         if relative:
             start = len(self._s)
-            return ((GPath(x[start:]),[GPath(u) for u in y],[GPath(u) for u in z])
+            return ((GPath(x[start:]),[GPath(u) for u in y], [GPath(u) for u in z])
                 for x,y,z in scandir.walk(topdown,onerror))  # Polemos: replaced os.walk which is slow in Python 2.7 and below.
         else:
             return ((GPath(x),[GPath(u) for u in y],[GPath(u) for u in z])

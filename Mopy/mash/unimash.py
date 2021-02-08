@@ -131,8 +131,9 @@ def fChk(data):
 
 
 def n_path(path):  # Goofy but it works.
-    """Returns a normalized bolt path."""
-    return unicode(path).replace("bolt.Path(u'", "").replace("')", "")
+    """Returns a normalized bolt path when everything else fails."""
+    #print(type(path))
+    return unicode(path).replace("bolt.Path(u'", "").replace('bolt.Path(u"', '').replace("')", "").replace('")', '')
 
 
 def uniformatDate(value):

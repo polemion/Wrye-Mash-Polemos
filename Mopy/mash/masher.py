@@ -7168,16 +7168,12 @@ class Installer_Rename(InstallerLink):  # Polemos
     def Execute(self, event):
         """Handle selection."""
         curName = self.selected[0]
-        isdir = self.data.dir.join(curName).isdir()
-        if isdir: root, ext = curName,''
-        else: root, ext = curName.rootExt
-        tmpName = '%s%s' % (root, ext)
         # Check if selected is the special ==Last== marker
         if self.data.lastKey == self.selected[0]:
             balt.showWarning(self.gTank, _(u'This is a special marker and it cannot be renamed.'))
             return
         # Check if selected is a marker
-        if all([n_path(tmpName).startswith('=='), n_path(tmpName).endswith('==')]):
+        if all([n_path(curName).startswith('=='), n_path(curName).endswith('==')]):
             pos = self.data[curName].order
             name = balt.askText(self.gTank, _(u'Rename marker as:'), _(u'Rename Marker'))
             if not name: return
@@ -7192,14 +7188,14 @@ class Installer_Rename(InstallerLink):  # Polemos
                 singletons.gInstallers.RefreshUIMods()
             return
         # Check if the file was deleted without Mash knowing it.
-        try: instExist = mosh.dirs['installers'].join(tmpName.s).exists()
-        except: instExist = mosh.dirs['installers'].join(n_path(tmpName)).exists()
+        try: instExist = mosh.dirs['installers'].join(curName).exists()
+        except: instExist = mosh.dirs['installers'].join(n_path(curName)).exists()
         if not instExist:
             RefreshNotify()
             return
         # All ok? Continue...
-        try: result = balt.askText(self.gTank, _(u'Rename %s as:') % curName.s, self.title, tmpName.s)
-        except: result = balt.askText(self.gTank, _(u'Rename %s as:') % n_path(curName), self.title, n_path(tmpName))
+        try: result = balt.askText(self.gTank, _(u'Rename %s as:') % curName.s, self.title, curName.s)
+        except: result = balt.askText(self.gTank, _(u'Rename %s as:') % n_path(curName), self.title, n_path(curName))
         result = (result or '').strip()
         if not result: return
         #--Error checking
@@ -7255,12 +7251,11 @@ class Installer_Duplicate(InstallerLink):
         if self.chkMarker(): return
         curName = self.selected[0]
         isdir = self.data.dir.join(curName).isdir()
-        if isdir: root,ext = curName,''
-        else: root,ext = curName.rootExt
-        oldName = '%s%s' % (root, ext)
+        if isdir: root, ext = curName, ''
+        else: root, ext = curName.rootExt
         # Check if the file was deleted without Mash knowing it.
-        try: instExist = mosh.dirs['installers'].join(oldName.s).exists()
-        except: instExist = mosh.dirs['installers'].join(n_path(oldName)).exists()
+        try: instExist = mosh.dirs['installers'].join(curName).exists()
+        except: instExist = mosh.dirs['installers'].join(n_path(curName)).exists()
         if not instExist:
             RefreshNotify()
             return
@@ -7270,7 +7265,7 @@ class Installer_Duplicate(InstallerLink):
         while newName in self.data:
             newName = root + (_(u' Copy (%d)') % index) + ext
             index += 1
-        try: result = balt.askText(self.gTank,_(u"Duplicate %s as:") % curName.s, self.title, newName.s)
+        try: result = balt.askText(self.gTank,_(u"Duplicate %s as:") % curName.s, self.title, newName)
         except: result = balt.askText(self.gTank,_(u"Duplicate %s as:") % n_path(curName), self.title, n_path(newName))
         result = (result or '').strip()
         if not result: return
@@ -7283,14 +7278,14 @@ class Installer_Duplicate(InstallerLink):
             balt.showWarning(self.gTank,_(u"%s already exists.") % newName.s)
             return
         if self.data.dir.join(curName).isfile() and curName.cext != newName.cext:
-            balt.showWarning(self.gTank, _(u"%s does not have correct extension (%s).") % (newName.s,curName.ext))
+            balt.showWarning(self.gTank, _(u"%s does not have correct extension (%s).") % (newName.s, curName.ext))
             return
         #--Duplicate
         try:
             wx.BeginBusyCursor()
-            self.data.copy(curName,newName)
+            self.data.copy(curName, newName)
         except:
-            balt.showError(self.gTank,_(u"%s is not a valid name.") % result)
+            balt.showError(self.gTank, _(u"%s is not a valid name.") % result)
             return
         finally: wx.EndBusyCursor()
         self.data.refresh(what='N')
