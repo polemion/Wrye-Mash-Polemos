@@ -2277,7 +2277,8 @@
     <p><b>Create an executable for Wry Mash Polemos' fork, by Polemos:</b></p>
     <p>I<i> will eventually fill this section with more information. Sorry for
         the delay people.</i></p>
-    <p>The requirements for creating the executable are the following:</p>
+    <p>The requirements for creating the executable are the following (some may
+      not be needed):</p>
     <p>altgraph==0.14<br>
       backports-abc==0.5<br>
       beautifulsoup4==4.6.0<br>
@@ -2519,8 +2520,18 @@
             Versions</b></a> </span>
       <hr></h2>
     <p><a name="Versions" style="color: rgb(204, 102, 0);"></a></p>
-    <p><b><b>101 beta4 Polemos [11/2/2020]</b> </b></p>
+    <p><b><b>101 beta5 Polemos [8/2/2021]</b> </b></p>
     <p><em><strong>-Bugfixes, failsafes and safety additions.</strong></em><br>
+      Fixed some pathing issues and fixed an issue with using the apostrophe
+      character on renaming installers.<br>
+      Added an information dialog to notify users of the new ability to enable
+      MWSE 1024 plugin<br>
+      Added switches on Greatness7 and NullCascade commits so that they may be
+      enabled/disabled from the settings.<br>
+      Implemented Greatness7 and NullCascade commits for supporting up to 1024
+      plugins with MWSE .<br>
+      Added an option in settings for enabling/disabling MWSE support of 1024
+      plugins.<br>
       Reverted, temporarily, the new file-drop functionality in the Installers
       since it is conflicting with the internal drag and drop.<br>
       Fixed a bug in the Settings dialog which was not resizing the elements
