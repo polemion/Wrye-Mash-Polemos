@@ -1172,7 +1172,7 @@ class MasterList(gui.List):
         #--Already selected?
         if self.isLoaded(masterInfos): return True
         #--Already at max masters?
-        elif len(self.newMasters) == 255:
+        elif len(self.newMasters) == mosh.mwIniFile.maxPlugins:
             gui.dialog.ErrorMessage(self, _(u'Unable to select %s because file already has maximum number of masters.') % (masterName,))
             return False
         #--New master?
