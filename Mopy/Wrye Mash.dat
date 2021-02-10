@@ -7,7 +7,7 @@
   <body style="                        background-color: rgb(255, 242, 204);">
     <hr style="color: white; margin-left: auto; margin-right: auto;">
     <h1><span style="color: rgb(0, 51, 51);"> <b>Polemos's Wrye Mash Fork v101
-          beta5</b> </span> </h1>
+          beta6</b> </span> </h1>
     <p><b>Latest Version: <a href="https://www.nexusmods.com/morrowind/mods/45439">Nexus
           </a><br> Discussion: <a href="https://www.nexusmods.com/morrowind/mods/45439?tab=posts">Comments
           section</a></b></p>
@@ -2508,6 +2508,18 @@
           in position 1: ordinal not in range(128): </strong>Disable the "Use
         Unicode UTF-8 for worldwide language support" in the "Region Settings"
         of your Windows 10 installation.</li>
+      <li><strong>Windows 10 (and maybe more windows versions), Application
+          Error message 0xc0150004: </strong>Probably missing some required
+        DLLs from your system, try installing "Microsoft Visual C++ 2008
+        Redistributable Package" (both x86 and x64 is preferred but depends on
+        your system). In case you are unable to install the package you may try
+        the following (worked for me, it is a suggestion, your responsibility
+        and choice): Rename the folder
+        "C:\ProgramData\Microsoft\Crypto\RSA\S-1-5-18" to
+        "C:\ProgramData\Microsoft\Crypto\RSA\S-1-5-18_old", and after installing
+        the package you may copy the missing files from the original folder to
+        the new folder.<br>
+        &nbsp;</li>
     </ul>
     <br>
     <ul>
@@ -2520,8 +2532,10 @@
             Versions</b></a> </span>
       <hr></h2>
     <p><a name="Versions" style="color: rgb(204, 102, 0);"></a></p>
-    <p><b><b>101 beta5 Polemos [8/2/2021]</b> </b></p>
+    <p><b><b>101 beta6 Polemos [10/2/2021]</b> </b></p>
     <p><em><strong>-Bugfixes, failsafes and safety additions.</strong></em><br>
+      Added latest commit from Nullcascade regarding the MWSE 1024 plugin limit
+      for the mod masters tab.<br>
       Fixed some pathing issues and fixed an issue with using the apostrophe
       character on renaming installers.<br>
       Added an information dialog to notify users of the new ability to enable

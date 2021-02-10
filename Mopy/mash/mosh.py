@@ -6463,7 +6463,7 @@ class FileRefs(FileRep):
 
 class WorldRefs:
     """World references as defined by a set of masters (esms and esps)."""
-    def __init__(self,masterNames = [], progress=None, log=None):
+    def __init__(self,masterNames=[], progress=None, log=None):
         self.progress = progress or Progress()
         self.log = log or Log()
         self.levListMasters = {} #--Count of masters for each leveled list (LEVC or LEVI)
