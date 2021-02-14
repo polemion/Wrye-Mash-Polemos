@@ -111,6 +111,7 @@ settingDefaults = {
     'query.tes3cmd.sync': False,
     'query.tes3cmd.merge': False,
     'query.mwse.max.plugins': False,
+    'query.mcp.extended.map': False,
 
     #--Wrye Mash
     'all.ok': True,
@@ -124,7 +125,6 @@ settingDefaults = {
     'mash.page': 2,
     'mash.window.sizes': {},
     'mash.bit.ver': '',
-    'mash.extend.plugins': False,
 
     #-Polemos: Profile
     'profile.active': 'Default',
@@ -142,6 +142,8 @@ settingDefaults = {
     #-Polemos: Advanced Settings
     'advanced.7zipcrc32b': False,
     'advanced.redate.interval': 60,
+    'mash.extend.plugins': False,
+    'mash.mcp.extend.map': False,
 
     #-Polemos: Date scheme for version checking (Web)
     'last.check': None,

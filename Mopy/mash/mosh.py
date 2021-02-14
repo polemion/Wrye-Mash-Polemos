@@ -1393,14 +1393,17 @@ class Fmap(Record):
         #--Border
         self.drawBorder(cBorder,0,0,512,512,4)
 
-    def drawCell(self,land,uland,vland,marked):
+    def drawCell(self, land, uland, vland, marked):
         """Draw a cell from landscape record."""
         from math import sqrt, pow
         #--Tranlate grid point (u,v) to pixel point
         if not self.changed: self.edit()
         #--u/v max/min are grid range of visible map.
         #--wcell is bit width of cell. 512 is bit width of visible map.
-        (umin,umax,vmin,vmax,wcell,wmap) = (-28,27,-27,28,9,512)
+        if not settings['mash.mcp.extend.map']:  # Regular Morrowind map
+            (umin, umax, vmin, vmax, wcell, wmap) = (-28, 27, -27, 28, 9, 512)
+        else:  # MCP extended Morrowind map
+            (umin, umax, vmin, vmax, wcell, wmap) = (-51, 50, -63, 38, 4, 512)
         if not ((umin <= uland <= umax) and (vmin <= vland <= vmax)):
             return
         #--x0,y0 is bitmap coordinates of top left of cell in visible map.
@@ -6792,21 +6795,39 @@ class WorldRefs:
                         cntDeleted += 1
         #--Done
         fileRefs.updateScptRefs()
-        return (cntRepaired,cntDeleted,cntUnnamed)
+        return (cntRepaired, cntDeleted, cntUnnamed)
 
-    def repairWorldMap(self,fileRefs,gridLines=True):
+    def repairWorldMap(self, fileRefs, gridLines=True):
         """Repair savegame's world map."""
         if not fileRefs.fmap: return 0
         progress = self.progress
-        progress.setMax((28*2)**2)
-        progress(0.0,_(u"Drawing Cells"))
+        progress.setMax((28 * 2) ** 2)
+        progress(0.0, _(u'Drawing Cells'))
         proCount = 0
-        for gridx in xrange(-28,28,1):
-            for gridy in xrange(28,-28,-1):
-                id = '[%d,%d]' % (gridx,gridy)
-                cell = fileRefs.cells_id.get(id,None)
+        for gridx in xrange(-28, 28, 1):
+            for gridy in xrange(28, -28, -1):
+                id = '[%d,%d]' % (gridx, gridy)
+                cell = fileRefs.cells_id.get(id, None)
                 isMarked = cell and cell.flags & 32
-                fileRefs.fmap.drawCell(self.lands.get(id),gridx,gridy,isMarked)
+                fileRefs.fmap.drawCell(self.lands.get(id), gridx, gridy, isMarked)
+                proCount += 1
+                progress(proCount)
+        fileRefs.fmap.drawGrid(gridLines)
+        return 1
+
+    def repairWorldMapMCP(self, fileRefs, gridLines=True):  # Polemos: Added (I hope) support for MCP extended world map
+        """Repair savegame's world map."""
+        if not fileRefs.fmap: return 0
+        progress = self.progress
+        progress.setMax((51 + 51) * (64 + 38))
+        progress(0.0, _(u'Drawing Cells'))
+        proCount = 0
+        for gridx in xrange(-51, 51, 1):
+            for gridy in xrange(38, -64, -1):
+                id = '[%d,%d]' % (gridx, gridy)
+                cell = fileRefs.cells_id.get(id, None)
+                isMarked = cell and cell.flags & 32
+                fileRefs.fmap.drawCell(self.lands.get(id), gridx, gridy, isMarked)
                 proCount += 1
                 progress(proCount)
         fileRefs.fmap.drawGrid(gridLines)

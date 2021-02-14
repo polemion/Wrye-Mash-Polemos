@@ -3233,7 +3233,7 @@ class InstallersPanel(SashTankPanel):  # Polemos: Refactored, changes, store/res
         self.frameActivated = False
         self.fullRefresh = False
 
-    def DragAndDrop(self):  # Polemos, diasabled for now, todo: re-enable
+    def DragAndDrop(self):  # Polemos, disabled for now, todo: fix and re-enable
         """"Enable File Drag and Drop."""
         #dragDrop = self.enableFileDragDrop(singletons.gInstList.gList)
         #singletons.gInstList.gList.SetDropTarget(dragDrop)
@@ -10097,22 +10097,39 @@ class Save_ShowJournal(Link):
 
 #------------------------------------------------------------------------------
 
-class Save_UpdateWorldMap(Link):
+class Save_UpdateWorldMap(Link):  # Polemos: Added (I hope) support for MCP extended world map
     """Updates the savegame's world map."""
 
     def AppendToMenu(self,menu,window,data):
         Link.AppendToMenu(self,menu,window,data)
-        menuItem = wx.MenuItem(menu,self.id,_(u'Update Map'))
+        menutxt = _(u'Update Map') if not conf.settings[
+            'mash.mcp.extend.map'] else _(u'Update extended Map (MCP)')
+        menuItem = wx.MenuItem(menu, self.id, menutxt)
         menu.AppendItem(menuItem)
         if len(data) != 1: menuItem.Enable(False)
 
+    def mcpWarn(self):
+        """Warn about MCP beta map function."""
+        tmessage = _(u'MCP extended map support enabled.')
+        message = _(u'This is an untested and beta support for reflecting added and removed landmasses, on saved games'
+            u' patched with MCP\'s extended map. Again, obviously, you need to have your game patched by MCP first.'
+            u'\n\nBefore proceeding make a backup of the saved game you wish to update, so that you may revert to it in case'
+            u' your saved game map is destroyed.\n\nYou have been warned, you are responsible for any actions taken, proceed'
+            u' with caution, take a backup and do it for science.\n\nClick "Yes" to proceed OR click "No" to abort...')
+        if gui.dialog.ContinueQuery(self.window, tmessage,
+            message, 'query.mcp.extended.map', _(u'Update extended Map (MCP)')) != wx.ID_OK: return False
+        return True
+
     def Execute(self,event):
         """Handle menu selection."""
+        if conf.settings['mash.mcp.extend.map']:
+            if not self.mcpWarn(): return
         #--File Info
         fileName = self.data[0]
         fileInfo = self.window.data[fileName]
         if fileInfo.getStatus() > 10:
-            gui.dialog.WarningMessage(self.window, _(u"File master list is out of date. Please edit masters before attempting repair."))
+            gui.dialog.WarningMessage(self.window, _(
+                u"File master list is out of date. Please edit masters before attempting repair."))
             return
         progress = None
         dialog = None
@@ -10137,10 +10154,13 @@ class Save_UpdateWorldMap(Link):
             progress.setBaseScale()
             fileRefs = mosh.FileRefs(fileInfo,progress=progress)
             fileRefs.refresh()
-            worldRefs.repairWorldMap(fileRefs,conf.settings['mash.worldMap.gridLines'])
+            if not conf.settings['mash.mcp.extend.map']:  # Regular map support
+                worldRefs.repairWorldMap(fileRefs, conf.settings['mash.worldMap.gridLines'])
+            else:  # MCP extended map support
+                worldRefs.repairWorldMapMCP(fileRefs, conf.settings['mash.worldMap.gridLines'])
             fileRefs.safeSave()
             progress = progress.Destroy()
-            gui.dialog.InfoMessage(self.window,_(u"World map updated."))
+            gui.dialog.InfoMessage(self.window, _(u'World map updated.'))
         #--Done
         finally:
             if progress is not None: progress.Destroy()
