@@ -4,7 +4,7 @@
 #
 # This file is part of Wrye Mash Polemos fork.
 #
-# Wrye Mash, Polemos fork Copyright (C) 2017-2020 Polemos
+# Wrye Mash, Polemos fork Copyright (C) 2017-2021 Polemos
 # * based on code by Yacoby copyright (C) 2011-2016 Wrye Mash Fork Python version
 # * based on code by Melchor copyright (C) 2009-2011 Wrye Mash WMSA
 # * based on code by Wrye copyright (C) 2005-2009 Wrye Mash
@@ -603,7 +603,7 @@ class Tes3Reader:
         (name,size) = self.unpack('4si',8,recType+'.SUB_HEAD')
         #--Match expected name?
         if expName and expName != name:
-            raise Tes3Error(self.inName,_(u'%s: Expected %s sub-record, but found %s instead.') % (recType,expName,name))
+            raise Tes3Error(self.inName,_('%s: Expected %s sub-record, but found %s instead.') % (recType,expName,name))
         #--Match expected size?
         if expSize and expSize != size:
             raise Tes3SizeError(self.inName,recType+'.'+name,size,expSize,True)
@@ -877,7 +877,7 @@ class ListRecord(Record):
             else: raise Tes3UnknownSubRecord(self.inName,name,self.name)
         #--No id?
         if not self.id:
-            raise Tes3Error(self.inName,_(u'No id for %s record.') % (self.name,))
+            raise Tes3Error(self.inName,_('No id for %s record.') % (self.name,))
         #--Bad count?
         if self.count != len(self.entries):
             self.count = len(self.entries)
@@ -960,7 +960,7 @@ class Book(Record):
             elif name == 'DELE': self.isDeleted = True
             #--Bad record?
             else:
-                raise Tes3Error(self.inName,_(u'Extraneous subrecord (%s) in %s record.')
+                raise Tes3Error(self.inName,_('Extraneous subrecord (%s) in %s record.')
                     % (name,self.name))
 
     def dumpData(self,out):
@@ -1126,7 +1126,7 @@ class Cell(Record):
             #--Map Note?
             elif name == 'NAM0':
                 if subGroup >= 20:
-                    raise Tes3Error(self.ins, self.getId()+_(u': Second NAM0 subrecord.'))
+                    raise Tes3Error(self.ins, self.getId()+_(': Second NAM0 subrecord.'))
                 subGroup = 20
                 if size != 4: raise Tes3SizeError(self.inName,'CELL.NAM0',size,4,True)
                 if size != 4: raise Tes3SizeError(self.inName,'CELL.NAM0',size,4,True)
@@ -1295,14 +1295,14 @@ class Dial(Record):
             self.dele = ins.read(size,'DIAL.DELE')
             bytesRead += 8+size
         if bytesRead != self.size:
-            raise Tes3Error(self.inName,_(u'DIAL %d %s: Unexpected subrecords') % (self.type,self.id))
+            raise Tes3Error(self.inName,_('DIAL %d %s: Unexpected subrecords') % (self.type,self.id))
 
     def sortInfos(self):
         """Sorts infos by link order."""
         #--Build infosById
         infosById = {}
         for info in self.infos:
-            if info.id is None: raise Tes3Error(self.inName, _(u'Dialog %s: info with missing id.') % (self.id,))
+            if info.id is None: raise Tes3Error(self.inName, _('Dialog %s: info with missing id.') % (self.id,))
             infosById[info.id] = info
         #--Heads
         heads = []
@@ -1797,17 +1797,17 @@ class Scpt(Record):
             #--Other subrecords
             elif name in srNameSet:
                 setattr(self,name.lower(),SubRecord(name,size,ins))
-            else: raise Tes3Error(self.inName,_(u'Unknown SCPT record: ')+name)
+            else: raise Tes3Error(self.inName,_('Unknown SCPT record: ')+name)
             bytesRead += 8+size
         if bytesRead != self.size:
-            raise Tes3Error(self.inName,_(u'SCPT %s: Unexpected subrecords') % (self.id))
+            raise Tes3Error(self.inName,_('SCPT %s: Unexpected subrecords') % (self.id))
 
     def getRef(self):
         """Returns reference data for a global script."""
         rnam = self.rnam
         if not rnam or rnam.data == chr(255)*4: return None
         if not settings['mash.extend.plugins']:  # MWSE compatibility != enabled
-            if rnam.size != 4: raise Tes3Error(self.inName, (_(u'SCPT.RNAM'), rnam.size, 4, True))
+            if rnam.size != 4: raise Tes3Error(self.inName, (_('SCPT.RNAM'), rnam.size, 4, True))
         # MWSE adds an 8-byte variant for supporting more than 255 mods.
         if rnam.size == 4:
             iMod = struct.unpack('3xB', rnam.data)[0]
@@ -1816,13 +1816,13 @@ class Scpt(Record):
         elif rnam.size == 8:
             return struct.unpack('2i', rnam.data)
         else:
-            raise Tes3Error(self.inName,(_(u'SCPT.RNAM'), rnam.size, 4, True))
+            raise Tes3Error(self.inName, (_('SCPT.RNAM'), rnam.size, 4, True))  # Why the _ ???
 
     def setRef(self,reference):
         """Set reference data for a global script."""
-        (iMod,iObj) = reference
+        (iMod, iObj) = reference
         if iMod > 255 and settings['mash.extend.plugins']:  # MWSE compatibility == enabled
-            self.rnam.setData(struct.pack('2i',iMod,iObj))
+            self.rnam.setData(struct.pack('2i', iMod, iObj))
         else:
             self.rnam.setData(struct.pack('i', iObj)[:3] + struct.pack('B', iMod))
         self.setChanged()
@@ -2384,7 +2384,7 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
 
             self.bsaFiles = self.chkCase(self.bsaFiles)
             self.loadFiles = self.chkCase(self.loadFiles)
-        except Exception as err:  # Last resort to avoid conf file corruption Todo: err debug
+        except Exception as err:  # Last resort to avoid conf file corruption Todo: err add debug information (from raise)
             self.flush_conf()
 
     def load_OpenMW_cfg(self):  # Polemos
@@ -2908,11 +2908,11 @@ class FileInfo: # Polemos: OpenMW/TES3mp support
         try:
             ins = Tes3Reader(self.name,file(path,'rb'))
             (name,size,delFlag,recFlag) = ins.unpackRecHeader()
-            if name != 'TES3': raise Tes3Error(self.name,_(u'Expected TES3, but got ')+name)
+            if name != 'TES3': raise Tes3Error(self.name,_('Expected TES3, but got ')+name)
             self.tes3 = Tes3(name,size,delFlag,recFlag,ins,True)
         except struct.error, rex:
             ins.close()
-            raise Tes3Error(self.name,u'Struct.error: '+`rex`)
+            raise Tes3Error(self.name,'Struct.error: '+`rex`)
         except Tes3Error, error:
             ins.close()
             error.inName = self.name
@@ -3736,11 +3736,11 @@ class SaveInfo(FileInfo):  # Polemos: Fixed a small (ancient again) bug with the
         try:
             ins = Tes3Reader(self.name,file(path,'rb'))
             (name,size,delFlag,recFlag) = ins.unpackRecHeader()
-            if name != 'TES3': raise Tes3Error(self.name,_(u'Expected TES3, but got %s' % name))
+            if name != 'TES3': raise Tes3Error(self.name,_('Expected TES3, but got %s' % name))
             self.tes3 = Tes3(name,size,delFlag,recFlag,ins,True)
         except struct.error, rex:
             ins.close()
-            raise Tes3Error(self.name,_(u'Struct.error: %s' % rex))
+            raise Tes3Error(self.name,_('Struct.error: %s' % rex))
         except Tes3Error, error:
             ins.close()
             error.inName = self.name
@@ -3798,18 +3798,23 @@ class ResPack:
     def getOrder(self):
         """Returns load order number or None if not loaded."""
         raise AbstractError
+
     def rename(self,newName):
         """Renames respack."""
         raise AbstractError
+
     def duplicate(self,newName):
         """Duplicates self with newName."""
         raise AbstractError
+
     def select(self):
         """Selects package."""
         raise AbstractError
+
     def unselect(self):
         """Unselects package."""
         raise AbstractError
+
     def isSelected(self):
         """Returns True if is currently selected."""
         raise AbstractError
@@ -6556,7 +6561,7 @@ class WorldRefs:
                 if iMMod:
                     if iMMod >= len(masterMap):
                         raise Tes3RefError(masterName,cellId,objId,iObj,iMMod,
-                            _(u'NO SUCH MASTER'))
+                            _('NO SUCH MASTER'))
                     altKey = (masterMap[iMMod],iObj)
                     oldIdKey = altKey
                     #--Already modified?
@@ -6590,7 +6595,7 @@ class WorldRefs:
         #--Map'em
         for mmName in masterInfo.masterNames:
             if mmName not in self.masterNames:
-                raise MoshError(_(u"Misordered esm: %s should load before %s") % (mmName, masterInfo.name))
+                raise MoshError(_(u"Miss-ordered esm: %s should load before %s") % (mmName, masterInfo.name))
             masterMap.append(self.masterNames.index(mmName)+1)
         #--Done
         return masterMap

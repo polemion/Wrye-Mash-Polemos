@@ -4,7 +4,7 @@
 #
 # This file is part of Wrye Mash Polemos fork.
 #
-# Wrye Mash, Polemos fork Copyright (C) 2017-2020 Polemos
+# Wrye Mash, Polemos fork Copyright (C) 2017-2021 Polemos
 # * based on code by Yacoby copyright (C) 2011-2016 Wrye Mash Fork Python version
 # * based on code by Melchor copyright (C) 2009-2011 Wrye Mash WMSA
 # * based on code by Wrye copyright (C) 2005-2009 Wrye Mash
@@ -180,7 +180,7 @@ dir_util.copy_tree('..\\Data Files', '..\\bin\\Data Files')
 folds = ['Data', 'Extras', 'images', 'locale', 'snapshots', 'themes']
 [dir_util.copy_tree(fold, '%s\\%s' % (dest_folder, fold)) for fold in folds]
 
-# Delete unheeded files in bin dir.
+# Delete unneeded files in bin dir (needed for Win95~XP).
 toDel = ('w9xpopen.exe', 'gdiplus.dll', 'msvcp90.dll', 'msvcr90.dll')
 for x in toDel:
     targ = os.path.join(dest_folder, x)
@@ -192,7 +192,7 @@ for x in toDel:
 if os.path.exists('upx.exe'):
     files = ( glob.glob(os.path.join(dest_folder, '*.dll'))
             + glob.glob(os.path.join(dest_folder, '*.exe')) )
-    #note, --ultra-brute takes ages.
-    #If you want a fast build change it to --best
+    # note, --ultra-brute takes ages.
+    # If you want a fast build change it to --best
     args = ['upx.exe', '--best'] + files
     os.spawnv(os.P_WAIT, 'upx.exe', args)
