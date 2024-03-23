@@ -84,7 +84,7 @@ class SettingsTabs:
         self.Update_po = wx.CheckBox(UpdateBox, wx.ID_ANY, _(u'Enable Notifications'), dPos, dSize, 0)
         self.Update_staticText = wx.StaticText(UpdateBox, wx.ID_ANY, _(u'Frequency in Days (0=Everyday):'), dPos, dSize, 0)
         self.fldUpdate = wx.SpinCtrl(UpdateBox, wx.ID_ANY, u'', dPos, size=(45, -1),
-                                            style=wx.SP_ARROW_KEYS|wx.SP_WRAP|wx.ALIGN_CENTER_HORIZONTAL, max=365, min=0)
+                                     style=wx.SP_ARROW_KEYS|wx.SP_WRAP|wx.ALIGN_CENTER_HORIZONTAL, max=365, min=0)
         # Interface Settings
         InterfaceBox = wx.StaticBox(self.general_panel, wx.ID_ANY, _(u'Interface Settings:'))
         Interface_Sizer = wx.StaticBoxSizer(InterfaceBox, wx.VERTICAL)
@@ -105,7 +105,7 @@ class SettingsTabs:
         IntOpt2_Sizer.AddMany([(self.InterfaceStatic, 0, wx.ALIGN_CENTER|wx.ALL, 5), ((30,0),0,0,5),(self.ThemeChoice, 1, wx.ALL, 5)])
         IntOpt3_Sizer.AddMany([(self.EncodStatic, 0, wx.ALIGN_CENTER|wx.ALL, 5), ((30,0),0,0,5),(self.EncodChoice, 1, wx.ALL, 5)])
         Interface_Sizer.AddMany([(IntOpt0_Sizer, 0, wx.EXPAND, 5),
-            (IntOpt1_Sizer, 0, wx.EXPAND, 5),(IntOpt2_Sizer, 0, wx.EXPAND, 5),(IntOpt3_Sizer, 0, wx.EXPAND, 5)])
+                                 (IntOpt1_Sizer, 0, wx.EXPAND, 5),(IntOpt2_Sizer, 0, wx.EXPAND, 5),(IntOpt3_Sizer, 0, wx.EXPAND, 5)])
         General_Sizer = wx.BoxSizer(wx.VERTICAL)
         General_Sizer.AddMany([(Menu_Sizer,0,wx.EXPAND|wx.ALL,5),(Update_Sizer,0,wx.EXPAND|wx.ALL,5),(Interface_Sizer,0,wx.EXPAND|wx.ALL,5)])
         self.general_panel.SetSizer(General_Sizer)
@@ -146,15 +146,15 @@ class SettingsTabs:
             # Layout
             Morrowind_Sizer, Installers_Sizer, Mlox_Sizer, MGEXE_Sizer, TES3cmd_Sizer = SizerMany(5, wx.HORIZONTAL)
             Morrowind_Sizer.AddMany([(self.Morrowind_static,0,wx.TOP|wx.RIGHT,5),
-                    ((2,0),0,0,5),(uns,0,0,0),(self.fldMw,1,wx.ALIGN_CENTER,5),(self.btnBrowseMw,0,wx.LEFT,5)])
+                                     ((2,0),0,0,5),(uns,0,0,0),(self.fldMw,1,wx.ALIGN_CENTER,5),(self.btnBrowseMw,0,wx.LEFT,5)])
             Installers_Sizer.AddMany([(self.Installers_static,0,wx.TOP|wx.RIGHT,5),
-                    ((16,0),0,0,5),(self.fldInst,1,wx.ALIGN_CENTER,5),(self.btnBrowseInst,0,wx.LEFT,5)])
+                                      ((16,0),0,0,5),(self.fldInst,1,wx.ALIGN_CENTER,5),(self.btnBrowseInst,0,wx.LEFT,5)])
             Mlox_Sizer.AddMany([(self.Mlox_static,0,wx.TOP|wx.RIGHT,5),
-                    ((35,0),0,0,5),(self.fldmlox,1,wx.ALIGN_CENTER,5),(self.btnBrowsemlox,0,wx.LEFT,5)])
+                                ((35,0),0,0,5),(self.fldmlox,1,wx.ALIGN_CENTER,5),(self.btnBrowsemlox,0,wx.LEFT,5)])
             MGEXE_Sizer.AddMany([(self.MGEXE_static,0,wx.TOP|wx.RIGHT,5),
-                    ((20,0),0,0,5),(self.fldMGEXE,1,wx.ALIGN_CENTER,5),(self.btnBrowseMGEXE,0,wx.LEFT,5)])
+                                 ((20,0),0,0,5),(self.fldMGEXE,1,wx.ALIGN_CENTER,5),(self.btnBrowseMGEXE,0,wx.LEFT,5)])
             TES3cmd_Sizer.AddMany([(self.TES3cmd_static0,0,wx.TOP|wx.RIGHT,5),
-                    ((11,0),0,0,5),(self.TES3cmd_static1,1,wx.TOP|wx.RIGHT,5),(self.btnRechkT3cmd,0,wx.LEFT,5)])
+                                   ((11,0),0,0,5),(self.TES3cmd_static1,1,wx.TOP|wx.RIGHT,5),(self.btnRechkT3cmd,0,wx.LEFT,5)])
             MainPaths_Sizer.AddMany([(Morrowind_Sizer,0,wx.EXPAND,5),(Installers_Sizer,0,wx.EXPAND,5)])
             OptionalPaths_Sizer.AddMany([(Mlox_Sizer,0,wx.EXPAND,5),(MGEXE_Sizer,0,wx.EXPAND,5), (TES3cmd_Sizer,0,wx.EXPAND,5)])
             Paths_Sizer.AddMany([(MainPaths_Sizer,0,wx.EXPAND|wx.ALL,5),((0,0),1,0,5),(OptionalPaths_Sizer,0,wx.EXPAND|wx.ALL,5)])
@@ -193,23 +193,23 @@ class SettingsTabs:
             OpenMWTES3mp_Sizer, Downloads_Sizer, Mods_Sizer, OpenMWconf_Sizer = SizerMany(4, wx.HORIZONTAL)
             DataFiles_Sizer, TES3mpconf_Sizer, Mlox64_Sizer, = SizerMany(3, wx.HORIZONTAL)
             OpenMWTES3mp_Sizer.AddMany([(self.OpenMWTES3mp_static,0,wx.TOP|wx.RIGHT,5),
-                                ((2,0),0,0,5),(uns,0,0,0),(self.fldOpenMWloc,1,wx.ALIGN_CENTER,5),(self.btnBrowseOpenMWloc,0,wx.LEFT,5)])
+                                        ((2,0),0,0,5),(uns,0,0,0),(self.fldOpenMWloc,1,wx.ALIGN_CENTER,5),(self.btnBrowseOpenMWloc,0,wx.LEFT,5)])
             Downloads_Sizer.AddMany([(self.Downloads_static,0,wx.TOP|wx.RIGHT,5),
-                                ((43,0),0,0,5),(self.fldDownloads,1,wx.ALIGN_CENTER,5),(self.btnBrowseDownloads,0,wx.LEFT,5)])
+                                     ((43,0),0,0,5),(self.fldDownloads,1,wx.ALIGN_CENTER,5),(self.btnBrowseDownloads,0,wx.LEFT,5)])
             Mods_Sizer.AddMany([(self.Mods_static,0,wx.TOP|wx.RIGHT,5),
                                 ((72,0),0,0,5),(self.flddatamods,1,wx.ALIGN_CENTER,5),(self.btnBrowsedatamods,0,wx.LEFT,5)])
             OpenMWconf_Sizer.AddMany([(self.OpenMWConfigs_static,0,wx.TOP|wx.RIGHT,5),
-                                ((35,0),0,0,5),(self.fldOpenMWConf,1,wx.ALIGN_CENTER,5),(self.btnBrowseOpenMWConf,0,wx.LEFT,5)])
+                                      ((35,0),0,0,5),(self.fldOpenMWConf,1,wx.ALIGN_CENTER,5),(self.btnBrowseOpenMWConf,0,wx.LEFT,5)])
             DataFiles_Sizer.AddMany([(self.DataFiles_static,0,wx.TOP|wx.RIGHT,5),
-                                ((10,0),0,0,5),(self.fldDataFiles,1,wx.ALIGN_CENTER,5),(self.btnBrowseDataFiles,0,wx.LEFT,5)])
+                                     ((10,0),0,0,5),(self.fldDataFiles,1,wx.ALIGN_CENTER,5),(self.btnBrowseDataFiles,0,wx.LEFT,5)])
             TES3mpconf_Sizer.AddMany([(self.TES3mpConfigs_static,0,wx.TOP|wx.RIGHT,5),
-                                ((2,0),0,0,5),(self.fldTES3mpConf,1,wx.ALIGN_CENTER,5),(self.btnBrowseTES3mpConf,0,wx.LEFT,5)])
+                                      ((2,0),0,0,5),(self.fldTES3mpConf,1,wx.ALIGN_CENTER,5),(self.btnBrowseTES3mpConf,0,wx.LEFT,5)])
             Mlox64_Sizer.AddMany([(self.Mlox64_static,0,wx.TOP|wx.RIGHT,5),((96,0),0,0,5),
-                            (self.fldmlox64,1,wx.ALIGN_CENTER,5),(self.btnBrowsemlox64,0,wx.LEFT,5)])
+                                  (self.fldmlox64,1,wx.ALIGN_CENTER,5),(self.btnBrowsemlox64,0,wx.LEFT,5)])
             MainPaths_Sizer.AddMany([(OpenMWTES3mp_Sizer,0,wx.EXPAND,5),(Downloads_Sizer,0,wx.EXPAND,5),
-                            (Mods_Sizer,0,wx.EXPAND,5),(OpenMWconf_Sizer,0,wx.EXPAND,5)])
+                                     (Mods_Sizer,0,wx.EXPAND,5),(OpenMWconf_Sizer,0,wx.EXPAND,5)])
             OptionalPaths_Sizer.AddMany([(DataFiles_Sizer,0,wx.EXPAND,5),(TES3mpconf_Sizer,0,wx.EXPAND,5),(Mlox64_Sizer,0,wx.EXPAND,5)])
-            self.Paths_Sizer.AddMany([(MainPaths_Sizer,0,wx.EXPAND|wx.ALL,5),(OptionalPaths_Sizer,0,wx.EXPAND|wx.ALL,5)])
+            Paths_Sizer.AddMany([(MainPaths_Sizer,0,wx.EXPAND|wx.ALL,5),(OptionalPaths_Sizer,0,wx.EXPAND|wx.ALL,5)])
 
         # Common Layout
         self.paths_panel.SetSizer(Paths_Sizer)
@@ -227,7 +227,7 @@ class SettingsTabs:
         ColBox = wx.StaticBox(self.defaults_panel, wx.ID_ANY, _(u'Mash Columns Default Widths:'))
         Col_Sizer = wx.StaticBoxSizer(ColBox, wx.VERTICAL)
         self.Col_staticText = wx.StaticText(ColBox, wx.ID_ANY, _(u'If you wish to reset all the columns widths of Wrye Mash displayed lists\n'
-                u'(e.g.: Mod Lists) to their default settings check the box below and then\nclick the OK button:'), dPos, dSize, 0)
+                                                                 u'(e.g.: Mod Lists) to their default settings check the box below and then\nclick the OK button:'), dPos, dSize, 0)
         self.colReset = wx.CheckBox(ColBox, wx.ID_ANY, _(u'Reset All Of Wrye Mash Columns Widths?')+' '*5, dPos, dSize, wx.ALIGN_RIGHT)
         Col_Sizer.AddMany([(self.Col_staticText, 0, wx.EXPAND, 5), (self.colReset, 0, wx.EXPAND|wx.ALL, 5)])
         # Layout
@@ -245,18 +245,18 @@ class SettingsTabs:
 
         if not self.openmw:  # Regular Morrowind support
             self.a7zcrcOn = wx.CheckBox(advitmsBox, wx.ID_ANY,
-                    u'  Use 7zip to calculate crc32 for large files (experimental)', dPos, dSize, 0)
+                                        u'  Use 7zip to calculate crc32 for large files (experimental)', dPos, dSize, 0)
             self.modIntervTxt = wx.StaticText(advitmsBox, wx.ID_ANY, u'Mod redating time interval, in seconds (Default: 60):', dPos, dSize, 0)
             self.modIntervFld = wx.SpinCtrl(advitmsBox, wx.ID_ANY, u'', dPos,
-                    (65, 20), wx.SP_ARROW_KEYS|wx.SP_WRAP|wx.ALIGN_CENTER_HORIZONTAL, 1, 999, 0)
+                                            (65, 20), wx.SP_ARROW_KEYS|wx.SP_WRAP|wx.ALIGN_CENTER_HORIZONTAL, 1, 999, 0)
             intervSizer = wx.BoxSizer(wx.HORIZONTAL)
             intervSizer.AddMany([(self.modIntervTxt, 1, 0, 5), (self.modIntervFld, 0, 0, 5)])
             self.plugMore = wx.CheckBox(advitmsBox, wx.ID_ANY,
-                    u'  Add support for up to 1024 plugins (default is 256 - MWSE required - beta).', dPos, dSize, 0)
+                                        u'  Add support for up to 1024 plugins (default is 256 - MWSE required - beta).', dPos, dSize, 0)
             self.mapMore = wx.CheckBox(advitmsBox, wx.ID_ANY,
-                    u'  Add support for MCP extended map, (replaces regular "Update Map" - MCP required - beta).', dPos, dSize, 0)
+                                       u'  Add support for MCP extended map, (replaces regular "Update Map" - MCP required - beta).', dPos, dSize, 0)
             advitms_Sizer.AddMany([(self.a7zcrcOn, 0, wx.DOWN, 5), (intervSizer, 0, wx.EXPAND|wx.RIGHT|wx.DOWN|wx.UP, 5),
-                    (self.plugMore, 0, wx.DOWN, 5), (self.mapMore, 0, wx.DOWN, 5)])
+                                   (self.plugMore, 0, wx.DOWN, 5), (self.mapMore, 0, wx.DOWN, 5)])
         if self.openmw:  # OpenMW/TES3mp support
             advinfo = wx.StaticText(advitmsBox, wx.ID_ANY, _(u'Nothing here yet!'), dPos, dSize, 0)
             advitms_Sizer.AddMany([(advinfo, 0, 0, 5)])
@@ -279,11 +279,11 @@ class SettingsTabs:
         self.credits_button = wx.Button(self.about_panel, wx.ID_ANY, _(u'Credits'), dPos, size=(60, 22))
         # Contents
         self.contents = rtc.RichTextCtrl(self.about_panel,wx.ID_ANY,u'',dPos,size=(-1,166),
-                            style=wx.TE_READONLY|wx.VSCROLL|wx.HSCROLL|wx.NO_BORDER|wx.WANTS_CHARS)
+                                         style=wx.TE_READONLY|wx.VSCROLL|wx.HSCROLL|wx.NO_BORDER|wx.WANTS_CHARS)
         self.contents.SetFocus()
         # URL
         self.home_url = wx.HyperlinkCtrl(self.about_panel,wx.ID_ANY,self.website_po[0],
-                            self.website_po[1],dPos,dSize,wx.HL_CONTEXTMENU|wx.HL_DEFAULT_STYLE)
+                                         self.website_po[1],dPos,dSize,wx.HL_CONTEXTMENU|wx.HL_DEFAULT_STYLE)
         # Layout
         AboutImage_Sizer, About_Sizer = SizerMany(2, wx.VERTICAL)
         AboutImageBtn_Sizer, AboutMain_Sizer, AboutURL_Sizer = SizerMany(3, wx.HORIZONTAL)
@@ -293,7 +293,7 @@ class SettingsTabs:
             AboutImageBtn_Sizer,0,wx.TOP,5),(AboutURL_Sizer,1,wx.EXPAND|wx.TOP,5)])
         AboutMain_Sizer.AddMany([(AboutImage_Sizer,0,wx.EXPAND,5),(self.contents,1,wx.ALL|wx.EXPAND,5)])
         About_Sizer.AddMany([(self.title,0,wx.EXPAND|wx.RIGHT|wx.LEFT,
-            5),(self.version,0,wx.EXPAND|wx.RIGHT|wx.LEFT,5),(AboutMain_Sizer,1,wx.EXPAND,5)])
+                              5),(self.version,0,wx.EXPAND|wx.RIGHT|wx.LEFT,5),(AboutMain_Sizer,1,wx.EXPAND,5)])
         self.about_panel.SetSizer(About_Sizer)
         self.about_panel.Layout()
         About_Sizer.Fit(self.about_panel)
@@ -551,7 +551,7 @@ class SettingsWindow(wx.Dialog, SettingsTabs):  # Polemos: Total reconstruction.
         conf.settings['show.debug.log'] = self.ShowErr.GetValue()
         conf.settings['active.theme'] = self.ThemeChoiceNew = [x for num, x in enumerate(self.themeData) if num == self.ThemeChoice.GetSelection()][0]
         conf.settings['profile.encoding'] = self.EncodChoiceNew = [enc for enc in profileEncodings if enc in
-                    [x for num, x in enumerate(self.EncodChoiceList) if num == self.EncodChoice.GetSelection()][0]][0]
+                                                                   [x for num, x in enumerate(self.EncodChoiceList) if num == self.EncodChoice.GetSelection()][0]][0]
         for x in self.warnkeys: conf.settings[x]=False if x in self.warnList.GetCheckedStrings() else True
         if self.colReset.GetValue(): self.resetMashLists()
 

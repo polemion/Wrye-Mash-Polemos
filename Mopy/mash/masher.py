@@ -175,8 +175,8 @@ class check_version: # Polemos
 
     def askcheck(self):
         result = gui.dialog.askdialog(None, _(u'Would you like Wrye Mash to notify you whenever a new version is released?'
-            u'\n\nClick Yes to enable checking every 15 days (recommended).\nIf you click No you can always enable it later'
-                        u' in the settings (and also change how often it checks).'), _(u'Wrye Mash Updates?'))
+                                              u'\n\nClick Yes to enable checking every 15 days (recommended).\nIf you click No you can always enable it later'
+                                              u' in the settings (and also change how often it checks).'), _(u'Wrye Mash Updates?'))
         conf.settings['asked.check'] = True
         if result == wx.ID_YES:  # If YES:
             conf.settings['enable.check'] = True
@@ -201,11 +201,11 @@ class check_version: # Polemos
     def notify(self, status):
         if status == 'error':  # On error
             gui.dialog.ErrorMessage(None, _(u'An error occurred while trying to check for available updates.'
-                u'\n\nPlease try again later or visit Wrye Mash home page on Nexus.'), title=_(u'Update error'))
+                                            u'\n\nPlease try again later or visit Wrye Mash home page on Nexus.'), title=_(u'Update error'))
 
         elif status:  # On available update
             result = gui.dialog.askdialog(None, _(u'Wrye Mash v%s has been released.\n\nWould you like to download it?'
-                u' (Will open your internet browser).' % (self.newver)), _(u'Wrye Mash %s released.' % (self.newver)))
+                                                  u' (Will open your internet browser).' % (self.newver)), _(u'Wrye Mash %s released.' % (self.newver)))
 
             conf.settings['last.check'] = date.today()
             if result == wx.ID_YES:  # If YES:
@@ -216,7 +216,7 @@ class check_version: # Polemos
             conf.settings['last.check'] = date.today()
             if self.mode == 'manual':
                 gui.dialog.InfoMessage(None, _(u'You seem to have the latest version.\n\n'
-                 u'(Note: This may be wrong if there were significant changes in Morrowind Nexus website).'))
+                                               u'(Note: This may be wrong if there were significant changes in Morrowind Nexus website).'))
 
 
 def setmlox():  # Polemos
@@ -318,37 +318,37 @@ class Checkboxes(balt.ImageList):
 installercons = balt.ImageList(16,16)
 imgPath       = 'images'
 installercons.data.extend({
-    #--Off/Archive
-    'off.green':  Image(os.path.join(imgPath, r'checkbox_green_off.png'),wx.BITMAP_TYPE_PNG),
-    'off.grey':   Image(os.path.join(imgPath, r'checkbox_grey_off.png'),wx.BITMAP_TYPE_PNG),
-    'off.red':    Image(os.path.join(imgPath, r'checkbox_red_off.png'),wx.BITMAP_TYPE_PNG),
-    'off.white':  Image(os.path.join(imgPath, r'checkbox_white_off.png'),wx.BITMAP_TYPE_PNG),
-    'off.orange': Image(os.path.join(imgPath, r'checkbox_orange_off.png'),wx.BITMAP_TYPE_PNG),
-    'off.yellow': Image(os.path.join(imgPath, r'checkbox_yellow_off.png'),wx.BITMAP_TYPE_PNG),
-    #--On/Archive
-    'on.green':  Image(os.path.join(imgPath, r'checkbox_green_inc.png'),wx.BITMAP_TYPE_PNG),
-    'on.grey':   Image(os.path.join(imgPath, r'checkbox_grey_inc.png'),wx.BITMAP_TYPE_PNG),
-    'on.red':    Image(os.path.join(imgPath, r'checkbox_red_inc.png'),wx.BITMAP_TYPE_PNG),
-    'on.white':  Image(os.path.join(imgPath, r'checkbox_white_inc.png'),wx.BITMAP_TYPE_PNG),
-    'on.orange': Image(os.path.join(imgPath, r'checkbox_orange_inc.png'),wx.BITMAP_TYPE_PNG),
-    'on.yellow': Image(os.path.join(imgPath, r'checkbox_yellow_inc.png'),wx.BITMAP_TYPE_PNG),
-    #--Off/Directory
-    'off.green.dir':  Image(os.path.join(imgPath, r'diamond_green_off.png'),wx.BITMAP_TYPE_PNG),
-    'off.grey.dir':   Image(os.path.join(imgPath, r'diamond_grey_off.png'),wx.BITMAP_TYPE_PNG),
-    'off.red.dir':    Image(os.path.join(imgPath, r'diamond_red_off.png'),wx.BITMAP_TYPE_PNG),
-    'off.white.dir':  Image(os.path.join(imgPath, r'diamond_white_off.png'),wx.BITMAP_TYPE_PNG),
-    'off.orange.dir': Image(os.path.join(imgPath, r'diamond_orange_off.png'),wx.BITMAP_TYPE_PNG),
-    'off.yellow.dir': Image(os.path.join(imgPath, r'diamond_yellow_off.png'),wx.BITMAP_TYPE_PNG),
-    #--On/Directory
-    'on.green.dir':  Image(os.path.join(imgPath, r'diamond_green_inc.png'),wx.BITMAP_TYPE_PNG),
-    'on.grey.dir':   Image(os.path.join(imgPath, r'diamond_grey_inc.png'),wx.BITMAP_TYPE_PNG),
-    'on.red.dir':    Image(os.path.join(imgPath, r'diamond_red_inc.png'),wx.BITMAP_TYPE_PNG),
-    'on.white.dir':  Image(os.path.join(imgPath, r'diamond_white_inc.png'),wx.BITMAP_TYPE_PNG),
-    'on.orange.dir': Image(os.path.join(imgPath, r'diamond_orange_inc.png'),wx.BITMAP_TYPE_PNG),
-    'on.yellow.dir': Image(os.path.join(imgPath, r'diamond_yellow_inc.png'),wx.BITMAP_TYPE_PNG),
-    #--Broken
-    'corrupt':   Image(os.path.join(imgPath, r'red_x.png'),wx.BITMAP_TYPE_PNG),
-    }.items())
+                              #--Off/Archive
+                              'off.green':  Image(os.path.join(imgPath, r'checkbox_green_off.png'),wx.BITMAP_TYPE_PNG),
+                              'off.grey':   Image(os.path.join(imgPath, r'checkbox_grey_off.png'),wx.BITMAP_TYPE_PNG),
+                              'off.red':    Image(os.path.join(imgPath, r'checkbox_red_off.png'),wx.BITMAP_TYPE_PNG),
+                              'off.white':  Image(os.path.join(imgPath, r'checkbox_white_off.png'),wx.BITMAP_TYPE_PNG),
+                              'off.orange': Image(os.path.join(imgPath, r'checkbox_orange_off.png'),wx.BITMAP_TYPE_PNG),
+                              'off.yellow': Image(os.path.join(imgPath, r'checkbox_yellow_off.png'),wx.BITMAP_TYPE_PNG),
+                              #--On/Archive
+                              'on.green':  Image(os.path.join(imgPath, r'checkbox_green_inc.png'),wx.BITMAP_TYPE_PNG),
+                              'on.grey':   Image(os.path.join(imgPath, r'checkbox_grey_inc.png'),wx.BITMAP_TYPE_PNG),
+                              'on.red':    Image(os.path.join(imgPath, r'checkbox_red_inc.png'),wx.BITMAP_TYPE_PNG),
+                              'on.white':  Image(os.path.join(imgPath, r'checkbox_white_inc.png'),wx.BITMAP_TYPE_PNG),
+                              'on.orange': Image(os.path.join(imgPath, r'checkbox_orange_inc.png'),wx.BITMAP_TYPE_PNG),
+                              'on.yellow': Image(os.path.join(imgPath, r'checkbox_yellow_inc.png'),wx.BITMAP_TYPE_PNG),
+                              #--Off/Directory
+                              'off.green.dir':  Image(os.path.join(imgPath, r'diamond_green_off.png'),wx.BITMAP_TYPE_PNG),
+                              'off.grey.dir':   Image(os.path.join(imgPath, r'diamond_grey_off.png'),wx.BITMAP_TYPE_PNG),
+                              'off.red.dir':    Image(os.path.join(imgPath, r'diamond_red_off.png'),wx.BITMAP_TYPE_PNG),
+                              'off.white.dir':  Image(os.path.join(imgPath, r'diamond_white_off.png'),wx.BITMAP_TYPE_PNG),
+                              'off.orange.dir': Image(os.path.join(imgPath, r'diamond_orange_off.png'),wx.BITMAP_TYPE_PNG),
+                              'off.yellow.dir': Image(os.path.join(imgPath, r'diamond_yellow_off.png'),wx.BITMAP_TYPE_PNG),
+                              #--On/Directory
+                              'on.green.dir':  Image(os.path.join(imgPath, r'diamond_green_inc.png'),wx.BITMAP_TYPE_PNG),
+                              'on.grey.dir':   Image(os.path.join(imgPath, r'diamond_grey_inc.png'),wx.BITMAP_TYPE_PNG),
+                              'on.red.dir':    Image(os.path.join(imgPath, r'diamond_red_inc.png'),wx.BITMAP_TYPE_PNG),
+                              'on.white.dir':  Image(os.path.join(imgPath, r'diamond_white_inc.png'),wx.BITMAP_TYPE_PNG),
+                              'on.orange.dir': Image(os.path.join(imgPath, r'diamond_orange_inc.png'),wx.BITMAP_TYPE_PNG),
+                              'on.yellow.dir': Image(os.path.join(imgPath, r'diamond_yellow_inc.png'),wx.BITMAP_TYPE_PNG),
+                              #--Broken
+                              'corrupt':   Image(os.path.join(imgPath, r'red_x.png'),wx.BITMAP_TYPE_PNG),
+                          }.items())
 
 # Windows ---------------------------------------------------------------------
 
@@ -741,7 +741,7 @@ class BSArchivesList(gui.List, gui.ListDragDropMixin):  # Polemos
         """Check column sorting."""
         if conf.settings['mash.Archives.sort'] != '#':
             gui.dialog.ErrorMessage(self.GetParent(), _(u'The Archives '
-             u'list must be sorted by "Load Order (#)" to\n enable Keyboard or Mouse based sorting.'))
+                                                        u'list must be sorted by "Load Order (#)" to\n enable Keyboard or Mouse based sorting.'))
             return False
         return True
 
@@ -909,8 +909,8 @@ class ModPackageList(gui.List):  # Polemos
         # Complex package?
         if not filesLen:
             if gui.dialog.askdialog(self, _(u'This package\'s structure is too complex to be detected correctly. '
-                u'Would you like to proceed nevertheless? Click No to abort.\n\nIf you abort, you can retry installing the package and then select the'
-                    u' "Advanced" option to set the package "data files" folder.'), _(u'Complex package')) == wx.ID_NO: return
+                                            u'Would you like to proceed nevertheless? Click No to abort.\n\nIf you abort, you can retry installing the package and then select the'
+                                            u' "Advanced" option to set the package "data files" folder.'), _(u'Complex package')) == wx.ID_NO: return
         # Clean some junk
         bolt.CleanJunkTemp()
         # Move to Mods dir
@@ -993,6 +993,7 @@ class MasterList(gui.List):
 
     def __init__(self,parent,fileInfo):
         self.parent = parent
+        self.OpenMW = conf.settings['openmw']
         #--Columns
         self.cols = conf.settings['mash.masters.cols']
         self.colNames = conf.settings['mash.colNames']
@@ -1137,7 +1138,12 @@ class MasterList(gui.List):
         #--Sort
         data = self.data
         #--Start with sort by type
-        self.items.sort(key=lambda a: data[a].name[:-4].lower())
+        if not self.OpenMW:
+            self.items.sort(key=lambda a: data[a].name[:-4].lower())
+        elif self.OpenMW:
+            tmp_modNamesESM = [x for x in self.items if data[x].name[len(data[x].name) - 3:] in ('esm', 'ame')]
+            tmp_modNamesESP = [x for x in self.items if data[x].name[len(data[x].name) - 3:] in ('esp', 'don')]
+            self.items = tmp_modNamesESM + tmp_modNamesESP
         if col == 'Master':
             pass #--Done by default
         elif col == 'Load Order' or col == '#':
@@ -1150,7 +1156,12 @@ class MasterList(gui.List):
         #--ESMs First?
         conf.settings['mash.masters.esmsFirst'] = self.esmsFirst
         if self.esmsFirst or col == 'Load Order':
-            self.items.sort(key=lambda a:data[a].name[-1].lower())
+            if not self.OpenMW:
+                self.items.sort(key=lambda a:data[a].name[-1].lower())
+            elif self.OpenMW:
+                tmp_modNamesESM = [x for x in self.items if data[x].name[len(data[x].name) - 3:] in ('esm', 'ame')]
+                tmp_modNamesESP = [x for x in self.items if data[x].name[len(data[x].name) - 3:] in ('esp', 'don')]
+                self.items = tmp_modNamesESM + tmp_modNamesESP
 
     def getMasterInfos(self,masterName):
         """Get instances"""
@@ -1640,12 +1651,12 @@ class ModList(gui.List, gui.ListDragDropMixin):  # Polemos: OpenMW/TES3mp suppor
         if not self.OpenMW:  # Polemos: Regular Morrowind support
             if conf.settings['mash.mods.sort'] != 'Modified' and conf.settings['mash.mods.sort'] != '#':
                 gui.dialog.ErrorMessage(self.GetParent(), _(u'The Mods '
-                    u'list must be sorted "by Modified" or by "Load Order (#)" to\nenable Keyboard or Mouse based sorting.'))
+                                                            u'list must be sorted "by Modified" or by "Load Order (#)" to\nenable Keyboard or Mouse based sorting.'))
                 return False
         elif self.OpenMW:  # Polemos: OpenMW/TES3mp support
             if conf.settings['openmw.mods.sort'] != '#':
                 gui.dialog.ErrorMessage(self.GetParent(), _(u'The Plugins list '
-                    u'must be sorted by "Load Order (#)" to\nenable Keyboard or Mouse based sorting.'))
+                                                            u'must be sorted by "Load Order (#)" to\nenable Keyboard or Mouse based sorting.'))
                 return False
         return True
 
@@ -1654,10 +1665,10 @@ class ModList(gui.List, gui.ListDragDropMixin):  # Polemos: OpenMW/TES3mp suppor
         if not self.isReversed: return True
         if not self.OpenMW:  # Polemos: Regular Morrowind support
             gui.dialog.ErrorMessage(self.GetParent(),
-                _(u'The Mods list is reversed. Only Keyboard based sorting is allowed (Ctrl+Arrows).'))
+                                    _(u'The Mods list is reversed. Only Keyboard based sorting is allowed (Ctrl+Arrows).'))
         elif self.OpenMW:  # Polemos: OpenMW/TES3mp support
             gui.dialog.ErrorMessage(self.GetParent(),
-                _(u'The Plugins list is reversed. Only Keyboard based sorting is allowed (Ctrl+Arrows).'))
+                                    _(u'The Plugins list is reversed. Only Keyboard based sorting is allowed (Ctrl+Arrows).'))
         return False
 
     def OnDrop(self, names, toIdx): # Polemos: Complete recoding.
@@ -1675,7 +1686,7 @@ class ModList(gui.List, gui.ListDragDropMixin):  # Polemos: OpenMW/TES3mp suppor
         if not self.OpenMW:
             esm = [x for x in items if x.lower().endswith('.esm')]
             esp = [x for x in items if x.lower().endswith('.esp')]
-        else:
+        elif self.OpenMW:
             esm = [x for x in items if x.lower().endswith('.esm') or x.lower().endswith('.omwgame')]
             esp = [x for x in items if x.lower().endswith('.esp') or x.lower().endswith('.omwaddon')]
         # Set items timestamps (for ordering)
@@ -1905,7 +1916,7 @@ class ModdataList(gui.List, gui.ListDragDropMixin):  # Polemos
         """Check column sorting."""
         if conf.settings['mash.datamods.sort'] != '#':
             gui.dialog.ErrorMessage(self.GetParent(), _(u'The'
-                u' Mods list must be sorted by "Load Order (#)" to\n enable Keyboard or Mouse based sorting.'))
+                                                        u' Mods list must be sorted by "Load Order (#)" to\n enable Keyboard or Mouse based sorting.'))
             return False
         return True
 
@@ -2016,21 +2027,21 @@ class ModDetails(wx.Window): # Polemos: fixed bugs, refactored, optimised, addon
             tbarSizer = wx.BoxSizer(wx.HORIZONTAL)
             tbarSizer.SetMinSize(wx.Size(170, 24))
             tbarSizer.AddMany([(info_sizer,1,wx.ALIGN_CENTER|wx.RIGHT|wx.LEFT,1),
-                (self.restore_btn, 0, wx.ALIGN_RIGHT|wx.RIGHT|wx.LEFT, 2), (self.backup_btn, 0, wx.ALIGN_RIGHT|wx.RIGHT|wx.LEFT, 2)])
+                               (self.restore_btn, 0, wx.ALIGN_RIGHT|wx.RIGHT|wx.LEFT, 2), (self.backup_btn, 0, wx.ALIGN_RIGHT|wx.RIGHT|wx.LEFT, 2)])
             # DateTime sizer
             dtSizer = wx.BoxSizer(wx.HORIZONTAL)
             dtSizer.AddMany([(self.modified, 1, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5),
-                (self.cpBtn, 0, wx.ALIGN_CENTER_VERTICAL, 5), (self.psBtn, 0, wx.ALIGN_CENTER_VERTICAL, 5)])
+                             (self.cpBtn, 0, wx.ALIGN_CENTER_VERTICAL, 5), (self.psBtn, 0, wx.ALIGN_CENTER_VERTICAL, 5)])
             # Go figure sizers
             modSizer = wx.BoxSizer(wx.HORIZONTAL)
             modSizer.AddMany([(modText, 0, 0, 4), ((0, 0), 1), (self.version, 0, wx.RIGHT, 4)])
             mstrSizer = wx.BoxSizer(wx.HORIZONTAL)
             mstrSizer.AddMany([((0, 0), 1), (self.save, 0, wx.RIGHT, 4),
-                (self.master_btn, 0, wx.CENTER, 4), (self.cancel, 0, wx.LEFT, 4), ((0, 0), 1)])
+                               (self.master_btn, 0, wx.CENTER, 4), (self.cancel, 0, wx.LEFT, 4), ((0, 0), 1)])
             mainSizer = wx.BoxSizer(wx.VERTICAL)
             self.SetSizer(mainSizer)
             mainSizer.AddMany([(tbarSizer, 0, wx.EXPAND, 5),(modSizer,0,wx.EXPAND), self.file, self.author,
-                (dtSizer, 0,wx.EXPAND),self.description,(self.masters,1,wx.EXPAND),(mstrSizer,0,wx.EXPAND|wx.TOP|wx.ALIGN_CENTER,4)])
+                               (dtSizer, 0,wx.EXPAND),self.description,(self.masters,1,wx.EXPAND),(mstrSizer,0,wx.EXPAND|wx.TOP|wx.ALIGN_CENTER,4)])
         if True:  # Events
             self.restore_btn.Bind(wx.EVT_BUTTON, self.restore)
             self.backup_btn.Bind(wx.EVT_BUTTON, self.backup)
@@ -2176,7 +2187,7 @@ class ModDetails(wx.Window): # Polemos: fixed bugs, refactored, optimised, addon
             self.versionStr = u'v%0.1f' % (modInfo.tes3.hedr.version,)
         #--Set fields
         for field, val in zip((self.file, self.author, self.modified, self.description),  # Polemos
-                        (self.fileStr, self.authorStr, self.modifiedStr, self.descriptionStr)):
+                              (self.fileStr, self.authorStr, self.modifiedStr, self.descriptionStr)):
             try: field.SetValue(val)
             except: field.SetValue(uniChk(val))
         self.version.SetLabel(self.versionStr)
@@ -2332,8 +2343,8 @@ class ModDetails(wx.Window): # Polemos: fixed bugs, refactored, optimised, addon
             self.SetFile(None)
         singletons.modList.Refresh()
         if warning: gui.dialog.ErrorMessage(None, _(u'Unable to proceed with your changes. No changes have been saved.\n\n'
-                u'This has probably happened because some (or one) of your master files in the mod\'s master list contain unknown characters. '
-                    u'Try renaming the target master files before adding them in the master list.'))
+                                                    u'This has probably happened because some (or one) of your master files in the mod\'s master list contain unknown characters. '
+                                                    u'Try renaming the target master files before adding them in the master list.'))
 
     def OnCancel(self, event):
         """On cancel."""
@@ -2416,10 +2427,10 @@ class ModPanel(gui.NotebookPanel):  # Polemos: OpenMW/TES3mp support, fixes and 
         try:
             if not self.openmw:  # Polemos: Regular Morrowind support
                 text = _(u'Mods: %d/%d | BSAs: %d/%d') % (len(mosh.mwIniFile.loadFiles),
-                    len(mosh.modInfos.data), singletons.BSArchives.Archives.active_bsa, len(singletons.BSArchives.Archives.items))
+                                                          len(mosh.modInfos.data), singletons.BSArchives.Archives.active_bsa, len(singletons.BSArchives.Archives.items))
             if self.openmw:  # Polemos: OpenMW/TES3mp support
                 text = _(u'Plugins: %d/%d | BSAs: %d/%d') % (len(mosh.mwIniFile.loadFiles), len(mosh.modInfos.data),
-                    len(mosh.mwIniFile.get_active_bsa()), len(singletons.BSArchives.Archives.items))
+                                                             len(mosh.mwIniFile.get_active_bsa()), len(singletons.BSArchives.Archives.items))
         except: text = _(u'Config file is corrupt.')
         singletons.statusBar.SetStatusField(text, 2)
 
@@ -2667,7 +2678,7 @@ class SaveDetails(wx.Window): # Polemos: fixed old bugs, refactored, optimized, 
             sizer = wx.BoxSizer(wx.VERTICAL)
             self.SetSizer(sizer)
             sizer.AddMany([(sizer_h0, 0, wx.EXPAND),self.file,self.saveName,self.playerName,self.curCell,
-                (self.picture, 0, wx.TOP|wx.BOTTOM, 4),(self.masters, 1, wx.EXPAND),(sizer_h1,0,wx.EXPAND|wx.TOP,4)])
+                           (self.picture, 0, wx.TOP|wx.BOTTOM, 4),(self.masters, 1, wx.EXPAND),(sizer_h1,0,wx.EXPAND|wx.TOP,4)])
         if True: # Events
             self.master_btn.Bind(wx.EVT_BUTTON, self.MasterMenu)
             wx.EVT_LEFT_DOWN(self.file, self.OnEditFile)
@@ -2858,8 +2869,8 @@ class SaveDetails(wx.Window): # Polemos: fixed old bugs, refactored, optimized, 
         self.SetFile(self.saveInfo.name)
         singletons.saveList.Refresh(saveInfo.name)
         if warning: gui.dialog.ErrorMessage(None, _(u'Unable to proceed with your changes. No changes have been saved.\n\n'
-                u'This has probably happened because some (or one) of your master files in the save\'s master list contain unknown characters. '
-                    u'Try renaming the target master files before adding them in the master list.'))
+                                                    u'This has probably happened because some (or one) of your master files in the save\'s master list contain unknown characters. '
+                                                    u'Try renaming the target master files before adding them in the master list.'))
 
     def OnCancel(self,event):
         """Event: Clicked cancel button."""
@@ -2953,11 +2964,11 @@ class InstallersList(balt.Tank, gui.ListDragDropMixin): # Polemos: refactored, o
         """Check column sorting."""
         if conf.settings['mash.installers.sort'] != 'Order':
             gui.dialog.ErrorMessage(self.GetParent(),
-                _(u'The Installers list must be sorted by "Load Order" to\n enable Keyboard or Mouse based sorting.'))
+                                    _(u'The Installers list must be sorted by "Load Order" to\n enable Keyboard or Mouse based sorting.'))
             return False
         if conf.settings['mash.installers.sortProjects'] or conf.settings['mash.installers.sortActive']:
             gui.dialog.ErrorMessage(self.GetParent(),
-                _(u'The Installers list must not be "Sort by Active" or "Projects first" to enable drag and drop.'))
+                                    _(u'The Installers list must not be "Sort by Active" or "Projects first" to enable drag and drop.'))
             return False
         return True
 
@@ -2965,7 +2976,7 @@ class InstallersList(balt.Tank, gui.ListDragDropMixin): # Polemos: refactored, o
         """Check if list is reversed."""
         if not self.isReversed: return True
         gui.dialog.ErrorMessage(self.GetParent(),
-            _(u'The Installers list is reversed. Only Keyboard based sorting is allowed (Ctrl+Arrows).'))
+                                _(u'The Installers list is reversed. Only Keyboard based sorting is allowed (Ctrl+Arrows).'))
         return False
 
     def OnDrop(self, names, toIdx):
@@ -3045,7 +3056,7 @@ class InstallersPanel(SashTankPanel):  # Polemos: Refactored, changes, store/res
         self.instRefr()
         if True:  # Content
             self.gList = InstallersList(left, data, installercons,
-                InstallersPanel.mainMenu, InstallersPanel.itemMenu, details=self, style=wx.LC_REPORT)
+                                        InstallersPanel.mainMenu, InstallersPanel.itemMenu, details=self, style=wx.LC_REPORT)
             self.gList.SetSizeHints(100, 100)
             self.DragAndDrop()  # Polemos: Enable file Drag and Drop
             # Buttons/Status Bar
@@ -3062,19 +3073,19 @@ class InstallersPanel(SashTankPanel):  # Polemos: Refactored, changes, store/res
             self.sPackBtn.SetBitmapHover(singletons.images['mod.save.onhov'].GetBitmap())
             self.sPackBtn.SetToolTip(wx.ToolTip(_(u'Save Order')))
             self.btnList = [(self.gPackage, 1, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5), (self.rPackBtn, 0, wx.ALIGN_CENTER_VERTICAL, 5),
-                (self.sPackBtn, 0, wx.ALIGN_CENTER_VERTICAL, 5)]
+                            (self.sPackBtn, 0, wx.ALIGN_CENTER_VERTICAL, 5)]
             # Info Tabs
             self.gNotebook = wx.Notebook(right, style=wx.NB_MULTILINE)
             self.infoPages = []
             infoTitles = (
-                    ('gGeneral', _(u'General')),
-                    ('gMatched', _(u'Matched')),
-                    ('gMissing', _(u'Missing')),
-                    ('gMismatched', _(u'Mismatched')),
-                    ('gConflicts', _(u'Conflicts')),
-                    ('gUnderrides', _(u'Underridden')),
-                    ('gDirty', _(u'Dirty')),
-                    ('gSkipped', _(u'Skipped')),)
+                ('gGeneral', _(u'General')),
+                ('gMatched', _(u'Matched')),
+                ('gMissing', _(u'Missing')),
+                ('gMismatched', _(u'Mismatched')),
+                ('gConflicts', _(u'Conflicts')),
+                ('gUnderrides', _(u'Underridden')),
+                ('gDirty', _(u'Dirty')),
+                ('gSkipped', _(u'Skipped')),)
             for name, title in infoTitles:
                 gPage = wx.TextCtrl(self.gNotebook, wx.ID_ANY, style=wx.TE_MULTILINE|wx.TE_READONLY|wx.HSCROLL, name=name)
                 self.gNotebook.AddPage(gPage, title)
@@ -3148,27 +3159,27 @@ class InstallersPanel(SashTankPanel):  # Polemos: Refactored, changes, store/res
     def importDraggedItms(self, fPaths):  # Polemos
         """Import Drag and Dropped files to installers dir."""
         if gui.dialog.askdialog(self, _(u'Import Installers?\n\nClick "Yes" to copy the dragged and dropped installers into the'
-            u' "Installers" directory.\nClick "No" to cancel the operation.'), _(u'Import package(s)?')) == wx.ID_NO: return
+                                        u' "Installers" directory.\nClick "No" to cancel the operation.'), _(u'Import package(s)?')) == wx.ID_NO: return
         actions = 0
         for sourcePath in fPaths:
             fpath, fname = ntpath.split(sourcePath)
             if os.path.isfile(sourcePath):  # Importing a file
                 if os.path.isfile(os.path.join(conf.settings['sInstallersDir'], fname)):
                     if gui.dialog.askdialog(self, _(u'A file with the same name already '
-                        u'exists. Overwrite "%s"?' % fname), _(u'Overwrite file?')) == wx.ID_NO: continue
+                                                    u'exists. Overwrite "%s"?' % fname), _(u'Overwrite file?')) == wx.ID_NO: continue
                 # Copy/overwrite file to destination
                 actions += 1
                 try: shutil.copyfile(sourcePath, os.path.join(conf.settings['sInstallersDir'], fname))
                 except shutil.Error:
                     gui.dialog.ErrorMessage(None, _(u'Operation aborted:'
-                        u' You cannot import a package from Installers directory on the Installers directory.'))
+                                                    u' You cannot import a package from Installers directory on the Installers directory.'))
                 except IOError:
                     gui.dialog.ErrorMessage(None, _(u'Operation failed: Access denied. Unable to write on the destination.'))
                     return
             elif os.path.isdir(sourcePath):  # Importing a directory
                 if os.path.isdir(os.path.join(conf.settings['sInstallersDir'], fname)):
                     if gui.dialog.askdialog(self, _(u'A directory with the same name already '
-                        u'exists. Overwrite "%s"?' % fname), _(u'Overwrite directory?')) == wx.ID_NO: continue
+                                                    u'exists. Overwrite "%s"?' % fname), _(u'Overwrite directory?')) == wx.ID_NO: continue
                 # Copy/overwrite directory to destination
                 actions += 1
                 mosh.CopyTree(self, sourcePath, os.path.join(conf.settings['sInstallersDir'], fname))
@@ -3197,11 +3208,11 @@ class InstallersPanel(SashTankPanel):  # Polemos: Refactored, changes, store/res
         self.instStatusCh(_(u'Restored Installers Order...'))
         # Re-install packages?
         if gui.dialog.askdialog(self, _(u'Installers order has been Restored. Re-install your packages using your restored order?\n\n'
-            u'Your packages need to be re-installed to sync the overriding conflicts with the new ordering.\n\nIf you click "Yes", then Wrye '
-                u'Mash will automatically install your packages, sequentially, starting from the last package in your order, and continuing'
-                    u' up to the first package (to respect overrides).\nOnly the packages present in the restored list and which were '
-                        u'installed when the list was created will be re-installed, the rest will be ignored.\n\nClick "No" to skip'
-                            u' the process.'), _(u'Re-install packages?')) == wx.ID_NO: return
+                                        u'Your packages need to be re-installed to sync the overriding conflicts with the new ordering.\n\nIf you click "Yes", then Wrye '
+                                        u'Mash will automatically install your packages, sequentially, starting from the last package in your order, and continuing'
+                                        u' up to the first package (to respect overrides).\nOnly the packages present in the restored list and which were '
+                                        u'installed when the list was created will be re-installed, the rest will be ignored.\n\nClick "No" to skip'
+                                        u' the process.'), _(u'Re-install packages?')) == wx.ID_NO: return
         # Re-install packages
         toInstall = [x[1] for x in instData if x[2]]
         progress = balt.Progress(_(u'Installing...'), '\n' + ' ' * 60)
@@ -3264,7 +3275,7 @@ class InstallersPanel(SashTankPanel):  # Polemos: Refactored, changes, store/res
                 modified = data.refresh(progress,what,self.fullRefresh)
                 if modified: self.gList.RefreshUI()
                 if modified == "noDir": gui.dialog.WarningMessage(self, _(u'"%s" cannot be accessed.'
-                        u'\nThis path is possibly on a remote drive, or misspelled, or non writable.' % mosh.dirs['installers'].s))
+                                                                          u'\nThis path is possibly on a remote drive, or misspelled, or non writable.' % mosh.dirs['installers'].s))
                 self.fullRefresh = False
                 self.frameActivated = False
                 self.refreshing = False
@@ -3502,7 +3513,7 @@ class DataModsPanel(gui.NotebookPanel):  # Polemos
             toolbar_sizer = wx.BoxSizer(wx.HORIZONTAL)
             toolbar_sizer.SetMinSize(wx.Size(170, 24))
             toolbar_sizer.AddMany([(info_sizer,1,wx.ALIGN_CENTER|wx.ALL,1),
-                    (self.restore_btn, 0, wx.ALIGN_RIGHT|wx.ALL, 2), (self.backup_btn, 0, wx.ALIGN_RIGHT|wx.ALL, 2)])
+                                   (self.restore_btn, 0, wx.ALIGN_RIGHT|wx.ALL, 2), (self.backup_btn, 0, wx.ALIGN_RIGHT|wx.ALL, 2)])
             # Packages toolbar sizer
             packageTsizer = wx.BoxSizer(wx.HORIZONTAL)
             packageTsizer.Add(self.hid_chkBox, 0, wx.RIGHT|wx.LEFT, 5)
@@ -3915,13 +3926,13 @@ class MashFrame(wx.Frame):  # Polemos: Added a Menubar, OpenMW/TES3mp support, m
                     conf.settings['query.mwse.max.plugins'] = True
                     if os.path.isfile(os.path.join(conf.settings['mwDir'], 'MWSE.dll')):
                         result = gui.dialog.askdialog(self, _(u"MWSE detected on Morrowind's installation!\n\n"
-                            u"Thanks to Nullcascade and Greatness7, Wrye Mash now supports the MWSE's 1024 "
-                            u"raised plugin limit! Please do note that the implementation is still in beta "
-                            u"and that any plugin manipulation moving forward, will take this change into "
-                            u"account.\nAny bug reports should also be forwarded on the MWSE team.\n\n"
-                            u"Click YES if you wish to enable MWSE 1024 plugin support (this can always be "
-                            u"changed later the advanced options of the settings). Click NO if you do not "
-                            u"wish to change anything."), _(u'MWSE detected!'))
+                                                              u"Thanks to Nullcascade and Greatness7, Wrye Mash now supports the MWSE's 1024 "
+                                                              u"raised plugin limit! Please do note that the implementation is still in beta "
+                                                              u"and that any plugin manipulation moving forward, will take this change into "
+                                                              u"account.\nAny bug reports should also be forwarded on the MWSE team.\n\n"
+                                                              u"Click YES if you wish to enable MWSE 1024 plugin support (this can always be "
+                                                              u"changed later the advanced options of the settings). Click NO if you do not "
+                                                              u"wish to change anything."), _(u'MWSE detected!'))
                         if result == wx.ID_YES: conf.settings['mash.extend.plugins'] = True
             #--Current notebook panel
             if singletons.gInstallers: singletons.gInstallers.frameActivated = True
@@ -3935,13 +3946,13 @@ class MashFrame(wx.Frame):  # Polemos: Added a Menubar, OpenMW/TES3mp support, m
             # --Does morrowind.ini have any bad or missing files?
             if mosh.mwIniFile.loadFilesBad:
                 message = (_(u"Missing files and/or incorrect entries have been removed from load list:\n\n  %s")
-                    % (u', '.join(mosh.mwIniFile.loadFilesBad),))
+                           % (u', '.join(mosh.mwIniFile.loadFilesBad),))
                 mosh.mwIniFile.safeSave()
                 gui.dialog.WarningMessage(self, message)
             # --Was load list too long?
             if mosh.mwIniFile.loadFilesExtra:
                 message = (_(u"Load list has been truncated because it was too long:\n\n  %s")
-                    % (u', '.join(mosh.mwIniFile.loadFilesExtra),))
+                           % (u', '.join(mosh.mwIniFile.loadFilesExtra),))
                 mosh.mwIniFile.safeSave()
                 gui.dialog.WarningMessage(self, message)
             #--Any new corrupted mod files?
@@ -3962,7 +3973,7 @@ class MashFrame(wx.Frame):  # Polemos: Added a Menubar, OpenMW/TES3mp support, m
             # --Any Y2038 Resets?
             if mosh.y2038Resets:
                 message = (_(u'Mash cannot handle dates greater than January 19, 2038. Accordingly, the dates for the '
-                    u'following files have been reset to an earlier date: \n%s.') % u', '.join(sorted(mosh.y2038Resets)))
+                             u'following files have been reset to an earlier date: \n%s.') % u', '.join(sorted(mosh.y2038Resets)))
                 del mosh.y2038Resets[:]
                 gui.dialog.WarningMessage(self, message)
 
@@ -4153,7 +4164,7 @@ class MenuBar:  # Polemos
         self.ID_Installers_AddMarker = self.PanelMenu.Append(wx.ID_ANY , _(u"Add Marker..."), _(u"Add a Marker in the installers list."))
         self.PanelMenu.AppendSeparator()
         self.ID_Installers_AnnealAll = self.PanelMenu.Append(wx.ID_ANY , _(u"Anneal All"),
-                _(u"Correct underrides in anPackages and install missing files from active anPackages."))
+                                                             _(u"Correct underrides in anPackages and install missing files from active anPackages."))
         self.MainMenuGUI.Append(self.PanelMenu, _(u'&Actions'))
         # Events:
         self.parent.Bind(wx.EVT_MENU, self.Installers_ImportP, self.ID_Installers_Import)
@@ -4190,9 +4201,9 @@ class MenuBar:  # Polemos
         # "Settings" items:
         self.ins_sort0a = self.settings_menu.Append(wx.ID_ANY, _(u"Enabled"), _(u"Enable Installers."), wx.ITEM_CHECK)
         self.ins_sort1a = self.settings_menu.Append(wx.ID_ANY, _(u"Avoid at Startup"),
-                            _(u"When enabled Mash will not open in the Installers screen on program start."), wx.ITEM_CHECK)
+                                                    _(u"When enabled Mash will not open in the Installers screen on program start."), wx.ITEM_CHECK)
         self.ins_sort2a = self.settings_menu.Append(wx.ID_ANY, _(u"Progress Extra Info"),
-                            _(u"Show extra information in the progress bar (filename, size, CRC) while refreshing."), wx.ITEM_CHECK)
+                                                    _(u"Show extra information in the progress bar (filename, size, CRC) while refreshing."), wx.ITEM_CHECK)
         self.settings_menu.AppendSeparator()
         self.ins_sort3a = self.settings_menu.Append(wx.ID_ANY, _(u"Auto-Anneal"), _(u"Auto-Anneal Installers."),wx.ITEM_CHECK)
         self.ins_sort4a = self.settings_menu.Append(wx.ID_ANY, _(u"Clean Data Directory"), _(u"Remove empty Installer Directories."),wx.ITEM_CHECK)
@@ -4291,7 +4302,7 @@ class MenuBar:  # Polemos
         self.mods_build_load()
         self.PanelMenu.AppendMenu(wx.ID_ANY, _(u'&Load'), self.sub_PanelMenu0)
         self.PanelMenu.AppendSeparator()
-        self.ID_plugins_CopyActive = self.PanelMenu.Append(wx.ID_ANY, _(u"Copy Active Mods List"), _(u"Copy Active Mods List in clipboard."))
+        self.ID_plugins_CopyActive = self.PanelMenu.Append(wx.ID_ANY, _(u"Copy Active Mods List"), _(u"Copy Active Mods List to clipboard."))
         if True:  # "Snapshots" sub-items:
             self.ID_snapshot_po_take = self.sub_PanelMenu1.Append(wx.ID_ANY, _(u"Take fast snapshot"),
                                                                   _(u"Take a fast snapshot of your mod order."))
@@ -4357,10 +4368,10 @@ class MenuBar:  # Polemos
         self.ID_plugins_OpenMWcfg = self.settings_menu.Append(wx.ID_ANY, _(u"OpenMW.cfg..."), _(u"Open OpenMW.cfg."))
         self.ID_plugins_IniTweaks = self.settings_menu.Append(wx.ID_ANY, _(u"CFG Tweaks..."), _(u"Integrate CFG Tweaks.")).Enable(False)
         self.ID_Reset_Beth_Dates = self.settings_menu.Append(wx.ID_ANY, _(u"Reset Bethesda Dates"),
-                                  _(u"Resets the dates of the Bethesda Masters and Archives. Can help with problems with Steam.")).Enable(False)
+                                                             _(u"Resets the dates of the Bethesda Masters and Archives. Can help with problems with Steam.")).Enable(False)
         self.settings_menu.AppendSeparator()
         self.ID_plugins_LockTimes = self.mod_sort0b = self.settings_menu.Append(wx.ID_ANY, _(u"Lock Order"),
-                                    _(u"Prevents undesired changes in mods order outside of Mash."), wx.ITEM_CHECK)
+                                                                                _(u"Prevents undesired changes in mods order outside of Mash."), wx.ITEM_CHECK)
         self.MainMenuGUI.Append(self.settings_menu, _(u'&Settings'))
         # Conditions
         self.mods_settings_cond()
@@ -4377,18 +4388,18 @@ class MenuBar:  # Polemos
             self.misc_modMenu.AppendMenu(wx.ID_ANY, _(u'&Mlox'), self.misc_subMenu0).Enable(False)
         if True:  # TES3cmd sub-items:
             self.TES3cmd0 = self.misc_subMenu1.Append(wx.ID_ANY, _(u"&Fixit (all active)"),
-                            _(u"Executes \"tes3cmd.exe fixit --hide-backups --backup-dir\" and creates a multipatch."))
+                                                      _(u"Executes \"tes3cmd.exe fixit --hide-backups --backup-dir\" and creates a multipatch."))
             self.TES3cmd1 = self.misc_subMenu1.Append(wx.ID_ANY, _(u"&Restore modified files"), _(u"Restore changed files from backup dir."))
             self.misc_subMenu1.AppendSeparator()
             self.TES3cmd2 = self.misc_subMenu1.Append(wx.ID_ANY, _(u"&Create MultiPatch"),
-                            _(u"It produces a powerful patch file based on your current load order to solve various problems."))
+                                                      _(u"It produces a powerful patch file based on your current load order to solve various problems."))
             self.misc_modMenu.AppendMenu(wx.ID_ANY, _(u'&TES3cmd'), self.misc_subMenu1).Enable(False)
         self.misc_modMenu.AppendSeparator()
         self.TES3lint_Settings = self.misc_modMenu.Append(wx.ID_ANY, _(u"TES3lint Settings"), _(u"Configure TES3lint flags and settings.")).Enable(False)
         #self.Custom_Commands = self.misc_modMenu.Append(wx.ID_ANY, _(u"Custom Commands..."), _(u"Create, save, edit and delete Custom Commands."))
         self.misc_modMenu.AppendSeparator()
         self.ID_plugins_check_updates = self.misc_modMenu.Append(wx.ID_ANY, _(u"Check for Updates"),
-                            _(u"Check for new Wrye  Mash releases. Note: Depends on Nexus working status."))
+                                                                 _(u"Check for new Wrye  Mash releases. Note: Depends on Nexus working status."))
         self.MainMenuGUI.Append(self.misc_modMenu, _(u'&Misc'))
         # Conditions
         self.mods_misc_cond()
@@ -4410,7 +4421,7 @@ class MenuBar:  # Polemos
             self.mods_build_load()
             self.PanelMenu.AppendMenu(wx.ID_ANY, _(u'&Load'), self.sub_PanelMenu0)
         self.PanelMenu.AppendSeparator()
-        self.ID_Mods_CopyActive = self.PanelMenu.Append(wx.ID_ANY, _(u"Copy Active Mods List"), _(u"Copy Active Mods List in clipboard."))
+        self.ID_Mods_CopyActive = self.PanelMenu.Append(wx.ID_ANY, _(u"Copy Active Mods List"), _(u"Copy Active Mods List to clipboard."))
         if True: # "Snapshots" sub-items:
             self.ID_snapshot_po_take = self.sub_PanelMenu1.Append(wx.ID_ANY, _(u"Take fast snapshot"), _(u"Take a fast snapshot of your mod order."))
             self.ID_snapshot_po_restore = self.sub_PanelMenu1.Append(wx.ID_ANY, _(u"Restore fast snapshot"),
@@ -4475,7 +4486,7 @@ class MenuBar:  # Polemos
         self.ID_Mods_IniTweaks = self.settings_menu.Append(wx.ID_ANY, _(u"INI Tweaks..."), _(u"Integrate INI Tweaks."))
         self.ID_Mods_Replacers = self.settings_menu.Append(wx.ID_ANY, _(u"Replacers..."), _(u"Configure Replacers."))
         self.ID_Reset_Beth_Dates = self.settings_menu.Append(wx.ID_ANY, _(u"Reset Bethesda Dates"),
-                                      _(u"Resets the dates of the Bethesda Masters and Archives. Can help with problems with Steam."))
+                                                             _(u"Resets the dates of the Bethesda Masters and Archives. Can help with problems with Steam."))
         self.settings_menu.AppendSeparator()
         self.mod_sort0b = self.settings_menu.Append(wx.ID_ANY, _(u"Lock Times"), _(u"Prevents undesired changes in mods order."), wx.ITEM_CHECK)
         self.MainMenuGUI.Append(self.settings_menu, _(u'&Settings'))
@@ -4495,18 +4506,18 @@ class MenuBar:  # Polemos
             self.misc_modMenu.AppendMenu(wx.ID_ANY, _(u'&Mlox'), self.misc_subMenu0)
         if True: # TES3cmd sub-items:
             self.TES3cmd0 = self.misc_subMenu1.Append(wx.ID_ANY, _(u"&Fixit (all active)"),
-                                _(u"Executes \"tes3cmd.exe fixit --hide-backups --backup-dir\" and creates a multipatch."))
+                                                      _(u"Executes \"tes3cmd.exe fixit --hide-backups --backup-dir\" and creates a multipatch."))
             self.TES3cmd1 = self.misc_subMenu1.Append(wx.ID_ANY, _(u"&Restore modified files"), _(u"Restore changed files from backup dir."))
             self.misc_subMenu1.AppendSeparator()
             self.TES3cmd2 = self.misc_subMenu1.Append(wx.ID_ANY, _(u"&Create MultiPatch"),
-                                _(u"It produces a powerful patch file based on your current load order to solve various problems."))
+                                                      _(u"It produces a powerful patch file based on your current load order to solve various problems."))
             self.misc_modMenu.AppendMenu(wx.ID_ANY, _(u'&TES3cmd'), self.misc_subMenu1)
         self.misc_modMenu.AppendSeparator()
         self.TES3lint_Settings = self.misc_modMenu.Append(wx.ID_ANY, _(u"TES3lint Settings"), _(u"Configure TES3lint flags and settings."))
         self.Custom_Commands = self.misc_modMenu.Append(wx.ID_ANY, _(u"Custom Commands..."), _(u"Create, save, edit and delete Custom Commands."))
         self.misc_modMenu.AppendSeparator()
         self.ID_Mods_check_updates = self.misc_modMenu.Append(wx.ID_ANY, _(u"Check for Updates"),
-                                _(u"Check for new Wrye  Mash releases. Note: Depends on Nexus working status."))
+                                                              _(u"Check for new Wrye  Mash releases. Note: Depends on Nexus working status."))
         self.MainMenuGUI.Append(self.misc_modMenu, _(u'&Misc'))
         # Conditions
         self.mods_misc_cond()
@@ -4541,7 +4552,7 @@ class MenuBar:  # Polemos
         self.mod_sort0.Check() if self.window_mod_po.esmsFirst else self.mod_sort0.Check(False)
         self.mod_sort1.Check() if self.window_mod_po.selectedFirst else self.mod_sort1.Check(False)
         sort_list = {'File':self.mod_sort2, 'Author':self.mod_sort3, 'Group':self.mod_sort4, '#':self.mod_sort5, 'Modified':self.mod_sort6,
-                                        'Rating':self.mod_sort7, 'Size':self.mod_sort8, 'Status':self.mod_sort9, 'Version':self.mod_sort10}
+                     'Rating':self.mod_sort7, 'Size':self.mod_sort8, 'Status':self.mod_sort9, 'Version':self.mod_sort10}
         [sort_list[x].Check() if x == self.window_mod_po.sort else sort_list[x].Check(False) for x in sort_list.keys()]
 
     def mods_settings_cond(self):
@@ -4686,7 +4697,7 @@ class MenuBar:  # Polemos
             curProfile = conf.settings.get('mash.profile', self.defaultName)
             if curProfile not in items: curProfile = self.defaultName
             [panel_id(id).Check(item.lower() == curProfile.lower()) for id,
-                item in zip(self.idList, items) if panel_label(id) == conf.settings['mash.profile']]
+            item in zip(self.idList, items) if panel_label(id) == conf.settings['mash.profile']]
         else:
             [panel_del(x.GetId()) for x in panel_get()]
             self.built_profiles_saves()
@@ -4859,20 +4870,20 @@ class DocBrowser(wx.Frame):  # Polemos: Refactored
                 (self.editButton,0,wx.GROW),
                 (self.prevButton,0,wx.GROW),
                 (self.nextButton,0,wx.GROW),
-                ),0,wx.GROW|wx.ALL^wx.BOTTOM,4),
+            ),0,wx.GROW|wx.ALL^wx.BOTTOM,4),
             (hSizer( #--Mod name, doc name
                 (self.docNameBox,2,wx.GROW),
-                ),0,wx.GROW|wx.TOP|wx.BOTTOM,4),
+            ),0,wx.GROW|wx.TOP|wx.BOTTOM,4),
             (self.plainText,3,wx.GROW),
             (self.htmlText,3,wx.GROW),
-            )
+        )
         sizer = hSizer(
             (vSizer(
                 (self.modNameBox,0,wx.GROW),
                 (self.modNameList,1,wx.GROW|wx.TOP,4),
-                ),0,wx.GROW|wx.TOP|wx.RIGHT,4),
+            ),0,wx.GROW|wx.TOP|wx.RIGHT,4),
             (self.mainSizer,1,wx.GROW),
-            )
+        )
         #--Set
         self.SetSizer(sizer)
         self.SetMod(modName)
@@ -5044,7 +5055,7 @@ class DocBrowser(wx.Frame):  # Polemos: Refactored
             self.docIsWtxt = self.GetIsWtxt(docPath)
             htmlPath = self.docIsWtxt and (os.path.splitext(docPath)[0]+'.html')
             if htmlPath and (not os.path.exists(htmlPath) or
-                (os.path.getmtime(docPath) > os.path.getmtime(htmlPath))):
+                             (os.path.getmtime(docPath) > os.path.getmtime(htmlPath))):
                 import wtxt
                 docsDir = os.path.join(mosh.modInfos.dir,'Docs')
                 wtxt.genHtml(docPath,cssDir=docsDir)
@@ -5190,7 +5201,7 @@ class MashApp(wx.App):  # Polemos: Added settings, file check, updates check, ml
         if conf.settings['mash.modDocs.show']: DocBrowser().Show()
         if conf.settings['mash.journal.show']: JournalBrowser().Show()
         if conf.settings.get('mash.help.show'): gui.dialog.HelpDialog(singletons.mashFrame,
-            singletons.images, conf.settings['mash.help.pos'], conf.settings['mash.help.size']).Show()
+                                                                      singletons.images, conf.settings['mash.help.pos'], conf.settings['mash.help.size']).Show()
         # Notify that all is ok.
         return True
 
@@ -5210,10 +5221,10 @@ class MashApp(wx.App):  # Polemos: Added settings, file check, updates check, ml
             if os.path.exists(os.path.join(conf.settings['mwDir'], 'Morrowind.ini')): return True
             if conf.settings['wizard.first.mw']:  # Welcome!
                 if not gui.dialog.WelcomeDialog(None, _(u'Welcome to Wrye Mash %s.' % conf.settings['mash.version'][3]),
-                                _(u'Click OK to start Wrye Mash configuration wizard.')).ShowModal(): return False
+                                                _(u'Click OK to start Wrye Mash configuration wizard.')).ShowModal(): return False
             else:  # Problems, notify user.
                 gui.dialog.ErrorMessage(None, _(u'There'
-                    u' is something wrong with your settings.\n\nClick OK to start Wrye Mash configuration wizard.'))
+                                                u' is something wrong with your settings.\n\nClick OK to start Wrye Mash configuration wizard.'))
             while True:
                 if WizardDialog().ShowModal():
                     MWdir = os.path.join(conf.settings['mwDir'], 'Morrowind.ini')
@@ -5223,7 +5234,7 @@ class MashApp(wx.App):  # Polemos: Added settings, file check, updates check, ml
                         return True
                     # Retry?
                     if gui.dialog.ErrorQuery(None, _(u'Morrowind.ini not found in %s! Try again or quit?') % (MWdir,),
-                             _(u'Try again or quit?')) != wx.ID_YES: return False
+                                             _(u'Try again or quit?')) != wx.ID_YES: return False
                 else: return False
 
     def SetopenMWDir(self): # Polemos: OpenMW/Tes3MP support.
@@ -5233,10 +5244,10 @@ class MashApp(wx.App):  # Polemos: Added settings, file check, updates check, ml
             if self.CheckopenMWDirs(): return True
             if conf.settings['wizard.first.openmw']:  # Welcome!
                 if not gui.dialog.WelcomeDialog(None, _(u'Welcome to Wrye Mash %s.' % conf.settings['mash.version'][3]),
-                                _(u'Click OK to start the OpenMW/Tes3MP settings wizard.')).ShowModal(): return False
+                                                _(u'Click OK to start the OpenMW/Tes3MP settings wizard.')).ShowModal(): return False
             else:  # Problems, notify user.
                 gui.dialog.ErrorMessage(None, _(u'There is something wrong'
-                    u' with your settings.\n\nClick OK to start the OpenMW/Tes3MP settings wizard.'))
+                                                u' with your settings.\n\nClick OK to start the OpenMW/Tes3MP settings wizard.'))
             while True:
                 if WizardDialog().ShowModal():
                     # Everything OK?
@@ -5245,7 +5256,7 @@ class MashApp(wx.App):  # Polemos: Added settings, file check, updates check, ml
                     else: problems = (u',\n'.join(errors)+'.')
                     # Retry?
                     if gui.dialog.ErrorQuery(None, _(u'Problems occurred! Try again or quit?\n\n%s' % problems),
-                            _(u'Try again or quit?')) != wx.ID_YES: return False
+                                             _(u'Try again or quit?')) != wx.ID_YES: return False
                 else: return False
 
     def setopenmw_profile(self):  # Polemos: OpenMW/Tes3MP.
@@ -5272,7 +5283,7 @@ class MashApp(wx.App):  # Polemos: Added settings, file check, updates check, ml
         except: pass
         if conf.settings['wizard.first.openmw']: return  False
         choice = gui.dialog.ManualDetectDialog(None, _(u"There was a problem locating OpenMW profile folder.\n"
-                u"(Openmw.cfg and 'Saves' dir reside there).\n\nHow do you wish to proceed?"), _(u'OpenMW Profile Directory not found!'))
+                                                       u"(Openmw.cfg and 'Saves' dir reside there).\n\nHow do you wish to proceed?"), _(u'OpenMW Profile Directory not found!'))
         if choice == wx.ID_NO: return self.setopenmw_profile()
         elif choice == wx.ID_YES:
             try:
@@ -5284,7 +5295,7 @@ class MashApp(wx.App):  # Polemos: Added settings, file check, updates check, ml
                     return True
             except:
                 if gui.dialog.WarningQuery(None, _(u'Failed to autodetect OpenMW Profile folder! Search manually?'),
-                 _(u'OpenMW profile Directory')) == wx.ID_YES: return self.setopenmw_profile()
+                                           _(u'OpenMW profile Directory')) == wx.ID_YES: return self.setopenmw_profile()
         return False
 
     def CheckopenMWDirs(self, mode='simple'):  # Polemos: OpenMW/Tes3MP.
@@ -5627,7 +5638,7 @@ class Mods_Tes3cmd_multipatch(Link): # Polemos: Added Create Multipatch option w
             gui.dialog.ErrorMessage(self.window, _(u"Couldn't find tes3cmd.exe to launch"))
             return
         if gui.dialog.WarningQuery(self.window, _(u'This might take a while. '
-                u'Are you sure you wish to continue?'), _(u'TES3cmd')) != wx.ID_YES: return
+                                                  u'Are you sure you wish to continue?'), _(u'TES3cmd')) != wx.ID_YES: return
         # Begin
         cmd = tes3cmd.Basic()
         t3_thread = Thread(target=cmd.multipatch)
@@ -5762,7 +5773,7 @@ class File_Delete(Link):
         message = _(ur'Delete these files? This operation cannot be undone.')
         message += '\n* ' + '\n* '.join(sorted(self.data))
         dialog = wx.MessageDialog(self.window, message, _(u'Delete Files'),
-            style=wx.YES_NO|wx.ICON_EXCLAMATION)
+                                  style=wx.YES_NO|wx.ICON_EXCLAMATION)
         if dialog.ShowModal() != wx.ID_YES:
             dialog.Destroy()
             return
@@ -5927,7 +5938,7 @@ class File_Redate(Link):  # Polemos fixes
         #--Ask user for revised time.
         start_time_po = formatdate64(int(startTime))
         dialog = gui.dialog.date_time_dialog(self.window,
-            title=_(u'Redate Mod(s)'), caption=_(u'Redate selected mod(s) (24h hour format):'), datetime=start_time_po)
+                                             title=_(u'Redate Mod(s)'), caption=_(u'Redate selected mod(s) (24h hour format):'), datetime=start_time_po)
         newTimeStr = dialog.GetValue()
         if newTimeStr == time.strptime(newTimeStr, '%m-%d-%Y %H:%M:%S'): return
         try:
@@ -5962,10 +5973,10 @@ class File_Redate_Sys_Time(Link):  # By Abot, adapted by Polemos.
         """Handle menu selection."""
         tmsg = _(u'This command will update the time of selected file(s), starting from current system time, keeping the same plugin order.')
         msg = _(u'It cannot be undone (at least, not in a single step).\n\nIt is meant to be used with files displayed in loading order.\n'
-                    u'If you know what you are doing, this function is great to sort/move entire groups of files that must be loaded last,'
-                    u' keeping the relative loading order (just ctrl+click or shift+click the files to organize).')
+                u'If you know what you are doing, this function is great to sort/move entire groups of files that must be loaded last,'
+                u' keeping the relative loading order (just ctrl+click or shift+click the files to organize).')
         if gui.dialog.ContinueQuery(self.window,
-            tmsg, msg, 'query.redate.curtime.continue', _(u'Redate from current system time'), False) != wx.ID_OK: return
+                                    tmsg, msg, 'query.redate.curtime.continue', _(u'Redate from current system time'), False) != wx.ID_OK: return
         # Scan
         fileInfos, newTime = self.window.data, time.time()
         # Do it
@@ -5994,7 +6005,7 @@ class File_Redate_Sel_Time(Link):  # By Abot, adapted by Polemos.
                 u'If you know what you are doing, this function is great to sort/move entire groups of files keeping the relative loading order '
                 u'(just ctrl+click or shift+click the files to organize).')
         if gui.dialog.ContinueQuery(self.window,
-                tmsg, msg, 'query.redate.fltime.continue', _(u'Redate first selected file time'), False) != wx.ID_OK: return
+                                    tmsg, msg, 'query.redate.fltime.continue', _(u'Redate first selected file time'), False) != wx.ID_OK: return
         # Scan for earliest date
         fileInfos = self.window.data
         newTime = fileInfos[self.data[0]].mtime
@@ -6070,7 +6081,7 @@ class File_Snapshot(Link):
         fileHedr = fileInfo.tes3.hedr
         if (fileVersion or snapVersion) and mosh.reVersion.search(fileHedr.description):
             newDescription = mosh.reVersion.sub(r'\1 '+fileVersion+snapVersion,
-                fileHedr.description,1)
+                                                fileHedr.description,1)
             fileInfo.writeDescription(newDescription)
             self.window.details.SetFile(fileName)
         #--Copy file
@@ -6171,7 +6182,7 @@ class File_RevertToBackup:
         menuItem = wx.MenuItem(menu,ID_REVERT_BACKUP,_(u'Revert to Backup'))
         menu.AppendItem(menuItem)
         self.backup = os.path.join(self.fileInfo.dir,
-            conf.settings['mosh.fileInfo.backupDir'],self.fileInfo.name)
+                                   conf.settings['mosh.fileInfo.backupDir'],self.fileInfo.name)
         menuItem.Enable(singleSelect and os.path.exists(self.backup))
         #--First Backup item
         wx.EVT_MENU(window,ID_REVERT_FIRST,self.Execute)
@@ -6267,7 +6278,7 @@ class File_Remove_RefsData(ListEditorData):
         #--File dialog
         workDir = conf.settings.get('mosh.workDir',conf.settings['mwDir'])
         dialog = wx.FileDialog(self.parent,_(u'Select Ref Remover file or files:'),
-            workDir,'', '*.*', wx.FD_OPEN|wx.FD_MULTIPLE)
+                               workDir,'', '*.*', wx.FD_OPEN|wx.FD_MULTIPLE)
         if dialog.ShowModal() != wx.ID_OK:
             dialog.Destroy()
             return None
@@ -6292,7 +6303,7 @@ class File_Remove_RefsData(ListEditorData):
         #--Right length?
         if len(newName) == 0 or len(newName) > 64:
             gui.dialog.ErrorMessage(self.parent,
-                _(u'Name must be between 1 and 64 characters long.'))
+                                    _(u'Name must be between 1 and 64 characters long.'))
             return False
         #--Rename
         conf.settings.setChanged('mash.refRemovers.data')
@@ -6346,8 +6357,8 @@ class File_Remove_Refs:
         #--Continue Query
         tmessage = _(u'Please Note:')
         message = _(u"This command will remove ALL instances of the refs listed in the associated file, EXCEPT for instances "
-                u"in safe cells. Be SURE that the cells you use for storage (strongholds, etc.) are included in the safe cells list, or"
-                u" you risk losing the items you have stored in them!")
+                    u"in safe cells. Be SURE that the cells you use for storage (strongholds, etc.) are included in the safe cells list, or"
+                    u" you risk losing the items you have stored in them!")
         if gui.dialog.ContinueQuery(self.window,tmessage,message,'query.refRemovers.continue',_(u'Remove Refs by Id...')) != wx.ID_OK:
             return
         #--Do it
@@ -6419,7 +6430,7 @@ class File_Replace_RefsData(ListEditorData):
         #--File dialog
         workDir = conf.settings.get('mosh.workDir',conf.settings['mwDir'])
         dialog = wx.FileDialog(self.parent,_(u'Select Ref Replacer list file:'),
-            workDir,'', '*.*', wx.FD_OPEN)
+                               workDir,'', '*.*', wx.FD_OPEN)
         if dialog.ShowModal() != wx.ID_OK:
             dialog.Destroy()
             return None
@@ -6436,7 +6447,7 @@ class File_Replace_RefsData(ListEditorData):
         #--Right length?
         if len(newName) == 0 or len(newName) > 64:
             gui.dialog.ErrorMessage(self.parent,
-                _(u'Name must be between 1 and 64 characters long.'))
+                                    _(u'Name must be between 1 and 64 characters long.'))
             return False
         #--Rename
         conf.settings.setChanged('mash.refReplacers.data')
@@ -6548,7 +6559,7 @@ class GetLinearList(Link):  # By Abot, adapted by Polemos.
         tmsg = _(u'This command will copy to the clipboard selected mods linear file list.')
         msg = _(u'For pasting in Windows applications file load dialog boxes (e.g. TESFaith#, TESPCS, etc).')
         if gui.dialog.ContinueQuery(self.window,
-            tmsg, msg, 'query.linear.file.list', _(u'Copy selected mods linear file list'), False) != wx.ID_OK: return
+                                    tmsg, msg, 'query.linear.file.list', _(u'Copy selected mods linear file list'), False) != wx.ID_OK: return
         # Scan for earliest date
         s = s1 = u''
         for fileName in self.data:
@@ -6593,7 +6604,7 @@ class File_RepairRefs(Link):
             except mosh.Tes3RefError, error:
                 progress = progress.Destroy()
                 message = _(u'%s has bad refs and must be repaired first.\n\nExample Bad Ref from %s:\nCell: %s\nObject Id: %s\nObject Index: '
-                    u'%d\nMod Index: %d (%s)'% (error.inName, error.inName, error.cellId, error.objId, error.iObj, error.iMod, error.masterName))
+                            u'%d\nMod Index: %d (%s)'% (error.inName, error.inName, error.cellId, error.objId, error.iObj, error.iMod, error.masterName))
                 gui.dialog.ErrorMessage(self.window, message)
                 return
             #--File Refs for Save File
@@ -6636,7 +6647,7 @@ class File_SortRecords(Link):
         #--Continue Query
         tmessage = _(u'Please Note:')
         message = _(u"This function will sort the records of the selected esp for easier viewing "
-            u"in the Details view of TESCS. Generally, this is only useful for active modders.")
+                    u"in the Details view of TESCS. Generally, this is only useful for active modders.")
         if gui.dialog.ContinueQuery(self.window,tmessage,message,'query.sortRecords.continue',_(u'Sort Records...')) != wx.ID_OK:
             return
         fileName = self.data[0]
@@ -6729,7 +6740,7 @@ class File_Stats(Link):
         fileInfo = self.window.data[fileName]
         fileInfo.getStats()
         frame = wx.Frame(self.window,-1,fileName,size=(200,300),
-            style= (wx.RESIZE_BORDER|wx.CAPTION|wx.SYSTEM_MENU|wx.CLOSE_BOX|wx.CLIP_CHILDREN))
+                         style= (wx.RESIZE_BORDER|wx.CAPTION|wx.SYSTEM_MENU|wx.CLOSE_BOX|wx.CLIP_CHILDREN))
         frame.SetIcons(singletons.images['mash.main.ico'].GetIconBundle())
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(File_StatsList(frame,fileInfo.stats),1,wx.EXPAND)
@@ -6849,7 +6860,7 @@ class Progress_info(Link):  # Polemos
         except: self.gTank = singletons.gInstallers.gList
         enabled = conf.settings['mash.installers.show.progress.info']
         message = _(u"Do you wish to show extra information in the progress bar (filename, size, CRC) while refreshing? "
-            u"This may decrease speed a lot. It is recommended only on fast computers or for debugging.")
+                    u"This may decrease speed a lot. It is recommended only on fast computers or for debugging.")
         if not enabled and not balt.askYes(self.gTank,fill(message,80),self.title):
             if conf.settings['mash.menubar.enabled']: singletons.MenuBar.installers_settings_cond()
             return
@@ -6927,14 +6938,14 @@ class Installers_Import(Link):  # Polemos
         sourcePath, pakFile = package
         # Move or copy?
         mc_query = gui.dialog.askdialog(None, _(u'Remove the original file after importing it?\n\n'
-            u'If you click Yes the original file will be deleted (after it is copied into the Installers directory).\n'
-                u'If the file fails to be copied, the deletion will be aborted automatically.'), _(u'Remove original file?'), True)
+                                                u'If you click Yes the original file will be deleted (after it is copied into the Installers directory).\n'
+                                                u'If the file fails to be copied, the deletion will be aborted automatically.'), _(u'Remove original file?'), True)
         if mc_query == wx.ID_CANCEL: return
         # Check if a file with the same name exists
         targPath = os.path.join(conf.settings['sInstallersDir'], pakFile)
         if os.path.isfile(targPath):
             overwrite = gui.dialog.askdialog(None, _(u'A package with the same name already exists in the Installers directory.\n\n'
-                u'Click Yes to overwrite the existing package or click No to abort the import process.'), _(u'Overwrite file?'))
+                                                     u'Click Yes to overwrite the existing package or click No to abort the import process.'), _(u'Overwrite file?'))
             if overwrite == wx.ID_NO: return
         # Copy/overwrite file to destination
         try: shutil.copyfile(sourcePath, targPath)
@@ -6951,7 +6962,7 @@ class Installers_Import(Link):  # Polemos
         if mc_query == wx.ID_YES:
             try: os.remove(sourcePath)
             except: gui.dialog.WarningMessage(None, _(u'The package was successfully imported into the Installers '
-                u'directory but Wrye Mash wasn\'t able to delete the original file. You may have to delete the source file manually.'))
+                                                      u'directory but Wrye Mash wasn\'t able to delete the original file. You may have to delete the source file manually.'))
 
 #------------------------------------------------------------------------------
 
@@ -6977,7 +6988,7 @@ class Installers_Refresh(Link):
             self.title = u'Full Refresh'
         if self.fullRefresh:
             message = balt.fill(_(u"Refresh ALL data from scratch? This may take five to ten "
-                    u"minutes (or more) depending on the number of mods you have installed."))
+                                  u"minutes (or more) depending on the number of mods you have installed."))
             if not balt.askWarning(self.gTank, fill(message, 80), self.title): return
         singletons.gInstallers.refreshed = False
         singletons.gInstallers.fullRefresh = self.fullRefresh
@@ -8089,7 +8100,7 @@ class snapshot_po_restore(Link):  # Polemos
         singletons.modList.Refresh()
         singletons.mashFrame.RefreshData()
         if missing_po: gui.dialog.WarningMessage(self.window, _(u'Snapshot restored but the'
-                u' following mod files were missing from your installation: \n\n%s\n') % (missing_po,))
+                                                                u' following mod files were missing from your installation: \n\n%s\n') % (missing_po,))
         else: gui.dialog.InfoMessage(self.window, _(u'Active mods snapshot restored.'))
 
 #------------------------------------------------------------------------------
@@ -8193,7 +8204,7 @@ class snapshot_po_select(Link):  # Polemos
         singletons.mashFrame.RefreshData()
         if missing_po != '':
             gui.dialog.WarningMessage(self.window, _(u"Snapshot restored but "
-                u"the following mod files were missing from your installation: \n\n%s\n") % (missing_po,))
+                                                     u"the following mod files were missing from your installation: \n\n%s\n") % (missing_po,))
         elif missing_po == '': gui.dialog.InfoMessage(self.window, _(u'Active mods snapshot restored.'))
 
 #------------------------------------------------------------------------------
@@ -8222,7 +8233,7 @@ class snapshot_po_export(Link):  # Polemos
         if not os.path.exists(destDir): os.makedirs(destDir)
         destName = 'snapshot.txt'
         dialog = wx.FileDialog(self.window,
-            _(u'Export snapshot as:'), destDir, destName, wildcard, wx.FD_SAVE|wx.FD_OVERWRITE_PROMPT)
+                               _(u'Export snapshot as:'), destDir, destName, wildcard, wx.FD_SAVE|wx.FD_OVERWRITE_PROMPT)
         if dialog.ShowModal() != wx.ID_OK:
             dialog.Destroy()
             return
@@ -8454,12 +8465,12 @@ class Reset_Beth_Dates(Link):  # Polemos
                       'tribunal.esm': 1035940926}
         # Reset Bethesda dates
         [os.utime(os.path.join(data_files, x), (DatesIndex[x.lower()],
-            DatesIndex[x.lower()])) for x in scandir.listdir(data_files) if x.lower() in DatesIndex.keys()]
+                                                DatesIndex[x.lower()])) for x in scandir.listdir(data_files) if x.lower() in DatesIndex.keys()]
         # Finish
         try: test = self.window
         except: self.window = singletons.BSArchives.Archives
         gui.dialog.InfoMessage(self.window, _(u'The dates of the Bethesda Masters'
-            u' (.ESM) and Archives (.BSA)\nhave been reset to their original dates.'))
+                                              u' (.ESM) and Archives (.BSA)\nhave been reset to their original dates.'))
         self.window.Refresh()
 
 #------------------------------------------------------------------------------
@@ -8569,7 +8580,7 @@ class Mods_Tes3cmd_Fixit():  # Polemos: made compatible with toolbar menu, more.
             gui.dialog.ErrorMessage(self.window, _(u"Couldn't find tes3cmd.exe to launch"))
             return
         if gui.dialog.WarningQuery(self.window, _(u'This is a lengthy process. '
-                u'Are you sure you wish to continue?'), _(u'TES3cmd')) != wx.ID_YES: return
+                                                  u'Are you sure you wish to continue?'), _(u'TES3cmd')) != wx.ID_YES: return
         # Begin
         cmd = tes3cmd.Basic()
         t3_thread = Thread(target=cmd.fixit)
@@ -9224,7 +9235,7 @@ class Mod_Tes3cmd_Sync(Link):  # By Abot, adapted by Polemos.
                 u' to the masters installed in "Data Files" by executing "tes3cmd.exe header --synchronize --debug --hide-backups --backup-dir"'
                 u' (debug option is set so information may be displayed, as by default no messages are shown with this command).')
         if gui.dialog.ContinueQuery(self.window, tmsg,
-            msg, 'query.tes3cmd.sync', _(u'Update header field and sync masters')) != wx.ID_OK: return
+                                    msg, 'query.tes3cmd.sync', _(u'Update header field and sync masters')) != wx.ID_OK: return
         # Scan
         cmd = tes3cmd.Basic()
         t3_thread = Thread(target=cmd.syncMasters, args=[self.data])
@@ -9264,7 +9275,7 @@ class Mod_TES3lint(Link):  # Polemos
         tes3lint, perl = self.chkPaths()
         if not tes3lint or not perl:
             gui.dialog.WarningMessage(self.window, _(u'You need to set/change '
-                u'some settings before you continue.\n\nClick OK to open the TES3lint configuration window.'))
+                                                     u'some settings before you continue.\n\nClick OK to open the TES3lint configuration window.'))
             pos = conf.settings['tes3lint.pos']
             import plugins.tes3lint.settings as init
             init.TES3lint_Settings(self.window, pos)
@@ -9333,7 +9344,7 @@ class Mod_Tes3cmd_Merge(Link):  # By Abot, adapted by Polemos.
                 u' as by default no messages are shown with this command).\n\nPlease note that not all mods are mergable and may not '
                 u'produce any results.')
         if gui.dialog.ContinueQuery(self.window, tmsg,
-            msg, 'query.tes3cmd.merge', _(u'Dump selected files records to dumb.esp'), False) != wx.ID_OK: return
+                                    msg, 'query.tes3cmd.merge', _(u'Dump selected files records to dumb.esp'), False) != wx.ID_OK: return
         # Scan
         cmd = tes3cmd.Basic()
         t3_thread = Thread(target=cmd.merge, args=[self.data])
@@ -9946,11 +9957,11 @@ class Save_Remove_DebrisCells(Link):
             except mosh.Tes3RefError, error:
                 progress = progress.Destroy()
                 message = ((
-                    _(u"%s has bad refs and must be repaired first.\n") +
-                    _(u"\nExample Bad Ref from %s:") +
-                    _(u"\n  Cell: %s\n  Object Id: %s\n  Object Index: %d")+
-                    _(u"\n  Mod Index: %d (%s)")) %
-                    (error.inName,error.inName,error.cellId,error.objId,error.iObj,error.iMod,error.masterName))
+                                   _(u"%s has bad refs and must be repaired first.\n") +
+                                   _(u"\nExample Bad Ref from %s:") +
+                                   _(u"\n  Cell: %s\n  Object Id: %s\n  Object Index: %d")+
+                                   _(u"\n  Mod Index: %d (%s)")) %
+                           (error.inName,error.inName,error.cellId,error.objId,error.iObj,error.iMod,error.masterName))
                 gui.dialog.ErrorMessage(self.window,message)
                 return
             #--File refs
@@ -9997,11 +10008,11 @@ class Save_RepairAll(Link):
             except mosh.Tes3RefError, error:
                 progress = progress.Destroy()
                 message = ((
-                    _(u"%s has bad refs and must be repaired first.\n") +
-                    _(u"\nExample Bad Ref from %s:") +
-                    _(u"\n  Cell: %s\n  Object Id: %s\n  Object Index: %d")+
-                    _(u"\n  Mod Index: %d (%s)")) %
-                    (error.inName,error.inName,error.cellId,error.objId,error.iObj,error.iMod,error.masterName))
+                                   _(u"%s has bad refs and must be repaired first.\n") +
+                                   _(u"\nExample Bad Ref from %s:") +
+                                   _(u"\n  Cell: %s\n  Object Id: %s\n  Object Index: %d")+
+                                   _(u"\n  Mod Index: %d (%s)")) %
+                           (error.inName,error.inName,error.cellId,error.objId,error.iObj,error.iMod,error.masterName))
                 gui.dialog.ErrorMessage(self.window,message)
                 return
             #--File Refs for Save File
@@ -10112,12 +10123,12 @@ class Save_UpdateWorldMap(Link):  # Polemos: Added (I hope) support for MCP exte
         """Warn about MCP beta map function."""
         tmessage = _(u'MCP extended map support enabled.')
         message = _(u'This is an untested and beta support for reflecting added and removed landmasses, on saved games'
-            u' patched with MCP\'s extended map. Again, obviously, you need to have your game patched by MCP first.'
-            u'\n\nBefore proceeding make a backup of the saved game you wish to update, so that you may revert to it in case'
-            u' your saved game map is destroyed.\n\nYou have been warned, you are responsible for any actions taken, proceed'
-            u' with caution, take a backup and do it for science.\n\nClick "Yes" to proceed OR click "No" to abort...')
+                    u' patched with MCP\'s extended map. Again, obviously, you need to have your game patched by MCP first.'
+                    u'\n\nBefore proceeding make a backup of the saved game you wish to update, so that you may revert to it in case'
+                    u' your saved game map is destroyed.\n\nYou have been warned, you are responsible for any actions taken, proceed'
+                    u' with caution, take a backup and do it for science.\n\nClick "Yes" to proceed OR click "No" to abort...')
         if gui.dialog.ContinueQuery(self.window, tmessage,
-            message, 'query.mcp.extended.map', _(u'Update extended Map (MCP)')) != wx.ID_OK: return False
+                                    message, 'query.mcp.extended.map', _(u'Update extended Map (MCP)')) != wx.ID_OK: return False
         return True
 
     def Execute(self,event):
@@ -10143,11 +10154,11 @@ class Save_UpdateWorldMap(Link):  # Polemos: Added (I hope) support for MCP exte
             except mosh.Tes3RefError, error:
                 progress = progress.Destroy()
                 message = ((
-                    _(u"%s has bad refs and must be repaired first.\n") +
-                    _(u"\nExample Bad Ref from %s:") +
-                    _(u"\n  Cell: %s\n  Object Id: %s\n  Object Index: %d")+
-                    _(u"\n  Mod Index: %d (%s)")) %
-                    (error.inName,error.inName,error.cellId,error.objId,error.iObj,error.iMod,error.masterName))
+                                   _(u"%s has bad refs and must be repaired first.\n") +
+                                   _(u"\nExample Bad Ref from %s:") +
+                                   _(u"\n  Cell: %s\n  Object Id: %s\n  Object Index: %d")+
+                                   _(u"\n  Mod Index: %d (%s)")) %
+                           (error.inName,error.inName,error.cellId,error.objId,error.iObj,error.iMod,error.masterName))
                 gui.dialog.ErrorMessage(self.window,message)
                 return
             #--File Refs for Save File
@@ -10285,8 +10296,8 @@ class Masters_RestoreModOrder(Link):  # Polemos
         self.window.Refresh()
         singletons.mashFrame.RefreshData()
         if missing_po: gui.dialog.WarningMessage(self.window, _(u"Mod order restored but the"
-                u" following mod files were either missing or stored in an unknown encoding "
-                u"(try renaming them if they exist): \n\n%s\n") % (missing_po.decode(conf.settings['profile.encoding'], 'replace'),))
+                                                                u" following mod files were either missing or stored in an unknown encoding "
+                                                                u"(try renaming them if they exist): \n\n%s\n") % (missing_po.decode(conf.settings['profile.encoding'], 'replace'),))
         else: gui.dialog.InfoMessage(self.window, _(u'Mod order successfully restored.'))
 
 
@@ -10342,9 +10353,9 @@ class Config_ScreenShots(Link): # Polemos: changed "Next Shot.." to a better nam
         next = ini.getSetting('General','Screen Shot Index','0')
         rePattern = re.compile(r'^(.+?)(\d*)$',re.I)
         try: pattern = balt.askText(self.window,_(u"Screenshot base name, optionally with next screenshot number.\n"
-                        u"E.g. ScreenShot or ScreenShot_101 or Subdir\\ScreenShot_201."),_(u"Configure screenshots."),base+next)
+                                                  u"E.g. ScreenShot or ScreenShot_101 or Subdir\\ScreenShot_201."),_(u"Configure screenshots."),base+next)
         except: pattern = balt.askText(singletons.screensList, _(u"Screenshot base name, optionally with next screenshot number.\n"
-                        u"E.g. ScreenShot or ScreenShot_101 or Subdir\\ScreenShot_201."), _(u"Configure screenshots."), base + next)
+                                                                 u"E.g. ScreenShot or ScreenShot_101 or Subdir\\ScreenShot_201."), _(u"Configure screenshots."), base + next)
         if not pattern: return
         maPattern = rePattern.match(pattern)
         newBase,newNext = maPattern.groups()
@@ -10352,7 +10363,7 @@ class Config_ScreenShots(Link): # Polemos: changed "Next Shot.." to a better nam
             LString('Screen Shot Base Name'): newBase,
             LString('Screen Shot Index'): (newNext or next),
             LString('Screen Shot Enable'): '1',
-            }}
+        }}
         screensDir = GPath(newBase).head
         if screensDir:
             if not screensDir.isabs(): screensDir = mosh.dirs['app'].join(screensDir)
@@ -10472,7 +10483,7 @@ class App_mge_xe(Link):  # Polemos: Added MGE XE in status bar.
         """Handle menu selection."""
         try:
             mgeexe_path = conf.settings['mgexe.dir'] if os.path.isfile(conf.settings['mgexe.dir']
-                                ) else '' or os.path.join(conf.settings['mwDir'], 'MGEXEgui.exe')
+                                                                       ) else '' or os.path.join(conf.settings['mwDir'], 'MGEXEgui.exe')
             if os.path.isfile(mgeexe_path):
                 conf.settings['mgexe.dir'] = mgeexe_path
                 conf.settings['mgexe.detected'] = True
@@ -10651,7 +10662,7 @@ def InitSettings():
 def installers_choose():  # Polemos.
     """Select Installers dir if not already defined."""
     gui.dialog.WarningMessage(None, _(u'Installers dir is not defined. Click OK to select a folder to'
-        u' use (for mod installers).\n\nIf you are upgrading and you get this message, select your old Installers directory.'))
+                                      u' use (for mod installers).\n\nIf you are upgrading and you get this message, select your old Installers directory.'))
     while True:
         InstallersDialog = wx.DirDialog(None, _(u"Select your Installers directory."))
         result = InstallersDialog.ShowModal()
@@ -10660,7 +10671,7 @@ def installers_choose():  # Polemos.
         # --User canceled?
         if result != wx.ID_OK:
             retryDialog = wx.MessageDialog(None, _(u'You need to set the Installers directory to'
-                u' proceed. Are you sure you want to exit?'), _(u'Exit?'), wx.YES_NO|wx.ICON_EXCLAMATION)
+                                                   u' proceed. Are you sure you want to exit?'), _(u'Exit?'), wx.YES_NO|wx.ICON_EXCLAMATION)
             result = retryDialog.ShowModal()
             retryDialog.Destroy()
             if result == wx.ID_YES:

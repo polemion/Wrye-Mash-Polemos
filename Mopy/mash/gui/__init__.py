@@ -403,7 +403,7 @@ class FileDrop(wx.FileDropTarget):  # Polemos
 class NotebookPanel(wx.Panel):
     """Parent class for notebook panels."""
 
-    def enableFileDragDrop(self, window):  # Polemos, disabled for now, the implementation conflicts with drag and drop
+    def enableFileDragDrop(self, window):  # todo: Polemos, disabled for now, the implementation conflicts with drag and drop
         """Enable Drag and drop file(s) for ctrl."""
         return FileDrop(window)
 

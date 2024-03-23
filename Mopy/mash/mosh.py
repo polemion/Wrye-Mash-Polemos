@@ -77,7 +77,7 @@ settingDefaults = {
     'mosh.fileInfo.backupDir': r'Mash\Backups',
     'mosh.fileInfo.hiddenDir': r'Mash\Hidden',
     'mosh.fileInfo.snapshotDir': r'Mash\Snapshots',
-    }
+}
 
 
 def formatInteger(value):
@@ -94,12 +94,12 @@ def formatDate(value):   # Polemos
 
 
 def megethos(num):  # Polemos
-        """Convert byte sizes to KBs, MBs or GBs."""
-        digits = len(str(num))
-        if digits <= 3: return '%dB' % (num)
-        elif 4 <= digits <= 6: return '%dKB' % (num / 1024)
-        elif 7 <= digits <= 9: return '%dMB' % (num / 1024 ** 2)
-        elif digits >= 10: return '%dGB' % (num / 1024 ** 3)
+    """Convert byte sizes to KBs, MBs or GBs."""
+    digits = len(str(num))
+    if digits <= 3: return '%dB' % (num)
+    elif 4 <= digits <= 6: return '%dKB' % (num / 1024)
+    elif 7 <= digits <= 9: return '%dMB' % (num / 1024 ** 2)
+    elif digits >= 10: return '%dGB' % (num / 1024 ** 3)
 
 
 # Data Dictionaries -----------------------------------------------------------
@@ -521,7 +521,7 @@ class Progress:
     def __call__(self,rawProgress,message=None):
         if not message: message = self.message
         if ((message != self.message) or
-            (time.time() > (self.time+self.interval))):
+                (time.time() > (self.time+self.interval))):
             self.doProgress(self.base+self.scale*rawProgress/self.max, message)
             self.message = message
             self.time = time.time()
@@ -951,7 +951,7 @@ class Book(Record):
             elif name == 'FNAM': self.title = cstrip(srData)
             elif name == 'BKDT':
                 (self.weight,self.value,self.isScroll,self.teaches,self.enchantPoints
-                    ) = struct.unpack('f4i',srData)
+                 ) = struct.unpack('f4i',srData)
             elif name == 'SCRI': self.script = cstrip(srData)
             elif name == 'ITEX': self.icon = cstrip(srData)
             elif name == 'TEXT': self.text = cstrip(srData)
@@ -961,7 +961,7 @@ class Book(Record):
             #--Bad record?
             else:
                 raise Tes3Error(self.inName,_('Extraneous subrecord (%s) in %s record.')
-                    % (name,self.name))
+                                % (name,self.name))
 
     def dumpData(self,out):
         """Dumps state into out. Called by getSize()."""
@@ -972,7 +972,7 @@ class Book(Record):
         out.packSub0('MODL',self.model)
         if self.title:   out.packSub0('FNAM',self.title)
         out.packSub('BKDT','f4i',
-            self.weight, self.value, self.isScroll, self.teaches, self.enchantPoints)
+                    self.weight, self.value, self.isScroll, self.teaches, self.enchantPoints)
         if self.script:  out.packSub0('SCRI',self.script)
         if self.icon:    out.packSub0('ITEX',self.icon)
         if self.text:    out.packSub0('TEXT',self.text)
@@ -1442,8 +1442,8 @@ class Fmap(Record):
                 rOld = ord(cOld[0])
                 #--New or old is sea.
                 if (ord(cNew[0]) & 1) or ((rOld & 1) and
-                    (-2 < (1.467742*rOld - ord(cOld[1])) < 2) and
-                    (-2 < (1.338710*rOld - ord(cOld[2])) < 2)):
+                                          (-2 < (1.467742*rOld - ord(cOld[1])) < 2) and
+                                          (-2 < (1.338710*rOld - ord(cOld[2])) < 2)):
                     mapd[x0+xc+ymoff] = cNew
         if marked:
             self.drawBorder(Fmap.MARKED,x0+2,y0+2,x0+7,y0+7,1)
@@ -1566,7 +1566,7 @@ class Info(Record):
             #--String/Value Tests
             elif name == 'DATA':
                 (self.type, self.spDisp, self.spRank, self.spSex, self.pcRank, self.unk02
-                    ) = struct.unpack('2i4B',srData)
+                 ) = struct.unpack('2i4B',srData)
             elif name == 'ONAM': self.spId = cstrip(srData)
             elif name == 'RNAM': self.spRace = cstrip(srData)
             elif name == 'CNAM': self.spClass = cstrip(srData)
@@ -1595,7 +1595,7 @@ class Info(Record):
         out.packSub0('NNAM',self.nextId)
         if not self.isDeleted:
             out.packSub('DATA','2i4B',
-                self.type, self.spDisp, self.spRank, self.spSex, self.pcRank, self.unk02)
+                        self.type, self.spDisp, self.spRank, self.spSex, self.pcRank, self.unk02)
         if self.spId:       out.packSub0('ONAM',self.spId)
         if self.spRace:     out.packSub0('RNAM',self.spRace)
         if self.spClass:    out.packSub0('CNAM',self.spClass)
@@ -1792,7 +1792,7 @@ class Scpt(Record):
             #--Header
             if name == 'SCHD':
                 (self.id, self.numShorts, self.numLongs, self.numFloats, self.dataSize, self.varSize
-                    ) = ins.unpack('32s5i',size,'SCPT.SCHD')
+                 ) = ins.unpack('32s5i',size,'SCPT.SCHD')
                 self.id = cstrip(self.id)
             #--Other subrecords
             elif name in srNameSet:
@@ -1846,9 +1846,9 @@ class Scpt(Record):
         """Dumps state into out. Called by getSize()."""
         #--Header
         out.packSub('SCHD','32s5i',
-            self.id,
-            self.numShorts, self.numLongs, self.numFloats,
-            self.dataSize, self.varSize)
+                    self.id,
+                    self.numShorts, self.numLongs, self.numFloats,
+                    self.dataSize, self.varSize)
         #--Others
         for record in [getattr(self,srName.lower(),None) for srName in Scpt.subRecordNames]:
             if not record: continue
@@ -1934,14 +1934,14 @@ class Tes3_Gmdt(SubRecord):
         if not self.data: raise StateError(_(u'Data undefined: ')+self.name)
         if not self.changed: return self.size
         self.data = struct.pack('3f12s64s4s32s',
-            self.curHealth,
-            self.maxHealth,
-            self.day,
-            self.unknown1,
-            self.curCell,
-            self.unknown2,
-            self.playerName,
-            )
+                                self.curHealth,
+                                self.maxHealth,
+                                self.day,
+                                self.unknown1,
+                                self.curCell,
+                                self.unknown2,
+                                self.playerName,
+                                )
         self.size = len(self.data)
         self.setChanged(False)
         return self.size
@@ -2010,9 +2010,12 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
     def __init__(self, dr):
         """Init."""
         self.dir = dr
-        # MWSE max plugins compatibility
-        self.maxPlugins = 1023 if settings['mash.extend.plugins'] else 255
         self.openmw = settings['openmw']
+        if not self.openmw:  # Morrowind
+            # MWSE max plugins compatibility
+            self.maxPlugins = 1023 if settings['mash.extend.plugins'] else 255
+        elif self.openmw:  # OpenMW/TES3mp
+            self.maxPlugins = None
         self.encod = settings['profile.encoding']
         if not self.openmw:  # Morrowind
             self.path = os.path.join(self.dir, 'Morrowind.ini')
@@ -2153,7 +2156,8 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
         """Item de-duplication."""
         the_set = set()
         the_set_add = the_set.add
-        return [x for x in itms if not (x in the_set or the_set_add(x))]
+        tmp = [x for x in itms if x]
+        return [x for x in tmp if not (x in the_set or the_set_add(x))]
 
     def checkActiveState(self, DataDir):  # Polemos
         """True if DataDir is in load list (OpenMW/TES3mp)."""
@@ -2191,7 +2195,7 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
         filterDups = self.itmDeDup(filterPaths)
         filterMissing = [x for x in filterDups if os.path.isdir(x)]
         return [u'data="%s"'%os.path.realpath(x).rstrip() for x in filterMissing
-            ] if repack else [os.path.realpath(x).rstrip() for x in filterMissing]
+                ] if repack else [os.path.realpath(x).rstrip() for x in filterMissing]
 
     def SaveDatamods(self, rawdata):  # Polemos
         """Export DataDirs to openmw.cfg."""
@@ -2217,9 +2221,12 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
                 conf_tmp.append('PluginMark')
             else: conf_tmp.extend(data)
         # No DataMods dirs yet
-        if conf_tmp and not self.DataModsDirs:
-            self.safeSave('\n'.join([
-                x for x in conf_tmp if not any(['PluginMark' in x, 'ArchiveMark' in x])]))
+        if conf_tmp and not self.DataMods:
+            self.safeSave('\n'.join([x for x in conf_tmp if not any([
+                'PluginMark' in x,
+                'ArchiveMark' in x,
+                'data=' in x
+            ])]))
         #self.StructureChk(datafiles_po) todo: check for cfg abnormalities...
         else:
             self.confLoadLines = conf_tmp
@@ -2261,7 +2268,8 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
         for line in self.open_conf_file():
             maLoadFile = reLoadFile.match(line)
             if maLoadFile:
-                self.DataMods.append(line.rstrip())
+                line = line.rstrip().replace('&&', '&')
+                self.DataMods.append(line)
             self.ConfCache.append(line)
         if not self.DataMods: return []
         return self.DataMods
@@ -2481,33 +2489,52 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
                     order_po.append(fpath)
         return order_po
 
+    def setOrdermTime(self, fpaths):
+        """Set mtime for file paths."""
+        mtime_first = 1
+        mtime_last = int(time.time())
+        if mtime_last < 1228683562: mtime_last = 1228683562
+        loadorder_mtime_increment = (mtime_last - mtime_first) / len(fpaths)
+        mtime = mtime_first
+        for filepath in fpaths:
+            os.utime(filepath, (-1, mtime))
+            mtime += loadorder_mtime_increment
+        # Polemos: For mods and bsas we use mtime to set/get order. Thus we keep compatibility with
+        # regular Morrowind mod/bsa ordering and just hijack Wrye Mash system to use with OpenMW.
+
     def openmw_apply_order(self, order, paths):  # Polemos: OpenMW/TES3mp
         """Handle OpenMW mod ordering when reading openmw.cfg to display on mods panel."""
         if not order or not paths: return
         order_po = self.data_files_factory(order)
-        # Polemos: For mods and bsas we use mtime to set/get order. Thus we keep compatibility with
-        # regular Morrowind mod/bsa ordering and just hijack Wrye Mash system to use with OpenMW.
-        if len(order_po) <= 1: return
-        mtime_first = 1026943162
-        mtime_last = int(time.time())
-        if mtime_last < 1228683562: mtime_last = 1228683562
-        loadorder_mtime_increment = (mtime_last - mtime_first) / len(order_po)
-        mtime = mtime_first
-        for filepath in order_po:
-            os.utime(filepath, (-1, mtime))
-            mtime += loadorder_mtime_increment
+        if len(order_po) > 1: self.setOrdermTime(order_po)
 
-    def save_openmw_plugin_factory(self):  # Polemos: OpenMW/TES3mp
+    def openmw_plugin_factory(self):  # Polemos: OpenMW/TES3mp
         """Prepare plugin file entries for insertion to OpenMW.cfg."""
         plugins_order = self.data_files_factory(self.loadFiles)
         plugins_order.sort(key=lambda x: os.path.getmtime(x))
-        plugins_order = [os.path.basename(x) for x in plugins_order]
+        esm_orderActive = [x for x in plugins_order if x.lower().endswith('.esm') or x.lower().endswith('.omwgame')]
+        esp_orderActive = [x for x in plugins_order if x.lower().endswith('.esp') or x.lower().endswith('.omwaddon')]
+        plugins_order = esm_orderActive + esp_orderActive
         plugins_order = self.itmDeDup(plugins_order)
-        esm_order = [x for x in plugins_order if x.lower().endswith('.esm') or x.lower().endswith('.omwgame')]
-        esp_order = [x for x in plugins_order if x.lower().endswith('.esp') or x.lower().endswith('.omwaddon')]
-        return esm_order + esp_order
+        plugins_order = [os.path.basename(x) for x in plugins_order]
 
-    def save_openmw_archive_factory(self):  # Polemos: OpenMW/TES3mp
+        esm_orderFull = [x for x in self.data_files_factory(modInfos.data) if x.lower().endswith('.esm') or x.lower().endswith('.omwgame')]
+        esp_orderFull = [x for x in self.data_files_factory(modInfos.data) if x.lower().endswith('.esp') or x.lower().endswith('.omwaddon')]
+        plugins_orderFull = esm_orderFull + esp_orderFull
+        plugins_orderFull = self.itmDeDup(plugins_orderFull)
+        self.setOrdermTime(plugins_orderFull)
+
+        plugins_orderFull.sort(key=lambda x: os.path.getmtime(x))
+
+        #for x in plugins_orderFull: print(x)
+        #print(22222222222222)
+        #modInfos.refresh()
+
+
+        return plugins_order
+
+
+    def openmw_archive_factory(self):  # Polemos: OpenMW/TES3mp
         """Prepare archive file entries for insertion to OpenMW.cfg."""
         archives_order = self.data_files_factory(self.bsaFiles)
         archives_order.sort(key=lambda x: os.path.getmtime(x))
@@ -2519,6 +2546,7 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
         """Simple no rules storage."""
         with io.open(self.path, 'w', encoding=self.encod, errors='strict') as conf_File:
             conf_File.write(simpleData)
+        self.mtime = getmtime(self.path)
 
     def save(self):  # Polemos fixes, optimizations, OpenMW/TES3mp support, BSA support, speed up massive lists.
         """Prepare data to write to morrowind.ini or openmw.cfg file."""
@@ -2558,8 +2586,8 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
 
             elif self.openmw:  # OpenMW/TES3mp
                 # Call file factories.
-                archives_order = self.save_openmw_archive_factory()
-                plugins_order = self.save_openmw_plugin_factory()
+                archives_order = self.openmw_archive_factory()
+                plugins_order = self.openmw_plugin_factory()
                 # Check for irregular file namings.
                 if not settings['query.file.risk']:
                     self.filesRisk = self.fileNamChk(archives_order+plugins_order)
@@ -2571,7 +2599,9 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
                     elif line == 'PluginMark':
                         for Plugin in plugins_order:
                             writeCache.append('content=%s' % Plugin)
-                    else: writeCache.append('%s' % line)
+                    else:
+                        if 'data=' in line: line = line.replace('&', '&&')
+                        writeCache.append('%s' % line)
 
             try:  # Try to join all and save once.
                 tmpwriteCache = '\n'.join(writeCache)
@@ -2669,22 +2699,23 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
             self.restoreBackup()
         except Exception as err:
             self.restoreBackup()
-        # If allowed check filename risk
+        # If allowed, check filename risk
         if not self.skip and self.filesRisk: self.fRisk()
         self.skip = False  # Skip first check
 
     def hasChanged(self):
         """True if morrowind.ini/openmw.cfg file has changed."""
         return ((self.mtime != getmtime(self.path)) or
-            (self.size != os.path.getsize(self.path)))
+                (self.size != os.path.getsize(self.path)))
 
     def refresh(self):
         """Load only if morrowind.ini/openmw.cfg has changed."""
         hasChanged = self.hasChanged()
         if hasChanged: self.loadConf()
-        if len(self.loadFiles) > self.maxPlugins:
-            del self.loadFiles[self.maxPlugins:]
-            self.safeSave()
+        if self.maxPlugins is not None:
+            if len(self.loadFiles) > self.maxPlugins:
+                del self.loadFiles[self.maxPlugins:]
+                self.safeSave()
         return hasChanged
 
     def refreshDoubleTime(self):
@@ -2733,6 +2764,7 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
 
     def isMaxLoaded(self):
         """True if load list is full."""
+        if self.maxPlugins is None: return False
         return len(self.loadFiles) >= self.maxPlugins
 
     def isLoaded(self,modFile):
@@ -2804,9 +2836,9 @@ class MasterInfo:
 
     def hasChanged(self):
         return (
-            (self.name != self.oldName) or
-            (self.size != self.oldSize) or
-            (not self.isLoaded) or self.isNew)
+                (self.name != self.oldName) or
+                (self.size != self.oldSize) or
+                (not self.isLoaded) or self.isNew)
 
     def isWellOrdered(self):
         if self.modInfo: return self.modInfo.isWellOrdered()
@@ -2871,19 +2903,19 @@ class FileInfo: # Polemos: OpenMW/TES3mp support
     def isEss(self):
         return self.name[-3:].lower() == 'ess'
     def isOmwgame(self):
-        return self.name[-3:].lower() == 'omwgame'
+        return self.name[-7:].lower() == 'omwgame'
     def isOmwaddon(self):
-        return self.name[-3:].lower() == 'omwaddon'
+        return self.name[-8:].lower() == 'omwaddon'
     def isOmwsave(self):
-        return self.name[-3:].lower() == 'omwsave'
+        return self.name[-7:].lower() == 'omwsave'
 
 
     def sameAs(self,fileInfo):
         return (
-            (self.size == fileInfo.size) and
-            (self.mtime == fileInfo.mtime) and
-            (self.ctime == fileInfo.ctime) and
-            (self.name == fileInfo.name) )
+                (self.size == fileInfo.size) and
+                (self.mtime == fileInfo.mtime) and
+                (self.ctime == fileInfo.ctime) and
+                (self.name == fileInfo.name) )
 
     def refresh(self):
         path = os.path.join(self.dir,self.name)
@@ -2900,6 +2932,13 @@ class FileInfo: # Polemos: OpenMW/TES3mp support
             self.tes3.hedr.fileType = 0
         elif type == 'ess':
             self.tes3.hedr.fileType = 32
+        elif self.openMW:
+            if type == 'omwgame':
+                self.tes3.hedr.fileType = 1
+            elif type == 'omwaddon':
+                self.tes3.hedr.fileType = 0
+            elif type == 'omwsave':  # todo: fix for OpenMW
+                self.tes3.hedr.fileType = 32
         self.tes3.hedr.setChanged()
         self.writeHedr()
 
@@ -2936,7 +2975,7 @@ class FileInfo: # Polemos: OpenMW/TES3mp support
         if not modInfos.has_key(masterName): return 30
         #--Sizes differ?
         elif ((masterName in self.masterSizes) and
-            (self.masterSizes[masterName] != modInfos[masterName].size)):
+              (self.masterSizes[masterName] != modInfos[masterName].size)):
             return 10
         #--Okay?
         else: return 0
@@ -3332,7 +3371,7 @@ class ResourceReplacer:
         'sound': {'.wav'},
         'splash':   textureExts,
         'textures': textureExts,
-        }
+    }
 
     def __init__(self,replacerDir,file):
         """Initialize"""
@@ -3508,12 +3547,13 @@ class ModInfos(FileInfos):
         """Sort list of mod names into their load order. ASSUMES MODNAMES ARE UNIQUE!!!"""
         data = self.data
         modNames = list(modNames) #--Don't do an in-place sort.
-        modNames.sort()
         modNames.sort(key=lambda a: (a in data) and data[a].mtime) #--Sort on modified
         if not self.OpenMW:
-            # Polemos: Not really needed for OpenMW implementation. Even though the Timsort algorithm (used in
-            # Python) is efficient with pre-sorted lists, we lose the advantage due to the added complexity.
             modNames.sort(key=lambda a: a[-1].lower()) #--Sort on esm/esp
+        elif self.OpenMW:
+            tmp_modNamesESM = [x for x in modNames if x[len(x)-3:] in ('esm', 'ame')]
+            tmp_modNamesESP = [x for x in modNames if x[len(x) - 3:] in ('esp', 'don')]
+            modNames = tmp_modNamesESM + tmp_modNamesESP
         #--Match Bethesda's esm sort order
         #  - Start with masters in chronological order.
         #  - For each master, if it's masters (mm's) are not already in list,
@@ -3537,7 +3577,10 @@ class ModInfos(FileInfos):
         modDex = 1
         while modDex < len(modNames):
             modName = modNames[modDex]
-            if modName[-1].lower() != 'm': break
+            if not self.OpenMW:
+                if modName[-1].lower() != 'm': break
+            elif self.OpenMW:
+                if modName[len(modName) - 3:] in ('esp', 'don'): break
             if self.circularMasters([modName]): modDex += 1
             else: modDex = 1 + preMaster(modName, modDex)
         #--Convert? and return
@@ -3647,12 +3690,12 @@ class ModInfos(FileInfos):
         except EOFError:  # Polemos: Fix for corrupted Updaters pkl
             import gui.dialog, wx
             if gui.dialog.ErrorQuery(None, _(u'Updaters data has been corrupted and needs to be reset.\n\nClick '
-                u'Yes to automatically delete the updaters data file.\n(This will make Wrye Mash forget which mods it has updated '
-                    u'but it will not affect your updated saves - an inconvenience really).\n\nClick No if you wish to do it '
-                        u'manually by deleting the following file:\n%s') % path) == wx.ID_YES:
+                                             u'Yes to automatically delete the updaters data file.\n(This will make Wrye Mash forget which mods it has updated '
+                                             u'but it will not affect your updated saves - an inconvenience really).\n\nClick No if you wish to do it '
+                                             u'manually by deleting the following file:\n%s') % path) == wx.ID_YES:
                 try: os.remove(path)
                 except: gui.dialog.ErrorMessage(None, _(u'Wrye Mash was unable to delete the file which '
-                    u'holds the Updaters data. You need to manually delete the following file:\n\n"%s"' % path))
+                                                        u'holds the Updaters data. You need to manually delete the following file:\n\n"%s"' % path))
 
     def saveObjectMaps(self):
         """Save ObjectMaps to file."""
@@ -4062,12 +4105,12 @@ class datamod_order:   # Polemos: OpenMW/TES3mp support
     def metainfo(self, mod):
         """Get data from mashmeta.inf file in mod directory."""
         data = {u'Installer':'',
-                  u'Version':'',
-                  u'NoUpdateVer':'',
-                  u'NewVersion':'',
-                  u'Category':'',
-                  u'Repo':'',
-                  u'ID':''}
+                u'Version':'',
+                u'NoUpdateVer':'',
+                u'NewVersion':'',
+                u'Category':'',
+                u'Repo':'',
+                u'ID':''}
         reList = re.compile(u'(Installer|Version|NoUpdateVer|NewVersion|Category|Repo|ID)=(.+)')
         # Special ModData
         if mod == self.mwfiles:
@@ -4247,7 +4290,7 @@ class BSA_order:  # Polemos
             # even though we are using append() inside the comprehension (which defeats
             # the purpose)... Be my guest and change it.
             [[bsas.append(os.path.join(moddir, bsafile)) for bsafile in scandir.listdir(moddir)
-                    if bsafile.lower().endswith('.bsa')] for moddir in bsadir if os.path.exists(moddir)]
+              if bsafile.lower().endswith('.bsa')] for moddir in bsadir if os.path.exists(moddir)]
         return bsas
 
     def bsa_active(self):
@@ -4691,9 +4734,9 @@ class Installer(object):  # Polemos: added MWSE compatibility, optimised, bug fi
             for index, rpFile in enumerate(sorted(pending)):  # Polemos: Bugfix and also added some extra info...
                 if progress_info:
                     try: string = (_(u'%s: Calculating CRCs...\n%s\nCRC: %s\nSize:  %sKB') %
-                            (rootName, unicode(rpFile.s, sys.getfilesystemencoding()), apFile.crc, (apFile.size/1024)))
+                                   (rootName, unicode(rpFile.s, sys.getfilesystemencoding()), apFile.crc, (apFile.size/1024)))
                     except: string = (_(u'%s: Calculating CRCs...\n%s\nCRC:  %s\nSize:  %sKB') %
-                            (rootName, rpFile.s, apFile.crc, (apFile.size/1024)))
+                                      (rootName, rpFile.s, apFile.crc, (apFile.size/1024)))
                 if progress_info: progress(index, string)
                 # Polemos: Progress dialogs crawl if they have to show many items continuously. The same seems to
                 # also happen on native windows progress dialogs (if you wonder why the "show more" is not ON by
@@ -4983,7 +5026,7 @@ class Installer(object):  # Polemos: added MWSE compatibility, optimised, bug fi
         for file,sizeCrc in dirty_sizeCrc.items():
             sizeCrcDate = data_sizeCrcDate.get(file)
             if (not sizeCrcDate or sizeCrc != sizeCrcDate[:2] or
-                sizeCrc == data_sizeCrc.get(file)):
+                    sizeCrc == data_sizeCrc.get(file)):
                 del dirty_sizeCrc[file]
         #--Done
         (self.status, oldStatus) = (status, self.status)
@@ -5053,7 +5096,7 @@ class InstallerArchive(Installer):
         if not fileSizeCrcs:
             import gui.dialog
             gui.dialog.ErrorMessage(None, _(u'7z module is'
-                u' unable to read archive %s.\nTry extracting it and then repacking it before trying again.' % (archive.s)))
+                                            u' unable to read archive %s.\nTry extracting it and then repacking it before trying again.' % (archive.s)))
             return
 
     def unpackToTemp(self, archive, fileNames, progress=None):  # Polemos fixes and addons.
@@ -5362,7 +5405,7 @@ class InstallersData(bolt.TankData, DataDict):  # Polemos fixes
                 except: pass
             mashIni.set("General", "sInstallersDir", os.path.abspath(dirs["installers"].s))
             installers_po = u"[General]\nsInstallersDir=%s" % (str(GPath(mashIni.get('General', 'sInstallersDir').strip())
-                                ).replace("bolt.Path(u'", '').replace("')", '')).decode('unicode_escape')
+                                                                   ).replace("bolt.Path(u'", '').replace("')", '')).decode('unicode_escape')
             with io.open('mash.ini', 'wb+', encoding='utf-8') as f: f.write(installers_po)
 
     def getSorted(self,column,reverse):
@@ -5522,7 +5565,7 @@ class InstallersData(bolt.TankData, DataDict):  # Polemos fixes
                 if not installer:
                     pending.add(archive)
                 elif (isdir and not installer.refreshed) or (
-                    (installer.size,installer.modified) != (apath.size,apath.mtime)):
+                        (installer.size,installer.modified) != (apath.size,apath.mtime)):
                     newData[archive] = installer
                     pending.add(archive)
                 else: newData[archive] = installer
@@ -5786,7 +5829,7 @@ class InstallersData(bolt.TankData, DataDict):  # Polemos fixes
             if not showInactive and not installer.isActive: continue
             if not showLower and installer.order < srcOrder: continue
             curConflicts = Installer.sortFiles([x.s for x,y in installer.data_sizeCrc.iteritems()
-                if x in mismatched and y != src_sizeCrc[x]])
+                                                if x in mismatched and y != src_sizeCrc[x]])
             if curConflicts: packConflicts.append((installer.order,package.s,curConflicts))
         #--Unknowns
         isHigher = -1
@@ -6019,7 +6062,7 @@ class FileRep:
                 ids[record] = id and id.lower()
         #--Sort
         self.records.sort(cmp=lambda a,b:
-            cmp(typeOrder[a.name],typeOrder[b.name]) or cmp(ids[a],ids[b]))
+        cmp(typeOrder[a.name],typeOrder[b.name]) or cmp(ids[a],ids[b]))
 
 
 class FileRefs(FileRep):
@@ -6561,7 +6604,7 @@ class WorldRefs:
                 if iMMod:
                     if iMMod >= len(masterMap):
                         raise Tes3RefError(masterName,cellId,objId,iObj,iMMod,
-                            _('NO SUCH MASTER'))
+                                           _('NO SUCH MASTER'))
                     altKey = (masterMap[iMMod],iObj)
                     oldIdKey = altKey
                     #--Already modified?
@@ -6569,7 +6612,7 @@ class WorldRefs:
                         oldIdKey = refAlts[altKey]
                     if oldIdKey not in refIds:
                         raise Tes3RefError(masterName,cellId,objId,iObj,iMMod,
-                            masterInfo.masterNames[iMMod-1])
+                                           masterInfo.masterNames[iMMod-1])
                     del refIds[oldIdKey]
                     refAlts[altKey] = newIdKey
                 #--Save it
@@ -7079,7 +7122,7 @@ class FileLibrary(FileRep):
             script = self.getRecord('SCPT',scriptId,Scpt)
             scriptCode = tsMain.substitute(
                 libId=libId, srcId=srcId, ifAltId=(
-                    (altId and tsIfAltId.substitute(libId=libId,altId=altId)) or ''))
+                        (altId and tsIfAltId.substitute(libId=libId,altId=altId)) or ''))
             script.setCode(scriptCode)
             script.setChanged()
             #--Book

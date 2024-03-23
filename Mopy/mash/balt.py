@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import os
 
 # Wrye Mash Polemos fork GPL License and Copyright Notice ==============================
 #
