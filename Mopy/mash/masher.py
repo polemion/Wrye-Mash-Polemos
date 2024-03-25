@@ -1432,8 +1432,9 @@ class ModList(gui.List, gui.ListDragDropMixin):  # Polemos: OpenMW/TES3mp suppor
         items, data = mosh.modInfos.getLoadOrder(self.items,False)[:], self.data
         items.sort(key=lambda a: data[a].mtime)
         if not self.OpenMW: items.sort(lambda a, b: cmp(a[-4:].lower(), b[-4:].lower()))
-        else: items.sort(lambda a, b: cmp(a.lower().endswith('.esm') and a.lower().endswith('.omwgame'),
-                                          b.lower().endswith('.esp') and b.lower().endswith('.omwaddon')))
+        else:
+            items.sort(key=lambda x: (x.lower().endswith('.esm') or x.lower().endswith('.omwgame'),
+                                      x.lower().endswith('.esp') or x.lower().endswith('.omwaddon')))
         num_mod = {mod:str(num+1) for num, mod in enumerate(items)}
         return num_mod
 
@@ -1671,7 +1672,7 @@ class ModList(gui.List, gui.ListDragDropMixin):  # Polemos: OpenMW/TES3mp suppor
                                     _(u'The Plugins list is reversed. Only Keyboard based sorting is allowed (Ctrl+Arrows).'))
         return False
 
-    def OnDrop(self, names, toIdx): # Polemos: Complete recoding.
+    def OnDrop(self, names, toIdx):  # Polemos: Complete recoding.
         """Support for dragging and dropping list items"""
         # Notify user if drag and drop is allowed
         if not self.chkSort(): return
@@ -1689,17 +1690,20 @@ class ModList(gui.List, gui.ListDragDropMixin):  # Polemos: OpenMW/TES3mp suppor
         elif self.OpenMW:
             esm = [x for x in items if x.lower().endswith('.esm') or x.lower().endswith('.omwgame')]
             esp = [x for x in items if x.lower().endswith('.esp') or x.lower().endswith('.omwaddon')]
-        # Set items timestamps (for ordering)
+        # Fix cases that the first item is in Unix time 1.0
         getTime = lambda x: mosh.modInfos[x].mtime
-        for fileType, items in {'esm': esm, 'esp': esp}.iteritems():
-            for i in xrange(len(items) - 1, 0, -1):
-                if getTime(items[i]) <= getTime(items[i-1]):
-                    mosh.modInfos[items[i-1]].setMTime(getTime(items[i]) - 1)
+        curTimes = sorted(getTime(i) for i in items)
+        if min(curTimes) <= 1000:
+            for i, x in enumerate(items, 1):
+                mosh.modInfos[x].setMTime(10000*i)
+        # Set items timestamps (for ordering)
+        for fType, itms in {'esm': esm, 'esp': esp}.items():
+            for i in xrange(len(itms) - 1, 0, -1):
+                if getTime(itms[i]) <= getTime(itms[i-1]):
+                    mosh.modInfos[itms[i-1]].setMTime(getTime(itms[i]) - 1)
         # Refresh GUI
         mosh.modInfos.refreshDoubleTime()
         self.Refresh()
-        # OpenMW/TES3mp support
-        if self.OpenMW: mosh.mwIniFile.safeSave()
 
     def moveSelected(self, event, moveMod):
         """Moves selected files up or down (depending on moveMod)"""
@@ -1761,11 +1765,11 @@ class ModdataList(gui.List, gui.ListDragDropMixin):  # Polemos
         self.mainMenu = ModdataList.mainMenu
         self.itemMenu = ModdataList.itemMenu
         #--Parent init
-        gui.List.__init__(self,parent, -1, ctrlStyle=(wx.LC_REPORT))
+        gui.List.__init__(self, parent, -1, ctrlStyle=(wx.LC_REPORT))
         gui.ListDragDropMixin.__init__(self, self.list)
         #--Image List
         checkboxesIL = singletons.images['mash.checkboxes'].GetImageList()
-        self.list.SetImageList(checkboxesIL,wx.IMAGE_LIST_SMALL)
+        self.list.SetImageList(checkboxesIL, wx.IMAGE_LIST_SMALL)
         #--Events
         wx.EVT_LIST_ITEM_SELECTED(self,self.listId,self.OnItemSelected)
         self.list.Bind(wx.EVT_LEFT_DCLICK, self.OnDoubleClick)
@@ -5189,7 +5193,6 @@ class MashApp(wx.App):  # Polemos: Added settings, file check, updates check, ml
         self.InitVersion()
         #--Locale
         wx.Locale(wx.LOCALE_LOAD_DEFAULT)
-
         #--WMFrame
         frame = MashFrame(pos=conf.settings['mash.framePos'], size=conf.settings['mash.frameSize'])
         self.SetTopWindow(frame)
@@ -8608,7 +8611,7 @@ class Mods_Tes3cmd_Fixit():  # Polemos: made compatible with toolbar menu, more.
 
     def chkResults(self):  # Polemos: Dedicated to Wrye Mash's bug finder Champion... StaticNation
         """Check TES3cmd mod list for irregularities."""
-        # Are the bethesda masters first in in order?
+        # Are the bethesda masters first in order?
         self.modItems = singletons.modList.items[:]
         if len(self.modItems) <= 1: return
         self.bethMasters = ['morrowind.esm', 'tribunal.esm', 'bloodmoon.esm']

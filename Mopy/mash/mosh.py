@@ -42,14 +42,14 @@
 
 
 import locale
-import time
-from threading import Thread as Thread # Polemos
-from subprocess import PIPE, check_call  # Polemos
+import time, traceback
+from threading import Thread as Thread  # Polemos
+from subprocess import PIPE, check_call # Polemos
 from sfix import Popen  # Polemos
 import io, ushlex, scandir  # Polemos
 from unimash import uniChk, encChk, _  # Polemos
 import array, cPickle, cStringIO, copy, math, os, re, shutil, string
-import struct, sys, stat,bolt
+import struct, sys, stat, bolt
 from bolt import LString, GPath, DataDict, SubProgress
 import compat, mush
 # Exceptions
@@ -2083,7 +2083,7 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
         settings = {section: {key: value}}
         self.saveSettings(settings)
 
-    def saveSettings(self,settings):
+    def saveSettings(self, settings):
         """Applies dictionary of settings to ini file. Values in settings dictionary can be
         either actual values or full key=value line ending in newline char."""
         settings = {LString(x): {LString(u): v for u, v in y.iteritems()} for x, y in settings.iteritems()}
@@ -2149,7 +2149,7 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
                         line = sectionSettings[maSetting.group(1).lower()]
                     tmpFile.write(line)
         #--Done
-        renameFile(tmpPath,self.path, True)
+        renameFile(tmpPath, self.path, True)
         self.mtime = getmtime(self.path)
 
     def itmDeDup(self, itms):  # Polemos
@@ -2165,20 +2165,20 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
 
     def unloadDatamod(self, DataDir):  # Polemos
         """Remove DataDir from OpenMW."""
-        DataDirF = [u'data="%s"' % os.path.realpath(x).rstrip() for x in DataDir]
+        DataDirF = [u'data="%s"' % x.rstrip() for x in DataDir]
         [self.DataMods.remove(x) for x in DataDirF if x in self.DataMods]
         self.SaveDatamods(self.DataMods)
 
     def loadDatamod(self, DataDir, DataOrder):  # Polemos
         """Add DataDir to OpenMW."""
-        [self.DataMods.append(u'data="%s"' % os.path.realpath(x)) for x in DataDir]
+        [self.DataMods.append(u'data="%s"' % x) for x in DataDir]
         DataOrderF = [u'data="%s"' % x for x in DataOrder]
         datamodsListExport = [x for x in DataOrderF if x in self.DataMods]
         self.SaveDatamods(datamodsListExport)
 
     def updateDatamods(self, DataOrder):  # Polemos
         """Update DataDirs order (active or not - OpenMW)."""
-        DataOrderF = [u'data="%s"' % os.path.realpath(x[1]) for x in DataOrder]
+        DataOrderF = [u'data="%s"' % x[1] for x in DataOrder]
         datamodsListExport = [x for x in DataOrderF if x in self.DataMods]
         self.DataMods = datamodsListExport
         self.SaveDatamods(datamodsListExport)
@@ -2194,8 +2194,7 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
         filterPaths = self.filterDataMod(data)
         filterDups = self.itmDeDup(filterPaths)
         filterMissing = [x for x in filterDups if os.path.isdir(x)]
-        return [u'data="%s"'%os.path.realpath(x).rstrip() for x in filterMissing
-                ] if repack else [os.path.realpath(x).rstrip() for x in filterMissing]
+        return [u'data="%s"' % x.rstrip() for x in filterMissing] if repack else [x.rstrip() for x in filterMissing]
 
     def SaveDatamods(self, rawdata):  # Polemos
         """Export DataDirs to openmw.cfg."""
@@ -2392,8 +2391,9 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
 
             self.bsaFiles = self.chkCase(self.bsaFiles)
             self.loadFiles = self.chkCase(self.loadFiles)
-        except Exception as err:  # Last resort to avoid conf file corruption Todo: err add debug information (from raise)
+        except Exception as err:  # Last resort to avoid conf file corruption Todo: err expand
             self.flush_conf()
+            traceback.print_exc()
 
     def load_OpenMW_cfg(self):  # Polemos
         """Read plugin data from openmw.cfg"""
@@ -2462,10 +2462,9 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
             if not no_sound_mark: self.confLoadLines.insert(0, 'ArchiveMark')
             self.bsaFiles = self.chkCase(self.bsaFiles)
             self.loadFiles = self.chkCase(self.loadFiles)
-            if self.bsaFiles: self.openmw_apply_order(self.bsaFiles, self.datafiles_po)
-            if self.loadFiles: self.openmw_apply_order(self.loadFiles, self.datafiles_po)
-        except Exception as err:  # Last resort to avoid conf file corruption Todo: err debug
+        except Exception as err:  # Last resort to avoid conf file corruption Todo: err expand
             self.flush_conf()
+            traceback.print_exc()
 
     def get_active_bsa(self):  # Polemos
         """Called to return BSA entries from conf files."""
@@ -2489,50 +2488,16 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
                     order_po.append(fpath)
         return order_po
 
-    def setOrdermTime(self, fpaths):
-        """Set mtime for file paths."""
-        mtime_first = 1
-        mtime_last = int(time.time())
-        if mtime_last < 1228683562: mtime_last = 1228683562
-        loadorder_mtime_increment = (mtime_last - mtime_first) / len(fpaths)
-        mtime = mtime_first
-        for filepath in fpaths:
-            os.utime(filepath, (-1, mtime))
-            mtime += loadorder_mtime_increment
-        # Polemos: For mods and bsas we use mtime to set/get order. Thus we keep compatibility with
-        # regular Morrowind mod/bsa ordering and just hijack Wrye Mash system to use with OpenMW.
-
-    def openmw_apply_order(self, order, paths):  # Polemos: OpenMW/TES3mp
-        """Handle OpenMW mod ordering when reading openmw.cfg to display on mods panel."""
-        if not order or not paths: return
-        order_po = self.data_files_factory(order)
-        if len(order_po) > 1: self.setOrdermTime(order_po)
-
     def openmw_plugin_factory(self):  # Polemos: OpenMW/TES3mp
         """Prepare plugin file entries for insertion to OpenMW.cfg."""
-        plugins_order = self.data_files_factory(self.loadFiles)
-        plugins_order.sort(key=lambda x: os.path.getmtime(x))
-        esm_orderActive = [x for x in plugins_order if x.lower().endswith('.esm') or x.lower().endswith('.omwgame')]
-        esp_orderActive = [x for x in plugins_order if x.lower().endswith('.esp') or x.lower().endswith('.omwaddon')]
-        plugins_order = esm_orderActive + esp_orderActive
-        plugins_order = self.itmDeDup(plugins_order)
-        plugins_order = [os.path.basename(x) for x in plugins_order]
-
-        esm_orderFull = [x for x in self.data_files_factory(modInfos.data) if x.lower().endswith('.esm') or x.lower().endswith('.omwgame')]
-        esp_orderFull = [x for x in self.data_files_factory(modInfos.data) if x.lower().endswith('.esp') or x.lower().endswith('.omwaddon')]
-        plugins_orderFull = esm_orderFull + esp_orderFull
-        plugins_orderFull = self.itmDeDup(plugins_orderFull)
-        self.setOrdermTime(plugins_orderFull)
-
-        plugins_orderFull.sort(key=lambda x: os.path.getmtime(x))
-
-        #for x in plugins_orderFull: print(x)
-        #print(22222222222222)
-        #modInfos.refresh()
-
-
-        return plugins_order
-
+        plugins_order_paths = self.data_files_factory(self.loadFiles)
+        plugins_order_paths.sort(key=lambda x: os.path.getmtime(x))
+        esm_order_active = [x for x in plugins_order_paths if x.lower().endswith('.esm') or x.lower().endswith('.omwgame')]
+        esp_order_active = [x for x in plugins_order_paths if x.lower().endswith('.esp') or x.lower().endswith('.omwaddon')]
+        plugins_order = esm_order_active + esp_order_active
+        plugins_order_names_tmp = [os.path.basename(x) for x in plugins_order]
+        plugins_order_fin = self.itmDeDup(plugins_order_names_tmp)
+        return plugins_order_fin
 
     def openmw_archive_factory(self):  # Polemos: OpenMW/TES3mp
         """Prepare archive file entries for insertion to OpenMW.cfg."""
@@ -2593,15 +2558,15 @@ class MWIniFile:  # Polemos: OpenMW/TES3mp support
                     self.filesRisk = self.fileNamChk(archives_order+plugins_order)
                 # Create output entries.
                 for line in self.confLoadLines:
+                    if 'data=' in line:
+                        line = line.replace('&', '&&')
                     if line == 'ArchiveMark':
                         for Archive in archives_order:
                             writeCache.append('fallback-archive=%s' % Archive)
                     elif line == 'PluginMark':
                         for Plugin in plugins_order:
                             writeCache.append('content=%s' % Plugin)
-                    else:
-                        if 'data=' in line: line = line.replace('&', '&&')
-                        writeCache.append('%s' % line)
+                    else: writeCache.append('%s' % line)
 
             try:  # Try to join all and save once.
                 tmpwriteCache = '\n'.join(writeCache)
@@ -3588,7 +3553,7 @@ class ModInfos(FileInfos):
         else: return modNames
 
     def isLoaded(self, fileName): #--Loading
-        """True if fileName is in the the load list."""
+        """True if fileName is in the load list."""
         return mwIniFile.isLoaded(fileName)
 
     def load(self, fileNames, doSave=True):  # Polemos: Speed up
@@ -4155,7 +4120,18 @@ class datamod_order:   # Polemos: OpenMW/TES3mp support
 
     def RefreshProfile(self):
         """Get Data from user profile."""
-        self.ProfileDataMods = [x.rstrip() for x in self.read(self.mods) if os.path.isdir(x.rstrip())]
+        orderProfileDataMods = [dmod.rstrip() for dmod in self.read(self.mods) if os.path.isdir(dmod.rstrip())]
+        uniqProfileDataMods = list(set(orderProfileDataMods))
+        self.ProfileDataMods = []
+        for dmod in orderProfileDataMods:
+            if dmod in uniqProfileDataMods:
+                uniqProfileDataMods.remove(dmod)
+                xfiles = os.path.dirname(dmod)
+                for mulder in os.listdir(xfiles):
+                    scully = os.path.join(xfiles, mulder)
+                    if scully == dmod:
+                        self.ProfileDataMods.append(dmod)
+                        break
         if not self.check_mods_data(): self.SetModOrder()
 
     def check_mods_data(self):
@@ -4242,7 +4218,7 @@ class datamod_order:   # Polemos: OpenMW/TES3mp support
 #------------------------------------------------------------------------------
 
 class DataModsInfo(DataDict, datamod_order):  # Polemos: OpenMW/TES3mp support
-    """Returns a mods information."""
+    """Returns mod information."""
     data = {}
     def __init__(self):
         """Initialize."""
