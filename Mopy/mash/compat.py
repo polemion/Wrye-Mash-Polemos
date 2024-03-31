@@ -34,50 +34,47 @@
 #
 # ======================================================================================
 
-
-"""
-Mash uses cPickle to store data. This means that whenever the code changes
-much then it breaks backwards compatibility. The sane solution would be to
-convert everything to use json. However for my sanity, this file
-provides a workaround to enable the renaming of files
+import sys, pickle, traceback
+from datetime import datetime
+from io import open
+from . import appinfo
 
 
-(This is not a nice solution)
-"""
+class MashUnpickler(pickle.Unpickler):
+    """The same as pickle.Unpickler.find_class but translates module names."""
 
-import sys
-import cPickle
-
-def findClass(module, name):
-    """Find class implementation. The same as pickle.Unpickler.find_class but translates module names"""
-    if module in ('bolt', 'masher', 'balt', 'mash', 'mosh', 'mush'):
-        module = 'mash.' + module
-
-    __import__(module)
-    mod = sys.modules[module]
-    klass = getattr(mod, name)
-    return klass
-
-def uncpickle(fPath):  # Polemos: Compatibility fix
-    """Same as cPickle.loads(f) but does module name translation"""
-    if type(fPath) is unicode or type(fPath) is str:
+    def findClass(self, module, name):
+        """Find class implementation."""
         try:
+            if module in ('bolt', 'masher', 'balt', 'mash', 'mosh', 'mush'):
+                module = 'mash.' + module
+            __import__(module)
+            mod = sys.modules[module]
+            klass = getattr(mod, name)
+            return klass
+        except ImportError as e:
+            print('%s: [Error] %s:\n%s' % (datetime.now(), e, traceback.format_exc()), end='')
+        except AttributeError as e:
+            print('%s: [Error] %s:\n%s' % (datetime.now(), e, traceback.format_exc()), end='')
+
+
+def uncpickle(fPath):
+    """Same as cPickle.loads(f) but does module name translation"""
+    try:
+        if isinstance(fPath, str):
             with open(fPath, 'rb') as f:
-                pickleObj = cPickle.Unpickler(f)
-                pickleObj.find_global = findClass
+                pickleObj = MashUnpickler(f)
                 return pickleObj.load()
-        except:
-            with open(fPath, 'r') as f:
-                # Polemos: The Python 2.x version of pickle has a
-                # bug when in binary (slightly more efficient but
-                # also needed for newer protocols), thus besides
-                # compatibility with older saved Wrye Mash settings
-                # it is needed as a failover. More info:
-                # https://bugs.python.org/issue11564
-                pickleObj = cPickle.Unpickler(f)
-                pickleObj.find_global = findClass
-                return pickleObj.load()
-    else:
-        pickleObj = cPickle.Unpickler(fPath)
-        pickleObj.find_global = findClass
-        return pickleObj.load()
+        else:
+            pickleObj = MashUnpickler(fPath)
+            return pickleObj.load()
+    except UnicodeDecodeError as e:  # Python3 pickle has changed dramatically from Python2
+        print('%s: [Error] This is the Python3 version of %s, and you '
+              'are trying to load configuration taken with a Python2 version. Will exit.' % (
+              datetime.now(), appinfo.appName))
+        return None
+    except pickle.UnpicklingError as e:  # Ditto
+        print('%s: [Error] This is the Python3 version of %s, and you '
+              'are trying to load installers/table data taken with a Python2 version. Data will need to be refreshed.' % (
+                  datetime.now(), appinfo.appName))
+        return None

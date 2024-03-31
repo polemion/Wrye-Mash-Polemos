@@ -27,8 +27,10 @@
 
 
 import wx, os, json
+from wx import adv
 from ..unimash import _
 from .. import singletons
+from io import open
 
 # Default Style
 style = {
@@ -42,17 +44,19 @@ internalStyle = {
     'list.background': (220, 220, 255)
 }
 
+
 def setIcon(parent, icon=None, text='', type=wx.BITMAP_TYPE_ANY):
     """Set icon of caller window."""
     if icon is not None:
         try:
             parent.SetIcon(wx.Icon(icon, type), text)
             return
-        except: pass  # If for a reason the image is missing.
+        except:
+            pass  # If for a reason the image is missing.
     parent.SetIcon(wx.Icon(os.path.join('images', 'Wrye Mash.ico'), wx.BITMAP_TYPE_ICO), u'Wrye Mash')
 
 
-class ThemeEngine:
+class ThemeEngine(object):
     """Wrye Mash theme engine."""
 
     def __init__(self, theme):
@@ -75,28 +79,29 @@ class ThemeEngine:
         """Import theme."""
         themePath = os.path.join(self.themedir, theme)
         with open(themePath, 'r') as rawTheme: themeData = json.load(rawTheme)
-        for x in themeData: style[x]=themeData[x]
+        for x in themeData: style[x] = themeData[x]
 
     def exportTheme(self, theme, rawTheme):
         """Export theme."""
         themePath = os.path.join(self.themedir, theme)
         themeData = ('{\r\n\r\n', (',\r\n'.join(('"%s": %s' if type(rawTheme[x]) is tuple else '"%s": "%s"') %
-            (x, list(rawTheme[x]) if type(rawTheme[x]) is tuple else rawTheme[x]) for x in rawTheme)), '\r\n\r\n}')
+                                                (x, list(rawTheme[x]) if type(rawTheme[x]) is tuple else rawTheme[x])
+                                                for x in rawTheme)), '\r\n\r\n}')
         with open(themePath, 'w') as themeFile: themeFile.writelines(themeData)
 
 
-class SysTray(wx.TaskBarIcon):
+class SysTray(adv.TaskBarIcon):
     """Systray icon."""
 
     def __init__(self, mainFrame, mode):
         """Init."""
-        wx.TaskBarIcon.__init__(self)
+        adv.TaskBarIcon.__init__(self)
         mainFrame.Hide()
         self.mainFrame = mainFrame
         self.openmw = mode
         setIcon(self)
         # Event
-        self.Bind(wx.EVT_TASKBAR_LEFT_DOWN, self.OnSyTrayLeftClick)
+        self.Bind(adv.EVT_TASKBAR_LEFT_DOWN, self.OnSyTrayLeftClick)
 
     def OnSyTrayLeftClick(self, event):
         """Restore app window."""
@@ -112,10 +117,14 @@ class SysTray(wx.TaskBarIcon):
         menu.AppendSeparator()
         openApp = menu.Append(wx.NewId(), _(u'Open Wrye Mash'))
         exit = menu.Append(wx.NewId(), _(u'Exit'))
+
         # Menu actions
         def runGameDef(event): self.mainFrame.systrayRun(None)
+
         def OpenAppDef(event): self.OnSyTrayLeftClick(None)
+
         def ExitDef(event): self.mainFrame.OnCloseWindow(None)
+
         # Menu events
         self.Bind(wx.EVT_MENU, runGameDef, runGame)
         self.Bind(wx.EVT_MENU, OpenAppDef, openApp)

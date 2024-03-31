@@ -28,7 +28,7 @@
 
 import os, sys
 from ..nash import wrye_download_site
-from .. import bitver
+from .. import appinfo
 
 # Note:
 # 'b' => bold,
@@ -36,9 +36,9 @@ from .. import bitver
 # '' => None
 
 # Determine if mash is x64 or x86 bit ver.
-bit = bitver.wryeMashBitVer if hasattr(bitver, 'wryeMashBitVer') else ''
+bit = appinfo.wryeMashBitVer if hasattr(appinfo, 'wryeMashBitVer') else ''
 # OpenMW/TES3mp or Morrowind functionality.
-openmw = os.path.exists(os.path.join(os.path.dirname(sys.argv[0]), 'openmw.dat'))
+openmw = os.path.exists(os.path.join(appinfo.MashDir, 'openmw.dat'))
 
 # Version details
 ver = 101
@@ -46,6 +46,7 @@ extraVerInfo = u'beta9' if not openmw else u'Alpha for OpenMW'
 # This updates the date of the fork in the credits (brutally below). You will need to change it below for your fork. Respect the dates.
 date = u'2/2024'
 author = u'Polemos fork'
+
 
 def protoLicence():
     """License factory."""
@@ -115,11 +116,12 @@ def protoSource():
         (u'Yacoby: ', 'b'),
         (u'drag and drop functionality, mlox - TES3cmd support, fixes, refactoring and more,\r\n', 'i'),
         (u'Polemos: ', 'b'),
-        (u'Toolbar menu, mod order snapshots, better Unicode support, fixes, BSA Archives implementation, OpenMW/TES3mp compatibility,'
-         u' TES3lint support, Custom Commands support, new dialogs, theming options, store/restore mod order buttons, interface'
-         u' modernization and streamlining, speed improvements, update notifications, support for people with weak vision, higher'
-         u' icon res for the status bar, extra functionalities, multi-language Morrowind support, Animation packages support, MWSE'
-         u' support and much much more.\r\n', 'i'),
+        (
+        u'Toolbar menu, mod order snapshots, better Unicode support, fixes, BSA Archives implementation, OpenMW/TES3mp compatibility,'
+        u' TES3lint support, Custom Commands support, new dialogs, theming options, store/restore mod order buttons, interface'
+        u' modernization and streamlining, speed improvements, update notifications, support for people with weak vision, higher'
+        u' icon res for the status bar, extra functionalities, multi-language Morrowind support, Animation packages support, MWSE'
+        u' support and much much more.\r\n', 'i'),
     ))
     source.extend(newline)
     source.extend((
@@ -153,11 +155,12 @@ def protoSource():
 def Current_Version():
     """The Data here feeds all of Wrye Mash."""
     extraVerInf = u' ' + extraVerInfo
-    # Setup.py or setupx64.py imports version info (for compiling) from the line below. It is brutal so keep the formatting.
-    return (ver, u'%sv%s%s - %s - %s' % (bit, ver, extraVerInf, author, date), u'%s - %s'%(ver, date), u'%s'%date[-4:], u'%s'%author)
+    # Setup.py or setupx64.py imports version info (for compiling) from the lines below. It is brutal so keep the formatting.
+    return (ver, u'%sv%s%s - %s - %s' % (
+        bit, ver, extraVerInf, author, date), u'%s - %s' % (ver, date), u'%s' % date[-4:], u'%s' % author)
 
 
-class About:  # Polemos: a much needed "About".
+class About(object):  # Polemos: a much needed "About".
     """About Data. It is called from Settings Dialog (About Tab)."""
 
     def __init__(self, mode):

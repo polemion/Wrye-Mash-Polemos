@@ -25,27 +25,29 @@
 #
 # ===========================================================================================
 
-import os, time, chardet, singletons, locale, re, cPickle
-
+import os, time, chardet, locale, re, pickle
+from io import open
+from . import singletons
 
 # Enrich these...
 usualEncodings = (
-    ('utf-8', 'Strict'),    # The Messiah
+    ('utf-8', 'Strict'),  # The Messiah
     ('cp1251', 'replace'),  # Windows Slavic
     ('cp1252', 'replace'),  # Western Europe
     ('cp1250', 'replace'),  # Central Europe
-    None,                   # Default
+    None,  # Default
 )
 
 profileEncodings = {
-        'cp1250': 'Central European Latin (Polish)',
-        'cp1251': 'Cyrillic alphabets (Slavic)',
-        'utf-8': 'Experimental (Write On)'
+    'cp1250': 'Central European Latin (Polish)',
+    'cp1251': 'Cyrillic alphabets (Slavic)',
+    'utf-8': 'Experimental (Write On)'
 }
 
 defaultEncoding = 'cp1252'
 if not defaultEncoding in profileEncodings:
     profileEncodings[defaultEncoding] = 'Western Latin (Morrowind default)'
+
 
 def compileTranslator(txtPath, pklPath):
     """Compiles specified txtFile into pklFile."""
@@ -53,32 +55,37 @@ def compileTranslator(txtPath, pklPath):
     reValue = re.compile(r'^>>>>\s*$')
     reBlank = re.compile(r'^\s*$')
     reNewLine = re.compile(r'\\n')
-    #--Scan text file
+    # --Scan text file
     translator = {}
+
     def addTranslation(key, value):
-        key   = reNewLine.sub('\n', key[:-1])
+        key = reNewLine.sub('\n', key[:-1])
         value = reNewLine.sub('\n', value[:-1])
         if key and value: translator[key] = value
+
     key, value, mode = '', '', 0
     with open(txtPath) as textFile:
         for line in textFile:
-            #--Blank line. Terminates key, value pair
+            # --Blank line. Terminates key, value pair
             if reBlank.match(line):
                 addTranslation(key, value)
                 key, value, mode = '', '', 0
-            #--Begin key input?
+            # --Begin key input?
             elif reSource.match(line):
                 addTranslation(key, value)
                 key, value, mode = '', '', 1
-            #--Begin value input?
-            elif reValue.match(line): mode = 2
-            elif mode == 1: key += line
-            elif mode == 2: value += line
-        addTranslation(key, value) #--In case missed last pair
-    #--Write translator to pickle
+            # --Begin value input?
+            elif reValue.match(line):
+                mode = 2
+            elif mode == 1:
+                key += line
+            elif mode == 2:
+                value += line
+        addTranslation(key, value)  # --In case missed last pair
+    # --Write translator to pickle
     filePath = pklPath
-    tempPath = filePath+'.tmp'
-    cPickle.dump(translator, open(tempPath, 'wb'), -1)
+    tempPath = filePath + '.tmp'
+    pickle.dump(translator, open(tempPath, 'wb'), -1)
     if os.path.exists(filePath): os.remove(filePath)
     os.rename(tempPath, filePath)
 
@@ -86,39 +93,50 @@ def compileTranslator(txtPath, pklPath):
 # Do translator test and set
 currentLocale = locale.getlocale()
 if locale.getlocale() == (None, None):  # Todo: Pos for Phoenix
-    try: locale.setlocale(locale.LC_ALL, '')  # Polemos: Possible fix for "locale.Error: unsupported locale setting"
-    except: locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')  # Statistics...
+    try:
+        locale.setlocale(locale.LC_ALL, '')  # Polemos: Possible fix for "locale.Error: unsupported locale setting"
+    except:
+        locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')  # Statistics...
 language = locale.getlocale()[0].split('_', 1)[0]
-if language.lower() == 'german': language = 'de' #--Hack for German speakers who aren't 'DE'.
-languagePkl, languageTxt = (os.path.join('locale', language+ext) for ext in ('.pkl', '.txt'))
+if language.lower() == 'german': language = 'de'  # --Hack for German speakers who aren't 'DE'.
+languagePkl, languageTxt = (os.path.join('locale', language + ext) for ext in ('.pkl', '.txt'))
 
-#--Recompile pkl file?
-if os.path.exists(languageTxt) and (not os.path.exists(languagePkl) or (os.path.getmtime(languageTxt) > os.path.getmtime(languagePkl))):
+# --Recompile pkl file?
+if os.path.exists(languageTxt) and (
+        not os.path.exists(languagePkl) or (os.path.getmtime(languageTxt) > os.path.getmtime(languagePkl))):
     compileTranslator(languageTxt, languagePkl)
 
-#--Use dictionary from pickle as translator
+# --Use dictionary from pickle as translator
 if os.path.exists(languagePkl):
     with open(languagePkl, 'rb') as pklFile:
-        _translator = cPickle.load(pklFile)
-    def _(text): return _translator.get(text, text)
+        _translator = pickle.load(pklFile)
+
+
+    def _(text):
+        return _translator.get(text, text)
 else:
-    def _(text): return text
+    def _(text):
+        return text
 
 
 def encChk(value):
     """Return value encoding."""
-    if type(value) is unicode: value = value.encode('utf-8')
+    if isinstance(value, str):
+        value = value.encode('utf-8')
     enc = chardet.detect(value)
     return enc['encoding']
 
 
 def uniChk(value):
     """UniGate for values check."""
-    try: return value.decode(encChk(value))
+    try:
+        return value.decode(encChk(value))
     except:
         for enc in usualEncodings:
-            try: return value if enc is None else value.decode(enc[0], enc[1])
-            except: continue
+            try:
+                return value if enc is None else value.decode(enc[0], enc[1])
+            except:
+                continue
 
 
 def fChk(data):
@@ -132,9 +150,7 @@ def fChk(data):
 
 def n_path(path):  # Goofy but it works.
     """Returns a normalized bolt path when everything else fails."""
-    #print(type(path))
-    return unicode(path).replace("bolt.Path(u'", "").replace('bolt.Path(u"', '').replace("')", "").replace('")', '')
-
+    return str(path).replace("bolt.Path(u'", "").replace('bolt.Path(u"', '').replace("')", "").replace('")', '')
 
 def uniformatDate(value):
     """Convert time to string formatted to a locale neutral date/time."""

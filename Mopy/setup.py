@@ -42,10 +42,13 @@
 # Imports
 from distutils.core import setup
 from mash.gui.credits import Current_Version as raw
-import scandir, py2exe, os, sys, imp, glob
+import os, sys, glob
+
+try: import py2exe
+except: sys.exit()
 
 # Info
-verraw = [x.strip() for x in raw()[2].replace('-',',').replace('/',',').split(',')]
+verraw = [x.strip() for x in raw()[2].replace('-', ',').replace('/', ',').split(',')]
 version = '0.%s.%s.%s' % (raw()[0], verraw[1], verraw[2])
 company_name = "Polemos"
 copyright = "Polemos 2017-%s (see 'license.txt' for full credits)" % verraw[2]
@@ -54,6 +57,7 @@ mashname = "Wrye Mash v%s %s" % (raw()[0], raw()[3])
 # Retrieving wx install dir for getting gdiplus.dll
 wxDlls = ["gdiplus.dll"]
 import wx
+
 wxDir = os.path.split(wx.__file__)[0]
 del wx
 wxDlls = [os.path.join(wxDir, a) for a in wxDlls]
@@ -113,7 +117,7 @@ help_f = 'Wrye Mash.dat'
 if os.path.exists('openmw.dat'): help_f = 'openmw.dat'
 prog_resources = ['.\\7zip\\x86\\7z.exe',
                   '.\\7zip\\x86\\7z.dll',
-                   help_f,
+                  help_f,
                   'Credits.txt',
                   'License.txt',
                   'cacert.pem',
@@ -122,14 +126,16 @@ prog_resources = ['.\\7zip\\x86\\7z.exe',
 
 # Remove old 'build' folder
 if os.access('.\\build', os.F_OK):
-    print 'Deleting old build folder...'
-    for root, dirs, files in scandir.walk('.\\build', topdown=False):
+    print()
+    'Deleting old build folder...'
+    for root, dirs, files in os.walk('.\\build', topdown=False):
         [os.remove(os.path.join(root, name)) for name in files]
         [os.rmdir(os.path.join(root, name)) for name in dirs]
     os.rmdir('.\\build')
 
+
 # File Information
-class Target:
+class Target(object):
     def __init__(self, **kw):
         self.__dict__.update(kw)
         self.version = version
@@ -137,11 +143,12 @@ class Target:
         self.copyright = copyright
         self.name = mashname
 
+
 # Includes for py2exe
 includes = ["wx", "encodings.*"]
 # Excludes for py2exe
 excludes = ["Tkconstants", "Tkinter", "tcl", "doctest", "pdb", "unittest",
-            "difflib", '_gtkagg', '_tkagg', 'bsddb', 'curses', #'email',
+            "difflib", '_gtkagg', '_tkagg', 'bsddb', 'curses',  # 'email',
             'pywin.debugger', 'pywin.debugger.dbgcon', 'pywin.dialogs']
 # dll Excludes
 dll_excludes = ['libgdk-win32-2.0-0.dll', 'libgobject-2.0-0.dll', 'tcl84.dll', 'tk84.dll', 'msvcp90.dll',
@@ -176,6 +183,7 @@ setup(
     console=[prog]
 )
 from distutils import dir_util
+
 dir_util.copy_tree('..\\Data Files', '..\\bin\\Data Files')
 folds = ['Data', 'Extras', 'images', 'locale', 'snapshots', 'themes']
 [dir_util.copy_tree(fold, '%s\\%s' % (dest_folder, fold)) for fold in folds]
@@ -190,8 +198,8 @@ for x in toDel:
 # Compress with UPX (Antivirus programs often don't like that).
 # Put upx executable in the same dir as the source.
 if os.path.exists('upx.exe'):
-    files = ( glob.glob(os.path.join(dest_folder, '*.dll'))
-            + glob.glob(os.path.join(dest_folder, '*.exe')) )
+    files = (glob.glob(os.path.join(dest_folder, '*.dll'))
+             + glob.glob(os.path.join(dest_folder, '*.exe')))
     # note, --ultra-brute takes ages.
     # If you want a fast build change it to --best
     args = ['upx.exe', '--best'] + files

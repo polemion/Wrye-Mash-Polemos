@@ -39,13 +39,12 @@
 
 
 import os
-import scandir  # Polemos
 
 
 def findMlox(mloxexe, exclusions, target):  # Polemos
     """Attempts to find mlox in the given path. It avoids searching Data Files, Installers etc."""
     exclusions = set([os.path.basename(x).lower() for x in exclusions])
-    for root, dirs, files in scandir.walk(target, topdown=True):
+    for root, dirs, files in os.walk(target, topdown=True):
         [dirs.remove(x) for x in list(dirs) if x.lower() in exclusions]
         x = [os.path.join(root, file) for file in files if file == mloxexe]
         if x: return x[0]
@@ -54,5 +53,7 @@ def findMlox(mloxexe, exclusions, target):  # Polemos
 def Mlox_The_Path(mloxexe, exclusions, target):  # Polemos
     """Returns mlox path."""
     if os.path.dirname(target) == target: return ''  # Avoid root pls...
-    try: return findMlox(mloxexe, exclusions, target)
-    except: return ''
+    try:
+        return findMlox(mloxexe, exclusions, target)
+    except:
+        return ''

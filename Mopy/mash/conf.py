@@ -36,9 +36,8 @@
 #
 # ======================================================================================
 
-
 import wx
-from unimash import _, defaultEncoding as defaultEncoding  # Polemos
+from .unimash import _, defaultEncoding as defaultEncoding  # Polemos
 
 settings = None
 
@@ -62,23 +61,23 @@ dataMap = {
 
 settingDefaults = {
 
-    #-# SettingsWindow
+    # -# SettingsWindow
     'mash.settings.pos': wx.DefaultPosition,
 
-    #-# Wizard
+    # -# Wizard
     'wizard.first.openmw': True,
     'wizard.first.mw': True,
 
-    #--Morrowind settings
+    # --Morrowind settings
     'mwDir': '',
     'sInstallersDir': None,
-    #-Polemos: MGE XE
+    # -Polemos: MGE XE
     'mgexe.detected': False,
     'mgexe.dir': '',
-    #-Polemos: mlox dir
+    # -Polemos: mlox dir
     'mloxpath': '',
 
-    #-Polemos: OpenMW/TES3mp settings
+    # -Polemos: OpenMW/TES3mp settings
     'openmw': False,
     'tes3mp': False,
     'openmwDir': None,
@@ -113,7 +112,7 @@ settingDefaults = {
     'query.mwse.max.plugins': False,
     'query.mcp.extended.map': False,
 
-    #--Wrye Mash
+    # --Wrye Mash
     'all.ok': True,
     'mash.version': 0,  # Set later in MashApp()
     'mash.virgin': True,
@@ -126,11 +125,11 @@ settingDefaults = {
     'mash.window.sizes': {},
     'mash.bit.ver': '',
 
-    #-Polemos: Profile
+    # -Polemos: Profile
     'profile.active': 'Default',
     'profile.encoding': defaultEncoding,
 
-    #-Polemos: Interface Settings
+    # -Polemos: Interface Settings
     'active.theme': ('Default theme', None),
     'backup.slots': 3,
     'interface.lists.color': True,
@@ -139,52 +138,52 @@ settingDefaults = {
     'app.min.systray': False,
     'show.debug.log': True,
 
-    #-Polemos: Advanced Settings
+    # -Polemos: Advanced Settings
     'advanced.7zipcrc32b': False,
     'advanced.redate.interval': 60,
     'mash.extend.plugins': False,
     'mash.mcp.extend.map': False,
 
-    #-Polemos: Date scheme for version checking (Web)
+    # -Polemos: Date scheme for version checking (Web)
     'last.check': None,
     'timeframe.check': 15,
     'enable.check': True,
     'asked.check': False,
 
-    #-Polemos: Common Sash Settings (Mod, Plugins, Saves Tabs)
+    # -Polemos: Common Sash Settings (Mod, Plugins, Saves Tabs)
     'mash.max.sash': 400,
     'mash.sash.window.size': (867, 395),
 
-    #--Wrye Mash: Load Lists
+    # --Wrye Mash: Load Lists
     'mash.loadLists.data': {
         'Bethesda ESMs': [
             'Morrowind.esm',
             'Tribunal.esm',
             'Bloodmoon.esm',
-            ],
-        },
+        ],
+    },
 
-    #--Polemos: Load Lists refresh toggle.
+    # --Polemos: Load Lists refresh toggle.
     'mash.loadLists.need.refresh': False,
 
-    #--Wrye Mash: Statistics
+    # --Wrye Mash: Statistics
     'mash.fileStats.cols': ['Type', 'Count', 'Size'],
     'mash.fileStats.sort': 'Type',
     'mash.fileStats.colReverse': {
         'Count': 1,
         'Size': 1,
-        },
+    },
     'mash.fileStats.colWidths': {
         'Type': 50,
         'Count': 50,
         'Size': 75,
-        },
+    },
     'mash.fileStats.colAligns': {
         'Count': 1,
         'Size': 1,
-        },
+    },
 
-    #--Polemos: TESlint implementation.
+    # --Polemos: TESlint implementation.
     'tes3lint.pos': wx.DefaultPosition,
     'tes3lint.location': '',
     'tes3lint.perl': '',
@@ -192,22 +191,22 @@ settingDefaults = {
     'tes3lint.command.result': u'',
     'tes3lint.refresh': True,
 
-    #--Polemos: Added for Utilities page.
+    # --Polemos: Added for Utilities page.
     'mash.utils.page': 0,
-    'mash.utils.cols': ['ID', 'File'], #, 'Flag'],  # Polemos: Leave the 'ID' alone.
+    'mash.utils.cols': ['ID', 'File'],  # , 'Flag'],  # Polemos: Leave the 'ID' alone.
     'mash.utils.colWidths': {
         'File': 150,
         'ID': 35,
         'Flag': 50,
-        },
+    },
     'mash.utils.colAligns': {},
     'mash.utils.colReverse': {
-            'File': 1,
-            },
+        'File': 1,
+    },
     'mash.utils.sort': 'File',
     'mash.utils.sashPos': 237,
 
-    #--Installers
+    # --Installers
     'mash.installers.cols': ['Package', 'Order', 'Modified', 'Size', 'Files'],
     'mash.installers.page': 1,
     'mash.installers.isFirstRun': True,
@@ -232,28 +231,28 @@ settingDefaults = {
         'Modified': 60,
         'Size': 60,
         'Files': 45
-        },
+    },
     'mash.installers.colAligns': {
         'Order': 'RIGHT',
         'Size': 'RIGHT',
         'Files': 'RIGHT',
         'Modified': 'RIGHT'
-        },
+    },
 
-    #--Wrye Mash: Screenshots
+    # --Wrye Mash: Screenshots
     'mash.screens.cols': ['Image', 'Size'],
     'mash.screens.sort': 'Image',
     'mash.screens.colReverse': {
         'Image': 1,
-        },
+    },
     'mash.screens.colWidths': {
         'Image': 150,
         'Size': 55,
-        },
+    },
     'mash.screens.colAligns': {},
     'mash.screens.sashPos': 212,
 
-    #--Wrye Mash: Group and Rating
+    # --Wrye Mash: Group and Rating
     'mash.mods.groups': ['Body',
                          'Bethesda',
                          'Clothes',
@@ -273,9 +272,9 @@ settingDefaults = {
                          'MWSE'],
     'mash.mods.ratings': ['+', '1', '2', '3', '4', '5', '=', '~'],
 
-    #--Wrye Mash: RefRemovers
+    # --Wrye Mash: RefRemovers
     'mash.refRemovers.data': {
-        },
+    },
     'mash.refRemovers.safeCells': [
         _(u"Balmora, Caius Cosades' House"),
         _(u"Indarys Manor"),
@@ -285,13 +284,13 @@ settingDefaults = {
         _(u"Solstheim, Thirsk"),
         _(u"Tel Uvirith, Tower Lower"),
         _(u"Tel Uvirith, Tower Upper"),
-        ],
+    ],
 
-    #--Wrye Mash: RefReplacers
+    # --Wrye Mash: RefReplacers
     'mash.refReplacers.data': {
-        },
+    },
 
-    #--Wrye Mash: Col (Sort) Names
+    # --Wrye Mash: Col (Sort) Names
     # Polemos: the '    File' fixes a wx glitch, kinda.   <===#
     'mash.colNames': {
         '#': _(u'#'),
@@ -320,21 +319,21 @@ settingDefaults = {
         'Files': _(u'Files'),
         'Order': _(u'Order'),
         'Archive': _(u'Archive')
-        },
+    },
 
-    #--Polemos: ModPackages
+    # --Polemos: ModPackages
     'mash.Packages.cols': ['Package', 'Size'],
     'mash.Packages.sort': 'Package',
     'mash.Packages.colReverse': {},
     'mash.Packages.colWidths': {
         'Package': 200,
         'Size': 37,
-        },
+    },
     'mash.Packages.colAligns': {
         '#': 1,
-        },
+    },
 
-    #--Polemos: BSArchives
+    # --Polemos: BSArchives
     'mash.Archives.cols': ['Archive', '#', 'Size'],
     'mash.Archives.sort': '#',
     'mash.Archives.colReverse': {},
@@ -342,12 +341,12 @@ settingDefaults = {
         'Archive': 113,
         '#': 30,
         'Size': 27,
-        },
+    },
     'mash.Archives.colAligns': {
         '#': 1,
-        },
+    },
 
-    #--Wrye Mash: Masters
+    # --Wrye Mash: Masters
     'mash.masters.cols': ['Master', '#'],
     'mash.masters.esmsFirst': 1,
     'mash.masters.selectedFirst': 0,
@@ -356,30 +355,30 @@ settingDefaults = {
     'mash.masters.colWidths': {
         'Master': 150,
         '#': 35,
-        },
+    },
     'mash.masters.colAligns': {
         '#': 1,
-        },
+    },
 
-    #--Wrye Mash: Help Browser
+    # --Wrye Mash: Help Browser
     'mash.help.show': False,
     'mash.help.pos': (-1, -1),
     'mash.help.size': (1036, 600),
     'mash.help.sash': 178,
 
-    #--Wrye Mash: Mod Notes
+    # --Wrye Mash: Mod Notes
     'mash.modNotes.show': False,
     'mash.modNotes.size': (200, 300),
     'mash.modNotes.pos': wx.DefaultPosition,
 
-    #--Wrye Mash: Mod Docs
+    # --Wrye Mash: Mod Docs
     'mash.modDocs.show': False,
     'openmw.modDocs.show': False,
     'mash.modDocs.size': (700, 400),
     'mash.modDocs.pos': wx.DefaultPosition,
     'mash.modDocs.dir': None,
 
-    #--Wrye Mash: Mods (Morrowind)
+    # --Wrye Mash: Mods (Morrowind)
     'mash.mods.cols': ['File', '#', 'Rating', 'Group', 'Modified', 'Size', 'Author'],
     'mash.mods.esmsFirst': 1,
     'mash.mods.selectedFirst': 0,
@@ -393,14 +392,14 @@ settingDefaults = {
         'Modified': 140,
         'Size': 75,
         'Author': 140,
-        },
+    },
     'mash.mods.colAligns': {
         'Size': 1,
-        },
+    },
     'mash.mods.renames': {},
     'mash.mods.sashPos': 655,
 
-    #--Polemos: Plugins (OpenMW)
+    # --Polemos: Plugins (OpenMW)
     'openmw.mods.cols': ['File', '#', 'Rating', 'Group', 'Size', 'Author'],
     'openmw.mods.esmsFirst': 1,
     'openmw.mods.selectedFirst': 0,
@@ -413,10 +412,10 @@ settingDefaults = {
         'Rating': 20,
         'Size': 75,
         'Author': 140,
-        },
+    },
     'openmw.mods.colAligns': {
         'Size': 1,
-        },
+    },
     'openmw.mods.renames': {},
 
     # Polemos: OpenMW DataMods
@@ -432,24 +431,24 @@ settingDefaults = {
         'Flags': 40,
         'Version': 60,
         'Category': 90,
-        },
+    },
     'mash.datamods.colAligns': {
         'Size': 1,
-        },
+    },
     'mash.datamods.renames': {},
 
-    #--Wrye Mash: Journal
+    # --Wrye Mash: Journal
     'mash.journal.show': False,
     'mash.journal.size': (300, 400),
     'mash.journal.pos': wx.DefaultPosition,
 
-    #--Wrye Mash: Saves
+    # --Wrye Mash: Saves
     'mash.saves.sets': [],
     'mash.saves.cols': ['File', 'Modified', 'Size', 'Save Name', 'Player', 'Cell'],
     'mash.saves.sort': 'Modified',
     'mash.saves.colReverse': {
         'Modified': 1,
-        },
+    },
     'mash.saves.colWidths': {
         'File': 128,
         'Modified': 133,
@@ -458,19 +457,19 @@ settingDefaults = {
         'Player': 80,
         'Cell': 111,
         'Day': 30,
-        },
+    },
     'mash.saves.colAligns': {
         'Size': 1,
-        },
+    },
     'mash.saves.sashPos': 655,
 
-    #--Polemos Mash: OpenMW Saves
+    # --Polemos Mash: OpenMW Saves
     'OpenMW.saves.cols': ['File', 'Modified', 'Size', 'Save Name', 'Player'],
     'mash.worldMap.gridLines': True,
     'OpenMW.saves.sort': 'Modified',
     'OpenMW.saves.colReverse': {
         'Modified': 1,
-        },
+    },
     'OpenMW.saves.colWidths': {
         'File': 189,
         'Modified': 133,
@@ -478,11 +477,11 @@ settingDefaults = {
         'Save Name': 160,
         'Player': 80,
         'Day': 30,
-        },
+    },
     'OpenMW.saves.colAligns': {
         'Size': 1,
-        }
-
     }
+
+}
 
 settingsOrig = settingDefaults.copy()

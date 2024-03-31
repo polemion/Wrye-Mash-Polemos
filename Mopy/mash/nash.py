@@ -31,11 +31,10 @@
 
 
 from lxml import html
-from lxml import _elementpath as _dummy  #  Polemos: Needed for py2exe to work.
+from lxml import _elementpath as _dummy  # Polemos: Needed for py2exe to work.
 import requests
-import gui.dialog
+from .gui import dialog as guidialog
 import os, wx
-
 
 os.environ["REQUESTS_CA_BUNDLE"] = "cacert.pem"
 
@@ -54,7 +53,7 @@ def wrye_download_site(url, mode):
             return 'https://www.nexusmods.com/morrowind/mods/46935?tab=files'
 
 
-class WryeWeb:
+class WryeWeb(object):
     """Wrye Mash version checker for Nexus."""
 
     def __init__(self, mode):
@@ -64,7 +63,7 @@ class WryeWeb:
 
     def get_mash_ver(self):
         """Parse Nexus page."""
-        progress = gui.dialog.netProgressDialog()
+        progress = guidialog.netProgressDialog()
         try:
             progress.update(4)
             page = requests.get(self.mash_net)
@@ -73,21 +72,24 @@ class WryeWeb:
             self.mash_net_ver = int(('%s' % (get_ver[0].text.strip().replace('v', ''))))
             progress.update()
             result = self.mash_net_ver
-        except: result = 'error'
+        except:
+            result = 'error'
         finally:
             progress.Destroy()
             return result
 
 
-class VisitWeb:
+class VisitWeb(object):
     """Visit a mod's webpage."""
 
     def __init__(self, webData):
         """Init."""
         repo, ID = webData
-        if repo == 'Nexus': self.Nexus(ID)
-        #elif repo ==...
-        else: return
+        if repo == 'Nexus':
+            self.Nexus(ID)
+        # elif repo ==...
+        else:
+            return
 
     def Nexus(self, ID):
         """Nexus site implementation."""

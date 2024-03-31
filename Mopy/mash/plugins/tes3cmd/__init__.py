@@ -40,13 +40,14 @@
 
 import os
 import subprocess
-from ...sfix import Popen
+from subprocess import Popen
 import threading
 import time
-import Queue as queue
+import six.moves.queue as queue
 from ... import conf, singletons
 
-class HelperMixin: # Polemos fixes.
+
+class HelperMixin(object):  # Polemos fixes.
 
     def getSubprocess(self, args):
         if os.name == 'nt':
@@ -57,9 +58,11 @@ class HelperMixin: # Polemos fixes.
         args_po = ''
         try:
             for x in args:
-                if x.lower().endswith('.esp') or x.lower().endswith('.esm') or x.lower().endswith('.ess'): x = '"%s"' % x
+                if x.lower().endswith('.esp') or x.lower().endswith('.esm') or x.lower().endswith(
+                    '.ess'): x = '"%s"' % x
                 if x != 'tes3cmd.exe': args_po = '%s %s' % (args_po, x)
-        except: args_po = ''
+        except:
+            args_po = ''
         # Polemos: Tired trying to work with Mary Popens buggy attitude. Be my guest.
         command = 'cd /D "%s" & %s%s' % (getDataDir(), cmd_po, args_po)
         return Popen(command, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
@@ -77,7 +80,8 @@ class HelperMixin: # Polemos fixes.
 
     def syncHeadMastArgs(self, files):  # Polemos: Added Sync Headers/Master ability by Abot.
         """Args factory"""
-        args = ['tes3cmd.exe', 'header', '--synchronize', '--debug', '--hide-backups', '--backup-dir', 'tes3cmdbck'] + files
+        args = ['tes3cmd.exe', 'header', '--synchronize', '--debug', '--hide-backups', '--backup-dir',
+                'tes3cmdbck'] + files
         return args
 
     def mergeArgs(self, files):  # Polemos: Added Merge records by Abot.
@@ -165,12 +169,14 @@ class Threaded(threading.Thread, HelperMixin):
         self.args = self.buildFixitArgs(hideBackups, backupDir)
         self.start()
 
-    def clean(self, files, replace=False, hideBackups=True, backupDir='tes3cmdbck', cells=True, dups=True, gmsts=True, instances=True, junk=True):
+    def clean(self, files, replace=False, hideBackups=True, backupDir='tes3cmdbck', cells=True, dups=True, gmsts=True,
+              instances=True, junk=True):
         self.files = files
         self.args = self.buildCleanArgs(files, replace, hideBackups, backupDir, cells, dups, gmsts, instances, junk)
         self.start()
 
-    def header(self, file, hideBackups=True, backupDir='tes3cmdbck', sync=True, updateMasters=False, updateRecordCount=False):
+    def header(self, file, hideBackups=True, backupDir='tes3cmdbck', sync=True, updateMasters=False,
+               updateRecordCount=False):
         self.files = [file]
         self.args = self.buildHeaderArgs(file, hideBackups, backupDir, sync, updateMasters, updateRecordCount)
         self.start()
@@ -189,13 +195,15 @@ class Threaded(threading.Thread, HelperMixin):
                     return
             time.sleep(0.01)
 
-        for line in iter(p.stdout.readline,''): self.out += line.strip() + '\n'
-        for line in iter(p.stderr.readline,''): self.err += line.strip() + '\n'
+        for line in iter(p.stdout.readline, ''): self.out += line.strip() + '\n'
+        for line in iter(p.stderr.readline, ''): self.err += line.strip() + '\n'
         if self.callback: self.callback()
+
 
 def getDataDir():  # Polemos fix
     data_files_dir = os.path.join(conf.settings['mwDir'], 'Data Files')
     return data_files_dir
+
 
 def getLocation():  # Polemos: Returns path only if TES3cmd is in "Data Files" dir
     path = os.path.join(conf.settings['mwDir'], 'Data Files', 'tes3cmd.exe')

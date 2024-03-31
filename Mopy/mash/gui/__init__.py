@@ -38,23 +38,21 @@
 # ========================================================================================
 
 
-import cPickle  # Polemos: Used to be pickle, changed obviously.
-import wx
+import wx, pickle
 from wx.lib.mixins.listctrl import ListCtrlAutoWidthMixin
 from .. import singletons
 from ..merrors import InterfaceError as InterfaceError
 from .. import balt
 from .. import mosh
-from ..unimash import _   # Polemos
+from ..unimash import _  # Polemos
 from .. import conf  # Polemos
-import interface  # Polemos
-
+from . import interface  # Polemos
 
 # Constants
 wxListAligns = [wx.LIST_FORMAT_LEFT, wx.LIST_FORMAT_RIGHT, wx.LIST_FORMAT_CENTRE]
 
 
-class ListDragDropMixin:
+class ListDragDropMixin(object):
     """
     This allows the simple dragging and dropping in lists, although this doesn't
     allow dragging between lists
@@ -87,7 +85,7 @@ class ListDragDropMixin:
             if idx == -1: break
             selected.append(self.listCtrl.GetItemText(idx))
         data = wx.CustomDataObject('ListItems%d' % self.listCtrl.GetId())
-        data.SetData(cPickle.dumps(selected))  # Polemos: Used to be pickle
+        data.SetData(pickle.dumps(selected))  # Polemos: Used to be pickle
         ds = wx.DropSource(self.listCtrl)
         ds.SetData(data)
         ds.DoDragDrop(True)
@@ -97,22 +95,26 @@ class ListDragDropMixin:
         # Find insertion point.
         toIdx, flags = self.listCtrl.HitTest((x, y))
         if toIdx == wx.NOT_FOUND:
-            if flags & wx.LIST_HITTEST_NOWHERE: toIdx = self.listCtrl.GetItemCount()
-            else: return
+            if flags & wx.LIST_HITTEST_NOWHERE:
+                toIdx = self.listCtrl.GetItemCount()
+            else:
+                return
         # Get bounding rect for the item being dropped onto and if the user is
         # dropping into the lower half of the rect, we want to insert _after_ this item.
         try:  # Polemos fix
             rect = self.listCtrl.GetItemRect(toIdx)
-            if y > rect.y + rect.height/2: toIdx += 1
-        except: pass
+            if y > rect.y + rect.height // 2: toIdx += 1
+        except:
+            pass
         self.OnDrop(selected, toIdx)
-        #ensure the moved items are selected
-        for itemDex in xrange(self.listCtrl.GetItemCount()):
+        # ensure the moved items are selected
+        for itemDex in range(self.listCtrl.GetItemCount()):
             self.listCtrl.SetItemState(itemDex, 0, wx.LIST_STATE_SELECTED)
         idx = -1
         while True:
             idx = self.listCtrl.GetNextItem(idx, wx.LIST_NEXT_ALL)
-            if idx == -1: break
+            if idx == -1:
+                break
             elif self.listCtrl.GetItemText(idx) in selected:
                 self.listCtrl.Select(idx)
 
@@ -135,7 +137,7 @@ class ListDrop(wx.DropTarget):
         """Called when OnDrop returns True.  We need to get the data and do something with it."""
         # copy the data from the drag source to our data object
         if self.GetData():
-            selected = cPickle.loads(self.data.GetData())  # Polemos: Used to be pickle
+            selected = pickle.loads(self.data.GetData())  # Polemos: Used to be pickle
             self.setFn(x, y, selected)
         # what is returned signals the source what to do
         # with the original data (move, copy, etc.)  In this
@@ -156,26 +158,26 @@ class List(wx.Panel):  # Polemos: Additions.
     """The listctrl control of all Mash lists (but the installers)."""
     prev_item = None
 
-    def __init__(self,parent,id=-1,ctrlStyle=(wx.LC_REPORT|wx.LC_SINGLE_SEL)):
+    def __init__(self, parent, id=-1, ctrlStyle=(wx.LC_REPORT | wx.LC_SINGLE_SEL)):
         """Init."""
-        wx.Panel.__init__(self,parent,id, style=wx.WANTS_CHARS)
+        wx.Panel.__init__(self, parent, id, style=wx.WANTS_CHARS)
         sizer = wx.BoxSizer(wx.VERTICAL)
         self.SetSizer(sizer)
-        self.SetSizeHints(-1,50)
-        #--ListCtrl
+        self.SetSizeHints(-1, 50)
+        # --ListCtrl
         listId = self.listId = wx.NewId()
         self.list = ListCtrl(self, listId, style=ctrlStyle)
         self.checkboxes = singletons.images['mash.checkboxes']
-        #--Columns
+        # --Columns
         self.PopulateColumns()
-        #--Items
+        # --Items
         self.sortDirty = 0
         self.PopulateItems()
         self.hitIcon = 0
         self.mouseItem = None
-        #--Events
+        # --Events
         wx.EVT_SIZE(self, self.OnSize)
-        wx.EVT_LEFT_DOWN(self.list,self.OnLeftDown)
+        wx.EVT_LEFT_DOWN(self.list, self.OnLeftDown)
         wx.EVT_COMMAND_RIGHT_CLICK(self.list, listId, self.DoItemMenu)
         wx.EVT_LIST_COL_CLICK(self, listId, self.DoItemSort)
         wx.EVT_LIST_COL_RIGHT_CLICK(self, listId, self.DoColumnMenu)
@@ -184,9 +186,11 @@ class List(wx.Panel):  # Polemos: Additions.
         wx.EVT_LEAVE_WINDOW(self.list, self.OnMouse)
         # Theming
         if interface.style['lists.font.color'] is not None:
-            [self.list.SetItemTextColour(x, interface.style['lists.font.color']) for x in xrange(self.list.GetItemCount())]
+            [self.list.SetItemTextColour(x, interface.style['lists.font.color']) for x in
+             range(self.list.GetItemCount())]
             self.fontDefaultColor = interface.style['lists.font.color']
-        else: self.fontDefaultColor = wx.SystemSettings.GetColour(wx.SYS_COLOUR_LISTBOXTEXT)
+        else:
+            self.fontDefaultColor = wx.SystemSettings.GetColour(wx.SYS_COLOUR_LISTBOXTEXT)
         self.list.Bind(wx.EVT_ENTER_WINDOW, self.hoverInCtrl)
 
     def hoverInCtrl(self, event):  # Polemos
@@ -206,8 +210,10 @@ class List(wx.Panel):  # Polemos: Additions.
                     self.lastItemColor = (mouseItem, itemColor)
                     self.MouseEffect(mouseItem)
             elif event.Leaving() and self.mouseItem is not None and self.mouseItem != -1:
-                try: self.list.SetItemTextColour(self.lastItemColor[0], self.lastItemColor[1])
-                except: pass
+                try:
+                    self.list.SetItemTextColour(self.lastItemColor[0], self.lastItemColor[1])
+                except:
+                    pass
         event.Skip()
 
     def MouseEffect(self, item):  # Polemos: Added a small effect.
@@ -215,9 +221,12 @@ class List(wx.Panel):  # Polemos: Additions.
         try:
             self.list.SetItemTextColour(item, interface.style['mouse.hover'])
             self.list.SetItemTextColour(self.prev_item[0], self.prev_item[1])
-        except: pass
-        try: self.prev_item = self.lastItemColor
-        except: pass  # Happens
+        except:
+            pass
+        try:
+            self.prev_item = self.lastItemColor
+        except:
+            pass  # Happens
 
     def PopulateColumns(self):  # Polemos: added list alignments per col name.
         """Create/name columns in ListCtrl."""
@@ -225,20 +234,20 @@ class List(wx.Panel):  # Polemos: Additions.
         center_align_po = ['Version', 'flags', '#']
         cols = self.cols
         self.numCols = len(cols)
-        for colDex in xrange(self.numCols):
+        for colDex in range(self.numCols):
             colKey = cols[colDex]
-            colName = self.colNames.get(colKey,colKey)
-            wxListAlign = wxListAligns[self.colAligns.get(colKey,0)]
-            if colName in right_align_po : wxListAlign = wx.LIST_FORMAT_RIGHT
+            colName = self.colNames.get(colKey, colKey)
+            wxListAlign = wxListAligns[self.colAligns.get(colKey, 0)]
+            if colName in right_align_po: wxListAlign = wx.LIST_FORMAT_RIGHT
             if colName in center_align_po: wxListAlign = wx.LIST_FORMAT_CENTER
-            self.list.InsertColumn(colDex,colName,wxListAlign)
-            self.list.SetColumnWidth(colDex, self.colWidths.get(colKey,30))
+            self.list.InsertColumn(colDex, colName, wxListAlign)
+            self.list.SetColumnWidth(colDex, self.colWidths.get(colKey, 30))
         if conf.settings['mash.large.fonts']:  # Polemos: Big fonts for tired eyes
             self.list.SetFont(wx.Font(*interface.internalStyle['big.font']))
         if interface.style['lists.font.color'] is not None:  # Polemos: Theme engine
             self.list.SetTextColour(interface.style['lists.font.color'])
 
-    def PopulateItem(self,itemDex,mode=0,selected=set()):
+    def PopulateItem(self, itemDex, mode=0, selected=set()):
         """Populate ListCtrl for specified item. [ABSTRACT]"""
         raise mosh.AbstractError
 
@@ -247,76 +256,84 @@ class List(wx.Panel):  # Polemos: Additions.
         self.items = self.data.keys()
         return self.items
 
-    def PopulateItems(self,col=None,reverse=-2,selected='SAME'):
+    def PopulateItems(self, col=None, reverse=-2, selected='SAME'):
         """Sort items and populate entire list."""
-        #--Sort Dirty?
+        # --Sort Dirty?
         if self.sortDirty:
             self.sortDirty = 0
-            (col, reverse) = (None,-1)
-        #--Items to select afterwards. (Defaults to current selection.)
+            (col, reverse) = (None, -1)
+        # --Items to select afterwards. (Defaults to current selection.)
         if selected == 'SAME': selected = set(self.GetSelected())
-        #--Reget items
+        # --Reget items
         self.GetItems()
-        self.SortItems(col,reverse)
-        #--Delete Current items
+        self.SortItems(col, reverse)
+        # --Delete Current items
         listItemCount = self.list.GetItemCount()
-        #--Populate items
-        for itemDex in xrange(len(self.items)):
+        # --Populate items
+        for itemDex in range(len(self.items)):
             mode = int(itemDex >= listItemCount)
-            self.PopulateItem(itemDex,mode,selected)
-        #--Delete items?
+            self.PopulateItem(itemDex, mode, selected)
+        # --Delete items?
         while self.list.GetItemCount() > len(self.items):
-            self.list.DeleteItem(self.list.GetItemCount()-1)
+            self.list.DeleteItem(self.list.GetItemCount() - 1)
 
     def ClearSelected(self):
-        for itemDex in xrange(self.list.GetItemCount()):
+        for itemDex in range(self.list.GetItemCount()):
             self.list.SetItemState(itemDex, 0, wx.LIST_STATE_SELECTED)
 
     def GetSelected(self):
         """Return list of items selected (highlighted) in the interface."""
-        #--No items?
+        # --No items?
         if not 'items' in self.__dict__: return []
         selected = []
         itemDex = -1
         while True:
-            itemDex = self.list.GetNextItem(itemDex, wx.LIST_NEXT_ALL,wx.LIST_STATE_SELECTED)
-            if itemDex == -1: break
-            else: selected.append(self.items[itemDex])
+            itemDex = self.list.GetNextItem(itemDex, wx.LIST_NEXT_ALL, wx.LIST_STATE_SELECTED)
+            if itemDex == -1:
+                break
+            else:
+                selected.append(self.items[itemDex])
         return selected
 
     def SelectItems(self, items):
         itemDex = -1
         while True:
             itemDex = self.list.GetNextItem(itemDex, wx.LIST_NEXT_ALL)
-            if itemDex == -1: break
-            elif self.items[itemDex] in items: self.list.Select(itemDex)
+            if itemDex == -1:
+                break
+            elif self.items[itemDex] in items:
+                self.list.Select(itemDex)
 
     def SelectAll(self):
         itemDex = -1
         while True:
             itemDex = self.list.GetNextItem(itemDex, wx.LIST_NEXT_ALL)
-            if itemDex == -1: break
-            else: self.list.Select(itemDex)
+            if itemDex == -1:
+                break
+            else:
+                self.list.Select(itemDex)
 
     def SetItemFocus(self, item):  # Polemos
         """Focus on selected item in the list (for AlphaNumeric KeyPresses)."""
         itemDex = -1
         while True:
             itemDex = self.list.GetNextItem(itemDex, wx.LIST_NEXT_ALL)
-            if itemDex == -1: break
-            elif self.items[itemDex] == item: self.list.Focus(itemDex)
+            if itemDex == -1:
+                break
+            elif self.items[itemDex] == item:
+                self.list.Focus(itemDex)
 
-    def DeleteSelected(self):  #$# from FallenWizard
+    def DeleteSelected(self):  # $# from FallenWizard
         """Deletes selected items."""
         items = self.GetSelected()
         if items:
             message = _(u'Delete these items? This operation cannot be undone.')
             message += '\n* ' + '\n* '.join(x for x in sorted(items))
-            if balt.askYes(self,message,_(u'Delete Items')):
+            if balt.askYes(self, message, _(u'Delete Items')):
                 for item in items: self.data.delete(item)
-            singletons.modList.Refresh() #$#
+            singletons.modList.Refresh()  # $#
 
-    def GetSortSettings(self,col,reverse):
+    def GetSortSettings(self, col, reverse):
         """Return parsed col, reverse arguments. Used by SortSettings.
         col: sort variable.
         Defaults to last sort. (self.sort)
@@ -328,50 +345,53 @@ class List(wx.Panel):  # Polemos: Additions.
             reverse the sort order.
         -2: Use current reverse setting for sort variable.
         """
-        #--Sort Column
+        # --Sort Column
         if not col: col = self.sort
-        #--Reverse
-        oldReverse = self.colReverse.get(col,0)
-        if col == 'Load Order': #--Disallow reverse for Load Order
+        # --Reverse
+        oldReverse = self.colReverse.get(col, 0)
+        if col == 'Load Order':  # --Disallow reverse for Load Order
             reverse = 0
         elif reverse == -1 and col == self.sort:
             reverse = not oldReverse
-        elif reverse < 0: reverse = oldReverse
-        #--Done
+        elif reverse < 0:
+            reverse = oldReverse
+        # --Done
         self.sort = col
         self.colReverse[col] = reverse
-        return (col,reverse)
+        return (col, reverse)
 
-    def DoColumnMenu(self,event):  # Polemos: added Master Menu button pos
+    def DoColumnMenu(self, event):  # Polemos: added Master Menu button pos
         """Column Menu"""
         if not self.mainMenu: return
-        #--Build Menu
-        try: column = event.GetColumn()
-        except: column = event
+        # --Build Menu
+        try:
+            column = event.GetColumn()
+        except:
+            column = event
         menu = wx.Menu()
         for link in self.mainMenu:
-            link.AppendToMenu(menu,self,column)
-        #--Show/Destroy Menu
+            link.AppendToMenu(menu, self, column)
+        # --Show/Destroy Menu
         self.PopupMenu(menu)
         menu.Destroy()
 
-    def OnColumnResize(self,event):
+    def OnColumnResize(self, event):
         """Column Resize"""
         pass
 
     def DoItemSort(self, event):
         """Item Sort"""
-        self.PopulateItems(self.cols[event.GetColumn()],-1)
+        self.PopulateItems(self.cols[event.GetColumn()], -1)
 
-    def DoItemMenu(self,event):
+    def DoItemMenu(self, event):
         """Item Menu"""
         selected = self.GetSelected()
         if not selected: return
-        #--Build Menu
+        # --Build Menu
         menu = wx.Menu()
         for link in self.itemMenu:
-            link.AppendToMenu(menu,self,selected)
-        #--Show/Destroy Menu
+            link.AppendToMenu(menu, self, selected)
+        # --Show/Destroy Menu
         self.PopupMenu(menu)
         menu.Destroy()
 
@@ -380,7 +400,7 @@ class List(wx.Panel):  # Polemos: Additions.
         size = self.GetClientSizeTuple()
         self.list.SetSize(size)
 
-    def OnLeftDown(self,event):
+    def OnLeftDown(self, event):
         """Event: Left Down"""
         event.Skip()
 
@@ -403,7 +423,8 @@ class FileDrop(wx.FileDropTarget):  # Polemos
 class NotebookPanel(wx.Panel):
     """Parent class for notebook panels."""
 
-    def enableFileDragDrop(self, window):  # todo: Polemos, disabled for now, the implementation conflicts with drag and drop
+    def enableFileDragDrop(self,
+                           window):  # todo: Polemos, disabled for now, the implementation conflicts with drag and drop
         """Enable Drag and drop file(s) for ctrl."""
         return FileDrop(window)
 

@@ -41,10 +41,14 @@
 
 # Imports
 from distutils.core import setup
-import wxversion
-wxversion.select('2.9')
 from mash.gui.credits import Current_Version as raw
-import scandir, py2exe, os, sys, glob
+import os, sys, glob
+
+try: import py2exe
+except: sys.exit()
+
+# Wine
+os.environ['PATH'] = os.pathsep.join([os.environ['PATH'], 'c:\\Python27\\Lib\\site-packages\\pywin32_system32\\'])
 
 # Info
 verraw = [x.strip() for x in raw()[2].replace('-', ',').replace('/', ',').split(',')]
@@ -72,7 +76,7 @@ help_f = 'Wrye Mash.dat'
 if os.path.exists('openmw.dat'): help_f = 'openmw.dat'
 prog_resources = ['.\\7zip\\x64\\7z.exe',
                   '.\\7zip\\x64\\7z.dll',
-                   help_f,
+                  help_f,
                   'Credits.txt',
                   'License.txt',
                   'cacert.pem',
@@ -81,14 +85,17 @@ prog_resources = ['.\\7zip\\x64\\7z.exe',
 
 # Remove old 'build' folder
 if os.access('.\\build', os.F_OK):
-    print 'Deleting old build folder...'
-    for root, dirs, files in scandir.walk('.\\build', topdown=False):
+    print()
+    'Deleting old build folder...'
+    for root, dirs, files in os.walk('.\\build', topdown=False):
         [os.remove(os.path.join(root, name)) for name in files]
         [os.rmdir(os.path.join(root, name)) for name in dirs]
     os.rmdir('.\\build')
 
+
 # File Information
-class Target:
+class Target(object):
+
     def __init__(self, **kw):
         self.__dict__.update(kw)
         self.version = version
@@ -96,18 +103,23 @@ class Target:
         self.copyright = copyright
         self.name = mashname
 
+
 # Includes for py2exe
 includes = ["wx", "encodings.*"]
 # Excludes for py2exe
 excludes = ["Tkconstants", "Tkinter", "tcl", "doctest", "pdb", "unittest",
-            "difflib", '_gtkagg', '_tkagg', 'bsddb', 'curses', #'email',
+            "difflib", '_gtkagg', '_tkagg', 'bsddb', 'curses',  # 'email',
             'pywin.debugger', 'pywin.debugger.dbgcon', 'pywin.dialogs']
 # dll Excludes
-dll_excludes = ['libgdk-win32-2.0-0.dll', 'libgobject-2.0-0.dll', 'tcl84.dll', 'tk84.dll', 'msvcp90.dll', 'msvcr71.dll', 'UxTheme.dll',
-                'API-MS-Win-Core-ProcessThreads-L1-1-0.dll', 'API-MS-Win-Core-Profile-L1-1-0.dll', 'API-MS-Win-Core-String-L1-1-0.dll',
-                'API-MS-Win-Core-SysInfo-L1-1-0.dll', 'API-MS-Win-Security-Base-L1-1-0.dll', 'CRYPT32.dll', 'KERNELBASE.dll', 'MPR.dll',
+dll_excludes = ['libgdk-win32-2.0-0.dll', 'libgobject-2.0-0.dll', 'tcl84.dll', 'tk84.dll', 'msvcp90.dll', 'msvcr71.dll',
+                'UxTheme.dll',
+                'API-MS-Win-Core-ProcessThreads-L1-1-0.dll', 'API-MS-Win-Core-Profile-L1-1-0.dll',
+                'API-MS-Win-Core-String-L1-1-0.dll',
+                'API-MS-Win-Core-SysInfo-L1-1-0.dll', 'API-MS-Win-Security-Base-L1-1-0.dll', 'CRYPT32.dll',
+                'KERNELBASE.dll', 'MPR.dll',
                 'MSASN1.dll', 'msvcp90.dll', 'msvcr90.dll', 'API-MS-Win-Core-ErrorHandling-L1-1-0.dll',
-                'API-MS-Win-Core-LibraryLoader-L1-1-0.dll', 'API-MS-Win-Core-LocalRegistry-L1-1-0.dll', 'API-MS-Win-Core-Misc-L1-1-0.dll',
+                'API-MS-Win-Core-LibraryLoader-L1-1-0.dll', 'API-MS-Win-Core-LocalRegistry-L1-1-0.dll',
+                'API-MS-Win-Core-Misc-L1-1-0.dll',
                 'IPHLPAPI.DLL', 'NSI.dll', 'WINNSI.DLL', 'WTSAPI32.dll']
 
 # py2exe options
@@ -138,6 +150,7 @@ setup(
     console=[prog]
 )
 from distutils import dir_util
+
 dir_util.copy_tree('..\\Data Files', '..\\bin\\Data Files')
 folds = ['Data', 'Extras', 'images', 'locale', 'snapshots', 'themes']
 [dir_util.copy_tree(fold, '%s\\%s' % (dest_folder, fold)) for fold in folds]
@@ -153,8 +166,8 @@ for x in toDel:
 # Put upx executable in the same dir as the source.
 if os.path.exists('upx.exe'):
     files = (glob.glob(os.path.join(dest_folder, '*.dll'))
-           + glob.glob(os.path.join(dest_folder, '*.exe'))
-           + glob.glob(os.path.join(dest_folder, 'lib', '*.dll')))
+             + glob.glob(os.path.join(dest_folder, '*.exe'))
+             + glob.glob(os.path.join(dest_folder, 'lib', '*.dll')))
     # Note: --ultra-brute takes ages.
     # If you want a fast build change it to --best
     args = ['upx.exe', '--best'] + files

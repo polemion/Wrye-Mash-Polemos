@@ -37,12 +37,14 @@
 #
 # ========================================================================================
 
-import sys, mash.bitver
-mash.bitver.wryeMashBitVer = 'x64 '
+import sys, os, mash.appinfo
 
-# Needed for py2exe
-if not hasattr(sys, 'frozen'):
-    import wxversion
-    wxversion.select('2.9')
+mash.appinfo.wryeMashBitVer = 'x64 '
+# Set current (true) Wrye Mash dir.
+if getattr(sys, 'frozen', False):  # Running frozen
+    mash.appinfo.MashDir = os.path.dirname(sys.executable)
+else:  # Running in a normal Python environment
+    mash.appinfo.MashDir = os.path.dirname(os.path.abspath(__file__))
 
+# Main
 import mash.mash

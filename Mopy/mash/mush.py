@@ -113,316 +113,316 @@ bethDataFiles = {'morrowind.esm', 'tribunal.esm', 'bloodmoon.esm', 'morrowind.bs
 # Skill Related
 
 primaryAttributes = (
-"Agility",
-"Endurance",
-"Intelligence",
-"Personality",
-"Speed",
-"Strength",
-"Willpower",
-"Luck",
+    "Agility",
+    "Endurance",
+    "Intelligence",
+    "Personality",
+    "Speed",
+    "Strength",
+    "Willpower",
+    "Luck",
 )
 
 combatSkills = (
-"Armorer",
-"Athletics",
-"Axe",
-"Block",
-"Blunt Weapon",
-"Heavy Armor",
-"Long Blade",
-"Medium Armor",
-"Spear",
+    "Armorer",
+    "Athletics",
+    "Axe",
+    "Block",
+    "Blunt Weapon",
+    "Heavy Armor",
+    "Long Blade",
+    "Medium Armor",
+    "Spear",
 )
 
 magicSkills = (
-"Alchemy",
-"Alteration",
-"Conjuration",
-"Destruction",
-"Enchant",
-"Illusion",
-"Mysticism",
-"Restoration",
-"Unarmored",
+    "Alchemy",
+    "Alteration",
+    "Conjuration",
+    "Destruction",
+    "Enchant",
+    "Illusion",
+    "Mysticism",
+    "Restoration",
+    "Unarmored",
 )
 
 stealthSkills = (
-"Acrobatics",
-"Hand To Hand",
-"Light Armor",
-"Marksman",
-"Mercantile",
-"Security",
-"Short Blade",
-"Sneak",
-"Speechcraft",
+    "Acrobatics",
+    "Hand To Hand",
+    "Light Armor",
+    "Marksman",
+    "Mercantile",
+    "Security",
+    "Short Blade",
+    "Sneak",
+    "Speechcraft",
 )
 
 # Wrye Level Set ==============================================================
 charSet0 = \
-"""begin wr_lev${className}GS
-short action
-short stemp
-short level
-
-if ( menuMode )
-  return
-
-elseif ( action == 0 ) ;--Initialize
-  set level to wr_lev${className}
-  set action to 10
-  return
-
-elseif ( action == 10 ) ;--Option Menu
-  messagebox "Choose the Way of the ${className} [level %g]?" level "Yes" "+5" "+1" "-1" "-5" "No"
-  set action to 20
-  return
-
-elseif ( action == 20 ) ;--Option selected
-  set stemp to getButtonPressed
-  if ( stemp == -1 ) ;--Not pressed yet
-  elseif ( stemp == 0 ) ; Do it
-     set action to 30
-  elseif ( stemp == 1 ) ; +5
-    if ( level < 96 )
-      set level to level + 5
+    """begin wr_lev${className}GS
+    short action
+    short stemp
+    short level
+    
+    if ( menuMode )
+      return
+    
+    elseif ( action == 0 ) ;--Initialize
+      set level to wr_lev${className}
       set action to 10
+      return
+    
+    elseif ( action == 10 ) ;--Option Menu
+      messagebox "Choose the Way of the ${className} [level %g]?" level "Yes" "+5" "+1" "-1" "-5" "No"
+      set action to 20
+      return
+    
+    elseif ( action == 20 ) ;--Option selected
+      set stemp to getButtonPressed
+      if ( stemp == -1 ) ;--Not pressed yet
+      elseif ( stemp == 0 ) ; Do it
+         set action to 30
+      elseif ( stemp == 1 ) ; +5
+        if ( level < 96 )
+          set level to level + 5
+          set action to 10
+        endif
+      elseif ( stemp == 2 ) ;+1
+        if ( level < 100 )
+          set level to level + 1
+          set action to 10
+        endif
+      elseif ( stemp == 3 ) ;-1
+        if ( level > 1 )
+          set level to level - 1
+          set action to 10
+        endif
+      elseif ( stemp == 4 ) ;-5
+        if ( level > 5 )
+          set level to level - 5
+          set action to 10
+        endif
+      elseif ( stemp == 5 ) ;--Cancel
+        set action to 100
+      endif
+      return
+    
+    elseif ( action == 30 ) ;--Do it
+      ;--Fall through
+    
+    elseif ( action == 100 ) ;--Terminate
+      set action to 0
+      stopScript wr_lev${className}GS
+      return
     endif
-  elseif ( stemp == 2 ) ;+1
-    if ( level < 100 )
-      set level to level + 1
-      set action to 10
+    
+    ;--Levels
+    set wr_lev${className} to level
+    set wr_levSetLevelGS.level to level
+    startScript wr_levSetLevelGS
+    
+    ;--Cap stats at level 30
+    if ( level > 30 )
+      set level to 30
     endif
-  elseif ( stemp == 3 ) ;-1
-    if ( level > 1 )
-      set level to level - 1
-      set action to 10
-    endif
-  elseif ( stemp == 4 ) ;-5
-    if ( level > 5 )
-      set level to level - 5
-      set action to 10
-    endif
-  elseif ( stemp == 5 ) ;--Cancel
-    set action to 100
-  endif
-  return
-
-elseif ( action == 30 ) ;--Do it
-  ;--Fall through
-
-elseif ( action == 100 ) ;--Terminate
-  set action to 0
-  stopScript wr_lev${className}GS
-  return
-endif
-
-;--Levels
-set wr_lev${className} to level
-set wr_levSetLevelGS.level to level
-startScript wr_levSetLevelGS
-
-;--Cap stats at level 30
-if ( level > 30 )
-  set level to 30
-endif
-"""
+    """
 
 charSet1 = \
-"""messagebox "You now follow the Way of the ${className}, level %g." level
-playSound skillraise
-set action to 100
-end"""
+    """messagebox "You now follow the Way of the ${className}, level %g." level
+    playSound skillraise
+    set action to 100
+    end"""
 
 # Library Generator ===========================================================
 # Templates
 libGenMain = (
-"""begin ${libId}LS
-short disabled
-short action
-
-if ( onActivate )
-    if ( menuMode == 0 )
-        activate
+    """begin ${libId}LS
+    short disabled
+    short action
+    
+    if ( onActivate )
+        if ( menuMode == 0 )
+            activate
+        endif
+        return  
+    elseif ( action != lib_action )
+        ;pass
+    elseif ( disabled != ${libId}G )
+        return
+    elseif ( ${libId}G )
+        set disabled to 0
+        enable
+        return
+    else
+        set disabled to 1
+        disable
+        return
     endif
-    return  
-elseif ( action != lib_action )
-    ;pass
-elseif ( disabled != ${libId}G )
-    return
-elseif ( ${libId}G )
-    set disabled to 0
-    enable
-    return
-else
-    set disabled to 1
-    disable
-    return
-endif
-
-;--Action changed...
-if ( lib_action != 1 )
-elseif ( ${libId}G )
-elseif ( player->getItemCount "${srcId}" )
-    set lib_actionCount to lib_actionCount + 1
-    set ${libId}G to 1
-${ifAltId}endif
-set action to lib_action
-
-end""")
+    
+    ;--Action changed...
+    if ( lib_action != 1 )
+    elseif ( ${libId}G )
+    elseif ( player->getItemCount "${srcId}" )
+        set lib_actionCount to lib_actionCount + 1
+        set ${libId}G to 1
+    ${ifAltId}endif
+    set action to lib_action
+    
+    end""")
 
 libGenIfAltId = (
-"""elseif ( player->getItemCount "${altId}" )
-    set lib_actionCount to lib_actionCount + 1
-    set ${libId}G to 1
-""")
+    """elseif ( player->getItemCount "${altId}" )
+        set lib_actionCount to lib_actionCount + 1
+        set ${libId}G to 1
+    """)
 
 # Scheduling ==================================================================
 # Templates
 
-#--Master
+# --Master
 scheduleMaster = (
-"""begin SC_${town}_Master
-dontSaveObject
-if ( menuMode )
-	return
-elseif ( cellChanged )
-	set SC_offScheduleG to 0
-elseif ( SC_${town}_State == 0 )
-	return
-elseif ( SC_Reschedule )
-	set SC_${town}_State to -1
-	set SC_Reschedule to 0
-elseif ( gamehour < 7 )
-	if ( SC_${town}_State != 4 )
-    	set SC_Reschedule to 0
-		set SC_${town}_State to 4
-		startScript SC_${town}_4
-	endif
-	${c4}startScript SC_${town}_C4
-	return
-elseif ( gamehour < 12 )
-	if ( SC_${town}_State != 1 )
-    	set SC_Reschedule to 0
-		set SC_${town}_State to 1
-		startScript SC_${town}_1
-	endif
-	return
-elseif ( gamehour < 19 )
-	if ( SC_${town}_State != 2 )
-    	set SC_Reschedule to 0
-		set SC_${town}_State to 2
-		startScript SC_${town}_2
-	endif
-	return
-else
-	if ( SC_${town}_State != 3 )
-    	set SC_Reschedule to 0
-		set SC_${town}_State to 3
-		startScript SC_${town}_3
-	endif
-	${c3}startScript SC_${town}_C3
-	return
-endif
-end
-""")
+    """begin SC_${town}_Master
+    dontSaveObject
+    if ( menuMode )
+            return
+    elseif ( cellChanged )
+            set SC_offScheduleG to 0
+    elseif ( SC_${town}_State == 0 )
+            return
+    elseif ( SC_Reschedule )
+            set SC_${town}_State to -1
+            set SC_Reschedule to 0
+    elseif ( gamehour < 7 )
+            if ( SC_${town}_State != 4 )
+            set SC_Reschedule to 0
+                    set SC_${town}_State to 4
+                    startScript SC_${town}_4
+            endif
+            ${c4}startScript SC_${town}_C4
+            return
+    elseif ( gamehour < 12 )
+            if ( SC_${town}_State != 1 )
+            set SC_Reschedule to 0
+                    set SC_${town}_State to 1
+                    startScript SC_${town}_1
+            endif
+            return
+    elseif ( gamehour < 19 )
+            if ( SC_${town}_State != 2 )
+            set SC_Reschedule to 0
+                    set SC_${town}_State to 2
+                    startScript SC_${town}_2
+            endif
+            return
+    else
+            if ( SC_${town}_State != 3 )
+            set SC_Reschedule to 0
+                    set SC_${town}_State to 3
+                    startScript SC_${town}_3
+            endif
+            ${c3}startScript SC_${town}_C3
+            return
+    endif
+    end
+    """)
 
-#--Cycle
+# --Cycle
 scheduleCycle1 = (
-"""begin SC_${town}_${cycle}
-short action
-float timer
-if ( action == 0 ) ;--First pass
-elseif ( action == 20 ) ;--Terminate
-	set action to 0
-	set timer to 0
-	stopScript SC_${town}_${cycle}
-	return
-;--Action == 10
-elseif ( SC_${town}_State != ${cycle} )
-	set action to 20
-	return
-elseif ( getInterior )
-	return
-elseif ( timer < 0.5 )
-	set timer to timer + getSecondsPassed
-	return
-else ;--Second Pass
-	set action to 20
-endif
+    """begin SC_${town}_${cycle}
+    short action
+    float timer
+    if ( action == 0 ) ;--First pass
+    elseif ( action == 20 ) ;--Terminate
+            set action to 0
+            set timer to 0
+            stopScript SC_${town}_${cycle}
+            return
+    ;--Action == 10
+    elseif ( SC_${town}_State != ${cycle} )
+            set action to 20
+            return
+    elseif ( getInterior )
+            return
+    elseif ( timer < 0.5 )
+            set timer to timer + getSecondsPassed
+            return
+    else ;--Second Pass
+            set action to 20
+    endif
+    
+    if ( action == 0 )
+            ;messagebox "Starting SC_${town}_${cycle}"
+            if ( SC_PlayBells )
+                     playSound "SC_ScheduleSND"
+            endif
+    ${cycleCode}endif
+    
+    """)
 
-if ( action == 0 )
-	;messagebox "Starting SC_${town}_${cycle}"
-	if ( SC_PlayBells )
-		 playSound "SC_ScheduleSND"
-	endif
-${cycleCode}endif
-
-""")
-
-#--Sleep
+# --Sleep
 scheduleSleep0 = (
-"""begin SC_${town}_C${cycle}
-;--Null sleep script. Should never be run, but just in case...
-if ( cellChanged )
-	set SC_Sleep to 0
-	stopScript SC_${town}_C${cycle}
-endif
-end
-""")
+    """begin SC_${town}_C${cycle}
+    ;--Null sleep script. Should never be run, but just in case...
+    if ( cellChanged )
+            set SC_Sleep to 0
+            stopScript SC_${town}_C${cycle}
+    endif
+    end
+    """)
 
 scheduleSleep1 = (
-"""begin SC_${town}_C${cycle}
-short prevState
-
-if ( prevState != SC_${town}_State )
-	set prevState to SC_${town}_State
-	;Fall through
-elseif ( cellChanged == 0 )
-	return
-endif
-
-if ( SC_${town}_State != ${cycle} )
-	set SC_Sleep to 0
-	stopScript SC_${town}_C${cycle}
-""")
+    """begin SC_${town}_C${cycle}
+    short prevState
+    
+    if ( prevState != SC_${town}_State )
+            set prevState to SC_${town}_State
+            ;Fall through
+    elseif ( cellChanged == 0 )
+            return
+    endif
+    
+    if ( SC_${town}_State != ${cycle} )
+            set SC_Sleep to 0
+            stopScript SC_${town}_C${cycle}
+    """)
 
 scheduleSleep2 = (
-"""else
-	set SC_Sleep to 0
-	stopScript SC_${town}_C${cycle}
-endif
-end
-""")
+    """else
+            set SC_Sleep to 0
+            stopScript SC_${town}_C${cycle}
+    endif
+    end
+    """)
 
-#--Reset
+# --Reset
 scheduleReset0 = (
-"""begin SC_${project}_ResetGS
-;--Resets schedules to morning schedule for all towns.
-float timer
-short playBells
-set playBells to SC_PlayBells
-set SC_PlayBells to 0
-if ( timer < 0 )
-    set timer to timer + getSecondsPassed
-    return
-endif
-""")
+    """begin SC_${project}_ResetGS
+    ;--Resets schedules to morning schedule for all towns.
+    float timer
+    short playBells
+    set playBells to SC_PlayBells
+    set SC_PlayBells to 0
+    if ( timer < 0 )
+        set timer to timer + getSecondsPassed
+        return
+    endif
+    """)
 
 scheduleReset1 = (
-"""if ( SC_${town}_State > 0 )
-    messagebox "Resetting $town..."
-    startScript SC_${town}_1
-    set timer to -2.0
-endif
-""")
+    """if ( SC_${town}_State > 0 )
+        messagebox "Resetting $town..."
+        startScript SC_${town}_1
+        set timer to -2.0
+    endif
+    """)
 
 scheduleReset2 = (
-"""messagebox "All towns reset."
-set SC_PlayBells to playBells
-stopScript SC_${project}_ResetGS
-end""")
+    """messagebox "All towns reset."
+    set SC_PlayBells to playBells
+    stopScript SC_${project}_ResetGS
+    end""")
 
 # Defs
 scheduleDefs = """

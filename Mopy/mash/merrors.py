@@ -35,14 +35,15 @@
 # ======================================================================================
 
 
-from unimash import _
+from .unimash import _
 import sys, traceback
 
 
 def excHook(_tp, _vl, _tb):
     """More user friendly."""
     excMsg = ''.join(traceback.format_exception(_tp, _vl, _tb))
-    print excMsg
+    print()
+    excMsg
 
 
 sys.excepthook = excHook
@@ -114,8 +115,10 @@ class Tes3ReadError(Tes3Error):
         self.recType = recType
         self.tryPos = tryPos
         self.maxPos = maxPos
-        if tryPos < 0: message = (_(u'%s: Attempted to read before (%d) beginning of file/buffer.') % (recType, tryPos))
-        else: message = (_(u'%s: Attempted to read past (%d) end (%d) of file/buffer.') % (recType, tryPos, maxPos))
+        if tryPos < 0:
+            message = (_(u'%s: Attempted to read before (%d) beginning of file/buffer.') % (recType, tryPos))
+        else:
+            message = (_(u'%s: Attempted to read past (%d) end (%d) of file/buffer.') % (recType, tryPos, maxPos))
         Tes3Error.__init__(self, inName, message)
 
 
@@ -141,15 +144,17 @@ class Tes3SizeError(Tes3Error):
         self.readSize = readSize
         self.maxSize = maxSize
         self.exactSize = exactSize
-        if exactSize: messageForm = _(u'%s: Expected size == %d, but got: %d ')
-        else: messageForm = _(u'%s: Expected size <= %d, but got: %d ')
+        if exactSize:
+            messageForm = _(u'%s: Expected size == %d, but got: %d ')
+        else:
+            messageForm = _(u'%s: Expected size <= %d, but got: %d ')
         Tes3Error.__init__(self, inName, messageForm % (recName, readSize, maxSize))
 
 
 class Tes3UnknownSubRecord(Tes3Error):
     """TES3 Error: Unknown subrecord."""
 
-    def __init__(self,inName,subName,recName):
+    def __init__(self, inName, subName, recName):
         Tes3Error.__init__(self, inName, _(u'Extraneous subrecord (%s) in %s record.')
                            % (subName, recName))
 
@@ -174,7 +179,7 @@ class MashError(mError):
     """Mash Error: Unrecognized sort key."""
 
     def __init__(self, col=u'', message=_(u'Unrecognized sort key')):
-        if col is None: col=u''
+        if col is None: col = u''
         mError.__init__(self, u'%s%s%s' % (message, u': ' if col or col is None else u'.', col))
 
 

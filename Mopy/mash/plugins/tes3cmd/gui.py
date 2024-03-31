@@ -46,35 +46,45 @@ from ...plugins import tes3cmd
 from . import tes3cmdgui
 
 
-class OutputParserMixin:  # Polemos fixes
+class OutputParserMixin(object):  # Polemos fixes
     """This is a mixing to allow unit testing, as we cannot initiate Cleaner without a lot of faf with wx"""
 
     def ParseOutput(self, output, err, file):
         """Parses the output for a single mod."""
-        stats   = ''
+        stats = ''
         cleaned = ''
         inStats = False
 
         for line in output.split('\n'):
-            if inStats and line.strip(): stats += line.strip() + '\r\n'
-            elif line.strip().startswith('Cleaned'): cleaned += line.strip() + '\r\n'
-            elif line.strip().startswith('Cleaning Stats for'): inStats = True
-            elif line.strip().endswith('was not modified'): stats += line + '\r\n'
+            if inStats and line.strip():
+                stats += line.strip() + '\r\n'
+            elif line.strip().startswith('Cleaned'):
+                cleaned += line.strip() + '\r\n'
+            elif line.strip().startswith('Cleaning Stats for'):
+                inStats = True
+            elif line.strip().endswith('was not modified'):
+                stats += line + '\r\n'
         # Polemos: Added an error message when things go wrong. Hope I will not regret it...
         for line in err.split('\n'):
-            if line.strip().startswith('FATAL ERROR'): stats = 'Fatal Error: "%s"\r\n\r\nCheck Errors below for details.\r\n' % file
+            if line.strip().startswith(
+                'FATAL ERROR'): stats = 'Fatal Error: "%s"\r\n\r\nCheck Errors below for details.\r\n' % file
         return stats, cleaned
 
 
 class CleanOp(tes3cmdgui.cleanop):  # Polemos: todo: Implement this???
-    def __init__( self, parent ): tes3cmdgui.cleanop.__init__(self, parent)
-    def OnCancel( self, event ): pass
-    def OnCleanClick( self, event ): pass
+    def __init__(self, parent): tes3cmdgui.cleanop.__init__(self, parent)
+
+    def OnCancel(self, event): pass
+
+    def OnCleanClick(self, event): pass
+
 
 DONE_HEADER, DONE_CLEAN = range(2)  # One range to rule them all.
 
 # the thread that manages the threaded process uses wx events to post messsages to the main thread
 EVT_DONE_ID = wx.NewId()
+
+
 def EVT_DONE(win, func): win.Connect(-1, -1, EVT_DONE_ID, func)
 
 
@@ -112,7 +122,7 @@ class Cleaner(tes3cmdgui.cleaner, OutputParserMixin):
         self.output = {}
         EVT_DONE(self, self.OnDone)
 
-    #--------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
     def Start(self, callback=None):
         """Starts running tes3cmd over all the files
         callback - The function that is called when the process is complete"""
@@ -161,13 +171,15 @@ class Cleaner(tes3cmdgui.cleaner, OutputParserMixin):
         self.cleaner = tes3cmd.Threaded(callback=func)
         self.cleaner.clean([filename], **args)
 
-    #--------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
     # GUI clean event and event handlers
     def OnDone(self, event):
         """Called when a file has finished processing.
         Dispatches to the correct function depending on event type"""
-        if event.doneType == DONE_HEADER: self.DoneHeader()
-        elif event.doneType == DONE_CLEAN: self.DoneClean()
+        if event.doneType == DONE_HEADER:
+            self.DoneHeader()
+        elif event.doneType == DONE_CLEAN:
+            self.DoneClean()
 
     def DoneClean(self):
         """When the file has done cleaning, we then sync the headers"""
@@ -193,12 +205,12 @@ class Cleaner(tes3cmdgui.cleaner, OutputParserMixin):
             self.mCleanedMods.Select(0)
             self.Select(self.currentFile)
         tfLen = len(self.files)
-        ratio = (tfLen - len(self.remainingFiles))/float(tfLen)
-        self.mProgress.SetValue(ratio*100)
+        ratio = (tfLen - len(self.remainingFiles)) // float(tfLen)
+        self.mProgress.SetValue(ratio * 100)
         self.clean_mod_info_text.SetLabel(u'Cleaning Stats:')  # Polemos: cosmetic fix
         self.StartNext()
 
-    #--------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
     # GUI  skip and stop events
     def OnSkip(self, event):
         """When the skip button is pressed."""
@@ -213,7 +225,7 @@ class Cleaner(tes3cmdgui.cleaner, OutputParserMixin):
         self.cleaner.join()
         self.clean_mod_info_text.SetLabel(u'User aborted.')  # Polemos: cosmetic fix
 
-    #--------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
     # GUI list selection events to view the logs for a file
     def OnSelect(self, event):
         """ListBox select, selecting a mod to view the stats of."""
@@ -226,14 +238,17 @@ class Cleaner(tes3cmdgui.cleaner, OutputParserMixin):
         self.mLog.SetValue(item['cleaned'])
         self.mErrors.SetValue(item['error'])
 
-    #--------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
     # Log functions and save log button event
     def GetLog(self, fileName):  # Polemos fix.
         """Gets the log text for the given file name."""
         log = u''
-        try: o = self.output[fileName]
-        except: o = {u'output': u'tes3cmd clean skipping Morrowind.esm: Bethesda Master.\r\n Morrowind.esm was not modified\r\n',
-                     u'error': u'', u'stats': u'Morrowind.esm was not modified\n', u'cleaned': ''}
+        try:
+            o = self.output[fileName]
+        except:
+            o = {
+                u'output': u'tes3cmd clean skipping Morrowind.esm: Bethesda Master.\r\n Morrowind.esm was not modified\r\n',
+                u'error': u'', u'stats': u'Morrowind.esm was not modified\n', u'cleaned': ''}
         try:
             if o[u'error']: log += o[u'error'] + '\r\n'
         except:
@@ -256,11 +271,13 @@ class Cleaner(tes3cmdgui.cleaner, OutputParserMixin):
                 for fn in self.output.keys():
                     log.write(u'--%s--\r\n' % fn)
                     log.write((self.GetLog(fn)).decode('utf-8', errors='ignore').replace(
-                        '.esp"', '%s"' % fn).replace('.esm"', '%s"' % fn).replace('.esp w', '%s w' % fn).replace('.esm w', '%s w' % fn))
+                        '.esp"', '%s"' % fn).replace('.esm"', '%s"' % fn).replace('.esp w', '%s w' % fn).replace(
+                        '.esm w', '%s w' % fn))
 
     def OnSaveLog(self, event):
         """Event executor."""
-        dlg = wx.FileDialog(self, _(u'Save log'), singletons.MashDir, 'tes3cmd.log', '*.log', wx.FD_SAVE|wx.FD_OVERWRITE_PROMPT)
+        dlg = wx.FileDialog(self, _(u'Save log'), singletons.MashDir, 'tes3cmd.log', '*.log',
+                            wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT)
         if dlg.ShowModal() == wx.ID_OK:
             fileName = os.path.join(dlg.GetDirectory(), dlg.GetFilename())
             self.SaveLog(fileName)

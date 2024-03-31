@@ -24,7 +24,8 @@
 # ===========================================================================================
 
 
-import os, io, conf, singletons
+import os, io
+from . import conf, singletons
 
 
 def profilePaths():
@@ -36,7 +37,7 @@ def profilePaths():
     return {'profiledir': profiledir, 'profile': profile, 'mods': mods, 'confBcks': confBcks}
 
 
-class user_profile:  # Polemos
+class user_profile(object):  # Polemos
     """Wrye Mash User profile."""
 
     def __init__(self):
@@ -54,8 +55,10 @@ class user_profile:  # Polemos
                 for x in ['active.dat', 'bsa.dat', 'plugins.dat']:
                     target = os.path.join(self.profiledir, x)
                     if os.path.isfile(target):
-                        try: os.remove(target)
-                        except: pass
+                        try:
+                            os.remove(target)
+                        except:
+                            pass
         updPrVer = []
         for line in self.getdata('profile'):  # Update Wrye Mash version in profile
             mashVer = 'profver=%s' % self.mashVer
@@ -68,14 +71,17 @@ class user_profile:  # Polemos
 
     def getdata(self, data='profile'):
         """Method for easy data retrieval"""
-        if data == 'profile': return self.read(self.profile)
-        elif data == 'mods': return self.read(self.mods)
+        if data == 'profile':
+            return self.read(self.profile)
+        elif data == 'mods':
+            return self.read(self.mods)
 
     def checkactive(self):
         """Check if active profile files exist and act."""
-        try: profile = self.setprofile()
+        try:
+            profile = self.setprofile()
         except:
-            self.createdefault() # todo: add dialog to inform user
+            self.createdefault()  # todo: add dialog to inform user
             profile = self.setprofile()
         for x in profile:
             if not os.path.exists(x): return False  # todo: add dialog to inform user
@@ -91,14 +97,17 @@ class user_profile:  # Polemos
 
     def createdefault(self):
         """Create default files/dirs."""
-        try: self.setprofile()
-        except: pass # todo: add dialog to inform user
+        try:
+            self.setprofile()
+        except:
+            pass  # todo: add dialog to inform user
         try:
             if not os.path.exists(self.profiledir): os.makedirs(self.profiledir)
             if not os.path.isfile(self.profile): self.create(self.profile, text=self.defaultini())
             if not os.path.isfile(self.mods): self.create(self.mods)
             if not os.path.isdir(self.confBcks): os.makedirs(self.confBcks)
-        except: pass # todo: add dialog to inform user
+        except:
+            pass  # todo: add dialog to inform user
 
     def create(self, data, text=''):
         """Create method."""
@@ -115,9 +124,12 @@ class user_profile:  # Polemos
         """Return default.ini text."""
         openmw = conf.settings['openmw']
         tes3mp = conf.settings['tes3mp']
-        if not openmw: engine = 'Morrowind'
-        elif openmw and not tes3mp: engine = 'openmw'
-        elif openmw and tes3mp: engine = 'openmw_tes3mp'
+        if not openmw:
+            engine = 'Morrowind'
+        elif openmw and not tes3mp:
+            engine = 'openmw'
+        elif openmw and tes3mp:
+            engine = 'openmw_tes3mp'
         text = ('#   Wrye Mash Profile Data    #',
                 '[General]',
                 'profver=%s' % (self.mashVer),

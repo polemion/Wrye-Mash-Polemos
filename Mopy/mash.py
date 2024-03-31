@@ -37,6 +37,14 @@
 #
 # ========================================================================================
 
-import mash.bitver
-mash.bitver.wryeMashBitVer = ''
+import sys, os, mash.appinfo
+
+mash.appinfo.wryeMashBitVer = ''
+# Set current (true) Wrye Mash dir.
+if getattr(sys, 'frozen', False):  # Running frozen
+    mash.appinfo.MashDir = os.path.dirname(sys.executable)
+else:  # Running in a normal Python environment
+    mash.appinfo.MashDir = os.path.dirname(os.path.abspath(__file__))
+
+# Main
 import mash.mash
