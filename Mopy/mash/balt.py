@@ -50,6 +50,7 @@ import textwrap
 import time
 import wx
 from wx.lib.mixins.listctrl import ListCtrlAutoWidthMixin
+import wx.adv as wxadv
 
 # Constants
 defId = -1
@@ -320,27 +321,27 @@ def spinCtrl(parent, value='', pos=defPos, size=defSize, style=wx.SP_ARROW_KEYS,
 
 def leftSash(parent, defaultSize=(100, 100), onSashDrag=None):
     """Creates a left sash window."""
-    sash = wx.SashLayoutWindow(parent, style=wx.SW_3D)
+    sash = wxadv.SashLayoutWindow(parent, style=wxadv.SW_3D)
     sash.SetDefaultSize(defaultSize)
-    sash.SetOrientation(wx.LAYOUT_VERTICAL)
-    sash.SetAlignment(wx.LAYOUT_LEFT)
-    sash.SetSashVisible(wx.SASH_RIGHT, True)
+    sash.SetOrientation(wxadv.LAYOUT_VERTICAL)
+    sash.SetAlignment(wxadv.LAYOUT_LEFT)
+    sash.SetSashVisible(wxadv.SASH_RIGHT, True)
     if onSashDrag:
         id = sash.GetId()
-        sash.Bind(wx.EVT_SASH_DRAGGED_RANGE, onSashDrag, id=id, id2=id)
+        sash.Bind(wxadv.EVT_SASH_DRAGGED_RANGE, onSashDrag, id=id, id2=id)
     return sash
 
 
 def topSash(parent, defaultSize=(100, 100), onSashDrag=None):
     """Creates a top sash window."""
-    sash = wx.SashLayoutWindow(parent, style=wx.SW_3D)
+    sash = wxadv.SashLayoutWindow(parent, style=wxadv.SW_3D)
     sash.SetDefaultSize(defaultSize)
-    sash.SetOrientation(wx.LAYOUT_HORIZONTAL)
-    sash.SetAlignment(wx.LAYOUT_TOP)
-    sash.SetSashVisible(wx.SASH_BOTTOM, True)
+    sash.SetOrientation(wxadv.LAYOUT_HORIZONTAL)
+    sash.SetAlignment(wxadv.LAYOUT_TOP)
+    sash.SetSashVisible(wxadv.SASH_BOTTOM, True)
     if onSashDrag:
         id = sash.GetId()
-        sash.Bind(wx.EVT_SASH_DRAGGED_RANGE, onSashDrag, id=id, id2=id)
+        sash.Bind(wxadv.EVT_SASH_DRAGGED_RANGE, onSashDrag, id=id, id2=id)
     return sash
 
 

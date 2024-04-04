@@ -3135,7 +3135,8 @@ class FileInfo(object):  # Polemos: OpenMW/TES3mp support
         try:
             ins = Tes3Reader(self.name, open(path, 'rb'))
             (name, size, delFlag, recFlag) = ins.unpackRecHeader()
-            if name != 'TES3': raise Tes3Error(self.name, _('Expected TES3, but got ') + name)
+            if name != 'TES3'.encode('ascii'):
+                raise Tes3Error(self.name, _('Expected TES3, but got ') + name)
             self.tes3 = Tes3(name, size, delFlag, recFlag, ins, True)
         except struct.error as rex:
             ins.close()

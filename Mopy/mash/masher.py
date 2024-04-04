@@ -5764,7 +5764,7 @@ class MashApp(object):
         self.InitData()
         self.InitVersion()
         # --Locale
-        wx.Locale(wx.LOCALE_LOAD_DEFAULT)
+        wx.Locale(wx.LANGUAGE_DEFAULT)
         # --WMFrame
         frame = MashFrame(pos=conf.settings['mash.framePos'], size=conf.settings['mash.frameSize'])
         self.SetTopWindow(frame)
@@ -5979,7 +5979,7 @@ class MashApp(object):
 
     def InitVersion(self):
         """Perform any version to version conversion. Called by OnInit()."""
-        version = conf.settings['mash.version']
+        version = conf.settings['mash.version'][0]
         # --Version 0.42: MTimes from settings to ModInfos.table.
         if version < 42:
             mtimeKey = 'mosh.modInfos.mtimes'
