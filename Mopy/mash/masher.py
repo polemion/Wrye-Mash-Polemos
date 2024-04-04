@@ -5995,8 +5995,7 @@ class MashApp(object):
             for fileName in colGenre.keys():
                 colGroup[fileName] = colGenre[fileName]
                 del colGenre[fileName]
-                print
-                fileName
+                print(fileName)
             if conf.settings['mash.mods.sort'] == 'Genre': conf.settings['mash.mods.sort'] = 'Group'
             colWidths = conf.settings['mash.mods.colWidths']
             if 'Genre' in colWidths:
@@ -12286,5 +12285,5 @@ def InitLinks_no_col_menu():  # Polemos: For "Menubar".
 
 
 # Main ------------------------------------------------------------------------ #
-if __name__ == '__main__': print
-'Compiled'
+if __name__ == '__main__':
+    print('Compiled')

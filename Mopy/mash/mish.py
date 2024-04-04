@@ -89,8 +89,7 @@ class Callables(object):
             return
         # --Not have key?
         if callKey not in callObjs:
-            print
-            "Unknown function/object:", callKey
+            print("Unknown function/object:", callKey)
             return
         # --Callable
         callObj = callObjs[callKey]
@@ -341,8 +340,7 @@ def getTranslatorName():
     """Prints locale."""
     import locale
     language = locale.getlocale()[0].split('_', 1)[0]
-    print
-    "Your translator file is: Mopy\\locale\\%s.txt" % (language,)
+    print("Your translator file is: Mopy\\locale\\%s.txt" % (language,))
 
 
 @mainFunction
@@ -371,8 +369,7 @@ def dumpTranslator():
                         outFile.write('\n')
                         dumpedKeys.add(key)
                         keyCount += 1
-    print
-    keyCount, 'translation keys written to', outPath
+    print(keyCount, 'translation keys written to', outPath)
 
 
 # Testing
@@ -446,12 +443,10 @@ def refInfo(fileName, forMods=-1, forCellId=None):
         for object in objects:
             if forMods != -1 and forMods != object[0]: continue
             if printCell:
-                print
-                printCell
+                print(printCell)
                 printCell = False
             master = object[0] and masters[object[0] - 1][0]
-            print
-            ' ', object[:3], master
+            print(' ', object[:3], master)
 
 
 # Misc.
@@ -499,8 +494,7 @@ def fixFix(fileName):  # --Fix fix operator.
             if rePointer.search(oldCode):
                 newCode = rePointer.sub('->', oldCode)
                 script.setCode(newCode)
-                print
-                script.id
+                print(script.id)
         fileRep.safeSave()
     # --Fix dialog scripts
     if True:
@@ -511,14 +505,10 @@ def fixFix(fileName):  # --Fix fix operator.
                 for record in info.records:
                     if record.name != 'BNAM': continue
                     if rePointer.search(record.data):
-                        print
-                        dial.id
-                        print
-                        ' ', info.text
-                        print
-                        ' ', record.data
-                        print
-                        record.setData(rePointer.sub('->', record.data))
+                        print(dial.id)
+                        print(' ', info.text)
+                        print(' ', record.data)
+                        print(record.setData(rePointer.sub('->', record.data)))
                         info.setChanged()
                         break
         fileDials.safeSave()
@@ -530,10 +520,8 @@ def lcvNightSort():  # Edit Plus Text Editors
     for line in lines:
         line = re.sub('@ night', '@ evening', line)
         line = re.sub(r'[\*\+] \.', '^ .', line)
-        print
-        line,
-    for line in lines: print
-    line,
+        print(line,)
+    for line in lines: print(line,)
 
 
 @mainFunction
@@ -605,8 +593,7 @@ def etxtToWtxt(fileName=None):
         line = re.sub(r'~([^ ].+?)~', r'~~\1~~', line)
         line = re.sub(r'_([^ ].+?)_', r'__\1__', line)
         line = re.sub(r'\*([^ ].+?)\*', r'**\1**', line)
-        print
-        line,
+        print(line,)
 
 
 @mainFunction
@@ -639,8 +626,7 @@ def temp(fileName):
 
     # --Loop over dials
     for dial in fileDials.dials:
-        print
-        dial.id
+        print(dial.id)
         for info in dial.infos:
             # --Change id?
             if info.spId == 'wr_mysMenu_s':
@@ -659,15 +645,12 @@ def temp(fileName):
                         if test.value == 0 and test.oper == 0:
                             test.text = 'menu'
                             test.value = -1
-                            print
-                            ' modder >> menu'
+                            print(' modder >> menu')
                         else:
                             info.tests[index] = 0
-                            print
-                            ' modder X'
+                            print(' modder X')
                     elif test.text in replKeys:
-                        print
-                        '', test.text, repls[test.text]
+                        print('', test.text, repls[test.text])
                         test.text = repls[test.text]
                 # --Result
                 if info.script:
@@ -675,8 +658,7 @@ def temp(fileName):
                     newScript = reStartScript.sub('player->startScript', newScript)
                     if newScript != info.script:
                         info.script = newScript
-                        print
-                        ' script subbed'
+                        print(' script subbed')
                 info.setChanged()
     fileDials.safeSave()
 

@@ -1398,8 +1398,7 @@ class MainFunctions(object):
         key = attrs.pop(0)
         func = self.funcs.get(key)
         if not func:
-            print
-            _(u'Unknown function/object:'), key
+            print(_(u'Unknown function/object:'), key)
             return
         for attr in attrs: func = getattr(func, attr)
         # --Separate out keywords args
@@ -1873,8 +1872,7 @@ def deprint(*args, **keyargs):
     import inspect
     stack = inspect.stack()
     file, line, function = stack[1][1:4]
-    print
-    '%s %4d %s: %s' % (GPath(file).tail.s, line, function, ' '.join(map(str, args)))
+    print('%s %4d %s: %s' % (GPath(file).tail.s, line, function, ' '.join(map(str, args))))
 
 
 def delist(header, items, on=False):

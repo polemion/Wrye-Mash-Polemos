@@ -7510,20 +7510,17 @@ class FileLibrary(FileRep):
         altIds = set([altId for srcId, altId in self.libMap.values()])
         factory = {'BOOK': Book}
         for modName in mwIniFile.loadOrder:
-            print
-            modName
+            print(modName)
             fileRep = FileRep(modInfos[modName], False)
             fileRep.load(keepTypes=None, factory=factory)
             for record in fileRep.records:
                 if record.name == 'BOOK':
                     bookId = record.getId()
                     if bookId in srcIds:
-                        print
-                        '', bookId
+                        print('', bookId)
                         self.srcBooks[bookId] = (record, modName)
                     elif bookId in altIds:
-                        print
-                        '', bookId
+                        print('', bookId)
                         self.altBooks[bookId] = (record, modName)
 
     def copyBooks(self):
@@ -7549,8 +7546,7 @@ class FileLibrary(FileRep):
             (srcId, altId) = self.libMap[libId]
             srcBook = self.srcBooks.get(srcId)[0]
             if not srcBook:
-                print
-                '%s: Missing source: %s' % (libId, srcId)
+                print('%s: Missing source: %s' % (libId, srcId))
                 continue
             # --Global
             glob = self.getRecord('GLOB', libId + 'G', Glob)
@@ -7833,15 +7829,13 @@ class CharSetImporter(object):
         from . import mush
         skills = mush.combatSkills + mush.magicSkills + mush.stealthSkills
         for className, stats in sorted(self.classStats.items()):
-            print
-            className, '-------------------------------'
+            print(className, '-------------------------------')
             skillStats = [(key, value) for key, value in stats.items() if key in skills]
             skillStats.sort(key=lambda a: a[1][1], reverse=True)
             for low, high in ((0, 5), (5, 10)):
                 for skill, stat in sorted(skillStats[low:high]):
-                    print
-                    '%-13s  %3d' % (skill, stat[1])
-                print
+                    print('%-13s  %3d' % (skill, stat[1]))
+                print()
 
     def save(self, fileInfo):
         """Add charset scripts to esp."""
@@ -7851,8 +7845,7 @@ class CharSetImporter(object):
         fileRep.indexRecords({'SCPT'})
         # --Add scripts
         for className in self.classStats.keys():
-            print
-            className
+            print(className)
             id = 'wr_lev%sGS' % (className,)
             script = fileRep.getRecord('SCPT', id, Scpt)
             script.setCode(self.getScript(className))
@@ -8365,5 +8358,5 @@ def initSettings():
 
 
 # Main ------------------------------------------------------------------------ #
-if __name__ == '__main__': print
-'Compiled'
+if __name__ == '__main__':
+    print('Compiled')
