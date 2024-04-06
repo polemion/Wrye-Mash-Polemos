@@ -26,3 +26,4 @@
 wryeMashBitVer = ''
 MashDir = ''
 appName = 'WryeMash'
+app = None

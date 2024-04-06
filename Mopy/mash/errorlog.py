@@ -44,7 +44,8 @@ The startup code redirects stdin/stderr to a file, so this class allows provides
 import sys, wx, os, io
 from .unimash import _, uniChk as uniChk
 from . import conf, singletons
-from gui import dialog as gui
+from .gui import dialog as gui
+from . import appinfo
 
 dPos = wx.DefaultPosition
 dSize = wx.DefaultSize
@@ -108,9 +109,12 @@ class ErrorLog(wx.Dialog):  # Polemos
             u'Really force Wrye Mash to quit?\n\nDo this only if Wrye Mash is stuck ad infinitum in the debug log!!!')
         if gui.WarningQuery(self, warning, _(u'Are you sure?')) == wx.ID_NO: return
         self.Destroy()
-        # Polemos: This is not a graceful exit. We could have exited gracefully by calling "self.parent.OnCloseWindow(None)" but
-        # this may introduce undesired side-effects (conf corruption for example).
+        try:
+            if self.parent.IsIconized(): self.parent.sysTray.onExit()
+        except:
+            pass
         self.parent.Destroy()
+        appinfo.app.ExitMainLoop()
         sys.exit(0)
 
     def savelog(self, event):

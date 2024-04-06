@@ -77,7 +77,7 @@ settings = None
 # --Default settings
 settingDefaults = {
     'mosh.modInfos.resetMTimes': 0,
-    'mosh.modInfos.objectMaps': r'Mash\ObjectMaps.pkl',
+    'mosh.modInfos.objectMaps': r'Mash\ObjectMapsPy3.pkl',
     'mosh.fileInfo.backupDir': r'Mash\Backups',
     'mosh.fileInfo.hiddenDir': r'Mash\Hidden',
     'mosh.fileInfo.snapshotDir': r'Mash\Snapshots',
@@ -115,7 +115,7 @@ def megethos(num):  # Polemos
 class Settings(object):  # Polemos: Added revert to backup configuration.
     """Settings dictionary. Changes are saved to pickle file."""
 
-    def __init__(self, confFile='settings.pkl'):
+    def __init__(self, confFile='settingsPy3.pkl'):
         """Initialize. Read settings from pickle file."""
         self.confFile = os.path.join(MashDir, confFile)
         self.changed = []
@@ -3135,7 +3135,7 @@ class FileInfo(object):  # Polemos: OpenMW/TES3mp support
         try:
             ins = Tes3Reader(self.name, open(path, 'rb'))
             (name, size, delFlag, recFlag) = ins.unpackRecHeader()
-            if name != 'TES3'.encode('ascii'):
+            if name != 'TES3'.encode('utf-8'):
                 raise Tes3Error(self.name, _('Expected TES3, but got ') + name.encode('utf-8', errors='replace'))
             self.tes3 = Tes3(name, size, delFlag, recFlag, ins, True)
         except struct.error as rex:
@@ -3325,9 +3325,9 @@ class FileInfos(object):  # + OpenMW/TES3mp support
         self.factory = factory
         self.data = {}
         if not self.OpenMW:  # Morrowind support
-            self.table = Table(os.path.join(self.dir, 'Mash', 'Table.pkl'))
+            self.table = Table(os.path.join(self.dir, 'Mash', 'TablePy3.pkl'))
         if self.OpenMW:  # OpenMW/TES3mp support
-            self.table = Table(os.path.join(MashDir, 'openmw', 'Table.pkl'))
+            self.table = Table(os.path.join(self.dir, 'openmw', 'TablePy3.pkl'))
         self.corrupted = {}  # --errorMessage = corrupted[fileName]
 
     # --Dictionary Emulation
@@ -8312,7 +8312,7 @@ def initDirs():  # Polemos fixes, changes + OpenMW/TES3mp support
 
 
 def mashini_read():  # Polemos: Make mash.ini an override.
-    """Read Mash.ini and get installers loc. It overrides settings.pkl"""
+    """Read Mash.ini and get installers loc. It overrides settingsX.pkl"""
     # Polemos: Mash.ini produces more problems than benefits. Deactivated for now.
     defaultini()
 
@@ -8344,7 +8344,7 @@ def mashini_read():  # Polemos: Make mash.ini an override.
 
 def initSettings():
     global settings
-    settings = Settings('settings.pkl')
+    settings = Settings('settingsPy3.pkl')
     res = True if settings.data else False
     reWryeMash = re.compile('^wrye\.mash')
     for key in settings.data.keys():

@@ -42,8 +42,7 @@ import sys, traceback
 def excHook(_tp, _vl, _tb):
     """More user friendly."""
     excMsg = ''.join(traceback.format_exception(_tp, _vl, _tb))
-    print()
-    excMsg
+    print(excMsg)
 
 
 sys.excepthook = excHook

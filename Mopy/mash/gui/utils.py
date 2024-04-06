@@ -102,11 +102,11 @@ class UtilsPanel(gui.NotebookPanel):  # Polemos: changes and fixes.
         wMin, wMax = 80, self.GetSizeTuple()[0] - 80
         sashPos = max(wMin, min(wMax, event.GetDragRect().width))
         self.left.SetDefaultSize((sashPos, 10))
-        wx.LayoutAlgorithm().LayoutWindow(self, self.right)
+        wxadv.LayoutAlgorithm().LayoutWindow(self, self.right)
         conf.settings['mash.utils.sashPos'] = sashPos
 
     def OnSize(self, event=None):
-        wx.LayoutAlgorithm().LayoutWindow(self, self.right)
+        wxadv.LayoutAlgorithm().LayoutWindow(self, self.right)
 
     def OnShow(self):
         """Panel is shown. Update self.data."""

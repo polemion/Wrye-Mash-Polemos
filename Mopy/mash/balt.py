@@ -1277,7 +1277,7 @@ class Tank(wx.Panel):  # Polemos: Edits
     def MouseEffect(self, item):  # Polemos: Added a small effect.
         """Handle mouse over item by showing tip or similar."""
         if conf.settings['interface.lists.color']:
-            from gui import interface
+            from .gui import interface
             try:
                 self.gList.SetItemTextColour(item, interface.style['mouse.hover'])
                 self.gList.SetItemTextColour(self.prev_item[0], self.prev_item[1])
@@ -1298,7 +1298,7 @@ class Tank(wx.Panel):  # Polemos: Edits
 
     def OnSize(self, event):
         """Panel size was changed. Change gList size to match."""
-        size = self.GetClientSizeTuple()
+        size = self.GetClientSize()
         self.gList.SetSize(size)
 
     def OnScroll(self, event):

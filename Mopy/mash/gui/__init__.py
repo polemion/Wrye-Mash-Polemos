@@ -397,7 +397,7 @@ class List(wx.Panel):  # Polemos: Additions.
 
     def OnSize(self, event):
         """Size Change"""
-        size = self.GetClientSizeTuple()
+        size = self.GetClientSize()
         self.list.SetSize(size)
 
     def OnLeftDown(self, event):

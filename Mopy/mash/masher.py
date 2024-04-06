@@ -67,6 +67,7 @@ from .mosh import formatInteger, formatDate, ResetTempDir
 from subprocess import Popen
 from .unimash import n_path, uniChk, fChk, uniformatDate
 from .merrors import MashError as MashError
+from wx import adv as wxadv
 
 # Constants
 DETACHED_PROCESS = 0x00000008  # Polemos: No console window.
@@ -103,12 +104,15 @@ class IdListIterator(object):
         """Iterator method."""
         return self
 
-    def next(self):
+    def __next__(self):
         """Iterator method."""
         if self.prevId >= self.lastId:
-            return
+            raise StopIteration
         self.prevId += 1
         return self.prevId
+
+    # Monkey patching
+    next = __next__
 
 
 class IdList(object):
@@ -427,11 +431,11 @@ class SashTankPanel(gui.NotebookPanel):
         wMin, wMax = 80, self.GetSizeTuple()[0] - 80
         sashPos = max(wMin, min(wMax, event.GetDragRect().width))
         self.left.SetDefaultSize((sashPos, 10))
-        wx.LayoutAlgorithm().LayoutWindow(self, self.right)
+        wxadv.LayoutAlgorithm().LayoutWindow(self, self.right)
         self.data.setParam('sashPos', sashPos)
 
     def OnSize(self, event=None):
-        wx.LayoutAlgorithm().LayoutWindow(self, self.right)
+        wxadv.LayoutAlgorithm().LayoutWindow(self, self.right)
 
     def OnCloseWindow(self):
         """To be called when containing frame is closing. Use for saving data, scrollpos, etc."""
@@ -2216,8 +2220,8 @@ class ModDetails(
             tbarSizer = wx.BoxSizer(wx.HORIZONTAL)
             tbarSizer.SetMinSize(wx.Size(170, 24))
             tbarSizer.AddMany([(info_sizer, 1, wx.ALIGN_CENTER | wx.RIGHT | wx.LEFT, 1),
-                               (self.restore_btn, 0, wx.ALIGN_RIGHT | wx.RIGHT | wx.LEFT, 2),
-                               (self.backup_btn, 0, wx.ALIGN_RIGHT | wx.RIGHT | wx.LEFT, 2)])
+                               (self.restore_btn, 0, wx.RIGHT | wx.LEFT, 2),
+                               (self.backup_btn, 0, wx.RIGHT | wx.LEFT, 2)])
             # DateTime sizer
             dtSizer = wx.BoxSizer(wx.HORIZONTAL)
             dtSizer.AddMany([(self.modified, 1, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5),
@@ -2233,7 +2237,7 @@ class ModDetails(
             self.SetSizer(mainSizer)
             mainSizer.AddMany([(tbarSizer, 0, wx.EXPAND, 5), (modSizer, 0, wx.EXPAND), self.file, self.author,
                                (dtSizer, 0, wx.EXPAND), self.description, (self.masters, 1, wx.EXPAND),
-                               (mstrSizer, 0, wx.EXPAND | wx.TOP | wx.ALIGN_CENTER, 4)])
+                               (mstrSizer, 0, wx.EXPAND | wx.TOP, 4)])
         if True:  # Events
             self.restore_btn.Bind(wx.EVT_BUTTON, self.restore)
             self.backup_btn.Bind(wx.EVT_BUTTON, self.backup)
@@ -3377,7 +3381,7 @@ class InstallersPanel(SashTankPanel):  # Polemos: Refactored, changes, store/res
                 ), 1, wx.GROW | wx.TOP, 4),
                 (self.gCommentstxt, 0, wx.TOP, 4),
                 (self.gComments, 1, wx.GROW | wx.TOP, 4), ))
-            wx.LayoutAlgorithm().LayoutWindow(self, right)
+            wxadv.LayoutAlgorithm().LayoutWindow(self, right)
             self.gComments.Disable()
         if True:  # Theming
             self.gPackage.SetBackgroundColour(self.GetBackgroundColour())
@@ -3386,8 +3390,8 @@ class InstallersPanel(SashTankPanel):  # Polemos: Refactored, changes, store/res
         if True:  # Events
             self.Bind(wx.EVT_TIMER, self.onUpdate, self.instTimer)
             self.instTimer.Start(300)
-            self.rPackBtn.Bind(wx.wx.EVT_BUTTON, self.onInstOrdR)
-            self.sPackBtn.Bind(wx.wx.EVT_BUTTON, self.onInstOrdS)
+            self.rPackBtn.Bind(wx.EVT_BUTTON, self.onInstOrdR)
+            self.sPackBtn.Bind(wx.EVT_BUTTON, self.onInstOrdS)
             self.gList.gList.Bind(wx.EVT_LIST_COL_RIGHT_CLICK, self.DoColumnMenu)
             self.gNotebook.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED, self.OnShowInfoPage)
             [x[0].Bind(wx.EVT_ENTER_WINDOW, self.hoverInCtrl) for x in self.infoPages]
@@ -4053,7 +4057,7 @@ class ScreensPanel(gui.NotebookPanel):
         singletons.screensList.picture = balt.Picture(right, 1024, 768)
         # --Layout
         right.SetSizer(hSizer((singletons.screensList.picture, 1, wx.GROW)))
-        wx.LayoutAlgorithm().LayoutWindow(self, right)
+        wxadv.LayoutAlgorithm().LayoutWindow(self, right)
         # --Event
         self.Bind(wx.EVT_SIZE, self.OnSize)
 
@@ -4067,12 +4071,12 @@ class ScreensPanel(gui.NotebookPanel):
         wMin, wMax = 80, self.GetSizeTuple()[0] - 80
         sashPos = max(wMin, min(wMax, event.GetDragRect().width))
         self.left.SetDefaultSize((sashPos, 10))
-        wx.LayoutAlgorithm().LayoutWindow(self, self.right)
+        wxadv.LayoutAlgorithm().LayoutWindow(self, self.right)
         singletons.screensList.picture.Refresh()
         conf.settings['mash.screens.sashPos'] = sashPos
 
     def OnSize(self, event=None):
-        wx.LayoutAlgorithm().LayoutWindow(self, self.right)
+        wxadv.LayoutAlgorithm().LayoutWindow(self, self.right)
 
     def OnShow(self):
         """Panel is shown. Update self.data."""
@@ -4370,6 +4374,7 @@ class MashFrame(wx.Frame):  # Polemos: Added a Menubar, OpenMW/TES3mp support, m
         except:
             pass
         self.Destroy()
+        appinfo.app.ExitMainLoop()
 
 
 # ------------------------------------------------------------------------------
@@ -5767,7 +5772,7 @@ class MashApp(object):
         wx.Locale(wx.LANGUAGE_DEFAULT)
         # --WMFrame
         frame = MashFrame(pos=conf.settings['mash.framePos'], size=conf.settings['mash.frameSize'])
-        self.SetTopWindow(frame)
+        appinfo.app.SetTopWindow(frame)
         frame.Show()
         # --Error log
         from . import errorlog

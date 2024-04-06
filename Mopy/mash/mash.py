@@ -73,7 +73,10 @@ class ErrorLogger(object):
 
     def write(self, message):
         """Write message to the log."""
-        self.log.write(message)
+        if 'Traceback' in message:
+            message = '%s: [Error] %s' % (datetime.now(), message)
+        if message:
+            self.log.write(message)
         self.flush()
 
     def flush(self):
@@ -107,10 +110,10 @@ excode = 0
 print('%s: %s' % (datetime.now(), logStart))
 try:
     from . import masher
-    app = MyApp(False)
+    appinfo.app = MyApp(False)
     main = masher.MashApp()
     if main.OnInit():
-        app.MainLoop()
+        appinfo.app.MainLoop()
     else:
         print('%s: [Error] %s failed to initialise. Exiting...' % (datetime.now(), appinfo.appName))
         excode = 1

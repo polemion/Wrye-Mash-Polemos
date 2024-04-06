@@ -85,8 +85,7 @@ prog_resources = ['.\\7zip\\x64\\7z.exe',
 
 # Remove old 'build' folder
 if os.access('.\\build', os.F_OK):
-    print()
-    'Deleting old build folder...'
+    print('Deleting old build folder...')
     for root, dirs, files in os.walk('.\\build', topdown=False):
         [os.remove(os.path.join(root, name)) for name in files]
         [os.rmdir(os.path.join(root, name)) for name in dirs]

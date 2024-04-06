@@ -99,7 +99,7 @@ if locale.getlocale() == (None, None):  # Todo: Pos for Phoenix
         locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')  # Statistics...
 language = locale.getlocale()[0].split('_', 1)[0]
 if language.lower() == 'german': language = 'de'  # --Hack for German speakers who aren't 'DE'.
-languagePkl, languageTxt = (os.path.join('locale', language + ext) for ext in ('.pkl', '.txt'))
+languagePkl, languageTxt = (os.path.join('locale', language + 'Py3' + ext) for ext in ('.pkl', '.txt'))
 
 # --Recompile pkl file?
 if os.path.exists(languageTxt) and (
