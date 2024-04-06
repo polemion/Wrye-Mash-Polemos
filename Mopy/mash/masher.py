@@ -7028,7 +7028,7 @@ class File_Remove_Refs(object):
         self.removers = conf.settings['mash.refRemovers.data']
 
     def GetItems(self):
-        items = self.removers.keys()
+        items = list(self.removers.keys())
         items.sort(key=lambda x: x.casefold())
         return items
 
@@ -7177,7 +7177,7 @@ class File_Replace_Refs(object):
         self.replacers = conf.settings['mash.refReplacers.data']
 
     def GetItems(self):
-        items = self.replacers.keys()
+        items = list(self.replacers.keys())
         items.sort(key=lambda x: x.casefold())
         return items
 
@@ -8753,7 +8753,7 @@ class Mods_LoadList(object):  # Polemos: Added compability with menubar, optimiz
 
     def GetItems(self):
         """Return sorted mod items."""
-        items = self.data.keys()
+        items = list(self.data.keys())
         items.sort(key=lambda x: x.casefold())
         return items
 
@@ -10395,7 +10395,7 @@ class Mods_custom_menu_item(object):  # Polemos
     def GetItems(self):
         self.refresh()
         if self.data != {}:
-            items = self.data.keys()
+            items = list(self.data.keys())
             items.sort(key=lambda x: x.casefold())
             return items
 

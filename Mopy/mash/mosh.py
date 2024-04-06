@@ -3382,7 +3382,7 @@ class FileInfos(object):  # + OpenMW/TES3mp support
 
     def refresh_OpenMW(self):
         data = self.data
-        oldList = data.keys()
+        oldList = list(data.keys())
         newList = []
         added = []
         updated = []
@@ -3434,7 +3434,7 @@ class FileInfos(object):  # + OpenMW/TES3mp support
 
     def refresh_Morrowind(self):
         data = self.data
-        oldList = data.keys()
+        oldList = list(data.keys())
         newList = []
         added = []
         updated = []
@@ -3818,7 +3818,7 @@ class ModInfos(FileInfos):
         if isinstance(fileNames, str):
             fileNames = [fileNames]
         # --Load masters
-        modFileNames = self.keys()
+        modFileNames = list(self.keys())
         for x in fileNames:
             if x not in self.data: continue  # Polemos fix: In case a mod is missing
             for master, size in self[x].tes3.masters:
@@ -5796,7 +5796,7 @@ class InstallersData(bolt.TankData, DataDict):  # Polemos fixes
     def getSorted(self, column, reverse):
         """Returns items sorted according to column and reverse."""
         data = self.data
-        items = data.keys()
+        items = list(data.keys())
         if column == 'Package':
             items.sort(reverse=reverse)
         elif column == 'Files':
@@ -6695,12 +6695,12 @@ class FileRefs(FileRep):
         # --Masters
         self.tes3.masters = newMasters
         # --File mapping
-        modMapKeys = modMap.keys()
+        modMapKeys = list(modMap.keys())
         # --Remap iObjs
         cells_id = self.cells_id
         reObjNum = re.compile('[0-9A-Z]{8}$')
         for (iMod, objMap) in objMaps:
-            cellIds = objMap.keys()
+            cellIds = list(objMap.keys())
             for cellId in cellIds:
                 cellObjMap = objMap[cellId]
                 # --Save

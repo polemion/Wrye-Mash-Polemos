@@ -253,7 +253,7 @@ class List(wx.Panel):  # Polemos: Additions.
 
     def GetItems(self):
         """Set and return self.items."""
-        self.items = self.data.keys()
+        self.items = list(self.data.keys())
         return self.items
 
     def PopulateItems(self, col=None, reverse=-2, selected='SAME'):
