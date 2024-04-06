@@ -1199,8 +1199,8 @@ class Tank(wx.Panel):  # Polemos: Edits
         data.setParam('colSort', column)
         # --Sort
         items = self.data.getSorted(column, reverse)
-        sortDict = dict((self.item_itemId[y], x) for x, y in enumerate(items))
-        self.gList.SortItems(key=lambda x: sortDict[x])
+        sortDict = {self.item_itemId[y]: x for x, y in enumerate(items)}
+        self.gList.SortItems(lambda x: sortDict[x])
         # --Done
         self.mouseTexts.clear()
 

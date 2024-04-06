@@ -2160,14 +2160,14 @@ class ModDetails(
             # Toolbar: Restore Button
             self.restore_btn = wx.BitmapButton(self, wx.ID_ANY, singletons.images['mod.open'].GetBitmap(), DPOS, DSIZE,
                                                0 | ADRW)
-            self.restore_btn.SetBitmapSelected(singletons.images['mod.open'].GetBitmap())
-            self.restore_btn.SetBitmapHover(singletons.images['mod.open.onhov'].GetBitmap())
+            self.restore_btn.SetBitmapPressed(singletons.images['mod.open'].GetBitmap())
+            self.restore_btn.SetBitmapCurrent(singletons.images['mod.open.onhov'].GetBitmap())
             self.restore_btn.SetToolTip(wx.ToolTip(_(u'Restore Mod Order')))
             # Toolbar: Backup Button
             self.backup_btn = wx.BitmapButton(self, wx.ID_ANY, singletons.images['mod.save'].GetBitmap(), DPOS, DSIZE,
                                               0 | ADRW)
-            self.backup_btn.SetBitmapSelected(singletons.images['mod.save'].GetBitmap())
-            self.backup_btn.SetBitmapHover(singletons.images['mod.save.onhov'].GetBitmap())
+            self.backup_btn.SetBitmapPressed(singletons.images['mod.save'].GetBitmap())
+            self.backup_btn.SetBitmapCurrent(singletons.images['mod.save.onhov'].GetBitmap())
             self.backup_btn.SetToolTip(wx.ToolTip(_(u'Backup Mod Order')))
             # File/Version Static Text
             self.version = wx.StaticText(self, -1, u'v0.0')
@@ -2196,8 +2196,8 @@ class ModDetails(
             # Master Menu Button
             self.master_btn = wx.BitmapButton(self, wx.ID_ANY, singletons.images['master.menu'].GetBitmap(), DPOS,
                                               DSIZE, ADRW)
-            self.master_btn.SetBitmapSelected(singletons.images['master.menu'].GetBitmap())
-            self.master_btn.SetBitmapHover(singletons.images['master.menu.onhov'].GetBitmap())
+            self.master_btn.SetBitmapPressed(singletons.images['master.menu'].GetBitmap())
+            self.master_btn.SetBitmapCurrent(singletons.images['master.menu.onhov'].GetBitmap())
             self.master_btn.SetToolTip(wx.ToolTip(_(u'Masters Menu')))
             self.master_btn.Disable()
             # Buttons
@@ -2894,8 +2894,8 @@ class SaveDetails(
             # Master Menu Button
             self.master_btn = wx.BitmapButton(self, wx.ID_ANY, singletons.images['master.menu'].GetBitmap(), DPOS,
                                               DSIZE, ADRW)
-            self.master_btn.SetBitmapSelected(singletons.images['master.menu'].GetBitmap())
-            self.master_btn.SetBitmapHover(singletons.images['master.menu.onhov'].GetBitmap())
+            self.master_btn.SetBitmapPressed(singletons.images['master.menu'].GetBitmap())
+            self.master_btn.SetBitmapCurrent(singletons.images['master.menu.onhov'].GetBitmap())
             self.master_btn.SetToolTip(wx.ToolTip(_(u'Masters Menu')))
             self.master_btn.Disable()
             # Buttons
@@ -3318,13 +3318,13 @@ class InstallersPanel(SashTankPanel):  # Polemos: Refactored, changes, store/res
             self.statusChanged = False
             self.rPackBtn = wx.BitmapButton(btnPanel, wx.ID_ANY, singletons.images['mod.open'].GetBitmap(), DPOS, DSIZE,
                                             0 | ADRW)
-            self.rPackBtn.SetBitmapSelected(singletons.images['mod.open'].GetBitmap())
-            self.rPackBtn.SetBitmapHover(singletons.images['mod.open.onhov'].GetBitmap())
+            self.rPackBtn.SetBitmapPressed(singletons.images['mod.open'].GetBitmap())
+            self.rPackBtn.SetBitmapCurrent(singletons.images['mod.open.onhov'].GetBitmap())
             self.rPackBtn.SetToolTip(wx.ToolTip(_(u'Restore Order')))
             self.sPackBtn = wx.BitmapButton(btnPanel, wx.ID_ANY, singletons.images['mod.save'].GetBitmap(), DPOS, DSIZE,
                                             0 | ADRW)
-            self.sPackBtn.SetBitmapSelected(singletons.images['mod.save'].GetBitmap())
-            self.sPackBtn.SetBitmapHover(singletons.images['mod.save.onhov'].GetBitmap())
+            self.sPackBtn.SetBitmapPressed(singletons.images['mod.save'].GetBitmap())
+            self.sPackBtn.SetBitmapCurrent(singletons.images['mod.save.onhov'].GetBitmap())
             self.sPackBtn.SetToolTip(wx.ToolTip(_(u'Save Order')))
             self.btnList = [(self.gPackage, 1, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 5),
                             (self.rPackBtn, 0, wx.ALIGN_CENTER_VERTICAL, 5),
@@ -3800,14 +3800,14 @@ class DataModsPanel(gui.NotebookPanel):  # Polemos
             # Toolbar: Restore Button
             self.restore_btn = wx.BitmapButton(self, wx.ID_ANY, singletons.images['mod.open'].GetBitmap(), DPOS, DSIZE,
                                                ADRW)
-            self.restore_btn.SetBitmapSelected(singletons.images['mod.open'].GetBitmap())
-            self.restore_btn.SetBitmapHover(singletons.images['mod.open.onhov'].GetBitmap())
+            self.restore_btn.SetBitmapPressed(singletons.images['mod.open'].GetBitmap())
+            self.restore_btn.SetBitmapCurrent(singletons.images['mod.open.onhov'].GetBitmap())
             self.restore_btn.SetToolTip(wx.ToolTip(_(u'Restore Mod Order')))
             # Toolbar: Backup Button
             self.backup_btn = wx.BitmapButton(self, wx.ID_ANY, singletons.images['mod.save'].GetBitmap(), DPOS, DSIZE,
                                               ADRW)
-            self.backup_btn.SetBitmapSelected(singletons.images['mod.save'].GetBitmap())
-            self.backup_btn.SetBitmapHover(singletons.images['mod.save.onhov'].GetBitmap())
+            self.backup_btn.SetBitmapPressed(singletons.images['mod.save'].GetBitmap())
+            self.backup_btn.SetBitmapCurrent(singletons.images['mod.save.onhov'].GetBitmap())
             self.backup_btn.SetToolTip(wx.ToolTip(_(u'Backup Mod Order')))
             # Packages list
             singletons.ModPackageList = ModPackageList(self)

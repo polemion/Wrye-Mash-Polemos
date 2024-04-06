@@ -48,8 +48,9 @@ from ..unimash import _
 from .. import gui
 from . import dialog
 from subprocess import PIPE
-from subprocess import Popen  # Polemos fix
-import shlex  # Polemos addon
+from subprocess import Popen
+import shlex
+from wx import adv as wxadv
 
 
 class FakeColumnEvent(object):
@@ -87,7 +88,7 @@ class UtilsPanel(gui.NotebookPanel):  # Polemos: changes and fixes.
         singletons.utilsList.description = self.gDescription
         right.SetSizer(
             vSizer((self.gCommandLine, 0, wx.GROW), (self.gArguments, 0, wx.GROW), (self.gDescription, 1, wx.GROW)))
-        wx.LayoutAlgorithm().LayoutWindow(self, right)
+        wxadv.LayoutAlgorithm().LayoutWindow(self, right)
         # --Events
         self.Bind(wx.EVT_SIZE, self.OnSize)
 
