@@ -50,7 +50,7 @@ from subprocess import Popen  # Polemos
 import io, shlex  # Polemos
 from .unimash import uniChk, encChk, _  # Polemos
 import array, pickle, copy, math, os, re, shutil, string
-from io import StringIO as cStringIO
+from io import BytesIO
 import struct, sys, stat
 from . import bolt
 from .bolt import LString, GPath, DataDict, SubProgress
@@ -83,9 +83,10 @@ settingDefaults = {
     'mosh.fileInfo.snapshotDir': r'Mash\Snapshots',
 }
 
+
 def formatInteger(value):
     """Convert integer to string formatted to locale."""
-    return locale.format('%d', int(value), 1)
+    return locale.format_string('%d', int(value), 1)
 
 
 def formatDate(value):  # Polemos
@@ -389,7 +390,7 @@ reExGroup = re.compile('(.*?),')
 
 def cstrip(inString):
     """Convert c-string (null-terminated string) to python string."""
-    zeroDex = inString.find('\x00')
+    zeroDex = inString.find(b'\x00')
     if zeroDex == -1:
         return inString
     else:
@@ -667,16 +668,16 @@ class Tes3Reader:
         """Unpack a record header."""
         return self.unpack('4s3i', 16, 'REC_HEAD')
 
-    def unpackSubHeader(self, recType='----', expName=None, expSize=0):
+    def unpackSubHeader(self, recType=b'----', expName=None, expSize=0):
         """Unpack a subrecord header. Optionally checks for match with expected name and size."""
-        (name, size) = self.unpack('4si', 8, recType + '.SUB_HEAD')
+        (name, size) = self.unpack(b'4si', 8, recType + b'.SUB_HEAD')
         # --Match expected name?
         if expName and expName != name:
             raise Tes3Error(self.inName,
-                            _('%s: Expected %s sub-record, but found %s instead.') % (recType, expName, name))
+                            _('%s: Expected %s sub-record, but found %s instead.') % (recType.decode('utf-8'), expName.decode('utf-8'), name.decode('utf-8')))
         # --Match expected size?
         if expSize and expSize != size:
-            raise Tes3SizeError(self.inName, recType + '.' + name, size, expSize, True)
+            raise Tes3SizeError(self.inName, recType + b'.' + name, size, expSize, True)
         return (name, size)
 
     # --Find data ------------------------------------------
@@ -759,7 +760,7 @@ class SubRecord(object):
         """Return size of self.data, after, if necessary, packing it."""
         if not self.changed: return self.size
         # --StringIO Object
-        out = Tes3Writer(cStringIO())
+        out = Tes3Writer(BytesIO())
         self.dumpData(out)
         # --Done
         self.data = out.getvalue()
@@ -803,11 +804,11 @@ class Record(object):
         elif ins:
             inPos = ins.tell()
             self.loadData(ins)
-            ins.seek(inPos, 0, name + '_REWIND')
+            ins.seek(inPos, 0, name + b'_REWIND')
             self.data = ins.read(self.size, name)
         # --Analyze internal buffer.
         else:
-            reader = Tes3Reader(self.inName, cStringIO(self.data))
+            reader = Tes3Reader(self.inName, BytesIO(self.data))
             self.loadData(reader)
             reader.close()
 
@@ -828,7 +829,7 @@ class Record(object):
         """Return size of self.data, after, if necessary, packing it."""
         if not self.changed: return self.size
         # --Pack data and return size.
-        out = Tes3Writer(cStringIO())
+        out = Tes3Writer(BytesIO())
         self.dumpData(out)
         self.data = out.getvalue()
         out.close()
@@ -892,7 +893,7 @@ class Record(object):
 
     def getReader(self):
         """Returns a Tes3Reader wrapped around self.data."""
-        return Tes3Reader(self.inName, cStringIO(self.data))
+        return Tes3Reader(self.inName, BytesIO(self.data))
 
 
 class ContentRecord(Record):
@@ -2103,7 +2104,7 @@ class Tes3_Gmdt(SubRecord):
 class Tes3(Record):
     """TES3 Record. File header."""
 
-    def __init__(self, name='TES3', size=0, delFlag=0, recFlag=0, ins=None, unpack=False):
+    def __init__(self, name='TES3'.encode('utf-8)'), size=0, delFlag=0, recFlag=0, ins=None, unpack=False):
         """Initialize."""
         self.hedr = None
         self.masters = []  # --(fileName,fileSize)
@@ -2114,25 +2115,25 @@ class Tes3(Record):
     def loadData(self, ins):
         MAX_SUB_SIZE = 100 * 1024
         # --Header
-        (name, size) = ins.unpackSubHeader('TES3', 'HEDR')
+        (name, size) = ins.unpackSubHeader(b'TES3', b'HEDR')
         self.hedr = Tes3_Hedr(name, size, ins, True)
         bytesRead = 8 + size
         # --Read Records
         while bytesRead < self.size:
-            (name, size) = ins.unpackSubHeader('TES3')
+            (name, size) = ins.unpackSubHeader(b'TES3')
             if size > MAX_SUB_SIZE: raise Tes3SizeError(self.inName, name, size, -MAX_SUB_SIZE, True)
             # --Masters
-            if name == 'MAST':
+            if name == b'MAST':
                 # --FileName
-                fileName = cstrip(ins.read(size, 'TES3.MAST'))
+                fileName = cstrip(ins.read(size, b'TES3.MAST'))
                 bytesRead += 8 + size
                 # --FileSize
-                (name, size) = ins.unpackSubHeader('TES3', 'DATA', 8)
-                fileSize = ins.unpack('Q', 8, 'TES3.DATA')[0]
+                (name, size) = ins.unpackSubHeader(b'TES3', b'DATA', 8)
+                fileSize = ins.unpack(b'Q', 8, b'TES3.DATA')[0]
                 self.masters.append((fileName, fileSize))
                 bytesRead += 16
             # --Game Data
-            elif name == 'GMDT':
+            elif name == b'GMDT':
                 self.gmdt = Tes3_Gmdt(name, size, ins, True)
                 bytesRead += 8 + size
             # --Screen snapshot?
@@ -3027,8 +3028,8 @@ class MasterInfo(object):
 
     def isExOverLoaded(self):
         """True if belongs to an exclusion group that is overloaded."""
-        maExGroup = reExGroup.match(self.name)
-        if not (mwIniFile.isLoaded(self.name) and maExGroup):
+        maExGroup = reExGroup.match(self.name.decode('utf-8'))
+        if not (mwIniFile.isLoaded(self.name.decode('utf-8')) and maExGroup):
             return False
         else:
             return (maExGroup.group(1) in mwIniFile.exOverLoaded)
@@ -3135,7 +3136,7 @@ class FileInfo(object):  # Polemos: OpenMW/TES3mp support
         try:
             ins = Tes3Reader(self.name, open(path, 'rb'))
             (name, size, delFlag, recFlag) = ins.unpackRecHeader()
-            if name != 'TES3'.encode('utf-8'):
+            if name != b'TES3':
                 raise Tes3Error(self.name, _('Expected TES3, but got ') + name.encode('utf-8', errors='replace'))
             self.tes3 = Tes3(name, size, delFlag, recFlag, ins, True)
         except struct.error as rex:
@@ -3447,6 +3448,7 @@ class FileInfos(object):  # + OpenMW/TES3mp support
             if not os.path.isfile(filePath) or not self.rightFileType(fileName): continue
             fileInfo = self.factory(self.dir, fileName)
             if fileName not in oldList:  # --New file?
+                fileInfo.getHeader()
                 try:
                     fileInfo.getHeader()
                 except Tes3Error as error:  # --Bad header?
@@ -3765,7 +3767,7 @@ class ModInfos(FileInfos):
         modNames = list(modNames)  # --Don't do an in-place sort.
         modNames.sort(key=lambda a: (a in data) and data[a].mtime)  # --Sort on modified
         if not self.OpenMW:
-            modNames.sort(key=lambda a: a[-1].lower())  # --Sort on esm/esp
+            modNames.sort(key=lambda a: str(a[-1]).lower())  # --Sort on esm/esp
         elif self.OpenMW:
             tmp_modNamesESM = [x for x in modNames if x[len(x) - 3:] in ('esm', 'ame')]
             tmp_modNamesESP = [x for x in modNames if x[len(x) - 3:] in ('esp', 'don')]
@@ -3796,7 +3798,7 @@ class ModInfos(FileInfos):
         while modDex < len(modNames):
             modName = modNames[modDex]
             if not self.OpenMW:
-                if modName[-1].lower() != 'm': break
+                if str(modName[-1]).lower() != 'm': break
             elif self.OpenMW:
                 if modName[len(modName) - 3:] in ('esp', 'don'): break
             if self.circularMasters([modName]):
@@ -4007,7 +4009,7 @@ class SaveInfo(FileInfo):  # Polemos: Fixed a small (ancient again) bug with the
         # it was present at least since Melchior's version up to Yakoby's.
         return self.extras['journal']
 
-    def getScreenshot(self):  # Polemos fixes
+    def getScreenshot(self):
         """Returns screenshot data with alpha info stripped out. If screenshot data isn't available, returns None."""
         # --Used cached screenshot, if have it.
         if 'screenshot' in self.extras: return self.extras['screenshot']
@@ -4016,7 +4018,7 @@ class SaveInfo(FileInfo):  # Polemos: Fixed a small (ancient again) bug with the
         try:
             ins = Tes3Reader(self.name, open(path, 'rb'))
             (name, size, delFlag, recFlag) = ins.unpackRecHeader()
-            if name != 'TES3': raise Tes3Error(self.name, _('Expected TES3, but got %s' % name))
+            if name != b'TES3': raise Tes3Error(self.name, _('Expected TES3, but got %s' % name.decode('utf-8')))
             self.tes3 = Tes3(name, size, delFlag, recFlag, ins, True)
         except struct.error as rex:
             ins.close()
@@ -4028,9 +4030,9 @@ class SaveInfo(FileInfo):  # Polemos: Fixed a small (ancient again) bug with the
         ins.close()
         # --Get screenshot data subrecord
         for subrecord in self.tes3.others:
-            if subrecord.name == 'SCRS':
+            if subrecord.name == b'SCRS':
                 # --Convert bgra array to rgb array
-                buff = cStringIO()
+                buff = BytesIO()
                 for num in range(len(subrecord.data) // 4):
                     bb, gg, rr = struct.unpack('3B', subrecord.data[num * 4:num * 4 + 3])
                     buff.write(struct.pack('3B', rr, gg, bb))
@@ -4043,14 +4045,15 @@ class SaveInfo(FileInfo):  # Polemos: Fixed a small (ancient again) bug with the
                     rgbScale = max(1.0, 80 // rgbSigma)
 
                     def remap(color):
-                        color = color - rgbAvg
-                        color = color * rgbScale
+                        color -= rgbAvg
+                        color *= rgbScale
                         return max(0, min(255, int(color + 128)))
                 except:
                     pass
                 buff.seek(0)
                 try:
-                    [buff.write(struct.pack('B', remap(ord(char)))) for num, char in enumerate(rgbString)]
+                    for char in rgbString:
+                        buff.write(struct.pack('B', remap(char)))
                 except:
                     pass
                 screenshot = buff.getvalue()
@@ -5763,7 +5766,7 @@ class InstallersData(bolt.TankData, DataDict):  # Polemos fixes
             mashIni = configparser.ConfigParser()
             try:
                 with io.open('mash.ini', 'r', encoding='utf-8') as f:
-                    mashIni.readfp(f)
+                    mashIni.read_file(f)
                 mash_ini = True
                 instPath = GPath(mashIni.get('General', 'sInstallersDir').strip()).s
             except:
@@ -5783,7 +5786,7 @@ class InstallersData(bolt.TankData, DataDict):  # Polemos fixes
                 mashIni = configparser.ConfigParser()
                 try:
                     with io.open('mash.ini', 'r', encoding='utf-8') as f:
-                        mashIni.readfp(f)
+                        mashIni.read_file(f)
                 except:
                     pass
             mashIni.set("General", "sInstallersDir", os.path.abspath(dirs["installers"].s))
@@ -6251,7 +6254,7 @@ class InstallersData(bolt.TankData, DataDict):  # Polemos fixes
             if curConflicts: packConflicts.append((installer.order, package.s, curConflicts))
         # --Unknowns
         isHigher = -1
-        buff = cStringIO()
+        buff = BytesIO()
         for order, package, files in packConflicts:
             if showLower and (order > srcOrder) != isHigher:
                 isHigher = (order > srcOrder)
@@ -6755,7 +6758,7 @@ class FileRefs(FileRep):
         if newIObj == -1: newIObj = iObj
         newObject = (newIMod, newIObj) + object[2:]
         if objRecords and objRecords[0].name == 'MVRF':
-            data = cStringIO()
+            data = BytesIO()
             if newIMod > 255 and settings['mash.extend.plugins']:  # MWSE compatibility == enabled
                 data.write(struct.pack('2i', newIMod, newIObj))
             else:
@@ -7420,7 +7423,7 @@ class FileDials(FileRep):
                 info.setChanged()
                 updated.append(infoKey)
         # --Report
-        buff = cStringIO()
+        buff = BytesIO()
         for header, infoKeys in ((_('Updated'), updated), (_('Unmatched'), unmatched)):
             if infoKeys:
                 buff.write('=== %s\n' % (header,))
@@ -7869,7 +7872,7 @@ class CharSetImporter(object):
             ('Stealth Skills', mush.stealthSkills))
         # --Dump Script
         stats = self.classStats[className]
-        out = cStringIO()
+        out = BytesIO()
         out.write(charSet0.substitute(className=className))
         for group, statNames in statGroups:
             out.write(';--' + group + '\n')
@@ -8186,7 +8189,7 @@ class ScheduleGenerator(object):
 
     def getSleepScript(self, town, cycle):
         """Return cells ("C") script for town, cycle."""
-        out = cStringIO()
+        out = BytesIO()
         tcSleep = self.sleep[town][cycle]
         # --No cells defined?
         if len(tcSleep) == 0:
@@ -8220,7 +8223,7 @@ class ScheduleGenerator(object):
         townCode = self.code.get(town, 0)
         townSchedule = self.schedule[town]
         npcs = sorted(townSchedule.keys())
-        out = cStringIO()
+        out = BytesIO()
         cycleCode = ''
         if townCode:
             for line in townCode[0] + townCode[cycle]: cycleCode += '\t' + line + '\n'

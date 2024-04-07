@@ -43,7 +43,7 @@ from .unimash import _  # Polemos
 from .merrors import AbstractError as AbstractError, ArgumentError as ArgumentError
 from .merrors import StateError as StateError, UncodedError as UncodedError
 from . import conf  # Polemos
-from io import StringIO as cStringIO
+from io import BytesIO
 import string
 import sys
 import textwrap
@@ -603,7 +603,7 @@ def showWryeLog(parent, logText, title='', style=0, asDialog=True, icons=None):
     if not isinstance(logText, bolt.Path):
         logPath = _settings.get('balt.WryeLog.temp', bolt.Path.getcwd().join('WryeLogTemp.html'))
         cssDir = _settings.get('balt.WryeLog.cssDir', GPath(''))
-        ins = cStringIO(logText + '\n{{CSS:wtxt_sand_small.css}}')
+        ins = BytesIO(logText + '\n{{CSS:wtxt_sand_small.css}}')
         out = logPath.open('w')
         bolt.WryeText.genHtml(ins, out, cssDir)
         out.close()

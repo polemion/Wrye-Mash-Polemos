@@ -331,8 +331,8 @@ def ContinueQuery(parent, tmessage, message, continueKey, title=_(u'Warning'), n
     [x.SetMaxSize(wx.Size(400, -1)) for x in (title, main)]
     [x.Wrap(-1) for x in (title, main)]
     cntSizer = wx.StaticBoxSizer(cntBox, wx.VERTICAL)
-    cntSizer.AddMany([(title, 0, wx.ALL | wx.EXPAND | wx.ALIGN_CENTER_HORIZONTAL, 5),
-                      (main, 1, wx.EXPAND | wx.ALIGN_CENTER_HORIZONTAL | wx.RIGHT | wx.LEFT, 5)])
+    cntSizer.AddMany([(title, 0, wx.ALL | wx.EXPAND, 5),
+                      (main, 1, wx.EXPAND | wx.RIGHT | wx.LEFT, 5)])
     btnSizer = wx.BoxSizer(wx.HORIZONTAL)
     btnSizer.AddMany([(okBtn, 0, wx.ALL, 5), (show, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5), (cnlBtn, 0, wx.ALL, 5)])
     mainSizer = wx.BoxSizer(wx.VERTICAL)

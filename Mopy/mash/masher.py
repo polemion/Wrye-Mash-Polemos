@@ -39,7 +39,7 @@
 
 
 # Imports
-from io import StringIO as cStringIO
+from io import BytesIO as BytesIO
 from datetime import datetime
 import io, os, re, shutil, stat, string, sys, time, warnings, ntpath
 from datetime import date
@@ -1139,7 +1139,7 @@ class MasterList(gui.List):
 
     def OnLabelEdited(self, event):
         """Label Edited"""
-        itemDex = event.m_itemIndex
+        itemDex = event.Index
         newName = event.GetText()
         # --No change?
         if newName in mosh.modInfos:
@@ -1273,7 +1273,7 @@ class MasterList(gui.List):
         conf.settings['mash.masters.esmsFirst'] = self.esmsFirst
         if self.esmsFirst or col == 'Load Order':
             if not self.OpenMW:
-                self.items.sort(key=lambda a: data[a].name[-1].lower())
+                self.items.sort(key=lambda a: str(data[a].name[-1]).lower())
             elif self.OpenMW:
                 tmp_modNamesESM = [x for x in self.items if data[x].name[len(data[x].name) - 3:] in ('esm', 'ame')]
                 tmp_modNamesESP = [x for x in self.items if data[x].name[len(data[x].name) - 3:] in ('esp', 'don')]
@@ -1747,7 +1747,7 @@ class ModList(gui.List, gui.ListDragDropMixin):  # Polemos: OpenMW/TES3mp suppor
             self.timer = wx.Timer(self)
             self.Bind(wx.EVT_TIMER, self.timeSelChk, self.timer)
             self.timer.Start(50)
-        self.timeChk = self.items[event.m_itemIndex]
+        self.timeChk = self.items[event.Index]
 
     def OnKeyDown(self, event):  # Polemos: added delete item on DEL
         fmap = {
@@ -2048,7 +2048,7 @@ class ModdataList(gui.List, gui.ListDragDropMixin):  # Polemos
 
     def OnItemSelected(self, event):
         """Do stuff when selecting a mod."""
-        modName = self.items[event.m_itemIndex]
+        modName = self.items[event.Index]
 
     def OnKeyDown(self, event):
         fmap = {
@@ -2314,7 +2314,7 @@ class ModDetails(
 
     def backup(self, event):  # Polemos
         """Save Mod order."""
-        log = mosh.LogFile(cStringIO())
+        log = mosh.LogFile(BytesIO())
         [log('%s' % name) for num, name in enumerate(mosh.mwIniFile.loadOrder)]
         modOrder = mosh.winNewLines(log.out.getvalue())
         if mosh.SaveModOrder(modOrder, 'plugins', 'datasnap').status: self.showInfo(_(u'Plugins Order Saved...'))
@@ -2816,7 +2816,7 @@ class SaveList(gui.List):  # Polemos: OpenMW support, additions, more...
             self.timer = wx.Timer(self)
             self.Bind(wx.EVT_TIMER, self.timeSelChk, self.timer)
             self.timer.Start(50)
-        self.timeChk = self.items[event.m_itemIndex]
+        self.timeChk = self.items[event.Index]
 
     def OnKeyDown(self, event):  # Polemos: added delete item on DEL
         fmap = {
@@ -4033,7 +4033,7 @@ class ScreensList(gui.List):  # Polemos: Fixes and more
         conf.settings.setChanged('mash.screens.colWidths')
 
     def OnItemSelected(self, event=None):
-        fileName = self.items[event.m_itemIndex]
+        fileName = self.items[event.Index]
         filePath = mosh.screensData.dir.join(fileName)
         bitmap = (filePath.exists() and wx.Bitmap(filePath.s)) or None
         self.picture.SetBitmap(bitmap)
@@ -7086,7 +7086,7 @@ class File_Remove_Refs(object):
         fileInfo = self.window.data[fileName]
         caption = _(u'Refs Removed: ') + fileName
         progress = guidialog.ProgressDialog(caption)
-        log = mosh.LogFile(cStringIO())
+        log = mosh.LogFile(BytesIO())
         try:
             fileRefs = mosh.FileRefs(fileInfo, log=log, progress=progress)
             fileRefs.refresh()
@@ -7216,7 +7216,7 @@ class File_Replace_Refs(object):
         fileInfo = self.window.data[fileName]
         caption = _(u'Refs Replaced: %s' % fileName)
         progress = guidialog.ProgressDialog(caption)
-        log = mosh.LogFile(cStringIO())
+        log = mosh.LogFile(BytesIO())
         try:
             # --Replacer
             replacerName = self.GetItems()[event.GetId() - ID_REPLACERS.BASE]
@@ -7317,7 +7317,7 @@ class File_RepairRefs(Link):
             # --Log and Progress
             caption = _(u'Repairing ') + fileName
             progress = guidialog.ProgressDialog(caption)
-            log = mosh.LogFile(cStringIO())
+            log = mosh.LogFile(BytesIO())
             # --World Refs
             worldRefs = mosh.WorldRefs(log=log, progress=progress)
             try:
@@ -10064,7 +10064,7 @@ class Mod_Import_LCVSchedules(Link):
         table.setItem(fileName, 'schedules.path', textPath)
         # --Import
         caption = textName
-        log = mosh.LogFile(cStringIO())
+        log = mosh.LogFile(BytesIO())
         try:
             generator = mosh.ScheduleGenerator()
             generator.log = log
@@ -10099,7 +10099,7 @@ class Mod_Import_MergedLists(Link):
             self.window = event[1]
         fileInfo = mosh.modInfos[fileName]
         caption = fileName
-        log = mosh.LogFile(cStringIO())
+        log = mosh.LogFile(BytesIO())
         progress = guidialog.ProgressDialog(caption)
         try:
             progress.setMax(10 + len(mosh.mwIniFile.loadOrder))
@@ -10495,7 +10495,7 @@ class Mod_RenumberRefs(Link):
         dialog = None
         try:
             # --Log and Progress
-            log = mosh.LogFile(cStringIO())
+            log = mosh.LogFile(BytesIO())
             # --File Refs
             fileRefs = mosh.FileRefs(fileInfo, log=log, progress=progress)
             fileRefs.refresh()
@@ -10922,7 +10922,7 @@ class Save_MapNotes(Link):
         fileInfo = self.window.data[fileName]
         caption = _(u'Map Notes: ') + fileName
         progress = guidialog.ProgressDialog(caption)
-        log = mosh.LogFile(cStringIO())
+        log = mosh.LogFile(BytesIO())
         try:
             fileRefs = mosh.FileRefs(fileInfo, True, True, log=log, progress=progress)
             fileRefs.refresh()
@@ -10995,7 +10995,7 @@ class Save_Remove_DebrisCells(Link):
         fileName = self.data[0]
         fileInfo = self.window.data[fileName]
         progress = guidialog.ProgressDialog(fileName)
-        log = mosh.LogFile(cStringIO())
+        log = mosh.LogFile(BytesIO())
         count = 0
         try:
             # --Log and Progress
@@ -11055,7 +11055,7 @@ class Save_RepairAll(Link):
             # --Log and Progress
             caption = _(u'Repairing ') + fileName
             progress = guidialog.ProgressDialog(caption)
-            log = mosh.LogFile(cStringIO())
+            log = mosh.LogFile(BytesIO())
             # --World Refs
             worldRefs = mosh.WorldRefs(log=log, progress=progress)
             try:
@@ -11126,7 +11126,7 @@ class Save_Review(Link):
             # --Log and Progress
             caption = _(u'Review of %s' % fileName)
             progress = guidialog.ProgressDialog(caption)
-            log = mosh.LogFile(cStringIO())
+            log = mosh.LogFile(BytesIO())
             # --File Refs for Save File
             fileRefs = mosh.FileRefs(fileInfo, log=log, progress=progress)
             fileRefs.refresh()
@@ -11257,7 +11257,7 @@ class Masters_CopyList(Link):
         fileName = fileInfo.name
         # --Get masters list
         caption = _(u'Masters for %s:') % (fileName,)
-        log = mosh.LogFile(cStringIO())
+        log = mosh.LogFile(BytesIO())
         log.setHeader(caption)
         for num, name in enumerate(fileInfo.masterNames):
             version = mosh.modInfos.getVersion(name)
@@ -11623,7 +11623,7 @@ class App_mlox_po(Link):  # Polemos, new tool (mlox) in status bar.
         finally:
             os.chdir(singletons.MashDir)
         # Import mlox output
-        log = mosh.LogFile(cStringIO())
+        log = mosh.LogFile(BytesIO())
         [log('%s' % (name)) for num, name in enumerate(mosh.mwIniFile.loadOrder)]
         text = mosh.winNewLines(log.out.getvalue())
         mtime = 1026943162
