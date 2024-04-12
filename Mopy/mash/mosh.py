@@ -3988,12 +3988,12 @@ class SaveInfo(FileInfo):  # Polemos: Fixed a small (ancient again) bug with the
         while not ins.atEnd():
             # --Get record info and handle it
             (name, size, delFlag, recFlag) = ins.unpackRecHeader()
-            if name != 'JOUR':
+            if name != b'JOUR':
                 ins.seek(size, 1, name)
             # --Journal
             else:
-                (subName, subSize) = ins.unpackSubHeader('JOUR')
-                if subName != 'NAME':
+                (subName, subSize) = ins.unpackSubHeader(b'JOUR')
+                if subName != b'NAME':
                     self.extras['journal'] = _(u'[Error reading file.]')  # Polemos fix: removed double '='
                 else:
                     reDate = re.compile(r'<FONT COLOR="9F0000">(.+?)</FONT><BR>')

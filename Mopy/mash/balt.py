@@ -941,7 +941,7 @@ class Picture(wx.Window):
         imgWidth, imgHeight = bitmap.GetWidth(), bitmap.GetHeight()
         if self.scaling == 2 or (self.scaling == 1 and (imgWidth > picWidth or imgHeight > picHeight)):
             image = bitmap.ConvertToImage()
-            factor = min(1.0 * picWidth // imgWidth, 1.0 * picHeight // imgHeight)
+            factor = min(picWidth / imgWidth, picHeight / imgHeight)
             newWidth, newHeight = int(factor * imgWidth), int(factor * imgHeight)
             self.scaled = image.Scale(newWidth, newHeight).ConvertToBitmap()
 
