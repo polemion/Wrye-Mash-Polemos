@@ -718,9 +718,9 @@ class BSArchivesList(gui.List, gui.ListDragDropMixin):  # Polemos
             else:
                 value = ''
             if mode and (colDex == 0):
-                self.list.InsertStringItem(itemDex, value)
+                self.list.InsertItem(itemDex, value)
             else:
-                self.list.SetStringItem(itemDex, colDex, value)
+                self.list.SetItem(itemDex, colDex, value)
         # --Image
         on = fileInfo[2]
         self.list.SetItemImage(itemDex, self.checkboxes.Getsimple(on))
@@ -962,9 +962,9 @@ class ModPackageList(gui.List):  # Polemos
             else:
                 value = ''
             if mode and (colDex == 0):
-                self.list.InsertStringItem(itemDex, value)
+                self.list.InsertItem(itemDex, value)
             else:
-                self.list.SetStringItem(itemDex, colDex, value)
+                self.list.SetItem(itemDex, colDex, value)
         # --Image, Polemos, todo: maybe implement...
         # installed = fileInfo[2]
         # self.list.SetItemImage(itemDex, self.checkboxes.Getsimple(installed))
@@ -1226,9 +1226,9 @@ class MasterList(gui.List):
                 value = repr(self.allMasters.index(masterName) + 1)
             # --Insert/Set Value
             if mode and (colDex == 0):
-                    self.list.InsertStringItem(itemDex, value)
+                    self.list.InsertItem(itemDex, value)
             else:
-                self.list.SetStringItem(itemDex, colDex, value)
+                self.list.SetItem(itemDex, colDex, value)
         # --Text BG
         if not mosh.mwIniFile.isWellOrdered(masterName):
             self.list.SetItemBackgroundColour(itemDex, colors['mash.doubleTime.load'])
@@ -1601,12 +1601,12 @@ class ModList(gui.List, gui.ListDragDropMixin):  # Polemos: OpenMW/TES3mp suppor
             else:
                 value = ''
             if mode and (colDex == 0):  # --Insert/SetString
-                self.list.InsertStringItem(itemDex, value)
+                self.list.InsertItem(itemDex, value)
             else:
                 try:
-                    self.list.SetStringItem(itemDex, colDex, value)
+                    self.list.SetItem(itemDex, colDex, value)
                 except UnicodeDecodeError:  # Polemos: Korean fix (possibly more)
-                    self.list.SetStringItem(itemDex, colDex, uniChk(value))
+                    self.list.SetItem(itemDex, colDex, uniChk(value))
         # --Text BG
         if not mosh.mwIniFile.isWellOrdered(fileName):
             self.list.SetItemBackgroundColour(itemDex, colors['mash.doubleTime.load'])
@@ -1976,9 +1976,9 @@ class ModdataList(gui.List, gui.ListDragDropMixin):  # Polemos
                 value = ''
             # --Insert/SetString
             if mode and (colDex == 0):
-                self.list.InsertStringItem(itemDex, value)
+                self.list.InsertItem(itemDex, value)
             else:
-                self.list.SetStringItem(itemDex, colDex, str(value, encoding='utf-8', errors='ignore'))  # todo: test this
+                self.list.SetItem(itemDex, colDex, str(value, encoding='utf-8', errors='ignore'))  # todo: test this
         # --Image
         on = fileInfo[5]
         self.list.SetItemImage(itemDex, self.checkboxes.Getsimple(on))
@@ -2751,9 +2751,9 @@ class SaveList(gui.List):  # Polemos: OpenMW support, additions, more...
             else:
                 value = ''
             if mode and (colDex == 0):
-                self.list.InsertStringItem(itemDex, value)
+                self.list.InsertItem(itemDex, value)
             else:
-                self.list.SetStringItem(itemDex, colDex, value)
+                self.list.SetItem(itemDex, colDex, value)
         # --Image
         status = fileInfo.getStatus()
         self.list.SetItemImage(itemDex, self.checkboxes.Get(status, False))
@@ -4002,9 +4002,9 @@ class ScreensList(gui.List):  # Polemos: Fixes and more
             else:
                 value = ''
             if mode and (colDex == 0):
-                self.list.InsertStringItem(itemDex, value)
+                self.list.InsertItem(itemDex, value)
             else:
-                self.list.SetStringItem(itemDex, colDex, value)
+                self.list.SetItem(itemDex, colDex, value)
         # --Selection State
         if fileName in selected:
             self.list.SetItemState(itemDex, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
@@ -7420,9 +7420,9 @@ class File_StatsList(gui.List):
                 value = formatInteger(itemData[1]) + ' B'
             # --Insert/Set Value
             if mode and (colDex == 0):
-                self.list.InsertStringItem(itemDex, value)
+                self.list.InsertItem(itemDex, value)
             else:
-                self.list.SetStringItem(itemDex, colDex, value)
+                self.list.SetItem(itemDex, colDex, value)
         # --State
         if type in selected:
             self.list.SetItemState(itemDex, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)

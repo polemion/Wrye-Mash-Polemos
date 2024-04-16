@@ -1123,7 +1123,7 @@ class Tank(wx.Panel):  # Polemos: Edits
         data, gList = self.data, self.gList
         item = item or self.GetItem(index)
         for iColumn, column in enumerate(data.getColumns(item)):
-            gList.SetStringItem(index, iColumn, column)
+            gList.SetItem(index, iColumn, column)
         gItem = gList.GetItem(index)
         iconKey, textKey, backKey = data.getGuiKeys(item)
         if iconKey and self.icons: gItem.SetImage(self.icons[iconKey])
@@ -1163,7 +1163,7 @@ class Tank(wx.Panel):  # Polemos: Edits
                 index += 1
         # --Add remaining new items
         for item in items:
-            gList.InsertStringItem(index, '')
+            gList.InsertItem(index, '')
             self.UpdateItem(index, item, selected)
             index += 1
         # --Cleanup

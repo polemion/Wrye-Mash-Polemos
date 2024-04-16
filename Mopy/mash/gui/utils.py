@@ -173,20 +173,20 @@ class UtilsList(gui.List):  # Polemos: Changes and optimizations.
                 value = ''
             if mode and (colDex == 0):
                 try:
-                    self.list.InsertStringItem(itemDex, value)
+                    self.list.InsertItem(itemDex, value)
                 except:
-                    self.list.InsertStringItem(itemDex, value.decode('utf-8', errors='ignore'))
+                    self.list.InsertItem(itemDex, value.decode('utf-8', errors='ignore'))
             else:
                 try:
-                    self.list.SetStringItem(itemDex, colDex, value)
+                    self.list.SetItem(itemDex, colDex, value)
                 except:
                     try:
-                        self.list.SetStringItem(itemDex, colDex, value.decode('utf-8'))
+                        self.list.SetItem(itemDex, colDex, value.decode('utf-8'))
                     except:
                         try:
-                            self.list.SetStringItem(itemDex, colDex, str(value))
+                            self.list.SetItem(itemDex, colDex, str(value))
                         except:
-                            self.list.SetStringItem(itemDex, colDex, value.encode('utf-8'))
+                            self.list.SetItem(itemDex, colDex, value.encode('utf-8'))
         # --Selection State
         if item in selected:
             self.list.SetItemState(itemDex, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
