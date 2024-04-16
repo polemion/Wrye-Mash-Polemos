@@ -327,9 +327,9 @@ class List(wx.Panel):  # Polemos: Additions.
         """Deletes selected items."""
         items = self.GetSelected()
         if items:
-            message = _(u'Delete these items? This operation cannot be undone.')
+            message = _('Delete these items? This operation cannot be undone.')
             message += '\n* ' + '\n* '.join(x for x in sorted(items))
-            if balt.askYes(self, message, _(u'Delete Items')):
+            if balt.askYes(self, message, _('Delete Items')):
                 for item in items: self.data.delete(item)
             singletons.modList.Refresh()  # $#
 

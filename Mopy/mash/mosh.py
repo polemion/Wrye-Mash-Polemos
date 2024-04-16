@@ -158,7 +158,7 @@ class Settings(object):  # Polemos: Added revert to backup configuration.
 
     def setChanged(self, key):
         """Marks given key as having been changed. Use if value is a dictionary, list or other object."""
-        if key not in self.data: raise ArgumentError(_(u"No settings data for %s" % key))
+        if key not in self.data: raise ArgumentError(_("No settings data for %s" % key))
         if key not in self.changed: self.changed.append(key)
 
     def getChanged(self, key, default=None):
@@ -572,7 +572,7 @@ class Progress(object):
         self.max = 1.0
 
     def setBaseScale(self, base=0.0, scale=1.0):
-        if scale == 0: raise ArgumentError(_(u'Scale must not equal zero!'))
+        if scale == 0: raise ArgumentError(_('Scale must not equal zero!'))
         self.base = base
         self.scale = scale
 
@@ -774,8 +774,8 @@ class SubRecord(object):
         raise AbstractError
 
     def dump(self, out):
-        if self.changed: raise StateError(_(u'Data changed: ') + self.name)
-        if not self.data: raise StateError(_(u'Data undefined: ') + self.name)
+        if self.changed: raise StateError(_('Data changed: ') + self.name)
+        if not self.data: raise StateError(_('Data undefined: ') + self.name)
         out.write(struct.pack('4si', self.name, len(self.data)))
         out.write(self.data)
 
@@ -843,8 +843,8 @@ class Record(object):
 
     def dump(self, out):
         """Dumps record header and data into output file stream."""
-        if self.changed: raise StateError(_(u'Data changed: ') + self.name)
-        if not self.data: raise StateError(_(u'Data undefined: ') + self.name)
+        if self.changed: raise StateError(_('Data changed: ') + self.name)
+        if not self.data: raise StateError(_('Data undefined: ') + self.name)
         out.write(struct.pack('4s3i', self.name, self.size, self.delFlag, self.recFlag))
         out.write(self.data)
 
@@ -911,7 +911,7 @@ class ListRecord(Record):
         """Initialize."""
         # --Record type.
         if name not in ('LEVC', 'LEVI'):
-            raise ArgumentError(_(u'Type must be either LEVC or LEVI.'))
+            raise ArgumentError(_('Type must be either LEVC or LEVI.'))
         # --Data
         self.id = None
         self.calcFromAllLevels = False
@@ -2029,7 +2029,7 @@ class Tes3_Hedr(SubRecord):
         self.numRecords = data[4]
 
     def getSize(self):  # Polemos: Fixed a struct bug here.
-        if not self.data and not self.changed: raise StateError(_(u'Data undefined: %s' % self.name))
+        if not self.data and not self.changed: raise StateError(_('Data undefined: %s' % self.name))
         if not self.changed: return self.size
         self.description = winNewLines(self.description)
 
@@ -2083,7 +2083,7 @@ class Tes3_Gmdt(SubRecord):
         self.playerName = cstrip(data[6])
 
     def getSize(self):
-        if not self.data: raise StateError(_(u'Data undefined: ') + self.name)
+        if not self.data: raise StateError(_('Data undefined: ') + self.name)
         if not self.changed: return self.size
         self.data = struct.pack('3f12s64s4s32s',
                                 self.curHealth,
@@ -2331,7 +2331,7 @@ class MWIniFile(object):  # Polemos: OpenMW/TES3mp support
 
     def loadDatamod(self, DataDir, DataOrder):  # Polemos
         """Add DataDir to OpenMW."""
-        [self.DataMods.append(u'data="%s"' % x) for x in DataDir]
+        [self.DataMods.append('data="%s"' % x) for x in DataDir]
         DataOrderF = [u'data="%s"' % x for x in DataOrder]
         datamodsListExport = [x for x in DataOrderF if x in self.DataMods]
         self.SaveDatamods(datamodsListExport)
@@ -2558,9 +2558,9 @@ class MWIniFile(object):  # Polemos: OpenMW/TES3mp support
                 if not maLoadArchiveFiles and not maLoadPluginFiles: self.confLoadLines.append(line.rstrip())
                 if not line:
                     if not PluginSection: raise Tes3Error('Morrowind.ini',
-                                                          _(u'Morrowind.ini: [Game Files] section not found.'))
+                                                          _('Morrowind.ini: [Game Files] section not found.'))
                     if not ArchiveSection: raise Tes3Error('Morrowind.ini',
-                                                           _(u'Morrowind.ini: [Archives] section not found.'))
+                                                           _('Morrowind.ini: [Archives] section not found.'))
 
             self.bsaFiles = self.chkCase(self.bsaFiles)
             self.loadFiles = self.chkCase(self.loadFiles)
@@ -2704,9 +2704,9 @@ class MWIniFile(object):  # Polemos: OpenMW/TES3mp support
 
         if self.hasChanged():  # Has the config file changed?
             if not self.openmw:
-                error_ini_po = _(u'Morrowind.ini has changed externally! Aborting...')
+                error_ini_po = _('Morrowind.ini has changed externally! Aborting...')
             elif self.openmw:
-                error_ini_po = _(u'Openmw.cfg has changed externally! Aborting...')
+                error_ini_po = _('Openmw.cfg has changed externally! Aborting...')
             raise StateError(error_ini_po)
 
         with io.open(self.path, 'w', encoding=self.encod, errors='strict') as conf_File:
@@ -2776,15 +2776,15 @@ class MWIniFile(object):  # Polemos: OpenMW/TES3mp support
         from .gui import dialog
         engine = u'Morrowind' if not self.openmw else u'OpenMW'
         # Notify user
-        tmessage = _(u'Some of your mod filenames seem to have problematic encodings.')
-        message = _(u'There is a possibility that they might cause problems/bugs with Wrye Mash or %s functionality.\n'
+        tmessage = _('Some of your mod filenames seem to have problematic encodings.')
+        message = _('There is a possibility that they might cause problems/bugs with Wrye Mash or %s functionality.\n'
                     u'Please consider renaming them.\n\nWould you like to see a list of the affected filenames?') % engine
         if dialog.ContinueQuery(None, tmessage, message, 'query.file.risk',
-                             _(u'Problematic Filenames Detected')) != wx.ID_OK:
+                             _('Problematic Filenames Detected')) != wx.ID_OK:
             return
         else:
             riskItms = '\n'.join(self.filesRisk)
-            dialog.WarningMessage(None, _(u'The affected filenames are:\n\n%s' % riskItms), _(u'Affected Filenames List'))
+            dialog.WarningMessage(None, _('The affected filenames are:\n\n%s' % riskItms), _('Affected Filenames List'))
         del self.filesRisk[:]
 
     def fileNamChk(self, flist):
@@ -2802,24 +2802,24 @@ class MWIniFile(object):  # Polemos: OpenMW/TES3mp support
         # Set data
         conf = u'Morrowind.ini' if not self.openmw else u'Openmw.cfg'
         confItms = ('Archive', 'GameFile') if not self.openmw else ('fallback-archive=', 'content')
-        l = _(u'Line')
+        l = _('Line')
         # Extract mod errors
-        mods = [(u'%s %s: %s' % (l, x, items[x])) for x in items if any([y in items[x] for y in confItms])]
+        mods = [('%s %s: %s' % (l, x, items[x])) for x in items if any([y in items[x] for y in confItms])]
         # Reload the config file
         self.loadConf()
         # If the errors are only for mod entries, skip them, keep the changes in the configuration file and notify user
         if len(items) == len(mods):
             errors = '\n'.join(mods)
             self.criticalMsg(
-                _(u'Problems encountered while updating %s. The following entries were not added:\n\n%s' % (
+                _('Problems encountered while updating %s. The following entries were not added:\n\n%s' % (
                 conf, errors)))
         # If there are also errors on lines without mod entries, notify user and raise error to revert to backup
         if len(items) > len(mods):
             errors = '\n'.join(
-                [(u'%s %s: %s...' % (l, x, items[x][:35])) if len(items[x]) > 35 else (u'%s %s: %s' % (l, x, items[x]))
+                [('%s %s: %s...' % (l, x, items[x][:35])) if len(items[x]) > 35 else ('%s %s: %s' % (l, x, items[x]))
                  for x in items])
             self.criticalMsg(
-                _(u'Problems encountered while updating %s. Will revert to backup, no changes will be saved:\n\n%s' % (
+                _('Problems encountered while updating %s. Will revert to backup, no changes will be saved:\n\n%s' % (
                 conf, errors)))
             self.restoreBackup()
 
@@ -3311,7 +3311,7 @@ class FileInfo(object):  # Polemos: OpenMW/TES3mp support
         snapLast[-1] = ('%0' + repr(len(snapLast[-1])) + 'd') % (int(snapLast[-1]) + 1,)
         destName = root + separator + ('.'.join(snapLast)) + ext
         wildcard = root + '*' + ext
-        wildcard = _(u'%s Snapshots|%s|All Snapshots|*.esp;*.esm;*.ess') % (root, wildcard)
+        wildcard = _('%s Snapshots|%s|All Snapshots|*.esp;*.esm;*.ess') % (root, wildcard)
         return (destDir, destName, wildcard)
 
 
@@ -3657,7 +3657,7 @@ class ResourceReplacer(object):
                 shutil.copyfile(srcPath, destPath)
                 if self.progress:
                     self.cumSize += os.path.getsize(srcPath)
-                    self.progress(self.cumSize, _(u'Copying Files...'))
+                    self.progress(self.cumSize, _('Copying Files...'))
             elif os.path.isdir(srcPath):
                 self.applyDir(srcPath, destPath, exts)
 
@@ -3917,14 +3917,14 @@ class ModInfos(FileInfos):
         except EOFError:  # Polemos: Fix for corrupted Updaters pkl
             import wx
             from .gui import dialog
-            if dialog.ErrorQuery(None, _(u'Updaters data has been corrupted and needs to be reset.\n\nClick '
+            if dialog.ErrorQuery(None, _('Updaters data has been corrupted and needs to be reset.\n\nClick '
                                              u'Yes to automatically delete the updaters data file.\n(This will make Wrye Mash forget which mods it has updated '
                                              u'but it will not affect your updated saves - an inconvenience really).\n\nClick No if you wish to do it '
                                              u'manually by deleting the following file:\n%s') % path) == wx.ID_YES:
                 try:
                     os.remove(path)
                 except:
-                    dialog.ErrorMessage(None, _(u'Wrye Mash was unable to delete the file which '
+                    dialog.ErrorMessage(None, _('Wrye Mash was unable to delete the file which '
                                                     u'holds the Updaters data. You need to manually delete the following file:\n\n"%s"' % path))
 
     def saveObjectMaps(self):
@@ -3980,7 +3980,7 @@ class SaveInfo(FileInfo):  # Polemos: Fixed a small (ancient again) bug with the
         modified html format."""
         if 'journal' in self.extras: return self.extras['journal']
         # --Default
-        self.extras['journal'] = _(u'[No Journal Record Found.]')
+        self.extras['journal'] = _('[No Journal Record Found.]')
         # --Open save file and look for journal entry
         inPath = os.path.join(self.dir, self.name)
         ins = Tes3Reader(self.name, open(inPath, 'rb'))
@@ -3994,7 +3994,7 @@ class SaveInfo(FileInfo):  # Polemos: Fixed a small (ancient again) bug with the
             else:
                 (subName, subSize) = ins.unpackSubHeader(b'JOUR')
                 if subName != b'NAME':
-                    self.extras['journal'] = _(u'[Error reading file.]')  # Polemos fix: removed double '='
+                    self.extras['journal'] = _('[Error reading file.]')  # Polemos fix: removed double '='
                 else:
                     reDate = re.compile(r'<FONT COLOR="9F0000">(.+?)</FONT><BR>')
                     reTopic = re.compile(r'@(.*?)#')
@@ -4177,7 +4177,7 @@ class UtilsData(DataDict):  # Polemos: Many changes here.
         return changed
 
     def rebuilt_config(self):
-        default_text = (u'; utils.dcg\r\n'
+        default_text = ('; utils.dcg\r\n'
                         u'; File containing the mash utils data\r\n'
                         u';\r\n'
                         u'; Format of a Utility entry:\r\n'
@@ -4220,9 +4220,9 @@ class UtilsData(DataDict):  # Polemos: Many changes here.
             for key, value in self.data.items():
                 if key not in orgData.keys():
                     try:
-                        lines.append(u"%s;%s;%s;%s".encode('utf-8').decode('utf-8') % ((key,) + value))
+                        lines.append("%s;%s;%s;%s".encode('utf-8').decode('utf-8') % ((key,) + value))
                     except:
-                        lines.append(u"%s;%s;%s;%s".decode('utf-8') % ((key,) + value))
+                        lines.append("%s;%s;%s;%s".decode('utf-8') % ((key,) + value))
                 elif key in orgData.keys():
                     for line in lines:
                         try:
@@ -4268,16 +4268,16 @@ class CommandsData(object):
                 commands = {}
                 for line in config_file:
                     line = line.strip()
-                    if not line.startswith(u';') and line != u'':
+                    if not line.startswith(';') and line != u'':
                         try:
-                            name = line.split(u';')[0]
-                            args = u';'.join(line.split(u';')[1:])
+                            name = line.split(';')[0]
+                            args = u';'.join(line.split(';')[1:])
                             commands[name] = args
                         except:
                             pass
                 self.data = commands
         except:
-            pass  # self.gui.ErrorMessage(None, _(u'A problem has occurred while loading "custom.dcg" to import your custom commands.\n'))
+            pass  # self.gui.ErrorMessage(None, _('A problem has occurred while loading "custom.dcg" to import your custom commands.\n'))
 
     def save_commands(self, save_default=False):
         try:
@@ -4286,14 +4286,14 @@ class CommandsData(object):
                 if not save_default:
                     for key, value in self.data.items():
                         try:
-                            file.write(u'%s;%s\n' % (key, value))
+                            file.write('%s;%s\n' % (key, value))
                         except:
                             pass
         except:
-            pass  # self.gui.ErrorMessage(None, _(u'A problem has occurred while saving/creating "custom.dcg" to export your custom commands.\n'))
+            pass  # self.gui.ErrorMessage(None, _('A problem has occurred while saving/creating "custom.dcg" to export your custom commands.\n'))
 
     def default_config_file(self):
-        return (u'; custom.dcg\n'
+        return ('; custom.dcg\n'
                 u'; File containing Custom Commands entries\n'
                 u';\n'
                 u'; Format of a Custom Command entry:\n'
@@ -4302,7 +4302,7 @@ class CommandsData(object):
                 u'; Hint: use %target% variable to represent the position of file target(s) in your commands.\n\n')
 
     def DoConfig(self):
-        dialog = self.gui.ListDialog(self.window, _(u'Set Commands...'), dict(self.data))
+        dialog = self.gui.ListDialog(self.window, _('Set Commands...'), dict(self.data))
         value = dialog.GetValue
         if value or value == {}:
             self.data = value
@@ -4386,7 +4386,7 @@ class datamod_order(object):  # Polemos: OpenMW/TES3mp support
                 u'Category': '',
                 u'Repo': '',
                 u'ID': ''}
-        reList = re.compile(u'(Installer|Version|NoUpdateVer|NewVersion|Category|Repo|ID)=(.+)')
+        reList = re.compile('(Installer|Version|NoUpdateVer|NewVersion|Category|Repo|ID)=(.+)')
         # Special ModData
         if mod == self.mwfiles:
             data[u'Category'] = u'Main Files'
@@ -4420,7 +4420,7 @@ class datamod_order(object):  # Polemos: OpenMW/TES3mp support
 
     def metatext(self):  # Todo: add dialog for setting repos, url, etc ...
         """Default content for mashmeta.inf (mod dir)."""
-        metatext = (u'[General]',
+        metatext = ('[General]',
                     u'Installer=',
                     u'Version=',
                     u'NoUpdateVer=',
@@ -4734,7 +4734,7 @@ class GetBckList(object):  # Polemos
         for num, bckfile in enumerate(self.bckfiles):
             if os.path.isfile(bckfile):
                 timestamp = os.path.getmtime(bckfile)
-                self.bckList.append(_(u'%s. Backup dated: %s' % (num, self.dtFactory(timestamp))))
+                self.bckList.append(_('%s. Backup dated: %s' % (num, self.dtFactory(timestamp))))
 
 
 # -----------------------------------------------------------------------------
@@ -4855,7 +4855,7 @@ class CopyTree(object):  # Polemos
         result = self.source_dir == self.target_dir
         if result:
             from .gui import dialog
-            dialog.ErrorMessage(self.parent, _(u'Operation aborted: Thou shall not copy a directory unto itself...'))
+            dialog.ErrorMessage(self.parent, _('Operation aborted: Thou shall not copy a directory unto itself...'))
         return result
 
     def copyAct(self):
@@ -4869,7 +4869,7 @@ class CopyTree(object):  # Polemos
         with wx.WindowDisabler():
             while thrTreeOp.isAlive(): wx.GetApp().Yield()
         if self.accessErr: dialog.ErrorMessage(self.parent,
-                                            _(u'Operation failed: Access denied. Unable to write on the destination.'))
+                                            _('Operation failed: Access denied. Unable to write on the destination.'))
 
     def cntItms(self):
         """Count directory contents for progress status."""
@@ -4910,7 +4910,7 @@ class CopyTree(object):  # Polemos
             self.accessErr = True
         finally:
             self.dialog.update(self.filesLen)
-            self.dialog.set_msg(_(u'Finished...'))
+            self.dialog.set_msg(_('Finished...'))
             time.sleep(2)  # Give some time for system file caching.
             self.dialog.Destroy()
 
@@ -4926,7 +4926,7 @@ class ResetTempDir(object):  # Polemos
     def __init__(self, window):
         """Init."""
         from .gui import dialog
-        wait = dialog.WaitDialog(window, _(u'Please wait, cleaning temp folder...'))
+        wait = dialog.WaitDialog(window, _('Please wait, cleaning temp folder...'))
         if os.path.isdir(self.tempdir):
             if not self.safe(self.tempdir):  # Polemos: todo: Add GUI to inform user.
                 self.status = False
@@ -5020,16 +5020,16 @@ class Installer(
         relPos = len(apRoot.s) + 1
         pending = set()
         # --Scan for changed files
-        progress(0, _(u'%s: Pre-Scanning...\n ') % rootName)
+        progress(0, _('%s: Pre-Scanning...\n ') % rootName)
         progress.setFull(1)
         dirDirsFiles = []
         emptyDirs = set()
         for asDir, sDirs, sFiles in os.walk(asRoot):
-            progress(0.05, _(u'%s: Pre-Scanning:\n%s') % (rootName, asDir[relPos:]))
+            progress(0.05, _('%s: Pre-Scanning:\n%s') % (rootName, asDir[relPos:]))
             if rootIsMods and asDir == asRoot: sDirs[:] = [x for x in sDirs if x.lower() not in Installer.dataDirsMinus]
             dirDirsFiles.append((asDir, sDirs, sFiles))
             if not (sDirs or sFiles): emptyDirs.add(GPath(asDir))
-        progress(0, _(u'%s: Scanning...\n ') % rootName)
+        progress(0, _('%s: Scanning...\n ') % rootName)
         progress.setFull(1 + len(dirDirsFiles))
         for index, (asDir, sDirs, sFiles) in enumerate(dirDirsFiles):
             progress(index)
@@ -5065,17 +5065,17 @@ class Installer(
         changed = bool(pending) or (len(new_sizeCrcDate) != len(old_sizeCrcDate))
         # --Update crcs?
         if pending:
-            progress(0, _(u'%s: Calculating CRCs...\n ') % rootName)
+            progress(0, _('%s: Calculating CRCs...\n ') % rootName)
             progress.setFull(3 + len(pending))
             numndex = 0
             for index, rpFile in enumerate(sorted(pending)):  # Polemos: Bugfix and also added some extra info...
                 if progress_info:
                     try:
-                        string = (_(u'%s: Calculating CRCs...\n%s\nCRC: %s\nSize:  %sKB') %
+                        string = (_('%s: Calculating CRCs...\n%s\nCRC: %s\nSize:  %sKB') %
                                   (rootName, str(rpFile.s, sys.getfilesystemencoding()), apFile.crc,
                                    (apFile.size // 1024)))
                     except:
-                        string = (_(u'%s: Calculating CRCs...\n%s\nCRC:  %s\nSize:  %sKB') %
+                        string = (_('%s: Calculating CRCs...\n%s\nCRC:  %s\nSize:  %sKB') %
                                   (rootName, rpFile.s, apFile.crc, (apFile.size // 1024)))
                 if progress_info:
                     progress(index, string)
@@ -5439,7 +5439,7 @@ class InstallerArchive(Installer):
         self.crc = archive.xxh
         # Get fileSizeCrcs
         fileSizeCrcs = self.fileSizeCrcs = []
-        reList = re.compile(u'(Path|Folder|Size|CRC) = (.+)')
+        reList = re.compile('(Path|Folder|Size|CRC) = (.+)')
         file = size = crc = isdir = 0
         command = r'7z.exe l -slt -sccUTF-8 "%s"' % archive.s
         args = shlex.split(command)
@@ -5464,7 +5464,7 @@ class InstallerArchive(Installer):
                     file = size = crc = isdir = 0
         if not fileSizeCrcs:
             from .gui import dialog
-            dialog.ErrorMessage(None, _(u'7z module is'
+            dialog.ErrorMessage(None, _('7z module is'
                                             u' unable to read archive %s.\nTry extracting it and then repacking it before trying again.' % (
                                                 archive.s)))
             return
@@ -5476,18 +5476,18 @@ class InstallerArchive(Installer):
             check = fileNames
         except:
             from .gui import dialog
-            dialog.ErrorMessage(None, _(u'No files to extract for selected archive.'))
+            dialog.ErrorMessage(None, _('No files to extract for selected archive.'))
             return
         progress = progress or bolt.Progress()
         progress.state, progress.full = 0, len(fileNames)
         # --Dump file list
         try:
             with io.open(self.tempList.s, 'w', encoding='utf-8') as out:
-                out.write(u'\n'.join(fileNames))
+                out.write('\n'.join(fileNames))
         except:
             from .gui import dialog
             dialog.ErrorMessage(None,
-                                    _(u'There was a problem installing your package.\nPlease do a "Full Refresh" from the menu and try again.'))
+                                    _('There was a problem installing your package.\nPlease do a "Full Refresh" from the menu and try again.'))
             self.clearTemp()
             return
         self.clearTemp()
@@ -5510,7 +5510,7 @@ class InstallerArchive(Installer):
             check = result  # Polemos: Excepting is fast sometimes.
         except:
             from .gui import dialog # Polemos: In case of errors.
-            dialog.ErrorMessage(None, _(u"Errors occurred during extraction and/or Extraction failed."))
+            dialog.ErrorMessage(None, _("Errors occurred during extraction and/or Extraction failed."))
         # Ensure that no file is read only:
         for thedir, subdirs, files in os.walk(
                 self.tempDir.s):  # Polemos: replaced os.walk which is slow in Python 2.7 and below.
@@ -5535,10 +5535,10 @@ class InstallerArchive(Installer):
         dest_src = {x: y for x, y in self.refreshDataSizeCrc().items() if x in destFiles}
         if not dest_src: return 0
         # --Extract
-        progress(0, _(u'%s\nExtracting files...') % archive.s)
+        progress(0, _('%s\nExtracting files...') % archive.s)
         self.unpackToTemp(archive, dest_src.values(), SubProgress(progress, 0, 0.9))
         # --Move
-        progress(0.9, _(u'%s\nMoving files...') % archive.s)
+        progress(0.9, _('%s\nMoving files...') % archive.s)
         progress.state, progress.full = 0, len(dest_src)
         count = 0
         norm_ghost = Installer.getGhosted()
@@ -5564,10 +5564,10 @@ class InstallerArchive(Installer):
         destDir = dirs['installers'].join(project)
         if destDir.exists(): destDir.rmtree(safety='Installers')
         # --Extract
-        progress(0, project.s + _(u"\nExtracting files..."))
+        progress(0, project.s + _("\nExtracting files..."))
         self.unpackToTemp(archive, files, SubProgress(progress, 0, 0.9))
         # --Move
-        progress(0.9, project.s + _(u"\nMoving files..."))
+        progress(0.9, project.s + _("\nMoving files..."))
         progress.state, progress.full = 0, len(files)
         count = 0
         tempDir = self.tempDir
@@ -5677,7 +5677,7 @@ class InstallersData(bolt.TankData, DataDict):  # Polemos fixes
         bolt.TankData.__init__(self, settings)
         self.tankKey = 'mash.installers'
         self.tankColumns = settings['mash.installers.cols']
-        self.title = _(u'Installers')
+        self.title = _('Installers')
         # --Default Params
         self.defaultParam('columns', self.tankColumns)
         self.defaultParam('colWidths', settings['mash.installers.colWidths'])
@@ -5713,7 +5713,7 @@ class InstallersData(bolt.TankData, DataDict):  # Polemos fixes
         changed = False
         self.refreshRenamed()
         if not self.loaded:
-            progress(0, _(u'Loading Data...\n'))
+            progress(0, _('Loading Data...\n'))
             self.dictFile.load()
             data = self.dictFile.data
             self.data = data.get('installers', {})
@@ -5792,7 +5792,7 @@ class InstallersData(bolt.TankData, DataDict):  # Polemos fixes
             mashIni.set("General", "sInstallersDir", os.path.abspath(dirs["installers"].s))
             installers_po = u"[General]\nsInstallersDir=%s" % (
                 str(GPath(mashIni.get('General', 'sInstallersDir').strip())
-                    ).replace("bolt.Path(u'", '').replace("')", '')).decode('unicode_escape')
+                    ).replace("bolt.Path('", '').replace("')", '')).decode('unicode_escape')
             with io.open('mash.ini', 'wb+', encoding='utf-8') as f:
                 f.write(installers_po)
 
@@ -5982,10 +5982,10 @@ class InstallersData(bolt.TankData, DataDict):  # Polemos fixes
             for subPending, iClass in zip((pending - projects, pending & projects),
                                           (InstallerArchive, InstallerProject)):
                 if not subPending: continue
-                progress(0, _(u"Scanning Packages..."))
+                progress(0, _("Scanning Packages..."))
                 progress.setFull(len(subPending))
                 for index, package in enumerate(sorted(subPending)):
-                    progress(index, _(u"Scanning Packages...\n %s" % package.s))
+                    progress(index, _("Scanning Packages...\n %s" % package.s))
                     installer = newData.get(package)
                     if not installer: installer = newData.setdefault(package, iClass(package))
                     apath = dirs['installers'].join(package)
@@ -6258,15 +6258,15 @@ class InstallersData(bolt.TankData, DataDict):  # Polemos fixes
         for order, package, files in packConflicts:
             if showLower and (order > srcOrder) != isHigher:
                 isHigher = (order > srcOrder)
-                buff.write(u'= %s %s\n' % ((_(u'Lower'), _(u'Higher'))[isHigher], '=' * 40))
-            buff.write(u'==%d== %s\n' % (order, package))
+                buff.write('= %s %s\n' % ((_('Lower'), _('Higher'))[isHigher], '=' * 40))
+            buff.write('==%d== %s\n' % (order, package))
             for file in files:
                 buff.write(file)
                 buff.write('\n')
             buff.write('\n')
         report = buff.getvalue()
         if not conflictsMode and not report and not srcInstaller.isActive:
-            report = _(u"No Underrides. Mod is not completely un-installed.")
+            report = _("No Underrides. Mod is not completely un-installed.")
         return report
 
 
@@ -6451,7 +6451,7 @@ class FileRep(object):
     def save(self, outPath=None):
         """Save data to file.
         outPath -- Path of the output file to write to. Defaults to original file path."""
-        if (not self.canSave): raise StateError(_(u"Insufficient data to write file."))
+        if (not self.canSave): raise StateError(_("Insufficient data to write file."))
         if outPath is None:
             fileInfo = self.fileInfo
             outPath = os.path.join(fileInfo.dir, fileInfo.name)
@@ -6536,7 +6536,7 @@ class FileRefs(FileRep):
     def refresh(self):
         """Load data if file has changed since last load."""
         if self.isDamaged:
-            raise StateError(self.fileInfo.name + _(u': Attempted to access damaged file.'))
+            raise StateError(self.fileInfo.name + _(': Attempted to access damaged file.'))
         if not self.isLoaded:
             try:
                 self.load()
@@ -6635,7 +6635,7 @@ class FileRefs(FileRep):
     def save(self, outPath=None):
         """Save data to file.
         outPath -- Path of the output file to write to. Defaults to original file path."""
-        if (not self.canSave or self.skipObjRecords): raise StateError(_(u"Insufficient data to write file."))
+        if (not self.canSave or self.skipObjRecords): raise StateError(_("Insufficient data to write file."))
         if not outPath:
             fileInfo = self.fileInfo
             outPath = os.path.join(fileInfo.dir, fileInfo.name)
@@ -6665,7 +6665,7 @@ class FileRefs(FileRep):
     # --Renumbering-------------------------------------------------------------
     def getFirstObjectIndex(self):
         """Returns first object index number. Assumes that references are in linear order."""
-        if not self.fileInfo.isEsp(): raise StateError(_(u'FileRefs.renumberObjects is for esps only.'))
+        if not self.fileInfo.isEsp(): raise StateError(_('FileRefs.renumberObjects is for esps only.'))
         for cell in self.cells:
             objects = cell.getObjects()
             for object in objects.list():
@@ -6676,8 +6676,8 @@ class FileRefs(FileRep):
     def renumberObjects(self, first):
         """Offsets all local object index numbers by specified amount. FOR ESPS ONLY!
         Returns number of objects changed."""
-        if not self.fileInfo.isEsp(): raise StateError(_(u'FileRefs.renumberObjects is for esps only.'))
-        if first <= 0: raise ArgumentError(_(u'First index should be a positive integer'))
+        if not self.fileInfo.isEsp(): raise StateError(_('FileRefs.renumberObjects is for esps only.'))
+        if first <= 0: raise ArgumentError(_('First index should be a positive integer'))
         log = self.log
         next = int(first)
         for cell in self.cells:
@@ -6795,7 +6795,7 @@ class FileRefs(FileRep):
             if rnam and rnam.data == chr(255) * 4:
                 ids.append(record.getId())
         if ids:
-            self.log.setHeader(_(u'Detached Global Scripts'))
+            self.log.setHeader(_('Detached Global Scripts'))
             for id in sorted(ids, key=str.lower):
                 self.log(id)
 
@@ -6909,10 +6909,10 @@ class FileRefs(FileRep):
                     delCount[objBase] = delCount.get(objBase, 0) + 1
         # --Done
         log = self.log
-        log.setHeader(_(u'Cells Skipped:'))
+        log.setHeader(_('Cells Skipped:'))
         for cell in sorted(cellsSkipped, key=lambda a: a.lower()):
             log('  ' + cell)
-        log.setHeader(_(u'References Deleted:'))
+        log.setHeader(_('References Deleted:'))
         for objId in sorted(delCount.keys(), key=lambda a: a.lower()):
             log('  %03d  %s' % (delCount[objId], objId))
 
@@ -6935,13 +6935,13 @@ class FileRefs(FileRep):
         newRecords = refReplacer.getSrcRecords()
         if newRecords:
             selfIds = set([record.getId().lower() for record in self.records if record.getId()])
-            log.setHeader(_(u'Records added:'))
+            log.setHeader(_('Records added:'))
             for newId in sorted(newRecords.keys()):
                 if newId not in selfIds:
                     self.records.append(newRecords[newId])
                     log(newId)
         # --Log
-        log.setHeader(_(u'References replaced:'))
+        log.setHeader(_('References replaced:'))
         for oldId in sorted(replCount.keys(), key=lambda a: a.lower()):
             log('%03d %s' % (replCount[oldId], oldId))
         # --Return number of references replaced.
@@ -7017,7 +7017,7 @@ class WorldRefs(object):
         cntCells = 0
         progress = self.progress
         progress.setMax(len(masterRefs.cells))
-        progress(0.0, _(u"Building ") + masterName)
+        progress(0.0, _("Building ") + masterName)
         for cell, record in masterRefs.lands.items():
             self.lands[cell] = record
         for masterCell in masterRefs.cells:
@@ -7075,7 +7075,7 @@ class WorldRefs(object):
         # --Map'em
         for mmName in masterInfo.masterNames:
             if mmName not in self.masterNames:
-                raise MoshError(_(u"Miss-ordered esm: %s should load before %s") % (mmName, masterInfo.name))
+                raise MoshError(_("Miss-ordered esm: %s should load before %s") % (mmName, masterInfo.name))
             masterMap.append(self.masterNames.index(mmName) + 1)
         # --Done
         return masterMap
@@ -7086,7 +7086,7 @@ class WorldRefs(object):
         # --Make sure fileRefs for a save file!
         if not fileRefs.fileInfo.isEss():
             fileName = fileRefs.fileInfo.fileName
-            raise ArgumentError(_(u'Cannot remove debris cells from a non-save game!') + fileName)
+            raise ArgumentError(_('Cannot remove debris cells from a non-save game!') + fileName)
         log = self.log
         cntDebrisCells = 0
         log.setHeader("Debris Cells")
@@ -7107,7 +7107,7 @@ class WorldRefs(object):
         # --Make sure fileRefs for a save file!
         if not fileRefs.fileInfo.isEss():
             fileName = fileRefs.fileInfo.fileName
-            raise ArgumentError(_(u'Cannot remove save debris from a non-save game!') + fileName)
+            raise ArgumentError(_('Cannot remove save debris from a non-save game!') + fileName)
         goodRecords = []
         debrisIds = self.debrisIds
         debrisTypes = set(debrisIds.keys())
@@ -7132,7 +7132,7 @@ class WorldRefs(object):
             # --Log
             log = self.log
             for type in sorted(removedIds.keys()):
-                log.setHeader(_(u"Debris %s:") % (type,))
+                log.setHeader(_("Debris %s:") % (type,))
                 for id in sorted(removedIds[type], key=lambda a: a.lower()):
                     log('  ' + id)
                 cntDebrisIds += len(removedIds[type])
@@ -7143,12 +7143,12 @@ class WorldRefs(object):
         same leveled list."""
         if not fileRefs.fileInfo.isEss():
             fileName = fileRefs.fileInfo.fileName
-            raise ArgumentError(_(u'Cannot remove overriding lists from a non-save game!') + fileName)
+            raise ArgumentError(_('Cannot remove overriding lists from a non-save game!') + fileName)
         listTypes = {'LEVC', 'LEVI'}
         levListMasters = self.levListMasters
         log = self.log
         cntLists = 0
-        log.setHeader(_(u"Overriding Lists"))
+        log.setHeader(_("Overriding Lists"))
         # --Go through records and trim overriding lists.
         goodRecords = []
         for record in fileRefs.records:
@@ -7199,7 +7199,7 @@ class WorldRefs(object):
             if not isMod:
                 cellName = cell.cellName
                 if not (cell.flags & 1) and cellName and (cellName not in self.extCellNames):
-                    log(_(u"Debris Cell Name: ") + cellName)
+                    log(_("Debris Cell Name: ") + cellName)
                     cell.flags &= ~32
                     cell.cellName = ''
                     cell.setChanged()
@@ -7287,7 +7287,7 @@ class WorldRefs(object):
         if not fileRefs.fmap: return 0
         progress = self.progress
         progress.setMax((28 * 2) ** 2)
-        progress(0.0, _(u'Drawing Cells'))
+        progress(0.0, _('Drawing Cells'))
         proCount = 0
         for gridx in range(-28, 28, 1):
             for gridy in range(28, -28, -1):
@@ -7305,7 +7305,7 @@ class WorldRefs(object):
         if not fileRefs.fmap: return 0
         progress = self.progress
         progress.setMax((51 + 51) * (64 + 38))
-        progress(0.0, _(u'Drawing Cells'))
+        progress(0.0, _('Drawing Cells'))
         proCount = 0
         for gridx in range(-51, 51, 1):
             for gridy in range(38, -64, -1):
@@ -7367,7 +7367,7 @@ class FileDials(FileRep):
     def save(self, outPath=None):
         """Save data to file.
         outPath -- Path of the output file to write to. Defaults to original file path."""
-        if (not self.canSave): raise StateError(_(u"Insufficient data to write file."))
+        if (not self.canSave): raise StateError(_("Insufficient data to write file."))
         FileRep.save(self, outPath)
 
     def loadText(self, textFileName):
@@ -7699,7 +7699,7 @@ class FileLists(FileRep):
         log = self.log
         for label, levls in (('Creature', self.levcs), ('Item', self.levis)):
             if not len(levls): continue
-            log.setHeader(_(u'Merged %s Lists:') % (label,))
+            log.setHeader(_('Merged %s Lists:') % (label,))
             for listId in sorted(levls.keys(), key=lambda a: a.lower()):
                 log(listId)
                 for mod in srcMods[listId]: log('  ' + mod)
@@ -7742,7 +7742,7 @@ class FileScripts(FileRep):
     def save(self, outPath=None):
         """Save data to file.
         outPath -- Path of the output file to write to. Defaults to original file path."""
-        if not self.canSave: raise StateError(_(u'Insufficient data to write file.'))
+        if not self.canSave: raise StateError(_('Insufficient data to write file.'))
         FileRep.save(self, outPath)
 
     def loadText(self, textFileName):
@@ -7816,10 +7816,10 @@ class CharSetImporter(object):
                     v00, v30 = [int(stat) for stat in maStats.groups()]
                     curStats.append((v00, v30))
                 else:
-                    raise MoshError(_(u'Bad line in CharSet class file.') + line.strip() + ' >> ' + stripped)
+                    raise MoshError(_('Bad line in CharSet class file.') + line.strip() + ' >> ' + stripped)
         # --Post Parse
         for className, stats in self.classStats.items():
-            if len(stats) != 35: raise MoshError(_(u'Bad number of stats for class ') + className)
+            if len(stats) != 35: raise MoshError(_('Bad number of stats for class ') + className)
             stats = self.classStats[className] = dict(zip(statNames, stats))
             # --Health
             str00, str30 = stats['Strength']
@@ -7997,14 +7997,14 @@ class ScheduleGenerator(object):
                     # --Import
                     if section == 'import':
                         newPath = line.strip()
-                        log(_(u'IMPORT: ') + newPath)
+                        log(_('IMPORT: ') + newPath)
                         if not os.path.exists(newPath) and pickScheduleFile:
                             caption = "Find sub-import file %s:" % (newPath,)
                             newPath = pickScheduleFile(caption, newPath)
                         if not (newPath and os.path.exists(newPath)):
-                            raise StateError(u"Unable to import schedule file: " + line.strip())
+                            raise StateError("Unable to import schedule file: " + line.strip())
                         if newPath.lower() in [dir.lower() for dir in imported]:
-                            log(_(u'  [%s already imported.]') % (newPath,))
+                            log(_('  [%s already imported.]') % (newPath,))
                         else:
                             log.indent += '> '
                             imported.append(newPath)
@@ -8051,7 +8051,7 @@ class ScheduleGenerator(object):
                             maSleep = reSleep.match(chunk)
                             if not maSleep or maSleep.group(1) == '=':
                                 raise MoshError(
-                                    _(u'Bad sleep condition state for %s in %s: %s') % (section, town, line))
+                                    _('Bad sleep condition state for %s in %s: %s') % (section, town, line))
                             condition, state = maSleep.group(2), sleepStates[maSleep.group(1)]
                             condition = reIsMember.sub(r'getPCRank \1 >= 0', condition)
                             cellStates += ((condition, state),)
@@ -8071,7 +8071,7 @@ class ScheduleGenerator(object):
                         rem = reDef.sub(replDef, rem)
                         # --Cell
                         maCell = reCell.match(rem)
-                        if not maCell: raise MoshError(_(u'Pos cell not defined for %s %s %d') % (town, npc, cycle))
+                        if not maCell: raise MoshError(_('Pos cell not defined for %s %s %d') % (town, npc, cycle))
                         cell = maCell.group(1)
                         rem = rem[len(cell):].strip()
                         # --Pos
@@ -8165,7 +8165,7 @@ class ScheduleGenerator(object):
 
     def getResetScript(self):
         """Return SC_[Project]_ResetGS script."""
-        if not self.project: raise StateError(_(u'No project has been defined!'))
+        if not self.project: raise StateError(_('No project has been defined!'))
         text = self.tsReset0.substitute(project=self.project)
         for town in sorted(self.schedule.keys()): text += self.tsReset1.substitute(town=town)
         text += self.tsReset2.substitute(project=self.project)
@@ -8173,7 +8173,7 @@ class ScheduleGenerator(object):
 
     def getResetStatesScript(self):
         """Return SC_[Project]_ResetStatesGS script."""
-        if not self.project: raise StateError(_(u'No project has been defined!'))
+        if not self.project: raise StateError(_('No project has been defined!'))
         text = "begin SC_%s_ResetStatesGS\n" % (self.project,)
         text += ';--Sets state variables for %s project to zero.\n' % (self.project,)
         for town in sorted(self.schedule.keys()):
@@ -8268,7 +8268,7 @@ class ScheduleGenerator(object):
 
 def defaultini():  # Polemos: The default ini.
     """Create mash_default.ini if none exists."""
-    default_ini = (u';--This is the generic version of Mash.ini. If you want to set values here,\n'
+    default_ini = (';--This is the generic version of Mash.ini. If you want to set values here,\n'
                    u';  then copy this to "mash.ini" and edit as desired.\n'
                    u';Use mash.ini as an override when you need the Installers dir in a remote or relative location.\n'
                    u'[General]\n'

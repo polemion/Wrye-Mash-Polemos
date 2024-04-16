@@ -77,7 +77,7 @@ def setIcon(parent, imgPath=None):
 class ProgressDialog(mosh.Progress):  # Polemos: fix for newer wxpythons.
     """Prints progress to file (stdout by default)."""
 
-    def __init__(self, title=_(u'Progress'), message='', parent=None, interval=0.1):
+    def __init__(self, title=_('Progress'), message='', parent=None, interval=0.1):
         """Init."""
         style = wx.PD_ELAPSED_TIME | wx.PD_AUTO_HIDE | wx.STAY_ON_TOP
         self.dialog = wx.ProgressDialog(title, message, 100, parent, style)
@@ -116,7 +116,7 @@ class WaitDialog(wx.BusyInfo, wx.BusyCursor):
 class GaugeDialog(wx.Dialog):  # Polemos
     """A custom progress dialog."""
 
-    def __init__(self, parent, message=_(u'Please wait...'), title=_(u'Progress...'), max=100):
+    def __init__(self, parent, message=_('Please wait...'), title=_('Progress...'), max=100):
         """Init."""
         wx.Dialog.__init__(self, parent, id=wx.ID_ANY, title=title, pos=dPos, size=(382, 96),
                            style=wx.CAPTION | wx.STAY_ON_TOP)
@@ -164,7 +164,7 @@ class GaugeDialog(wx.Dialog):  # Polemos
 class netProgressDialog(object):  # Polemos
     """Progress dialog for Nash (internet module) update."""
 
-    def __init__(self, caption=_(u'Please wait...'), message=_(u'Checking for new version...'), maximum=5, parent=None):
+    def __init__(self, caption=_('Please wait...'), message=_('Checking for new version...'), maximum=5, parent=None):
         """Init."""
         self.dialog = wx.ProgressDialog(caption, message, maximum, parent, style=wx.PD_ELAPSED_TIME | wx.PD_AUTO_HIDE)
 
@@ -175,11 +175,11 @@ class netProgressDialog(object):  # Polemos
 
     def update(self, counter=1):
         """Update dialog, on 5th step destroy."""
-        self.doProgress(counter, _(u'Checking for new version...'))
+        self.doProgress(counter, _('Checking for new version...'))
         if counter == 5: self.Destroy()
 
     def Destroy(self):
-        self.doProgress(5, _(u'Finished...'))
+        self.doProgress(5, _('Finished...'))
         self.dialog.Destroy()
 
 
@@ -187,7 +187,7 @@ class ConflictDialog(wx.Dialog):  # Polemos
     """A file-tree copy resolution dialog."""
     GetData = False
 
-    def __init__(self, parent, modName, title=_(u'Target folder already exists...')):
+    def __init__(self, parent, modName, title=_('Target folder already exists...')):
         """Init."""
         wx.Dialog.__init__(self, parent, id=wx.ID_ANY, title=title, pos=dPos, size=Size(507, 129),
                            style=wx.DEFAULT_DIALOG_STYLE | wx.STAY_ON_TOP)
@@ -199,16 +199,16 @@ class ConflictDialog(wx.Dialog):  # Polemos
             self.warn_bmp = wx.StaticBitmap(self.panel, wx.ID_ANY, wx.Bitmap('images/warning.png', wx.BITMAP_TYPE_ANY),
                                             dPos, dSize, 0)
             self.textQ = wx.StaticText(self.panel, wx.ID_ANY,
-                                       _(u'A mod folder with the same name already exists. How do you wish to proceed?'),
+                                       _('A mod folder with the same name already exists. How do you wish to proceed?'),
                                        dPos, Size(-1, -1), 0)
             self.textMod = wx.TextCtrl(self.panel, wx.ID_ANY, modName, dPos, Size(-1, 20),
                                        0 | wx.SIMPLE_BORDER | wx.TE_PROCESS_ENTER)
-            self.chkBox = wx.CheckBox(self, wx.ID_ANY, _(u'Backup existing mod...'), dPos, dSize, 0)
+            self.chkBox = wx.CheckBox(self, wx.ID_ANY, _('Backup existing mod...'), dPos, dSize, 0)
             # Buttons
-            self.rename_btn = wx.Button(self.panel, wx.ID_ANY, _(u'Rename mod:'), dPos, Size(95, 22), 0)
-            self.overwrite_btn = wx.Button(self, wx.ID_ANY, _(u'Overwrite...'), dPos, Size(85, 22), 0)
-            self.replace_btn = wx.Button(self, wx.ID_ANY, _(u'Replace...'), dPos, Size(75, 22), 0)
-            self.cancel_btn = wx.Button(self, wx.ID_CANCEL, _(u'Cancel'), dPos, Size(55, 22), 0)
+            self.rename_btn = wx.Button(self.panel, wx.ID_ANY, _('Rename mod:'), dPos, Size(95, 22), 0)
+            self.overwrite_btn = wx.Button(self, wx.ID_ANY, _('Overwrite...'), dPos, Size(85, 22), 0)
+            self.replace_btn = wx.Button(self, wx.ID_ANY, _('Replace...'), dPos, Size(75, 22), 0)
+            self.cancel_btn = wx.Button(self, wx.ID_CANCEL, _('Cancel'), dPos, Size(55, 22), 0)
 
         if True:  # Theming
             self.panel.SetForegroundColour(wx.Colour(0, 0, 0))
@@ -285,7 +285,7 @@ def askdialog(parent, question, caption, cnl=False):  # Polemos
     return dialog
 
 
-def DirDialog(parent, message=_(u'Choose a directory.'), defaultPath=''):  # Polemos
+def DirDialog(parent, message=_('Choose a directory.'), defaultPath=''):  # Polemos
     """Shows a modal directory dialog and return the resulting path, or None if canceled."""
     with wx.DirDialog(parent, message, defaultPath, style=wx.DD_NEW_DIR_BUTTON) as dialog:
         dialog.ShowModal()
@@ -293,8 +293,8 @@ def DirDialog(parent, message=_(u'Choose a directory.'), defaultPath=''):  # Pol
     return None if not path else path
 
 
-def FileDialog(parent, message=_(u'Choose a file.'), defaultPath='', defaultfile='',
-               wildcard=_(u'Executable files (*.exe)|*.exe')):  # Polemos
+def FileDialog(parent, message=_('Choose a file.'), defaultPath='', defaultfile='',
+               wildcard=_('Executable files (*.exe)|*.exe')):  # Polemos
     """Shows a modal find file dialog and returns the resulting file path and filename or None if canceled."""
     with wx.FileDialog(parent, message, defaultPath, defaultfile, wildcard,
                        style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as dialog:
@@ -303,7 +303,7 @@ def FileDialog(parent, message=_(u'Choose a file.'), defaultPath='', defaultfile
     return None if not path else (path, filename)
 
 
-def ContinueQuery(parent, tmessage, message, continueKey, title=_(u'Warning'), nBtn=True):  # Polemos
+def ContinueQuery(parent, tmessage, message, continueKey, title=_('Warning'), nBtn=True):  # Polemos
     """Shows a modal continue query if value of continueKey is false. Returns True to continue.
         Also provides checkbox "Don't show this in future." to set continueKey to true."""
     # Init actions
@@ -316,9 +316,9 @@ def ContinueQuery(parent, tmessage, message, continueKey, title=_(u'Warning'), n
     cntBox = wx.StaticBox(dialog, wx.ID_ANY, '')
     title = wx.StaticText(cntBox, wx.ID_ANY, tmessage, dPos, dSize, 0)
     main = wx.StaticText(cntBox, wx.ID_ANY, message, dPos, dSize, 0)
-    okBtn = wx.Button(dialog, wx.ID_OK, _(u'OK' if not nBtn else u'Yes'), dPos, dSize, 0)
-    show = wx.CheckBox(dialog, wx.ID_ANY, _(u' Don\'t show this in the future.'), dPos, dSize, 0)
-    cnlBtn = wx.Button(dialog, wx.ID_CANCEL, _(u'No'), dPos, dSize, 0)
+    okBtn = wx.Button(dialog, wx.ID_OK, _('OK' if not nBtn else u'Yes'), dPos, dSize, 0)
+    show = wx.CheckBox(dialog, wx.ID_ANY, _(' Don\'t show this in the future.'), dPos, dSize, 0)
+    cnlBtn = wx.Button(dialog, wx.ID_CANCEL, _('No'), dPos, dSize, 0)
     # Theming
     dialog.SetForegroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_WINDOWTEXT))
     dialog.SetBackgroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_WINDOW))
@@ -375,7 +375,7 @@ def LogMessage(parent, message, logText, title=u'', style=0, asDialog=True):
 class WelcomeDialog(wx.Dialog):  # Polemos
     """Shows a welcome message."""
 
-    def __init__(self, parent, headtext, detailstext, title=_(u'Welcome!!!')):
+    def __init__(self, parent, headtext, detailstext, title=_('Welcome!!!')):
         """Init."""
         wx.Dialog.__init__(self, parent, id=wx.ID_ANY, title=title, pos=dPos, size=(389, 141),
                            style=wx.DEFAULT_DIALOG_STYLE | wx.STAY_ON_TOP)
@@ -387,7 +387,7 @@ class WelcomeDialog(wx.Dialog):  # Polemos
                                        dSize, 0)
             headline = wx.StaticText(panel, wx.ID_ANY, headtext, dPos, dSize, 0)
             details = wx.StaticText(panel, wx.ID_ANY, detailstext, dPos, dSize, 0)
-            okBtn = wx.Button(self, wx.ID_OK, _(u'OK'), dPos, Size(65, 23), 0)
+            okBtn = wx.Button(self, wx.ID_OK, _('OK'), dPos, Size(65, 23), 0)
 
         if True:  # Theming
             panel.SetBackgroundColour(wx.Colour(255, 255, 255))
@@ -434,7 +434,7 @@ class ModInstallDialog(wx.Dialog):  # Polemos
     def __init__(self, parent, modname, data_files, package_data, package_name_data,
                  style=wx.DEFAULT_DIALOG_STYLE | wx.STAY_ON_TOP):
         """Init."""
-        wx.Dialog.__init__(self, parent, id=wx.ID_ANY, title=_(u'Mod Installation...'), pos=dPos, size=Size(419, 85),
+        wx.Dialog.__init__(self, parent, id=wx.ID_ANY, title=_('Mod Installation...'), pos=dPos, size=Size(419, 85),
                            style=style)
         self.package_data = package_data
         self.data_files = data_files
@@ -442,13 +442,13 @@ class ModInstallDialog(wx.Dialog):  # Polemos
 
         if True:  # Contents
             # Main
-            self.text = wx.StaticText(self, wx.ID_ANY, _(u'Mod Name:     '), dPos, Size(-1, -1), 0)
+            self.text = wx.StaticText(self, wx.ID_ANY, _('Mod Name:     '), dPos, Size(-1, -1), 0)
             self.mod_name = wx.TextCtrl(self, wx.ID_ANY, u'', dPos, Size(-1, 20), 0 | wx.SIMPLE_BORDER)
             self.mod_name.SetLabel(modname)
             # Buttons
-            self.advanced_btn = wx.Button(self, wx.ID_ANY, _(u'Advanced'), dPos, Size(75, 21), 0)
-            self.ok_btn = wx.Button(self, wx.ID_OK, _(u'OK'), dPos, Size(35, 21), 0)
-            self.cancel_btn = wx.Button(self, wx.ID_CANCEL, _(u'Cancel'), dPos, Size(60, 21), 0)
+            self.advanced_btn = wx.Button(self, wx.ID_ANY, _('Advanced'), dPos, Size(75, 21), 0)
+            self.ok_btn = wx.Button(self, wx.ID_OK, _('OK'), dPos, Size(35, 21), 0)
+            self.cancel_btn = wx.Button(self, wx.ID_CANCEL, _('Cancel'), dPos, Size(60, 21), 0)
 
         if True:  # Theming
             self.SetForegroundColour(wx.Colour(0, 0, 0))
@@ -503,16 +503,16 @@ class RenameDialog(wx.Dialog):  # Polemos
     """Rename target."""
     GetModName = False
 
-    def __init__(self, parent, oldName, title=_(u'Rename mod...'), style=wx.DEFAULT_DIALOG_STYLE | wx.STAY_ON_TOP):
+    def __init__(self, parent, oldName, title=_('Rename mod...'), style=wx.DEFAULT_DIALOG_STYLE | wx.STAY_ON_TOP):
         """Init."""
         wx.Dialog.__init__(self, parent, id=wx.ID_ANY, title=title, pos=dPos, size=Size(450, 107), style=style)
         self.SetSizeHints(-1, -1)
         self.oldName = oldName
         if True:  # Contents
-            self.text = wx.StaticText(self, wx.ID_ANY, _(u'Please select a new mod name:'), dPos, dSize, 0)
+            self.text = wx.StaticText(self, wx.ID_ANY, _('Please select a new mod name:'), dPos, dSize, 0)
             self.field = wx.TextCtrl(self, wx.ID_ANY, u'', dPos, Size(-1, 20), 0 | wx.SIMPLE_BORDER)
-            self.rename_btn = wx.Button(self, wx.ID_ANY, _(u'Rename'), dPos, Size(65, 22), 0)
-            self.cancel_btn = wx.Button(self, wx.ID_CANCEL, _(u'Cancel'), dPos, Size(60, 22), 0)
+            self.rename_btn = wx.Button(self, wx.ID_ANY, _('Rename'), dPos, Size(65, 22), 0)
+            self.cancel_btn = wx.Button(self, wx.ID_CANCEL, _('Cancel'), dPos, Size(60, 22), 0)
         if True:  # Theming
             self.field.SetForegroundColour(wx.Colour(0, 0, 0))
             self.field.SetBackgroundColour(wx.Colour(255, 255, 255))
@@ -559,7 +559,7 @@ class RenameDialog(wx.Dialog):  # Polemos
         self.Destroy()
 
 
-def InfoMessage(parent, message, title=_(u'Information'), style=(wx.OK | wx.ICON_INFORMATION | wx.STAY_ON_TOP)):
+def InfoMessage(parent, message, title=_('Information'), style=(wx.OK | wx.ICON_INFORMATION | wx.STAY_ON_TOP)):
     """Shows a modal information message."""
     return Message(parent, message, title, style)
 
@@ -568,7 +568,7 @@ def ManualDetectDialog(parent, message, title=u'',
                        style=wx.YES_NO | wx.ICON_EXCLAMATION | wx.STAY_ON_TOP | wx.CANCEL):  # Polemos
     """Manually or autodetect dialog."""
     with wx.MessageDialog(parent, message, title, style) as dialog:
-        dialog.SetYesNoLabels(_(u'Try to autodetect'), _(u'Manual search'))
+        dialog.SetYesNoLabels(_('Try to autodetect'), _('Manual search'))
         result = dialog.ShowModal()
     return result
 
@@ -578,7 +578,7 @@ def WarningQuery(parent, message, title=u'', style=(wx.YES_NO | wx.ICON_EXCLAMAT
     return Message(parent, message, title, style)
 
 
-def WarningMessage(parent, message, title=_(u'Warning'), style=(wx.OK | wx.ICON_EXCLAMATION | wx.STAY_ON_TOP)):
+def WarningMessage(parent, message, title=_('Warning'), style=(wx.OK | wx.ICON_EXCLAMATION | wx.STAY_ON_TOP)):
     """Shows a modal warning message."""
     return Message(parent, message, title, style)
 
@@ -588,7 +588,7 @@ def ErrorQuery(parent, message, title=u'', style=(wx.YES_NO | wx.ICON_HAND | wx.
     return Message(parent, message, title, style)
 
 
-def ErrorMessage(parent, message, title=_(u'Error'), style=(wx.OK | wx.ICON_HAND | wx.STAY_ON_TOP), dtype='error',
+def ErrorMessage(parent, message, title=_('Error'), style=(wx.OK | wx.ICON_HAND | wx.STAY_ON_TOP), dtype='error',
                  modal=True):
     """Shows a modal error message."""
     return Message(parent, message, title, style) if modal else MessageU(parent, message, dtype, title, modal)
@@ -623,7 +623,7 @@ class MessageU(wx.Dialog):
                                    dSize, 0)
             headTxt = wx.StaticText(panel, wx.ID_ANY, hmsg, dPos, dSize, 0)
             mainTxt = wx.StaticText(panel, wx.ID_ANY, msg, dPos, dSize, 0)
-            self.okBtn = wx.Button(self, wx.ID_OK, _(u'OK (%s)' % self.count), dPos, dSize, 0)
+            self.okBtn = wx.Button(self, wx.ID_OK, _('OK (%s)' % self.count), dPos, dSize, 0)
 
         if True:  # Theming
             self.SetBackgroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_WINDOW))
@@ -659,7 +659,7 @@ class MessageU(wx.Dialog):
             self.Destroy()
         else:
             self.count -= 1
-            self.okBtn.SetLabel(_(u'OK (%s)' % self.count))
+            self.okBtn.SetLabel(_('OK (%s)' % self.count))
 
 
 class ScrolledtextMessage(wx.Dialog):  # Polemos
@@ -694,8 +694,8 @@ class MaxCharDialog(wx.Dialog):  # Polemos
             captionBox = wx.StaticBox(self, wx.ID_ANY, caption)
             self.fld_po = wx.TextCtrl(captionBox, wx.ID_ANY, current, dPos, dSize, wx.TE_MULTILINE)
             self.fldchars = wx.TextCtrl(captionBox, wx.ID_ANY, self.char_remain(), dPos, dSize, wx.TE_READONLY)
-            self.btnOK = wx.Button(captionBox, wx.ID_OK, _(u'OK'), dPos, (-1, 22), 0)
-            btnCancel = wx.Button(captionBox, wx.ID_CANCEL, _(u'Cancel'), dPos, (-1, 22), 0)
+            self.btnOK = wx.Button(captionBox, wx.ID_OK, _('OK'), dPos, (-1, 22), 0)
+            btnCancel = wx.Button(captionBox, wx.ID_CANCEL, _('Cancel'), dPos, (-1, 22), 0)
         if True:  # Layout
             btnSizer = wx.BoxSizer(wx.HORIZONTAL)
             btnSizer.AddMany([(self.btnOK, 0, 0, 5), ((0, 0), 1, 0, 5), (self.fldchars, 0, 0, 5), ((0, 0), 1, 0, 5),
@@ -722,7 +722,7 @@ class MaxCharDialog(wx.Dialog):  # Polemos
 
     def char_remain(self):
         """Show remaining chars."""
-        current = _(u'Chars: %s of %s' % (len(self.fld_po.GetValue()), self.maxchar))
+        current = _('Chars: %s of %s' % (len(self.fld_po.GetValue()), self.maxchar))
         return current
 
     def char_update(self, event):
@@ -776,35 +776,35 @@ class date_time_dialog(wx.Dialog):  # Polemos
             # Title
             self.info = wx.StaticText(self, wx.ID_ANY, caption, dPos, dSize, 0)
             # Date
-            dateBox = wx.StaticBox(self, wx.ID_ANY, _(u'Date:'))
-            self.month_static = wx.StaticText(dateBox, wx.ID_ANY, _(u'Month:'), dPos, dSize, 0)
+            dateBox = wx.StaticBox(self, wx.ID_ANY, _('Date:'))
+            self.month_static = wx.StaticText(dateBox, wx.ID_ANY, _('Month:'), dPos, dSize, 0)
             self.month = wx.SpinCtrl(dateBox, wx.ID_ANY, u'', dPos, Size(65, -1),
                                      wx.SP_ARROW_KEYS | wx.SP_WRAP | wx.ALIGN_CENTER_HORIZONTAL, 1, 12, month)
-            self.day_static = wx.StaticText(dateBox, wx.ID_ANY, _(u'Day:'), dPos, dSize, 0)
+            self.day_static = wx.StaticText(dateBox, wx.ID_ANY, _('Day:'), dPos, dSize, 0)
             self.day = wx.SpinCtrl(dateBox, wx.ID_ANY, u'', dPos, Size(65, -1),
                                    wx.SP_ARROW_KEYS | wx.SP_WRAP | wx.ALIGN_CENTER_HORIZONTAL, 1, 31, day)
-            self.year_static = wx.StaticText(dateBox, wx.ID_ANY, _(u'Year:'), dPos, dSize, 0)
+            self.year_static = wx.StaticText(dateBox, wx.ID_ANY, _('Year:'), dPos, dSize, 0)
             self.year = wx.SpinCtrl(dateBox, wx.ID_ANY, u'', dPos, Size(85, -1),
                                     wx.SP_ARROW_KEYS | wx.SP_WRAP | wx.ALIGN_CENTER_HORIZONTAL, 1970, 2038, year)
             # Time
-            timeBox = wx.StaticBox(self, wx.ID_ANY, _(u'Time:'))
-            self.hour_static = wx.StaticText(timeBox, wx.ID_ANY, _(u'Hour:'), dPos, dSize, 0)
+            timeBox = wx.StaticBox(self, wx.ID_ANY, _('Time:'))
+            self.hour_static = wx.StaticText(timeBox, wx.ID_ANY, _('Hour:'), dPos, dSize, 0)
             self.hour = wx.SpinCtrl(timeBox, wx.ID_ANY, u'', dPos, Size(65, -1),
                                     wx.SP_ARROW_KEYS | wx.SP_WRAP | wx.ALIGN_CENTER_HORIZONTAL, 0, 23, hour)
-            self.min_static = wx.StaticText(timeBox, wx.ID_ANY, _(u'Min:'), dPos, dSize, 0)
+            self.min_static = wx.StaticText(timeBox, wx.ID_ANY, _('Min:'), dPos, dSize, 0)
             self.min = wx.SpinCtrl(timeBox, wx.ID_ANY, u'', dPos, Size(65, -1),
                                    wx.SP_ARROW_KEYS | wx.SP_WRAP | wx.ALIGN_CENTER_HORIZONTAL, 0, 59, min)
-            self.sec_static = wx.StaticText(timeBox, wx.ID_ANY, _(u'Sec:'), dPos, dSize, 0)
+            self.sec_static = wx.StaticText(timeBox, wx.ID_ANY, _('Sec:'), dPos, dSize, 0)
             self.sec = wx.SpinCtrl(timeBox, wx.ID_ANY, u'', dPos, Size(65, -1),
                                    wx.SP_ARROW_KEYS | wx.SP_WRAP | wx.ALIGN_CENTER_HORIZONTAL, 0, 59, sec)
             # Manual insert
-            mnlBox = wx.StaticBox(self, wx.ID_ANY, _(u'Insert Date/Time Manually (mm/dd/YYYY, hh:mm:ss):'))
+            mnlBox = wx.StaticBox(self, wx.ID_ANY, _('Insert Date/Time Manually (mm/dd/YYYY, hh:mm:ss):'))
             self.mnlTxtCtrl = wx.TextCtrl(mnlBox, wx.ID_ANY, '', dPos, dSize, 0)
             # Buttons area
-            self.ok_button = wx.Button(self, wx.ID_OK, _(u'OK'), dPos, (-1, 22), 0)
+            self.ok_button = wx.Button(self, wx.ID_OK, _('OK'), dPos, (-1, 22), 0)
             self.smplTextCtrl = wx.TextCtrl(self, wx.ID_ANY, self.curDT, dPos, dSize,
                                             wx.TE_CENTRE | wx.TE_READONLY | wx.SIMPLE_BORDER)
-            self.cancel_button = wx.Button(self, wx.ID_CANCEL, _(u'Cancel'), dPos, (-1, 22), 0)
+            self.cancel_button = wx.Button(self, wx.ID_CANCEL, _('Cancel'), dPos, (-1, 22), 0)
 
         if True:  # Theming
             self.SetForegroundColour(wx.Colour(255, 255, 255))
@@ -908,7 +908,7 @@ class SimpleListDialog(wx.Dialog):  # Polemos
     """A simple modal list dialog."""
     Selection = None
 
-    def __init__(self, parent, choices, msg=_(u'Choose an item:'), title=_(u'Select item'), size=Size(380, 230)):
+    def __init__(self, parent, choices, msg=_('Choose an item:'), title=_('Select item'), size=Size(380, 230)):
         """Init."""
         wx.Dialog.__init__(self, parent, id=wx.ID_ANY, title=title, pos=dPos, size=size,
                            style=wx.DEFAULT_DIALOG_STYLE | wx.STAY_ON_TOP)
@@ -919,8 +919,8 @@ class SimpleListDialog(wx.Dialog):  # Polemos
         if True:  # Content
             self.intro = wx.StaticText(self, wx.ID_ANY, msg, dPos, dSize, 0)
             self.wxlist = wx.ListBox(self, wx.ID_ANY, dPos, dSize, self.choices, wx.LB_ALWAYS_SB)
-            self.ok_btn = wx.Button(self, wx.ID_OK, _(u'OK'), dPos, Size(40, 22), 0)
-            self.cancel_btn = wx.Button(self, wx.ID_CANCEL, _(u'Cancel'), dPos, Size(55, 22), 0)
+            self.ok_btn = wx.Button(self, wx.ID_OK, _('OK'), dPos, Size(40, 22), 0)
+            self.cancel_btn = wx.Button(self, wx.ID_CANCEL, _('Cancel'), dPos, Size(55, 22), 0)
 
         if True:  # Theming
             self.intro.Wrap(-1)
@@ -990,11 +990,11 @@ class ListDialog(wx.Dialog):  # Polemos
             self.contents_list = wx.ListBox(self, wx.ID_ANY, dPos, dSize, u'', wx.LB_ALWAYS_SB | wx.LB_SORT)
 
         if True:  # Buttons
-            self.add_button = wx.Button(self, wx.ID_ANY, _(u'Add'), dPos, (60, 26), 0)
-            self.edit_button = wx.Button(self, wx.ID_ANY, _(u'Edit'), dPos, (60, 26), 0)
-            self.remove_button = wx.Button(self, wx.ID_ANY, _(u'Remove'), dPos, (60, 26), 0)
-            self.ok_button = wx.Button(self, wx.ID_OK, _(u'OK'), dPos, (60, 26), 0)
-            self.cancel_button = wx.Button(self, wx.ID_CANCEL, _(u'Cancel'), dPos, (60, 26), 0)
+            self.add_button = wx.Button(self, wx.ID_ANY, _('Add'), dPos, (60, 26), 0)
+            self.edit_button = wx.Button(self, wx.ID_ANY, _('Edit'), dPos, (60, 26), 0)
+            self.remove_button = wx.Button(self, wx.ID_ANY, _('Remove'), dPos, (60, 26), 0)
+            self.ok_button = wx.Button(self, wx.ID_OK, _('OK'), dPos, (60, 26), 0)
+            self.cancel_button = wx.Button(self, wx.ID_CANCEL, _('Cancel'), dPos, (60, 26), 0)
 
         if True:  # Theming
             self.contents_list.SetFont(
@@ -1040,7 +1040,7 @@ class ListDialog(wx.Dialog):  # Polemos
 
     def add(self, event):
         """Add item."""
-        dialog = ItemDialog(self, _(u'Add Command'), {u'': u''})
+        dialog = ItemDialog(self, _('Add Command'), {u'': u''})
         value = dialog.GetValue
         if value == {u'': u''}:
             return
@@ -1052,8 +1052,8 @@ class ListDialog(wx.Dialog):  # Polemos
         """On item select actions."""
         try:
             command = self.contents_list.GetString(self.contents_list.GetSelection())
-            name, args = command.split(u' : ')
-            name, args = name.strip(u'[] '), args.strip(u'[] ')
+            name, args = command.split(' : ')
+            name, args = name.strip('[] '), args.strip('[] ')
             return name, args, {name: args}
         except:
             pass  # In a way we propagate the exception to the caller.
@@ -1064,7 +1064,7 @@ class ListDialog(wx.Dialog):  # Polemos
             name, args, result = self.CurrentItem()
         except:
             return
-        dialog = ItemDialog(self, _(u'Edit Command'), result)
+        dialog = ItemDialog(self, _('Edit Command'), result)
         value = dialog.GetValue
         if value == {u'': u''}:
             return
@@ -1098,15 +1098,15 @@ class ItemDialog(wx.Dialog):  # Polemos
         for x in item: name, command = x, item[x]
 
         if True:  # Contents
-            boxName = wx.StaticBox(self, -1, _(u'Name'))
-            boxCommand = wx.StaticBox(self, -1, _(u'Command (add %target% variable for target file)'))
+            boxName = wx.StaticBox(self, -1, _('Name'))
+            boxCommand = wx.StaticBox(self, -1, _('Command (add %target% variable for target file)'))
             self.name = wx.TextCtrl(self, wx.ID_ANY, name, dPos, dSize, wx.TE_NO_VSCROLL)
             self.command = wx.TextCtrl(self, wx.ID_ANY, command, dPos, dSize, 0)
             self.status_text = wx.StaticText(self, wx.ID_ANY, u'', dPos, dSize,
                                              wx.ALIGN_CENTRE)  # Polemos Todo: Show errors.
             self.status_text.Wrap(-1)
-            self.ok_button = wx.Button(self, wx.ID_OK, _(u'OK'), dPos, dSize, 0)
-            self.cancel_button = wx.Button(self, wx.ID_CANCEL, _(u'Cancel'), dPos, dSize, 0)
+            self.ok_button = wx.Button(self, wx.ID_OK, _('OK'), dPos, dSize, 0)
+            self.cancel_button = wx.Button(self, wx.ID_CANCEL, _('Cancel'), dPos, dSize, 0)
 
         if True:  # Theming
             self.SetBackgroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_WINDOW))
@@ -1158,13 +1158,13 @@ class RunDialog(wx.Dialog):  # Polemos
 
     def __init__(self, parent, style=wx.CAPTION | wx.DEFAULT_DIALOG_STYLE | wx.STAY_ON_TOP):
         """Init."""
-        wx.Dialog.__init__(self, parent, id=wx.ID_ANY, title=_(u'Run...'), pos=dPos, size=Size(398, 116), style=style)
+        wx.Dialog.__init__(self, parent, id=wx.ID_ANY, title=_('Run...'), pos=dPos, size=Size(398, 116), style=style)
 
         if True:  # Content
-            boxCommand = wx.StaticBox(self, -1, _(u'Command (add %target% variable for target file)'))
+            boxCommand = wx.StaticBox(self, -1, _('Command (add %target% variable for target file)'))
             self.input_text = wx.TextCtrl(self, wx.ID_ANY, u'', dPos, dSize, wx.TE_NO_VSCROLL)
-            self.run_button = wx.Button(self, wx.ID_ANY, _(u'Execute Command'), dPos, dSize, 0)
-            self.cancel_button = wx.Button(self, wx.ID_CANCEL, _(u'Cancel'), dPos, dSize, 0)
+            self.run_button = wx.Button(self, wx.ID_ANY, _('Execute Command'), dPos, dSize, 0)
+            self.cancel_button = wx.Button(self, wx.ID_CANCEL, _('Cancel'), dPos, dSize, 0)
 
         if True:  # Theming
             self.SetForegroundColour(wx.Colour(0, 0, 0))
@@ -1227,21 +1227,21 @@ class UtilsDialog(wx.Dialog):  # Polemos: so many things here... also moved from
         self.SetMinSize(size)
 
         if True:  # components
-            txtProg = wx.StaticText(self.Panel, -1, _(u'Program'))
+            txtProg = wx.StaticText(self.Panel, -1, _('Program'))
             self.fldProg = wx.TextCtrl(self.Panel, -1, value=data[1], style=wx.TE_READONLY)
             btnBrowse = button(self.Panel, id=-1, label=_('...'), name='btnBrowse', onClick=self.OpenFile,
-                               tip=_(u'Browse for a program.'))
+                               tip=_('Browse for a program.'))
 
-            txtArguments = wx.StaticText(self.Panel, -1, _(u'Arguments'))
+            txtArguments = wx.StaticText(self.Panel, -1, _('Arguments'))
             self.fldArguments = wx.TextCtrl(self.Panel, -1, value=data[2])
 
-            txtDesc = wx.StaticText(self.Panel, -1, _(u'Description'))
+            txtDesc = wx.StaticText(self.Panel, -1, _('Description'))
             self.fldDesc = wx.TextCtrl(self.Panel, -1, style=wx.TE_MULTILINE, value=data[3])
             self.fldDesc.SetBackgroundColour((255, 255, 255))
             self.fldDesc.SetMinSize(Size(-1, 100))
 
-            btnOk = button(self.Panel, id=wx.ID_OK, label=_(u'OK'), name='btnOk', onClick=self.SaveUtility)
-            btnCancel = button(self.Panel, id=wx.ID_CANCEL, label=_(u'Cancel'), name='btnCancel', onClick=self.Cancel)
+            btnOk = button(self.Panel, id=wx.ID_OK, label=_('OK'), name='btnOk', onClick=self.SaveUtility)
+            btnCancel = button(self.Panel, id=wx.ID_CANCEL, label=_('Cancel'), name='btnCancel', onClick=self.Cancel)
 
         if True:  # Layout
             sizerProg = wx.BoxSizer(wx.HORIZONTAL)
@@ -1267,7 +1267,7 @@ class UtilsDialog(wx.Dialog):  # Polemos: so many things here... also moved from
 
     def OpenFile(self, event):  # Polemos fix
         """Opens the file dialog to set the utility program."""
-        dialog = wx.FileDialog(self, _(u'Choose the new utility.'), '', '', '*.*', wx.FD_OPEN)
+        dialog = wx.FileDialog(self, _('Choose the new utility.'), '', '', '*.*', wx.FD_OPEN)
         if dialog.ShowModal() != wx.ID_OK:
             dialog.Destroy()
             return
@@ -1304,8 +1304,8 @@ class AdvLog(wx.Dialog):  # Polemos
             self.text_log = wx.TextCtrl(self, wx.ID_ANY, u'', dPos, dSize,
                                         wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH)
             self.text_log.SetBackgroundColour((255, 255, 255))
-            self.OK_btn = wx.Button(self, wx.ID_OK, _(u'OK'), dPos, dSize, 0)
-            self.savelog_btn = wx.Button(self, wx.ID_ANY, _(u'Save Log'), dPos, dSize, 0)
+            self.OK_btn = wx.Button(self, wx.ID_OK, _('OK'), dPos, dSize, 0)
+            self.savelog_btn = wx.Button(self, wx.ID_ANY, _('Save Log'), dPos, dSize, 0)
 
         if True:  # Layout
             btn_sizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -1329,9 +1329,9 @@ class AdvLog(wx.Dialog):  # Polemos
 
     def start(self):
         """Cosmetic stuff."""
-        self.SetTitle(_(u'Please Wait...'))
+        self.SetTitle(_('Please Wait...'))
         self.text_log.SetDefaultStyle(wx.TextAttr(wx.BLUE))
-        self.text_log.WriteText(_(u'\nProcedure is being initialized. Please wait.'
+        self.text_log.WriteText(_('\nProcedure is being initialized. Please wait.'
                                   u'\n--------------------------------------------\n'))
 
     def write(self, data, color='BLACK'):
@@ -1390,7 +1390,7 @@ class AdvLog(wx.Dialog):  # Polemos
         """Cosmetic finish."""
         self.SetTitle(self.title)
         self.text_log.SetDefaultStyle(wx.TextAttr(wx.BLUE))
-        self.text_log.WriteText(_(u'\n\nFinished.\n\n'))
+        self.text_log.WriteText(_('\n\nFinished.\n\n'))
         self.log_done = True
 
     def winlog(self):
@@ -1399,7 +1399,7 @@ class AdvLog(wx.Dialog):  # Polemos
 
     def savelog(self, event):
         """Option to save log."""
-        dialog = wx.FileDialog(self, _(u'Save log'), singletons.MashDir, self.logname, '*.log',
+        dialog = wx.FileDialog(self, _('Save log'), singletons.MashDir, self.logname, '*.log',
                                wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT)
         if dialog.ShowModal() == wx.ID_OK:
             fileName = os.path.join(dialog.GetDirectory(), dialog.GetFilename())
@@ -1435,7 +1435,7 @@ class ArchiveExplorer(wx.Dialog):  # Polemos
     selectedItem = ''
     GetTreeValue = None
 
-    def __init__(self, package_data, advData=None, title=_(u'Install Plugin...')):
+    def __init__(self, package_data, advData=None, title=_('Install Plugin...')):
         """Init."""
         parent, archive, archiveData = package_data
         wx.Dialog.__init__(self, parent, id=wx.ID_ANY, title=title, pos=(-1, -1), size=(400, 350),
@@ -1446,14 +1446,14 @@ class ArchiveExplorer(wx.Dialog):  # Polemos
         self.timer_po()
 
         if True:  # Contents
-            self.archiveText = wx.StaticText(self, wx.ID_ANY, _(u'Contents of: %s' % archive), dPos, dSize,
+            self.archiveText = wx.StaticText(self, wx.ID_ANY, _('Contents of: %s' % archive), dPos, dSize,
                                              wx.ALIGN_CENTRE)
-            archBoxTitle = wx.StaticBox(self, wx.ID_ANY, _(u'Right click on a folder for options:'))
+            archBoxTitle = wx.StaticBox(self, wx.ID_ANY, _('Right click on a folder for options:'))
             self.archiveTree = wx.TreeCtrl(archBoxTitle, wx.ID_ANY, dPos, dSize, wx.TR_DEFAULT_STYLE)
-            self.statusText = wx.StaticText(self, wx.ID_ANY, _(u'Please select the mod\'s root folder.'), dPos, dSize,
+            self.statusText = wx.StaticText(self, wx.ID_ANY, _('Please select the mod\'s root folder.'), dPos, dSize,
                                             wx.ALIGN_CENTRE | wx.STATIC_BORDER)
-            self.ok_btn = wx.Button(self, wx.ID_OK, _(u'OK'), dPos, dSize, 0)
-            self.cancel_btn = wx.Button(self, wx.ID_CANCEL, _(u'Cancel'), dPos, dSize, 0)
+            self.ok_btn = wx.Button(self, wx.ID_OK, _('OK'), dPos, dSize, 0)
+            self.cancel_btn = wx.Button(self, wx.ID_CANCEL, _('Cancel'), dPos, dSize, 0)
 
         if True:  # Content Settings
             self.ok_btn.SetDefault()
@@ -1546,7 +1546,7 @@ class ArchiveExplorer(wx.Dialog):  # Polemos
             self.dataItem = self.selectedItem
             self.archiveTree.SetItemTextColour(self.dataItem, wx.BLUE)
             self.archiveTree.SetItemBold(self.dataItem)
-            self.statusText.SetLabel(_(u'Mod\'s root folder set.'))
+            self.statusText.SetLabel(_('Mod\'s root folder set.'))
             self.statusText.SetForegroundColour(wx.BLUE)
             self.Layout()
             self.treeFactory(self.dataItem)
@@ -1555,7 +1555,7 @@ class ArchiveExplorer(wx.Dialog):  # Polemos
             self.dataSet = False
             unsetOld()
             self.dataItem = ''
-            self.statusText.SetLabel(_(u'Please select the mod\'s root folder.'))
+            self.statusText.SetLabel(_('Please select the mod\'s root folder.'))
             self.statusText.SetForegroundColour(wx.Colour(255, 0, 0))
             self.GetTreeValue = None
             self.Layout()
@@ -1566,8 +1566,8 @@ class ArchiveExplorer(wx.Dialog):  # Polemos
 
         # Menu items
         context = wx.Menu()
-        setmenu = context.Append(-1, _(u'Set as the Mod\'s root.'))
-        unsetmenu = context.Append(-1, _(u'Unset folder.'))
+        setmenu = context.Append(-1, _('Set as the Mod\'s root.'))
+        unsetmenu = context.Append(-1, _('Unset folder.'))
         # Rules
         if not self.dataSet:
             if unsetmenu.IsEnabled(): unsetmenu.Enable(False)
@@ -1591,7 +1591,7 @@ class ArchiveExplorer(wx.Dialog):  # Polemos
         # Set max depth fo the tree
         self.depth_levels = ['lvl%s' % x for x in range(self.max_depth)]
         # Make root name user friendly
-        self.root = self.archiveTree.AddRoot(_(u'Archive root'))
+        self.root = self.archiveTree.AddRoot(_('Archive root'))
         # Append root children
         for folder in self.folders:
             if folder[2] == 0:
@@ -1641,7 +1641,7 @@ class HelpDialog(wx.Dialog):  # Polemos
     def __init__(self, parent, images, pos, size,
                  style=wx.DEFAULT_DIALOG_STYLE | wx.MAXIMIZE_BOX | wx.MINIMIZE_BOX | wx.RESIZE_BORDER | wx.STAY_ON_TOP):
         """Init."""
-        wx.Dialog.__init__(self, parent, id=wx.ID_ANY, title=_(u'Wrye Mash Help.'), pos=pos, size=size, style=style)
+        wx.Dialog.__init__(self, parent, id=wx.ID_ANY, title=_('Wrye Mash Help.'), pos=pos, size=size, style=style)
         self.openmw = conf.settings['openmw']
         singletons.helpBrowser = self
         self.SetIcons(images['mash.main.ico'].GetIconBundle())
@@ -1652,12 +1652,12 @@ class HelpDialog(wx.Dialog):  # Polemos
             self.indexPanel = wx.Panel(self.main, wx.ID_ANY, dPos, dSize, wx.TAB_TRAVERSAL)
             self.contentPanel = wx.Panel(self.main, wx.ID_ANY, dPos, dSize, wx.TAB_TRAVERSAL)
             # Content
-            self.conText = wx.StaticText(self.indexPanel, wx.ID_ANY, _(u'Help Index:'), dPos, dSize,
+            self.conText = wx.StaticText(self.indexPanel, wx.ID_ANY, _('Help Index:'), dPos, dSize,
                                          wx.ALIGN_CENTRE_HORIZONTAL)
             self.search = wx.SearchCtrl(self.indexPanel, wx.ID_ANY, '', dPos, dSize, 0)
             self.search.Hide()  # Disabled for now.
             self.index = wx.TreeCtrl(self.indexPanel, wx.ID_ANY, dPos, dSize, wx.TR_HIDE_ROOT | wx.TR_NO_LINES)
-            self.indexInf = wx.StaticText(self.indexPanel, wx.ID_ANY, _(u'Navigate with double clicking.'), dPos, dSize,
+            self.indexInf = wx.StaticText(self.indexPanel, wx.ID_ANY, _('Navigate with double clicking.'), dPos, dSize,
                                           0)
             self.help = wx.html.HtmlWindow(self.contentPanel, wx.ID_ANY, dPos, dSize, wx.html.HW_SCROLLBAR_AUTO)
         if True:  # Theme
@@ -1730,8 +1730,8 @@ class HelpDialog(wx.Dialog):  # Polemos
 
         # Menu items
         context = wx.Menu()
-        CopyItm = context.Append(-1, _(u'Copy'))
-        SelectAll = context.Append(-1, _(u'Select All'))
+        CopyItm = context.Append(-1, _('Copy'))
+        SelectAll = context.Append(-1, _('Select All'))
         # Events
         self.Bind(wx.EVT_MENU, copyAct, CopyItm)
         self.Bind(wx.EVT_MENU, SelectAllAct, SelectAll)
@@ -1778,7 +1778,7 @@ class HelpDialog(wx.Dialog):  # Polemos
                 last = False
                 tmp = []
         # Add to index
-        self.root = self.index.AddRoot(_(u'Contents:'))
+        self.root = self.index.AddRoot(_('Contents:'))
         for x in indexRaw: self.index.AppendItem(self.root, x)
 
     def loadHelp(self):
@@ -1813,7 +1813,7 @@ class ConfBackup(wx.Dialog):
 
     def __init__(self, parent=None):
         """Init."""
-        wx.Dialog.__init__(self, parent, id=wx.ID_ANY, title=_(u'Backup/Restore Configuration'), pos=dPos,
+        wx.Dialog.__init__(self, parent, id=wx.ID_ANY, title=_('Backup/Restore Configuration'), pos=dPos,
                            size=wx.Size(602, 300), style=wx.DEFAULT_DIALOG_STYLE | wx.STAY_ON_TOP)
         self.SetSizeHints(-1, -1)
         self.confFileNamesTemplate = ('morrowind.ini', 'openmw.cfg', 'pluginlist.json')
@@ -1824,14 +1824,14 @@ class ConfBackup(wx.Dialog):
         if True:  # Content
             # Main
             self.intro = wx.StaticText(self, wx.ID_ANY,
-                                       _(u'Use [Ctrl] + [Left Mouse Click] to select/unselect multiple items:'), dPos,
+                                       _('Use [Ctrl] + [Left Mouse Click] to select/unselect multiple items:'), dPos,
                                        dSize, 0)
             self.cnfList = wx.ListBox(self, wx.ID_ANY, dPos, dSize, cnfListChoices, wx.LB_ALWAYS_SB | wx.LB_EXTENDED)
             # Buttons
-            self.res_btn = wx.Button(self, wx.ID_ANY, _(u'Restore Selected'), dPos, wx.Size(160, 22), 0)
-            self.del_btn = wx.Button(self, wx.ID_ANY, _(u'Delete Selected'), dPos, wx.Size(160, 22), 0)
-            self.bck_btn = wx.Button(self, wx.ID_ANY, _(u'Backup Current Configuration'), dPos, wx.Size(180, 22), 0)
-            self.cnl_btn = wx.Button(self, wx.ID_CANCEL, _(u'Exit'), dPos, wx.Size(55, 22), 0)
+            self.res_btn = wx.Button(self, wx.ID_ANY, _('Restore Selected'), dPos, wx.Size(160, 22), 0)
+            self.del_btn = wx.Button(self, wx.ID_ANY, _('Delete Selected'), dPos, wx.Size(160, 22), 0)
+            self.bck_btn = wx.Button(self, wx.ID_ANY, _('Backup Current Configuration'), dPos, wx.Size(180, 22), 0)
+            self.cnl_btn = wx.Button(self, wx.ID_CANCEL, _('Exit'), dPos, wx.Size(55, 22), 0)
 
         if True:  # Theming
             self.intro.Wrap(-1)
@@ -1890,7 +1890,7 @@ class ConfBackup(wx.Dialog):
         if not os.path.isdir(self.confBckDir):  # One final check...
             os.makedirs(self.confBckDir)
             if not os.path.isdir(self.confBckDir):  # Failed.
-                ErrorMessage(None, _(u'Access Denied: Unable to create a folder storage for backups!!\n\n'
+                ErrorMessage(None, _('Access Denied: Unable to create a folder storage for backups!!\n\n'
                                      u'To proceed you neeed to manually create the following folder first:\n%s' % self.confBckDir))
                 self.OnExit(None)
 
@@ -1928,7 +1928,7 @@ class ConfBackup(wx.Dialog):
                 src = os.path.join(self.confBckDir, fnameS)
                 dst = os.path.join(conf.settings['mwDir'], fname)
             else:
-                WarningMessage(self, _(u'Unable to Restore:\n\nMorrowind is not set correctly in settings.\n'
+                WarningMessage(self, _('Unable to Restore:\n\nMorrowind is not set correctly in settings.\n'
                                        u'Please open the settings window and check the configuration.'))
                 return
         elif fname.lower() == 'openmw.cfg':  # OpenMW
@@ -1936,7 +1936,7 @@ class ConfBackup(wx.Dialog):
                 src = os.path.join(self.confBckDir, fnameS)
                 dst = os.path.join(conf.settings['openmwprofile'], fname)
             else:
-                WarningMessage(self, _(u'Unable to Restore:\n\nOpenMW is not set in settings.\n'
+                WarningMessage(self, _('Unable to Restore:\n\nOpenMW is not set in settings.\n'
                                        u'Please open the settings window and set the configuration of OpenMW.'))
                 return
         elif fname.lower() == 'pluginlist.json':  # TES3mp
@@ -1944,16 +1944,16 @@ class ConfBackup(wx.Dialog):
                 src = os.path.join(self.confBckDir, fnameS)
                 dst = os.path.join(conf.settings['TES3mpConf'], fname)
             else:
-                WarningMessage(self, _(u'Unable to Restore:\n\nTES3mp is not set in settings.\n'
+                WarningMessage(self, _('Unable to Restore:\n\nTES3mp is not set in settings.\n'
                                        u'Please open the settings window and set the configuration of TES3mp.'))
                 return
         # File actions.
         try:
             copyfile(src, dst)
         except IOError as err:  # Access Denied.
-            ErrorMessage(self, _(u'Access Denied, unable to overwrite destination:\n\n%s') % err, _(u'Access Denied'))
+            ErrorMessage(self, _('Access Denied, unable to overwrite destination:\n\n%s') % err, _('Access Denied'))
         except Exception as err:  # Who knows.
-            ErrorMessage(self, _(u'An error occurred while trying to restore:\n\n%s' % err))
+            ErrorMessage(self, _('An error occurred while trying to restore:\n\n%s' % err))
 
     def backup(self, event):
         """Backup actions"""
@@ -1965,7 +1965,7 @@ class ConfBackup(wx.Dialog):
             try:
                 copyfile(src, dst)
             except Exception as err:
-                ErrorMessage(self, _(u'An error occurred while trying to backup configuration:\n\n%s' % err))
+                ErrorMessage(self, _('An error occurred while trying to backup configuration:\n\n%s' % err))
         self.cnfList.SetItems(self.setConfList())
 
     def delete(self, event):
@@ -1976,7 +1976,7 @@ class ConfBackup(wx.Dialog):
             try:
                 os.remove(target)
             except Exception as err:
-                ErrorMessage(self, _(u'An error occurred while trying to delete the selected item(s):\n\n%s' % err))
+                ErrorMessage(self, _('An error occurred while trying to delete the selected item(s):\n\n%s' % err))
         self.cnfList.SetItems(self.setConfList())
 
     def OnExit(self, event):

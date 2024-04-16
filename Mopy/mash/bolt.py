@@ -441,7 +441,7 @@ class Path(object):  # Polemos: Unicode fixes.
                     break
                 except OSError:
                     time.sleep(2)
-            # if self.isdir(): self.message_po((u'Error: Access denied.\n\nCannot delete %s.' % (self._s))) #
+            # if self.isdir(): self.message_po(('Error: Access denied.\n\nCannot delete %s.' % (self._s))) #
             # Polemos: Looks nice to have, ain't it? Don't try it, seriously don't.                         #
 
     # --start, move, copy, touch, untemp
@@ -521,7 +521,7 @@ class Path(object):  # Polemos: Unicode fixes.
         """Custom messaging."""
         from .gui import dialog
         if message is None:
-            message = _(u'Errors occurred during file operations.\nTry running Wrye Mash with Admin rights.')
+            message = _('Errors occurred during file operations.\nTry running Wrye Mash with Admin rights.')
         dialog.ErrorMessage(None, _(message))
         return
 
@@ -532,7 +532,7 @@ class Path(object):  # Polemos: Unicode fixes.
             try:
                 os.chmod(path, stat.S_IWRITE)  # Part pythonic,
             except:
-                check_call(u'attrib -R %s /S' % (path))  # part hackish (Yeah I know).
+                check_call('attrib -R %s /S' % (path))  # part hackish (Yeah I know).
 
         try:
             write_on(path)
@@ -543,7 +543,7 @@ class Path(object):  # Polemos: Unicode fixes.
             elif action == 'shutil.move':
                 shutil.move(path, destdir)  # Not implemented.
         except:
-            pass  # self.message_po(_(u'Error: Access denied.\nTry running Wrye Mash with Admin rights.')) #
+            pass  # self.message_po(_('Error: Access denied.\nTry running Wrye Mash with Admin rights.')) #
             # Polemos: Nope, nope... nope...                                                         #
 
     def undeny_1err(self, func, path, _):  # Polemos
@@ -841,7 +841,7 @@ class MetaStamp(object):  # Polemos
 
     def MetaCreate(self):
         """Create mod metafile."""
-        metatext = (u'[General]',
+        metatext = ('[General]',
                     u'Installer=%s' % self.Installer,
                     u'Version=%s' % self.Version,
                     u'NoUpdateVer=',
@@ -886,7 +886,7 @@ class MetaParse(object):  # Polemos
                 u'Category': '',
                 u'Repo': '',
                 u'ID': ''}
-        reList = re.compile(u'(Installer|Version|NoUpdateVer|NewVersion|Category|Repo|ID)=(.+)')
+        reList = re.compile('(Installer|Version|NoUpdateVer|NewVersion|Category|Repo|ID)=(.+)')
         metadata = self.metaScan(metafile)[:]
         # Main
         for x in metadata:
@@ -949,13 +949,13 @@ class ModInstall(object):  # Polemos
             msg = _(
                 u'Error: Unable to backup existing mod folder!!!\n\nInstallation was aborted, no actions were taken.')
         elif error == 'install':
-            msg = _(u'Error: Could not finish installation!!!\n\nInstallation was aborted.')
+            msg = _('Error: Could not finish installation!!!\n\nInstallation was aborted.')
         elif error == 'rename':
-            msg = _(u'Error: An invalid mod name was supplied!!!\n\nInstallation was aborted, no actions were taken.')
+            msg = _('Error: An invalid mod name was supplied!!!\n\nInstallation was aborted, no actions were taken.')
         elif error == 'overwrite':
-            msg = _(u'Error: Unable to merge mods!!!\n\nInstallation was aborted.')
+            msg = _('Error: Unable to merge mods!!!\n\nInstallation was aborted.')
         elif error == 'replace':
-            msg = _(u'Error: Unable to delete existing mod folder!!!\n\nInstallation was aborted.')
+            msg = _('Error: Unable to delete existing mod folder!!!\n\nInstallation was aborted.')
         dialog.ErrorMessage(self.parent, msg)
 
     def chkStatus(self):
@@ -977,8 +977,8 @@ class ModInstall(object):  # Polemos
         from .gui import dialog
         if source_dir is not None: self.source_dir = source_dir
         if target_dir is not None:  self.target_dir = target_dir
-        self.dialog = dialog.GaugeDialog(self.parent, title=_(u'Installing...'), max=self.filesLen)
-        self.dialog.set_msg(_(u'Installing...'))
+        self.dialog = dialog.GaugeDialog(self.parent, title=_('Installing...'), max=self.filesLen)
+        self.dialog.set_msg(_('Installing...'))
         self.progress()  # todo: make modal
         thrd = thread.Thread(target=self.treeOp, args=('treeOpThread',))
         thrd.start()
@@ -1011,7 +1011,7 @@ class ModInstall(object):  # Polemos
             except:
                 pass
         self.dialog.update(self.filesLen)
-        self.dialog.set_msg(_(u'Finished...'))
+        self.dialog.set_msg(_('Finished...'))
         time.sleep(2)  # Give some time for system file caching.
         self.dialog.Destroy()
 
@@ -1312,7 +1312,7 @@ class MultiThreadGauge(object):  # Polemos
         self.mode = mode
         if mode == 'unpack':
             package_tempdir, package_path, data_files = packData
-            title = _(u'Unpacking...')
+            title = _('Unpacking...')
             if data_files == '\\':
                 data_files = ''
             else:
@@ -1322,7 +1322,7 @@ class MultiThreadGauge(object):  # Polemos
         if mode == 'pack':
             pack_source, pack_target = packData
             if pack_target.endswith('.rar'): pack_target = '%s.7z' % pack_target[:-4]
-            title = _(u'Packing...')
+            title = _('Packing...')
             cmd = r'7z.exe -bb -bsp1 a "%s" "%s\*"' % (pack_target, pack_source)
             cmd = cmd.replace('\\', '/')
         self.cmd = cmd
@@ -1352,9 +1352,9 @@ class MultiThreadGauge(object):  # Polemos
         """Quit functions."""
         self.output.stdout.close()
         if self.mode == 'unpack':
-            msg0, msg1 = _(u'Finishing Unpacking...'), _(u'Finished Unpacking.')
+            msg0, msg1 = _('Finishing Unpacking...'), _('Finished Unpacking.')
         else:
-            msg0, msg1 = _(u'Finishing Packing...'), _(u'Finished Packing.')
+            msg0, msg1 = _('Finishing Packing...'), _('Finished Packing.')
         self.update(99, msg0)
         self.update(100, msg1)
         time.sleep(1)
@@ -1398,7 +1398,7 @@ class MainFunctions(object):
         key = attrs.pop(0)
         func = self.funcs.get(key)
         if not func:
-            print(_(u'Unknown function/object:'), key)
+            print(_('Unknown function/object:'), key)
             return
         for attr in attrs: func = getattr(func, attr)
         # --Separate out keywords args
@@ -1550,7 +1550,7 @@ class Settings(DataDict):
     def setChanged(self, key):
         """Marks given key as having been changed. Use if value is a dictionary, list or other object."""
         if key not in self.data:
-            raise ArgumentError(_(u'No settings data for %s' % key))
+            raise ArgumentError(_('No settings data for %s' % key))
         if key not in self.changed:
             self.changed.append(key)
 
@@ -2045,7 +2045,7 @@ class Progress(object):
     """Progress Callable: Shows progress when called."""
 
     def __init__(self, full=1.0):
-        if (1.0 * full) == 0: raise ArgumentError(_(u'Full must be non-zero!'))
+        if (1.0 * full) == 0: raise ArgumentError(_('Full must be non-zero!'))
         self.message = ''
         self.full = full
         self.state = 0
@@ -2053,7 +2053,7 @@ class Progress(object):
 
     def setFull(self, full):
         """Set's full and for convenience, returns self."""
-        if (1.0 * full) == 0: raise ArgumentError(_(u'Full must be non-zero!'))
+        if (1.0 * full) == 0: raise ArgumentError(_('Full must be non-zero!'))
         self.full = full
         return self
 
@@ -2063,7 +2063,7 @@ class Progress(object):
 
     def __call__(self, state, message=''):
         """Update progress with current state. Progress is state/full."""
-        if (1.0 * self.full) == 0: raise ArgumentError(_(u'Full must be non-zero!'))
+        if (1.0 * self.full) == 0: raise ArgumentError(_('Full must be non-zero!'))
         if message: self.message = message
         if self.debug: deprint('%0.3f %s' % (1.0 * state // self.full, self.message))
         self.doProgress(1.0 * state // self.full, self.message)
@@ -2087,7 +2087,7 @@ class SubProgress(Progress):
         Progress.__init__(self, full)
         if baseTo == '+1': baseTo = baseFrom + 1
         if (baseFrom < 0 or baseFrom >= baseTo):
-            raise ArgumentError(_(u'BaseFrom must be >= 0 and BaseTo must be > BaseFrom'))
+            raise ArgumentError(_('BaseFrom must be >= 0 and BaseTo must be > BaseFrom'))
         self.parent = parent
         self.baseFrom = baseFrom
         self.scale = 1.0 * (baseTo - baseFrom)

@@ -150,7 +150,7 @@ def fChk(data):
 
 def n_path(path):  # Goofy but it works.
     """Returns a normalized bolt path when everything else fails."""
-    return str(path).replace("bolt.Path(u'", "").replace('bolt.Path(u"', '').replace("')", "").replace('")', '')
+    return str(path).replace("bolt.Path('", "").replace('bolt.Path("', '').replace("')", "").replace('")', '')
 
 def uniformatDate(value):
     """Convert time to string formatted to a locale neutral date/time."""

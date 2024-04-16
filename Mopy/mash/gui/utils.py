@@ -94,7 +94,7 @@ class UtilsPanel(gui.NotebookPanel):  # Polemos: changes and fixes.
 
     def SetStatusCount(self):  # Polemos: fix
         """Sets status bar count field."""
-        text = _(u'Utilities: %d') % (len(singletons.utilsList.data.data),)
+        text = _('Utilities: %d') % (len(singletons.utilsList.data.data),)
         singletons.statusBar.SetStatusField(text, 2)
 
     def OnSashDrag(self, event):
@@ -207,7 +207,7 @@ class UtilsList(gui.List):  # Polemos: Changes and optimizations.
         elif col == 'Flag':  # Polemos: Not enabled, todo: remove?
             pass
         else:
-            raise mosh.SortKeyError(_(u'Unrecognized sort key: %s' % col))  # Polemos: fix
+            raise mosh.SortKeyError(_('Unrecognized sort key: %s' % col))  # Polemos: fix
         # --Ascending
         if reverse: self.items.reverse()
 
@@ -268,7 +268,7 @@ class UtilsList(gui.List):  # Polemos: Changes and optimizations.
                         args_po.encode('utf-8').decode('utf-8')))
                     Popen(command, shell=True, stdin=PIPE, stdout=PIPE)
             except:
-                gui.dialog.WarningMessage(self, _(u"A problem "
+                gui.dialog.WarningMessage(self, _("A problem "
                                                   u"has occurred while opening '%s'.\nYou should edit 'utils.dcg' and update the corresponding line." % u))
 
     def NewItem(self):

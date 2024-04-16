@@ -474,7 +474,7 @@ def genSchedule(fileName, espName=None):
     else:
         init(2)
         fileInfo = mosh.modInfos.data.get(espName)
-        if not fileInfo: raise _(u'No such file: ') + espName
+        if not fileInfo: raise _('No such file: ') + espName
         generator.save(fileInfo)
 
 

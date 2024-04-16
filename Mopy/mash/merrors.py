@@ -104,7 +104,7 @@ class Tes3Error(mError):
         self.inName = inName
 
     def __str__(self):
-        return u'%s -> %s' % (self.inName or _(u'Unknown File'), self.message)
+        return u'%s -> %s' % (self.inName or _('Unknown File'), self.message)
 
 
 class Tes3ReadError(Tes3Error):
@@ -115,9 +115,9 @@ class Tes3ReadError(Tes3Error):
         self.tryPos = tryPos
         self.maxPos = maxPos
         if tryPos < 0:
-            message = (_(u'%s: Attempted to read before (%d) beginning of file/buffer.') % (recType, tryPos))
+            message = (_('%s: Attempted to read before (%d) beginning of file/buffer.') % (recType, tryPos))
         else:
-            message = (_(u'%s: Attempted to read past (%d) end (%d) of file/buffer.') % (recType, tryPos, maxPos))
+            message = (_('%s: Attempted to read past (%d) end (%d) of file/buffer.') % (recType, tryPos, maxPos))
         Tes3Error.__init__(self, inName, message)
 
 
@@ -130,7 +130,7 @@ class Tes3RefError(Tes3Error):
         self.iObj = iObj
         self.objId = objId
         self.masterName = masterName
-        message = (_(u'%s: Bad Ref: %s: objId: %s iObj: %d') % (inName, cellId, objId, iObj))
+        message = (_('%s: Bad Ref: %s: objId: %s iObj: %d') % (inName, cellId, objId, iObj))
         if iMod: message += u' iMod: %d [%s]' % (iMod, masterName)
         Tes3Error.__init__(self, inName, message)
 
@@ -144,9 +144,9 @@ class Tes3SizeError(Tes3Error):
         self.maxSize = maxSize
         self.exactSize = exactSize
         if exactSize:
-            messageForm = _(u'%s: Expected size == %d, but got: %d ')
+            messageForm = _('%s: Expected size == %d, but got: %d ')
         else:
-            messageForm = _(u'%s: Expected size <= %d, but got: %d ')
+            messageForm = _('%s: Expected size <= %d, but got: %d ')
         Tes3Error.__init__(self, inName, messageForm % (recName, readSize, maxSize))
 
 
@@ -154,7 +154,7 @@ class Tes3UnknownSubRecord(Tes3Error):
     """TES3 Error: Unknown subrecord."""
 
     def __init__(self, inName, subName, recName):
-        Tes3Error.__init__(self, inName, _(u'Extraneous subrecord (%s) in %s record.')
+        Tes3Error.__init__(self, inName, _('Extraneous subrecord (%s) in %s record.')
                            % (subName, recName))
 
 
@@ -162,14 +162,14 @@ class Tes3UnknownSubRecord(Tes3Error):
 class MaxLoadedError(mError):
     """Usage Error: Attempt to add a mod to load list when load list is full."""
 
-    def __init__(self, message=_(u'Load list is full.')):
+    def __init__(self, message=_('Load list is full.')):
         mError.__init__(self, message)
 
 
 class SortKeyError(mError):
     """Unknown Error: Unrecognized sort key."""
 
-    def __init__(self, message=_(u'Unrecognized sort key.')):
+    def __init__(self, message=_('Unrecognized sort key.')):
         mError.__init__(self, message)
 
 
@@ -177,7 +177,7 @@ class SortKeyError(mError):
 class MashError(mError):
     """Mash Error: Unrecognized sort key."""
 
-    def __init__(self, col=u'', message=_(u'Unrecognized sort key')):
+    def __init__(self, col=u'', message=_('Unrecognized sort key')):
         if col is None: col = u''
         mError.__init__(self, u'%s%s%s' % (message, u': ' if col or col is None else u'.', col))
 

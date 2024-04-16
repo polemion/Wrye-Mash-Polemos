@@ -39,18 +39,18 @@ class TES3lint_Settings(
 
     def __init__(self, parent, pos):
         """The settings mini window."""
-        wx.Dialog.__init__(self, parent, id=wx.ID_ANY, title=_(u'TES3lint Settings'), pos=pos, size=(331, 494),
+        wx.Dialog.__init__(self, parent, id=wx.ID_ANY, title=_('TES3lint Settings'), pos=pos, size=(331, 494),
                            style=wx.DEFAULT_DIALOG_STYLE)
 
         if True:  # Box Sizers
-            perl_sizer = wx.StaticBoxSizer(wx.StaticBox(self, wx.ID_ANY, _(u'Perl Executable:')), wx.HORIZONTAL)
-            tesl3int_sizer = wx.StaticBoxSizer(wx.StaticBox(self, wx.ID_ANY, _(u'TES3lint Script Location:')),
+            perl_sizer = wx.StaticBoxSizer(wx.StaticBox(self, wx.ID_ANY, _('Perl Executable:')), wx.HORIZONTAL)
+            tesl3int_sizer = wx.StaticBoxSizer(wx.StaticBox(self, wx.ID_ANY, _('TES3lint Script Location:')),
                                                wx.HORIZONTAL)
-            custom_flags_teslint_sizer = wx.StaticBoxSizer(wx.StaticBox(self, wx.ID_ANY, _(u'Custom Flags:')),
+            custom_flags_teslint_sizer = wx.StaticBoxSizer(wx.StaticBox(self, wx.ID_ANY, _('Custom Flags:')),
                                                            wx.VERTICAL)
             extras_teslint_sizer = wx.StaticBoxSizer(
-                wx.StaticBox(self, wx.ID_ANY, _(u'Extra Options (May cause freezes):')), wx.VERTICAL)
-            result_sizer = wx.StaticBoxSizer(wx.StaticBox(self, wx.ID_ANY, _(u'Final Command:')), wx.HORIZONTAL)
+                wx.StaticBox(self, wx.ID_ANY, _('Extra Options (May cause freezes):')), wx.VERTICAL)
+            result_sizer = wx.StaticBoxSizer(wx.StaticBox(self, wx.ID_ANY, _('Final Command:')), wx.HORIZONTAL)
 
         if True:  # Content
             # Perl Field/Button:
@@ -61,10 +61,10 @@ class TES3lint_Settings(
                                               wx.TE_NO_VSCROLL)
             self.browse_teslint_btn = wx.Button(tesl3int_sizer.GetStaticBox(), wx.ID_ANY, u'...', dPos, dSize, 0)
             # Recommended Flags:
-            flags_radio_boxChoices = [_(u'-n  "normal" output flags on (fastest)'),
-                                      _(u' -r  "recommended" output flags on (slow)'),
-                                      _(u'-a  all output flags on. (slowest)'),
-                                      _(u' -f "flags" specify flags below (separated by comma):')]
+            flags_radio_boxChoices = [_('-n  "normal" output flags on (fastest)'),
+                                      _(' -r  "recommended" output flags on (slow)'),
+                                      _('-a  all output flags on. (slowest)'),
+                                      _(' -f "flags" specify flags below (separated by comma):')]
             self.flags_radio_box = wx.RadioBox(self, wx.ID_ANY, u'Recommended Lists of Flags:', dPos, dSize,
                                                flags_radio_boxChoices, 1, 0)
             self.flags_radio_box.SetSelection(0)
@@ -73,15 +73,15 @@ class TES3lint_Settings(
                                                  0)
             # Extra Options:
             self.debug_checkBox = wx.CheckBox(extras_teslint_sizer.GetStaticBox(), wx.ID_ANY,
-                                              _(u'-D  "debug" output (vast)'), dPos, dSize, 0)
+                                              _('-D  "debug" output (vast)'), dPos, dSize, 0)
             self.verbose_checkBox = wx.CheckBox(extras_teslint_sizer.GetStaticBox(), wx.ID_ANY,
-                                                _(u' -v  "verbose" (possibly more output)'), dPos, dSize, 0)
+                                                _(' -v  "verbose" (possibly more output)'), dPos, dSize, 0)
             # TES3lint result:
             self.final_static = wx.StaticText(result_sizer.GetStaticBox(), wx.ID_ANY, u'', dPos, dSize, 0)
             self.final_static.Wrap(-1)
             # Buttons
-            self.ok_btn = wx.Button(self, wx.ID_OK, _(u'OK'), dPos, dSize, 0)
-            self.cancel_btn = wx.Button(self, wx.ID_CANCEL, _(u'Cancel'), dPos, dSize, 0)
+            self.ok_btn = wx.Button(self, wx.ID_OK, _('OK'), dPos, dSize, 0)
+            self.cancel_btn = wx.Button(self, wx.ID_CANCEL, _('Cancel'), dPos, dSize, 0)
 
         if True:  # Theming
             self.perl_field.SetForegroundColour(wx.Colour(0, 0, 0))
@@ -160,7 +160,7 @@ class TES3lint_Settings(
 
     def getFlags(self):
         """For better readability in export_settings."""
-        return [x.strip() for x in self.custom_flags_text.GetValue().strip().split(u',')]
+        return [x.strip() for x in self.custom_flags_text.GetValue().strip().split(',')]
 
     def cmd_factory(self):
         """Construct the command status text."""
@@ -198,19 +198,19 @@ class TES3lint_Settings(
         else:
             self.switch(False)
         if conf.settings['tes3lint.refresh']: self.final_static.SetLabelText(
-            u'%s %s' % (self.cmd_factory(), _(u'"target_file"')))
+            u'%s %s' % (self.cmd_factory(), _('"target_file"')))
 
     def perl_dir(self, event):
         """..."""
-        self.perl_field.SetValue(self.FileDialog(u'Perl', u'Executable files (*.exe)|*.exe', 'perl.exe'))
+        self.perl_field.SetValue(self.FileDialog('Perl', u'Executable files (*.exe)|*.exe', 'perl.exe'))
 
     def tes3lint_dir(self, event):
         """..."""
-        self.tes3lint_field.SetValue(self.FileDialog(u'TES3lint', u'All files (*.*)|*.*', 'tes3lint'))
+        self.tes3lint_field.SetValue(self.FileDialog('TES3lint', u'All files (*.*)|*.*', 'tes3lint'))
 
     def FileDialog(self, name, wildcard, defaultfile):
         """Filepaths for Perl and TES3lint."""
-        message = _(u"%s directory selection") % name
+        message = _("%s directory selection") % name
         dialog = wx.FileDialog(self, message, '', defaultfile, wildcard, style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST)
         if dialog.ShowModal() != wx.ID_OK:
             dialog.Destroy()

@@ -79,11 +79,11 @@ class ErrorLog(wx.Dialog):  # Polemos
         """Init."""
         self.parent = parent
         if not conf.settings['show.debug.log']: return
-        wx.Dialog.__init__(self, parent, id=wx.ID_ANY, title=_(u'Debug Log'), pos=dPos, size=(415, 249), style=style)
+        wx.Dialog.__init__(self, parent, id=wx.ID_ANY, title=_('Debug Log'), pos=dPos, size=(415, 249), style=style)
         # Contents
         self.text_log = wx.TextCtrl(self, wx.ID_ANY, '', dPos, dSize, wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH)
-        self.saveBtn = wx.Button(self, wx.ID_ANY, _(u'Save Log'), dPos, (-1, 22), 0)
-        self.fcloseBtn = wx.Button(self, wx.ID_ANY, _(u'Force Close Wrye Mash...'), dPos, (-1, 22), 0)
+        self.saveBtn = wx.Button(self, wx.ID_ANY, _('Save Log'), dPos, (-1, 22), 0)
+        self.fcloseBtn = wx.Button(self, wx.ID_ANY, _('Force Close Wrye Mash...'), dPos, (-1, 22), 0)
         # Theming
         self.SetForegroundColour(wx.Colour(255, 255, 255))
         self.SetBackgroundColour(wx.Colour(240, 240, 240))
@@ -107,7 +107,7 @@ class ErrorLog(wx.Dialog):  # Polemos
         """Force close Wrye Mash."""
         warning = _(
             u'Really force Wrye Mash to quit?\n\nDo this only if Wrye Mash is stuck ad infinitum in the debug log!!!')
-        if gui.WarningQuery(self, warning, _(u'Are you sure?')) == wx.ID_NO: return
+        if gui.WarningQuery(self, warning, _('Are you sure?')) == wx.ID_NO: return
         self.Destroy()
         try:
             if self.parent.IsIconized(): self.parent.sysTray.onExit()
@@ -119,7 +119,7 @@ class ErrorLog(wx.Dialog):  # Polemos
 
     def savelog(self, event):
         """Save the log."""
-        dialog = wx.FileDialog(self, _(u'Save log'), singletons.MashDir, "Debug", '*.log',
+        dialog = wx.FileDialog(self, _('Save log'), singletons.MashDir, "Debug", '*.log',
                                wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT)
         if dialog.ShowModal() == wx.ID_OK:
             fileName = os.path.join(dialog.GetDirectory(), dialog.GetFilename())

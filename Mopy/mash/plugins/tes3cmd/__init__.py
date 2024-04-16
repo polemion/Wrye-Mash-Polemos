@@ -91,7 +91,7 @@ class HelperMixin(object):  # Polemos fixes.
 
     def buildCleanArgs(self, files, replace, hideBackups, backupDir, cells, dups, gmsts, instances, junk):
         """Args factory"""
-        if not (cells or dups or gmsts or instances or junk): raise Exception(u'No options selected')
+        if not (cells or dups or gmsts or instances or junk): raise Exception('No options selected')
         args = ['tes3cmd.exe', 'clean']
         if replace: args.append('--replace')
         if hideBackups: args.append('--hide-backups')

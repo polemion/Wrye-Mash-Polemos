@@ -76,28 +76,28 @@ class SettingsTabs(object):
     def generalTab(self):
         """General Panel."""
         # Main Menu Settings
-        MenuBox = wx.StaticBox(self.general_panel, wx.ID_ANY, _(u'Main Menu Settings:'))
+        MenuBox = wx.StaticBox(self.general_panel, wx.ID_ANY, _('Main Menu Settings:'))
         Menu_Sizer = wx.StaticBoxSizer(MenuBox, wx.HORIZONTAL)
-        self.Menubar_po = wx.CheckBox(MenuBox, wx.ID_ANY, _(u'Enable Menubar'), dPos, dSize, 0)
-        self.Columns_Menu_po = wx.CheckBox(MenuBox, wx.ID_ANY, _(u'Enable Columns Menu'), dPos, dSize, 0)
+        self.Menubar_po = wx.CheckBox(MenuBox, wx.ID_ANY, _('Enable Menubar'), dPos, dSize, 0)
+        self.Columns_Menu_po = wx.CheckBox(MenuBox, wx.ID_ANY, _('Enable Columns Menu'), dPos, dSize, 0)
         # Update Settings
-        UpdateBox = wx.StaticBox(self.general_panel, wx.ID_ANY, _(u'Update Settings:'))
+        UpdateBox = wx.StaticBox(self.general_panel, wx.ID_ANY, _('Update Settings:'))
         Update_Sizer = wx.StaticBoxSizer(UpdateBox, wx.HORIZONTAL)
-        self.Update_po = wx.CheckBox(UpdateBox, wx.ID_ANY, _(u'Enable Notifications'), dPos, dSize, 0)
-        self.Update_staticText = wx.StaticText(UpdateBox, wx.ID_ANY, _(u'Frequency in Days (0=Everyday):'), dPos, dSize,
+        self.Update_po = wx.CheckBox(UpdateBox, wx.ID_ANY, _('Enable Notifications'), dPos, dSize, 0)
+        self.Update_staticText = wx.StaticText(UpdateBox, wx.ID_ANY, _('Frequency in Days (0=Everyday):'), dPos, dSize,
                                                0)
         self.fldUpdate = wx.SpinCtrl(UpdateBox, wx.ID_ANY, u'', dPos, size=(45, -1),
                                      style=wx.SP_ARROW_KEYS | wx.SP_WRAP | wx.ALIGN_CENTER_HORIZONTAL, max=365, min=0)
         # Interface Settings
-        InterfaceBox = wx.StaticBox(self.general_panel, wx.ID_ANY, _(u'Interface Settings:'))
+        InterfaceBox = wx.StaticBox(self.general_panel, wx.ID_ANY, _('Interface Settings:'))
         Interface_Sizer = wx.StaticBoxSizer(InterfaceBox, wx.VERTICAL)
-        self.HovHigh = wx.CheckBox(InterfaceBox, wx.ID_ANY, _(u'Enable Highlight on Hover in Lists'), dPos, dSize, 0)
-        self.LrgFont = wx.CheckBox(InterfaceBox, wx.ID_ANY, _(u'Use Big Fonts in Lists'), dPos, dSize, 0)
-        self.MinOnClose = wx.CheckBox(InterfaceBox, wx.ID_ANY, _(u'Minimize to Systray'), dPos, dSize, 0)
-        self.ShowErr = wx.CheckBox(InterfaceBox, wx.ID_ANY, _(u'Show Debug Log on Errors'), dPos, dSize, 0)
-        self.InterfaceStatic = wx.StaticText(InterfaceBox, wx.ID_ANY, _(u'Theme:'), dPos, dSize, 0)
+        self.HovHigh = wx.CheckBox(InterfaceBox, wx.ID_ANY, _('Enable Highlight on Hover in Lists'), dPos, dSize, 0)
+        self.LrgFont = wx.CheckBox(InterfaceBox, wx.ID_ANY, _('Use Big Fonts in Lists'), dPos, dSize, 0)
+        self.MinOnClose = wx.CheckBox(InterfaceBox, wx.ID_ANY, _('Minimize to Systray'), dPos, dSize, 0)
+        self.ShowErr = wx.CheckBox(InterfaceBox, wx.ID_ANY, _('Show Debug Log on Errors'), dPos, dSize, 0)
+        self.InterfaceStatic = wx.StaticText(InterfaceBox, wx.ID_ANY, _('Theme:'), dPos, dSize, 0)
         self.ThemeChoice = wx.Choice(InterfaceBox, wx.ID_ANY, dPos, dSize, self.ThemeChoiceList)
-        self.EncodStatic = wx.StaticText(InterfaceBox, wx.ID_ANY, _(u'Preferred Encoding:'), dPos, dSize, 0)
+        self.EncodStatic = wx.StaticText(InterfaceBox, wx.ID_ANY, _('Preferred Encoding:'), dPos, dSize, 0)
         self.EncodChoice = wx.Choice(InterfaceBox, wx.ID_ANY, dPos, dSize, self.EncodChoiceList)
         # Layout
         Menu_Sizer.AddMany([(self.Menubar_po, 0, wx.ALL, 5), space, (self.Columns_Menu_po, 0, wx.ALL, 5)])
@@ -124,9 +124,9 @@ class SettingsTabs(object):
     def pathsTab(self):
         """Paths Panel."""
         # Common
-        MainPathsBox = wx.StaticBox(self.paths_panel, wx.ID_ANY, _(u'Main Paths:'))
+        MainPathsBox = wx.StaticBox(self.paths_panel, wx.ID_ANY, _('Main Paths:'))
         MainPaths_Sizer = wx.StaticBoxSizer(MainPathsBox, wx.VERTICAL)
-        OptionalPathsBox = wx.StaticBox(self.paths_panel, wx.ID_ANY, _(u'Optional Paths:'))
+        OptionalPathsBox = wx.StaticBox(self.paths_panel, wx.ID_ANY, _('Optional Paths:'))
         OptionalPaths_Sizer = wx.StaticBoxSizer(OptionalPathsBox, wx.VERTICAL)
         Paths_Sizer = wx.BoxSizer(wx.VERTICAL)
 
@@ -137,7 +137,7 @@ class SettingsTabs(object):
             self.fldMw = wx.TextCtrl(MainPathsBox, wx.ID_ANY, u'', dPos, name='fldMw', size=(-1, 20), style=wx.TE_RICH)
             self.btnBrowseMw = wx.Button(MainPathsBox, wx.ID_OPEN, u'...', dPos, size=(30, 24), name='btnBrowseMw')
             # Main Paths: Installers
-            self.Installers_static = wx.StaticText(MainPathsBox, wx.ID_ANY, _(u'Installers:'), dPos, dSize, 0)
+            self.Installers_static = wx.StaticText(MainPathsBox, wx.ID_ANY, _('Installers:'), dPos, dSize, 0)
             self.fldInst = wx.TextCtrl(MainPathsBox, wx.ID_ANY, u'', dPos, name='fldInst', size=(-1, 20),
                                        style=wx.TE_RICH)
             self.btnBrowseInst = wx.Button(MainPathsBox, wx.ID_OPEN, u'...', dPos, size=(30, 24), name='btnBrowseInst')
@@ -156,7 +156,7 @@ class SettingsTabs(object):
             # Optional Paths: TES3cmd
             self.TES3cmd_static0 = wx.StaticText(OptionalPathsBox, wx.ID_ANY, u'TES3cmd:', dPos, dSize, 0)
             self.TES3cmd_static1 = wx.StaticText(OptionalPathsBox, wx.ID_ANY, u'', size=(-1, -1), style=0)
-            self.btnRechkT3cmd = wx.Button(OptionalPathsBox, wx.ID_ANY, _(u'Re-Check'), dPos, size=(70, 24))
+            self.btnRechkT3cmd = wx.Button(OptionalPathsBox, wx.ID_ANY, _('Re-Check'), dPos, size=(70, 24))
             # Layout
             Morrowind_Sizer, Installers_Sizer, Mlox_Sizer, MGEXE_Sizer, TES3cmd_Sizer = SizerMany(5, wx.HORIZONTAL)
             Morrowind_Sizer.AddMany([(self.Morrowind_static, 0, wx.TOP | wx.RIGHT, 5),
@@ -182,20 +182,20 @@ class SettingsTabs(object):
 
         if self.openmw:  # OpenMW/TES3mp support
             # Main Paths: OpenMW/TES3mp
-            self.OpenMWTES3mp_static = wx.StaticText(MainPathsBox, wx.ID_ANY, _(u'OpenMW/TES3mp:'), dPos, dSize, 0)
+            self.OpenMWTES3mp_static = wx.StaticText(MainPathsBox, wx.ID_ANY, _('OpenMW/TES3mp:'), dPos, dSize, 0)
             uns = rtc.RichTextCtrl(MainPathsBox, wx.ID_ANY, u'', dPos, size=(1, 1))  # Ugly unselect hack...
             self.fldOpenMWloc = wx.TextCtrl(MainPathsBox, wx.ID_ANY, u'', dPos, name='fldOpenMWloc', size=(-1, 20),
                                             style=wx.TE_RICH)
             self.btnBrowseOpenMWloc = wx.Button(MainPathsBox, wx.ID_OPEN, u'...', dPos, size=(30, 24),
                                                 name='btnBrowseOpenMWloc')
             # Main Paths: Downloads
-            self.Downloads_static = wx.StaticText(MainPathsBox, wx.ID_ANY, _(u'Downloads:'), dPos, dSize, 0)
+            self.Downloads_static = wx.StaticText(MainPathsBox, wx.ID_ANY, _('Downloads:'), dPos, dSize, 0)
             self.fldDownloads = wx.TextCtrl(MainPathsBox, wx.ID_ANY, u'', dPos, name='fldDownloads', size=(-1, 20),
                                             style=wx.TE_RICH)
             self.btnBrowseDownloads = wx.Button(MainPathsBox, wx.ID_OPEN, u'...', dPos, size=(30, 24),
                                                 name='btnBrowseDownloads')
             # Main Paths: DataMods
-            self.Mods_static = wx.StaticText(MainPathsBox, wx.ID_ANY, _(u'Mods:'), dPos, dSize, 0)
+            self.Mods_static = wx.StaticText(MainPathsBox, wx.ID_ANY, _('Mods:'), dPos, dSize, 0)
             self.flddatamods = wx.TextCtrl(MainPathsBox, wx.ID_ANY, u'', dPos, name='flddatamods', size=(-1, 20),
                                            style=wx.TE_RICH)
             self.btnBrowsedatamods = wx.Button(MainPathsBox, wx.ID_OPEN, u'...', dPos, size=(30, 24),
@@ -207,7 +207,7 @@ class SettingsTabs(object):
             self.btnBrowseOpenMWConf = wx.Button(MainPathsBox, wx.ID_OPEN, u'...', dPos, size=(30, 24),
                                                  name='btnBrowseOpenMWConf')
             # Optional Paths: Morrowind Data Files
-            self.DataFiles_static = wx.StaticText(OptionalPathsBox, wx.ID_ANY, _(u'Morrowind Data Files:'), dPos, dSize,
+            self.DataFiles_static = wx.StaticText(OptionalPathsBox, wx.ID_ANY, _('Morrowind Data Files:'), dPos, dSize,
                                                   0)
             self.fldDataFiles = wx.TextCtrl(OptionalPathsBox, wx.ID_ANY, u'', dPos, name='fldDataFiles', size=(-1, 20),
                                             style=wx.TE_RICH)
@@ -264,19 +264,19 @@ class SettingsTabs(object):
     def defaultsTab(self):
         """Defaults Panel."""
         # Warnings Settings
-        WarnBox = wx.StaticBox(self.defaults_panel, wx.ID_ANY, _(u'Mash Warning Prompts (Check To Enable):'))
+        WarnBox = wx.StaticBox(self.defaults_panel, wx.ID_ANY, _('Mash Warning Prompts (Check To Enable):'))
         Warn_Sizer = wx.StaticBoxSizer(WarnBox, wx.HORIZONTAL)
         self.warnList = wx.CheckListBox(WarnBox, wx.ID_ANY, dPos, dSize, [x for x in self.warnkeys],
                                         wx.LB_EXTENDED | wx.LB_SORT)
         Warn_Sizer.Add(self.warnList, 1, wx.EXPAND, 5)
         # Column Settings
-        ColBox = wx.StaticBox(self.defaults_panel, wx.ID_ANY, _(u'Mash Columns Default Widths:'))
+        ColBox = wx.StaticBox(self.defaults_panel, wx.ID_ANY, _('Mash Columns Default Widths:'))
         Col_Sizer = wx.StaticBoxSizer(ColBox, wx.VERTICAL)
         self.Col_staticText = wx.StaticText(ColBox, wx.ID_ANY,
-                                            _(u'If you wish to reset all the columns widths of Wrye Mash displayed lists\n'
+                                            _('If you wish to reset all the columns widths of Wrye Mash displayed lists\n'
                                               u'(e.g.: Mod Lists) to their default settings check the box below and then\nclick the OK button:'),
                                             dPos, dSize, 0)
-        self.colReset = wx.CheckBox(ColBox, wx.ID_ANY, _(u'Reset All Of Wrye Mash Columns Widths?') + ' ' * 5, dPos,
+        self.colReset = wx.CheckBox(ColBox, wx.ID_ANY, _('Reset All Of Wrye Mash Columns Widths?') + ' ' * 5, dPos,
                                     dSize, wx.ALIGN_RIGHT)
         Col_Sizer.AddMany([(self.Col_staticText, 0, wx.EXPAND, 5), (self.colReset, 0, wx.EXPAND | wx.ALL, 5)])
         # Layout
@@ -312,7 +312,7 @@ class SettingsTabs(object):
                 [(self.a7zcrcOn, 0, wx.DOWN, 5), (intervSizer, 0, wx.EXPAND | wx.RIGHT | wx.DOWN | wx.UP, 5),
                  (self.plugMore, 0, wx.DOWN, 5), (self.mapMore, 0, wx.DOWN, 5)])
         if self.openmw:  # OpenMW/TES3mp support
-            advinfo = wx.StaticText(advitmsBox, wx.ID_ANY, _(u'Nothing here yet!'), dPos, dSize, 0)
+            advinfo = wx.StaticText(advitmsBox, wx.ID_ANY, _('Nothing here yet!'), dPos, dSize, 0)
             advitms_Sizer.AddMany([(advinfo, 0, 0, 5)])
 
         # Common Layout
@@ -330,8 +330,8 @@ class SettingsTabs(object):
         self.wrye_bad = wx.StaticBitmap(self.about_panel, wx.ID_ANY, wx.Bitmap('images/wrye_bad.jpg'), dPos,
                                         size=(140, 140))
         # Buttons
-        self.license_button = wx.Button(self.about_panel, wx.ID_ANY, _(u'License'), dPos, size=(60, 22))
-        self.credits_button = wx.Button(self.about_panel, wx.ID_ANY, _(u'Credits'), dPos, size=(60, 22))
+        self.license_button = wx.Button(self.about_panel, wx.ID_ANY, _('License'), dPos, size=(60, 22))
+        self.credits_button = wx.Button(self.about_panel, wx.ID_ANY, _('Credits'), dPos, size=(60, 22))
         # Contents
         self.contents = rtc.RichTextCtrl(self.about_panel, wx.ID_ANY, u'', dPos, size=(-1, 166),
                                          style=wx.TE_READONLY | wx.VSCROLL | wx.HSCROLL | wx.NO_BORDER | wx.WANTS_CHARS)
@@ -370,7 +370,7 @@ class SettingsWindow(wx.Dialog, SettingsTabs):  # Polemos: Total reconstruction.
         # Common:
         self.name_po, self.version_po, self.website_po, self.developers_po, self.license_po = About(
             conf.settings['openmw']).getData()
-        self.SetTitle(_(u'Wrye Mash Settings'))
+        self.SetTitle(_('Wrye Mash Settings'))
         if settings is not None:
             self.settings = settings
         else:
@@ -394,8 +394,8 @@ class SettingsWindow(wx.Dialog, SettingsTabs):  # Polemos: Total reconstruction.
             # Error/Status Messages
             self.Settingstext = wx.StaticText(self, wx.ID_ANY, u'', dPos, dSize, 0)
             # OK/Cancel Buttons
-            self.btnOK = wx.Button(self, wx.ID_OK, _(u'OK'), dPos, size=(35, 22), name='btnOK')
-            self.btnCancel = wx.Button(self, wx.ID_CANCEL, _(u'Cancel'), dPos, size=(60, 22), name='btnCancel')
+            self.btnOK = wx.Button(self, wx.ID_OK, _('OK'), dPos, size=(35, 22), name='btnOK')
+            self.btnCancel = wx.Button(self, wx.ID_CANCEL, _('Cancel'), dPos, size=(60, 22), name='btnCancel')
             # Layout
             Buttons_Sizer = wx.BoxSizer(wx.HORIZONTAL)
             Buttons_Sizer.AddMany([(self.Settingstext, 1, wx.ALL, 5), (self.btnOK, 0, wx.RIGHT | wx.LEFT, 5),
@@ -442,11 +442,11 @@ class SettingsWindow(wx.Dialog, SettingsTabs):  # Polemos: Total reconstruction.
             # ==================== Disabled Items ====================== #
         if True:  # Common
             # Layout
-            self.settings_notebook.AddPage(self.general_panel, _(u'General'), True)
-            self.settings_notebook.AddPage(self.paths_panel, _(u'Paths'), False)
-            self.settings_notebook.AddPage(self.defaults_panel, _(u'Defaults'), False)
+            self.settings_notebook.AddPage(self.general_panel, _('General'), True)
+            self.settings_notebook.AddPage(self.paths_panel, _('Paths'), False)
+            self.settings_notebook.AddPage(self.defaults_panel, _('Defaults'), False)
             self.settings_notebook.AddPage(self.adv_panel, u"Advanced", False)
-            self.settings_notebook.AddPage(self.about_panel, _(u'About'), False)
+            self.settings_notebook.AddPage(self.about_panel, _('About'), False)
             main_Sizer = wx.BoxSizer(wx.VERTICAL)
             main_Sizer.AddMany([(self.settings_notebook, 1, wx.EXPAND | wx.ALL, 5),
                                 (Buttons_Sizer, 0, wx.RIGHT | wx.LEFT | wx.EXPAND, 5)])
@@ -515,31 +515,31 @@ class SettingsWindow(wx.Dialog, SettingsTabs):  # Polemos: Total reconstruction.
             menu_1 = self.Menubar_po.GetValue()
             menu_2 = self.Columns_Menu_po.GetValue()
             if not menu_1 and not menu_2:
-                errors.append(_(u'Please select at least one menu option.'))
+                errors.append(_('Please select at least one menu option.'))
                 disable = True
         if True:  # Dir conflict check.
             if not self.check_conflicts():
-                errors.append(_(u'Conflict in directory settings.'))
+                errors.append(_('Conflict in directory settings.'))
                 disable = True
         # Actions
         if disable:
             if self.Settingstext.GetLabel() != errors[0]: self.Settingstext.SetLabel(errors[0])
             self.btnOK.Disable()
         else:
-            self.Settingstext.SetLabel(u'')
+            self.Settingstext.SetLabel('')
             self.btnOK.Enable()
         [x.Disable() if not self.Update_po.IsChecked() else x.Enable() for x in
          (self.Update_staticText, self.fldUpdate)]
 
     def license_txt(self, event):
         """Show License."""
-        self.contents.SetValue(u'')
+        self.contents.SetValue('')
         self.text_engine(self.license_po)
         self.contents.SetFocus()
 
     def credits_txt(self, event):
         """Show Credits."""
-        self.contents.SetValue(u'')
+        self.contents.SetValue('')
         self.text_engine(self.developers_po)
         self.contents.SetFocus()
 
@@ -596,11 +596,11 @@ class SettingsWindow(wx.Dialog, SettingsTabs):  # Polemos: Total reconstruction.
         name = event.EventObject.Name[9:]
         if any((conf.dataMap[name].endswith(x) for x in ['.exe', '.cfg', '.py', '.json', '.ini', 'pl'])):
             ext = [x for x in ['.exe', '.cfg', '.py', '.json', '.ini', 'pl'] if conf.dataMap[name].endswith(x)][0]
-            dialog = wx.FileDialog(self, _(u'Select %s file location:') % conf.dataMap[name].capitalize(),
+            dialog = wx.FileDialog(self, _('Select %s file location:') % conf.dataMap[name].capitalize(),
                                    '', '%s' % conf.dataMap[name], u'Files (*%s)|*%s' % (ext, ext),
                                    style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST)
         else:
-            dialog = wx.DirDialog(self, _(u'%s directory selection') % conf.dataMap[name].capitalize())
+            dialog = wx.DirDialog(self, _('%s directory selection') % conf.dataMap[name].capitalize())
         if dialog.ShowModal() == wx.ID_OK:
             path = dialog.GetPath()
             dialog.Destroy()
@@ -727,10 +727,10 @@ class SettingsWindow(wx.Dialog, SettingsTabs):  # Polemos: Total reconstruction.
         """Returns TES3cmd.exe path."""
         path = os.path.join(conf.settings['mwDir'], 'Data Files', 'tes3cmd.exe')
         if os.path.exists(path):
-            self.TES3cmd_static1.SetLabel(_(u'Detected!'))
+            self.TES3cmd_static1.SetLabel(_('Detected!'))
             self.TES3cmd_static1.SetForegroundColour(wx.BLUE)
         else:
-            self.TES3cmd_static1.SetLabel(_(u'"TES3cmd.exe" not found in "Data Files" directory.'))
+            self.TES3cmd_static1.SetLabel(_('"TES3cmd.exe" not found in "Data Files" directory.'))
             self.TES3cmd_static1.SetForegroundColour(wx.RED)
 
     def chkRestart(self):
@@ -741,7 +741,7 @@ class SettingsWindow(wx.Dialog, SettingsTabs):  # Polemos: Total reconstruction.
                 self.ThemeChoiceEx != self.ThemeChoiceNew,
                 self.EncChoiceEx != self.EncodChoiceNew,
                 self.pathsRestart
-                )): gui.InfoMessage(self, _(u'Please restart Wrye Mash for changes to take effect.'))
+                )): gui.InfoMessage(self, _('Please restart Wrye Mash for changes to take effect.'))
 
     def InitCommon(self):
         """Init Common Settings."""

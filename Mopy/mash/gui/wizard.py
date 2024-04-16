@@ -59,7 +59,7 @@ class WizardDialog(wx.Dialog):
         self.Encoding_Ch = [('%s, %s' % (x, profileEncodings[x])) for x in profileEncodings]
         self.MashDate = conf.settings['mash.version']
         self.SetSizeHints(-1, -1)
-        self.WMPF_sword = wx.StaticBitmap(self, wx.ID_ANY, wx.Bitmap(u'images/daggerfall.png', wx.BITMAP_TYPE_ANY),
+        self.WMPF_sword = wx.StaticBitmap(self, wx.ID_ANY, wx.Bitmap('images/daggerfall.png', wx.BITMAP_TYPE_ANY),
                                           dPos, dSize, 0)
         gui.setIcon(self)
 
@@ -76,7 +76,7 @@ class WizardDialog(wx.Dialog):
                                             u'Wrye Mash %s Polemos fork is under the GPL 2 '
                                             u'license or higher. For more information read the included license.' %
                                             self.MashDate[3], dPos, Size(-1, 50), CEN)
-            self.introText5 = wx.StaticText(self.intro_panel, wx.ID_ANY, _(u'Click Next if you wish to proceed.'), dPos,
+            self.introText5 = wx.StaticText(self.intro_panel, wx.ID_ANY, _('Click Next if you wish to proceed.'), dPos,
                                             Size(-1, 30), CEN)
             # Sizers ========================================= #
             introPanSizer = wx.BoxSizer(wx.VERTICAL)
@@ -91,36 +91,36 @@ class WizardDialog(wx.Dialog):
 
         if not conf.settings['openmw']:  # Regular Morrowind support: Main and Optional Paths Panel
             self.mw_1_panel = wx.Panel(self, wx.ID_ANY, dPos, dSize, wx.TAB_TRAVERSAL)
-            self.mw1_Text1 = wx.StaticText(self.mw_1_panel, wx.ID_ANY, _(u'Please fill the entries below:'), dPos,
+            self.mw1_Text1 = wx.StaticText(self.mw_1_panel, wx.ID_ANY, _('Please fill the entries below:'), dPos,
                                            Size(-1, 30), CEN)
             # Morrowind directory
-            mw_box = wx.StaticBox(self.mw_1_panel, wx.ID_ANY, _(u'1) Morrowind directory:'))
+            mw_box = wx.StaticBox(self.mw_1_panel, wx.ID_ANY, _('1) Morrowind directory:'))
             mw_Sizer = wx.StaticBoxSizer(mw_box, wx.VERTICAL)
             self.fldMw = wx.TextCtrl(mw_box, wx.ID_ANY, u'', dPos, Size(-1, 21), wx.TE_READONLY, name='fldMw')
             self.btnBrowseMw = wx.Button(mw_box, wx.ID_OPEN, u'...', dPos, Size(-1, 21), wx.BU_EXACTFIT,
                                          name='btnBrowseMw')
             self.mw_Text = wx.StaticText(mw_box, wx.ID_ANY,
-                                         _(u'Define  the  directory  of  Morrowind\'s installation.'), dPos,
+                                         _('Define  the  directory  of  Morrowind\'s installation.'), dPos,
                                          Size(-1, 30), 0)
             # Installers directory
-            Instbox = wx.StaticBox(self.mw_1_panel, wx.ID_ANY, _(u'2) Mods Installers directory:'))
+            Instbox = wx.StaticBox(self.mw_1_panel, wx.ID_ANY, _('2) Mods Installers directory:'))
             InstSizer = wx.StaticBoxSizer(Instbox, wx.VERTICAL)
             self.fldInst = wx.TextCtrl(Instbox, wx.ID_ANY, u'', dPos, Size(-1, 21), wx.TE_READONLY, name='fldInst')
             self.btnBrowseInst = wx.Button(Instbox, wx.ID_OPEN, u'...', dPos, Size(-1, 21), wx.BU_EXACTFIT,
                                            name='btnBrowseInst')
-            self.InstText = wx.StaticText(Instbox, wx.ID_ANY, _(u'Select a folder '
+            self.InstText = wx.StaticText(Instbox, wx.ID_ANY, _('Select a folder '
                                                                 u'where your packed mod archives will be stored (zip, rar and 7z).'),
                                           dPos, Size(-1, 30), 0)
             # Mlox directory
-            Mloxbox = wx.StaticBox(self.mw_1_panel, wx.ID_ANY, _(u'3) Mlox directory (Optional):'))
+            Mloxbox = wx.StaticBox(self.mw_1_panel, wx.ID_ANY, _('3) Mlox directory (Optional):'))
             Mlox_Sizer = wx.StaticBoxSizer(Mloxbox, wx.VERTICAL)
             self.fldmlox = wx.TextCtrl(Mloxbox, wx.ID_ANY, u'', dPos, Size(-1, 21), wx.TE_READONLY, name='fldmlox')
             self.btnBrowsemlox = wx.Button(Mloxbox, wx.ID_OPEN, u'...', dPos, Size(-1, 21), wx.BU_EXACTFIT,
                                            name='btnBrowsemlox')
-            self.MloxText1 = wx.StaticText(Mloxbox, wx.ID_ANY, _(u'If you are using Mlox '
+            self.MloxText1 = wx.StaticText(Mloxbox, wx.ID_ANY, _('If you are using Mlox '
                                                                  u'standalone (exe) you may define it\'s location here.'),
                                            dPos, Size(-1, 30), 0)
-            self.MloxText2 = wx.StaticText(Mloxbox, wx.ID_ANY, _(u'If Mlox\'s folder '
+            self.MloxText2 = wx.StaticText(Mloxbox, wx.ID_ANY, _('If Mlox\'s folder '
                                                                  u'is inside Morrowind\'s you may try to autodetect it below.'),
                                            dPos, Size(-1, 30), 0)
             self.detect_Mlox_button = wx.Button(Mloxbox, wx.ID_ANY, u'Try to Detect Mlox Location', dPos, dSize, 0)
@@ -147,36 +147,36 @@ class WizardDialog(wx.Dialog):
 
         if conf.settings['openmw']:  # OpenMW/TES3mp support: Main Paths Panel
             self.openmw_1_panel = wx.Panel(self, wx.ID_ANY, dPos, dSize, wx.TAB_TRAVERSAL)
-            self.openmw1_Text1 = wx.StaticText(self.openmw_1_panel, wx.ID_ANY, _(u'Please fill the entries below:'),
+            self.openmw1_Text1 = wx.StaticText(self.openmw_1_panel, wx.ID_ANY, _('Please fill the entries below:'),
                                                dPos, Size(-1, 30), CEN)
             # OpenMW/TES3mp directory
-            openmw_te3mpbox = wx.StaticBox(self.openmw_1_panel, wx.ID_ANY, _(u'1) OpenMW/TES3mp directory:'))
+            openmw_te3mpbox = wx.StaticBox(self.openmw_1_panel, wx.ID_ANY, _('1) OpenMW/TES3mp directory:'))
             openmw_te3mpSizer = wx.StaticBoxSizer(openmw_te3mpbox, wx.VERTICAL)
             self.fldOpenMWloc = wx.TextCtrl(openmw_te3mpbox, wx.ID_ANY, u'', dPos, Size(-1, 21), wx.TE_READONLY,
                                             name='fldOpenMWloc')
             self.btnBrowseOpenMWloc = wx.Button(openmw_te3mpbox, wx.ID_OPEN, u'...', dPos, Size(-1, 21), wx.BU_EXACTFIT,
                                                 name='btnBrowseOpenMWloc')
-            self.Openmw_te3mpText = wx.StaticText(openmw_te3mpbox, wx.ID_ANY, _(u'Select '
+            self.Openmw_te3mpText = wx.StaticText(openmw_te3mpbox, wx.ID_ANY, _('Select '
                                                                                 u'the location of OpenMW and/or TES3mp installation.'),
                                                   dPos, Size(-1, 30), 0)
             # Downloads directory
-            Downloadsbox = wx.StaticBox(self.openmw_1_panel, wx.ID_ANY, _(u'2) Downloads directory:'))
+            Downloadsbox = wx.StaticBox(self.openmw_1_panel, wx.ID_ANY, _('2) Downloads directory:'))
             DownloadsSizer = wx.StaticBoxSizer(Downloadsbox, wx.VERTICAL)
             self.fldDownloads = wx.TextCtrl(Downloadsbox, wx.ID_ANY, u'', dPos, Size(-1, 21), wx.TE_READONLY,
                                             name='fldDownloads')
             self.btnBrowseDownloads = wx.Button(Downloadsbox, wx.ID_OPEN, u'...', dPos, Size(-1, 21), wx.BU_EXACTFIT,
                                                 name='btnBrowseDownloads')
-            self.DownloadsText = wx.StaticText(Downloadsbox, wx.ID_ANY, _(u'Select '
+            self.DownloadsText = wx.StaticText(Downloadsbox, wx.ID_ANY, _('Select '
                                                                           u'the folder where your packed mod archives will be stored (zip, rar and 7z).'),
                                                dPos, Size(-1, 30), 0)
             # Mods directory
-            Modsbox = wx.StaticBox(self.openmw_1_panel, wx.ID_ANY, _(u'3) Mods directory:'))
+            Modsbox = wx.StaticBox(self.openmw_1_panel, wx.ID_ANY, _('3) Mods directory:'))
             ModsSizer = wx.StaticBoxSizer(Modsbox, wx.VERTICAL)
             self.flddatamods = wx.TextCtrl(Modsbox, wx.ID_ANY, u'', dPos, Size(-1, 21), wx.TE_READONLY,
                                            name='flddatamods')
             self.btnBrowsedatamods = wx.Button(Modsbox, wx.ID_OPEN, u'...', dPos, Size(-1, 21), wx.BU_EXACTFIT,
                                                name='btnBrowsedatamods')
-            self.ModsText = wx.StaticText(Modsbox, wx.ID_ANY, _(u'Select a '
+            self.ModsText = wx.StaticText(Modsbox, wx.ID_ANY, _('Select a '
                                                                 u'folder where your activated (and unpacked) mod (Data) folders will reside.'),
                                           dPos, Size(-1, 30), 0)
             # Sizers ========================================= #
@@ -201,9 +201,9 @@ class WizardDialog(wx.Dialog):
         if conf.settings['openmw']:  # OpenMW/TES3mp support: Openmw.cfg Error Panel
             self.openmw_2_panel = wx.Panel(self, wx.ID_ANY, dPos, dSize, wx.TAB_TRAVERSAL)
             self.openmw2_Text1 = wx.StaticText(self.openmw_2_panel, wx.ID_ANY,
-                                               _(u'Please define OpenMW Profile Location:'), dPos, Size(-1, 35), CEN)
+                                               _('Please define OpenMW Profile Location:'), dPos, Size(-1, 35), CEN)
             # openmw.cfg location
-            Openmwcfgbox = wx.StaticBox(self.openmw_2_panel, wx.ID_ANY, _(u'openmw.cfg file location:'))
+            Openmwcfgbox = wx.StaticBox(self.openmw_2_panel, wx.ID_ANY, _('openmw.cfg file location:'))
             OpenmwcfgSizer = wx.StaticBoxSizer(Openmwcfgbox, wx.VERTICAL)
             self.fldOpenMWConf = wx.TextCtrl(Openmwcfgbox, wx.ID_ANY, u'', dPos, Size(-1, 21), wx.TE_READONLY,
                                              name='fldOpenMWConf')
@@ -211,19 +211,19 @@ class WizardDialog(wx.Dialog):
                                                  name='btnBrowseOpenMWConf')
             # Info
             self.openmw2_Text2 = wx.StaticText(Openmwcfgbox, wx.ID_ANY,
-                                               _(u'You need to define openmw.cfg location to proceed.'), dPos,
+                                               _('You need to define openmw.cfg location to proceed.'), dPos,
                                                Size(-1, 30), 0)
-            self.openmw2_Text3 = wx.StaticText(Openmwcfgbox, wx.ID_ANY, _(u'Note: You need to have run OpenMW '
+            self.openmw2_Text3 = wx.StaticText(Openmwcfgbox, wx.ID_ANY, _('Note: You need to have run OpenMW '
                                                                           u'atleast once in the past for OpenMW to create it\'s configuration files (openmw.cfg in our case).'),
                                                dPos, Size(-1, 60), 0)
-            self.openmw2_Text4 = wx.StaticText(Openmwcfgbox, wx.ID_ANY, _(u'If you haven\'t run OpenMW before, '
+            self.openmw2_Text4 = wx.StaticText(Openmwcfgbox, wx.ID_ANY, _('If you haven\'t run OpenMW before, '
                                                                           u'you may try the following:'), dPos,
                                                Size(-1, 30), 0)
             self.openmw2_Text5 = wx.StaticText(Openmwcfgbox, wx.ID_ANY,
-                                               _(u'1) Run OpenMW Launcher\n2) Configure it\n3) Click the button '
+                                               _('1) Run OpenMW Launcher\n2) Configure it\n3) Click the button '
                                                  u'below for Wrye Mash to retry locating openmw.cfg.'), dPos,
                                                Size(-1, 60), 0)
-            self.detect_openmwcfg_button = wx.Button(Openmwcfgbox, wx.ID_ANY, _(u'Try to Detect openmw.cfg'), dPos,
+            self.detect_openmwcfg_button = wx.Button(Openmwcfgbox, wx.ID_ANY, _('Try to Detect openmw.cfg'), dPos,
                                                      dSize, 0)
             # Sizers ========================================= #
             Openmwcfg_BrwSizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -240,43 +240,43 @@ class WizardDialog(wx.Dialog):
 
         if conf.settings['openmw']:  # OpenMW/TES3mp support: Optional Settings Panel
             self.openmw_3_panel = wx.Panel(self, wx.ID_ANY, dPos, dSize, wx.TAB_TRAVERSAL)
-            self.openmw3_Text = wx.StaticText(self.openmw_3_panel, wx.ID_ANY, _(u'Optional Settings:'), dPos,
+            self.openmw3_Text = wx.StaticText(self.openmw_3_panel, wx.ID_ANY, _('Optional Settings:'), dPos,
                                               Size(-1, 28), CEN)
             # Morrowind Data Files
-            OpenDataFilesbox = wx.StaticBox(self.openmw_3_panel, wx.ID_ANY, _(u'Morrowind Data Files:'))
+            OpenDataFilesbox = wx.StaticBox(self.openmw_3_panel, wx.ID_ANY, _('Morrowind Data Files:'))
             OpenDataFilesSizer = wx.StaticBoxSizer(OpenDataFilesbox, wx.VERTICAL)
             self.fldDataFiles = wx.TextCtrl(OpenDataFilesbox, wx.ID_ANY, u'', dPos, Size(-1, 21), wx.TE_READONLY,
                                             name='fldDataFiles')
             self.btnBrowseDataFiles = wx.Button(OpenDataFilesbox, wx.ID_OPEN, u'...', dPos, Size(-1, 21),
                                                 wx.BU_EXACTFIT, name='btnBrowseDataFiles')
             self.OpenDataFilesSizerText = wx.StaticText(OpenDataFilesbox, wx.ID_ANY,
-                                                        _(u'For better integration with Wrye Mash '
+                                                        _('For better integration with Wrye Mash '
                                                           u'it is recommended to define here the location of Morrowind\'s "Data Files".'),
                                                         dPos, Size(-1, 43), 0)
             # TES3mp
-            Tes3mpbox = wx.StaticBox(self.openmw_3_panel, wx.ID_ANY, _(u'TES3mp: (Not Ready Yet)'))
+            Tes3mpbox = wx.StaticBox(self.openmw_3_panel, wx.ID_ANY, _('TES3mp: (Not Ready Yet)'))
             Tes3mpSizer = wx.StaticBoxSizer(Tes3mpbox, wx.VERTICAL)
-            self.Tes3mp_checkBox = wx.CheckBox(Tes3mpbox, wx.ID_ANY, _(u'Enable TES3mp.'), dPos, dSize, 0)
+            self.Tes3mp_checkBox = wx.CheckBox(Tes3mpbox, wx.ID_ANY, _('Enable TES3mp.'), dPos, dSize, 0)
             self.fldTES3mpConf = wx.TextCtrl(Tes3mpbox, wx.ID_ANY, u'', dPos, Size(-1, 21), wx.TE_READONLY,
                                              name='fldTES3mpConf')
             self.btnBrowseTES3mpConf = wx.Button(Tes3mpbox, wx.ID_OPEN, u'...', dPos, Size(-1, 21), wx.BU_EXACTFIT,
                                                  name='btnBrowseTES3mpConf')
             self.Tes3mpText = wx.StaticText(Tes3mpbox, wx.ID_ANY,
-                                            _(u'Define pluginlist.json location or click the button below.'), dPos,
+                                            _('Define pluginlist.json location or click the button below.'), dPos,
                                             Size(-1, 30), 0)
-            self.detect_Tes3mp_button = wx.Button(Tes3mpbox, wx.ID_ANY, _(u'Try to Detect pluginlist.json'), dPos,
+            self.detect_Tes3mp_button = wx.Button(Tes3mpbox, wx.ID_ANY, _('Try to Detect pluginlist.json'), dPos,
                                                   dSize, 0)
             # Mlox64
-            Mlox64box = wx.StaticBox(self.openmw_3_panel, wx.ID_ANY, _(u'Mlox64: (Not Ready Yet)'))
+            Mlox64box = wx.StaticBox(self.openmw_3_panel, wx.ID_ANY, _('Mlox64: (Not Ready Yet)'))
             Mlox64_Sizer = wx.StaticBoxSizer(Mlox64box, wx.VERTICAL)
             self.fldmlox64 = wx.TextCtrl(Mlox64box, wx.ID_ANY, u'', dPos, Size(-1, 21), wx.TE_READONLY,
                                          name='fldmlox64')
             self.btnBrowsemlox64 = wx.Button(Mlox64box, wx.ID_OPEN, u'...', dPos, Size(-1, 21), wx.BU_EXACTFIT,
                                              name='btnBrowsemlox64')
             self.Mlox64Text = wx.StaticText(Mlox64box, wx.ID_ANY,
-                                            _(u'If you are using Mlox64 you may define it\'s location here.'), dPos,
+                                            _('If you are using Mlox64 you may define it\'s location here.'), dPos,
                                             Size(-1, 30), 0)
-            self.detect_Mlox64_button = wx.Button(Mlox64box, wx.ID_ANY, _(u'Try to Detect Mlox64 Location'), dPos,
+            self.detect_Mlox64_button = wx.Button(Mlox64box, wx.ID_ANY, _('Try to Detect Mlox64 Location'), dPos,
                                                   dSize, 0)
             # Sizers ========================================= #
             OpenDataFiles_BrwSizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -301,37 +301,37 @@ class WizardDialog(wx.Dialog):
 
         if True:  # Last Panel
             self.end_panel = wx.Panel(self, wx.ID_ANY, dPos, dSize, wx.TAB_TRAVERSAL)
-            self.EndText1 = wx.StaticText(self.end_panel, wx.ID_ANY, _(u'Misc Settings:'), dPos, Size(-1, 28), CEN)
+            self.EndText1 = wx.StaticText(self.end_panel, wx.ID_ANY, _('Misc Settings:'), dPos, Size(-1, 28), CEN)
             # Update Settings
-            Updatebox = wx.StaticBox(self.end_panel, wx.ID_ANY, _(u'Update Settings:'))
+            Updatebox = wx.StaticBox(self.end_panel, wx.ID_ANY, _('Update Settings:'))
             UpdateSizer = wx.StaticBoxSizer(Updatebox, wx.VERTICAL)
-            self.UpdateText1 = wx.StaticText(Updatebox, wx.ID_ANY, _(u'Would you like to be notified when '
+            self.UpdateText1 = wx.StaticText(Updatebox, wx.ID_ANY, _('Would you like to be notified when '
                                                                      u'the next Wrye Mash version is released?'), dPos,
                                              Size(-1, 30), 0)
-            self.Update_checkBox = wx.CheckBox(Updatebox, wx.ID_ANY, _(u'Enable Notifications:' + (' ' * 62)), dPos,
+            self.Update_checkBox = wx.CheckBox(Updatebox, wx.ID_ANY, _('Enable Notifications:' + (' ' * 62)), dPos,
                                                dSize, wx.ALIGN_RIGHT)
-            self.UpdateSpnText = wx.StaticText(Updatebox, wx.ID_ANY, _(u'Frequency in Days (0=Everyday):'), dPos, dSize,
+            self.UpdateSpnText = wx.StaticText(Updatebox, wx.ID_ANY, _('Frequency in Days (0=Everyday):'), dPos, dSize,
                                                0)
             self.Update_spinCtrl = wx.SpinCtrl(Updatebox, wx.ID_ANY, u'', dPos, Size(45, -1),
                                                wx.SP_ARROW_KEYS | wx.SP_WRAP, 0, 365, 15)
             # Interface Settings
-            Interfacebox = wx.StaticBox(self.end_panel, wx.ID_ANY, _(u'Interface Settings:'))
+            Interfacebox = wx.StaticBox(self.end_panel, wx.ID_ANY, _('Interface Settings:'))
             InterfaceSizer = wx.StaticBoxSizer(Interfacebox, wx.VERTICAL)
-            self.InterfaceText = wx.StaticText(Interfacebox, wx.ID_ANY, _(u'Choose a Theme for Wrye Mash:'), dPos,
+            self.InterfaceText = wx.StaticText(Interfacebox, wx.ID_ANY, _('Choose a Theme for Wrye Mash:'), dPos,
                                                Size(-1, 20), 0)
             self.Interface_choices = wx.Choice(Interfacebox, wx.ID_ANY, dPos, dSize, self.Interface_Themes, 0)
             # Encoding Settings
-            Encodingbox = wx.StaticBox(self.end_panel, wx.ID_ANY, _(u'Encoding Settings:'))
+            Encodingbox = wx.StaticBox(self.end_panel, wx.ID_ANY, _('Encoding Settings:'))
             EncodingSizer = wx.StaticBoxSizer(Encodingbox, wx.VERTICAL)
-            self.EncodingText = wx.StaticText(Encodingbox, wx.ID_ANY, _(u'Choose '
+            self.EncodingText = wx.StaticText(Encodingbox, wx.ID_ANY, _('Choose '
                                                                         u'an Encoding (Useful for Translated Versions of Morrowind):'),
                                               dPos, Size(-1, 30), 0)
             self.Encoding_choices = wx.Choice(Encodingbox, wx.ID_ANY, dPos, dSize, self.Encoding_Ch, 0)
             # Info
             self.EndText2 = wx.StaticText(self.end_panel, wx.ID_ANY,
-                                          _(u'Click Finish to save your settings and launch Wrye Mash.'), dPos,
+                                          _('Click Finish to save your settings and launch Wrye Mash.'), dPos,
                                           Size(-1, 30), CEN)
-            self.EndText3 = wx.StaticText(self.end_panel, wx.ID_ANY, _(u'(You can always change your settings later).'),
+            self.EndText3 = wx.StaticText(self.end_panel, wx.ID_ANY, _('(You can always change your settings later).'),
                                           dPos, Size(-1, 30), CEN)
             # Sizers ========================================= #
             Update_SpnSizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -420,17 +420,17 @@ class WizardDialog(wx.Dialog):
             if not conf.settings['openmw']:  # Regular Morrowind support
                 self.wizard_fields = (self.fldMw, self.fldInst)
                 self.PanelData = {0: [self.intro_panel, None, None],
-                                  1: [self.mw_1_panel, _(u'Please fill the entries below:'), self.mw1_Text1],
+                                  1: [self.mw_1_panel, _('Please fill the entries below:'), self.mw1_Text1],
                                   2: [self.end_panel, None, None]}
 
             if conf.settings['openmw']:  # OpenMW/TES3mp support
                 self.wizard_fields = (self.fldOpenMWloc, self.flddatamods, self.fldDownloads, self.fldDataFiles)
                 self.PanelData = {0: [self.intro_panel, None, None],
-                                  1: [self.openmw_1_panel, _(u'Please fill the entries below:'), self.openmw1_Text1],
-                                  2: [self.openmw_2_panel, _(u'Please define OpenMW Profile Location:'),
+                                  1: [self.openmw_1_panel, _('Please fill the entries below:'), self.openmw1_Text1],
+                                  2: [self.openmw_2_panel, _('Please define OpenMW Profile Location:'),
                                       self.openmw2_Text1],
-                                  3: [self.openmw_3_panel, _(u'Optional Settings:'), self.openmw3_Text],
-                                  4: [self.end_panel, _(u'Misc Settings:'), self.EndText1]}
+                                  3: [self.openmw_3_panel, _('Optional Settings:'), self.openmw3_Text],
+                                  4: [self.end_panel, _('Misc Settings:'), self.EndText1]}
 
         if True:  # Init Conditions
             self.LastPanel = len(self.PanelData) - 1
@@ -466,18 +466,18 @@ class WizardDialog(wx.Dialog):
     def init_content(self):
         """Variable Text Data."""
         if not conf.settings['openmw']:  # Regular Morrowind
-            t1 = _(u'Welcome to Wrye Mash %s Configuration Wizard.' % self.MashDate[3])
-            t2 = _(u'This wizard will help you configure all the settings needed to use Wrye Mash with Morrowind. ')
-            t3 = _(u'')
-            t4 = _(u'')
+            t1 = _('Welcome to Wrye Mash %s Configuration Wizard.' % self.MashDate[3])
+            t2 = _('This wizard will help you configure all the settings needed to use Wrye Mash with Morrowind. ')
+            t3 = _('')
+            t4 = _('')
             self.line_1.Hide()
             self.line_2.Hide()
             self.detect_Mlox_button.Disable()
         if conf.settings['openmw']:  # OpenMW/TES3mp
-            t1 = _(u'Welcome to Wrye Mash %s OpenMW/TES3mp Configuration Wizard.' % self.MashDate[3])
+            t1 = _('Welcome to Wrye Mash %s OpenMW/TES3mp Configuration Wizard.' % self.MashDate[3])
             t2 = _(
                 u'This wizard will help you configure all the settings needed to use Wrye Mash with OpenMW and/or TES3mp. ')
-            t3 = _(u'NOTE: This an Alpha/"Work in progress" version.')
+            t3 = _('NOTE: This an Alpha/"Work in progress" version.')
             t4 = _(
                 u'Since this is an Alpha/"Work in Progress" many features are not implemented and bugs may roam in every corner.  Use at your own risk.')
         #  Display
@@ -543,7 +543,7 @@ class WizardDialog(wx.Dialog):
             if self.allows:
                 for x, y in zip(self.PanelData, (1,)):
                     if not self.check_conflicts():
-                        self.PanelData[y][2].SetLabel(_(u'Conflicts in folder paths.'))
+                        self.PanelData[y][2].SetLabel(_('Conflicts in folder paths.'))
                         self.PanelData[y][2].SetForegroundColour(wx.RED)
                         if 1 not in self.disabled: self.disabled.append(1)
                     else:
@@ -565,16 +565,16 @@ class WizardDialog(wx.Dialog):
             if self.PanelID == 2:
                 if all([self.openmwcfg_detect is not None, self.allows]):
                     self.PanelData[self.PanelID][2].SetLabel(
-                        _(u'Success!') if self.openmwcfg_detect else _(u'Failed to detect OpenMW Profile.'))
+                        _('Success!') if self.openmwcfg_detect else _('Failed to detect OpenMW Profile.'))
                     self.detect_openmwcfg_button.SetLabel(
-                        _(u'Success!') if self.openmwcfg_detect else _(u'Failed to detect OpenMW Profile.'))
+                        _('Success!') if self.openmwcfg_detect else _('Failed to detect OpenMW Profile.'))
                     self.PanelData[self.PanelID][2].SetForegroundColour(wx.BLUE if self.openmwcfg_detect else wx.RED)
                     self.detect_openmwcfg_button.SetForegroundColour(wx.BLUE if self.openmwcfg_detect else wx.RED)
             # Panel 1, 3: Dir conflict check
             if self.allows:
                 for x, y in zip(self.PanelData, (1, 3)):
                     if not self.check_conflicts():
-                        self.PanelData[y][2].SetLabel(_(u'Conflicts in folder paths.'))
+                        self.PanelData[y][2].SetLabel(_('Conflicts in folder paths.'))
                         self.PanelData[y][2].SetForegroundColour(wx.RED)
                         if 3 not in self.disabled: self.disabled.append(3)
                     else:
@@ -628,22 +628,22 @@ class WizardDialog(wx.Dialog):
                 if all([os.path.isfile(os.path.join(self.fldMw.GetValue(), 'Morrowind.ini')),
                         os.path.isdir(os.path.join(self.fldMw.GetValue(), 'Data files'))]):
                     return show(
-                        [self.mw_Text, wx.BLUE, _(u'Success: morrowind.ini and "Data files" folder found.'), True])
+                        [self.mw_Text, wx.BLUE, _('Success: morrowind.ini and "Data files" folder found.'), True])
             except:
                 pass
             return show(
-                [self.mw_Text, wx.RED, _(u'Are you sure this is Morrowind\'s directory? (Ignore if you are sure).'),
+                [self.mw_Text, wx.RED, _('Are you sure this is Morrowind\'s directory? (Ignore if you are sure).'),
                  False])
         if folder == 'fldOpenMWloc':  # OpenMW Path Check
             try:
                 if all([os.path.isfile(os.path.join(self.fldOpenMWloc.GetValue(), 'openmw-launcher.exe'))]):
                     return show(
-                        [self.Openmw_te3mpText, wx.BLUE, _(u'Success: OpenMW Launcher found (openmw-launcher.exe).'),
+                        [self.Openmw_te3mpText, wx.BLUE, _('Success: OpenMW Launcher found (openmw-launcher.exe).'),
                          True])
             except:
                 pass
             return show([self.Openmw_te3mpText, wx.RED,
-                         _(u'Are you sure this is OpeMW/TES3mp directory? (Ignore if you are sure).'), False])
+                         _('Are you sure this is OpeMW/TES3mp directory? (Ignore if you are sure).'), False])
         if folder == 'fldOpenMWConf':  # OpenMW Path Check
             try:
                 chk_ok = False
@@ -652,11 +652,11 @@ class WizardDialog(wx.Dialog):
                                                'openmw.cfg')): chk_ok = True
             except:
                 pass
-            self.fldOpenMWConf.SetValue(u'')
+            self.fldOpenMWConf.SetValue('')
             if chk_ok: return show(
-                [self.openmw2_Text2, wx.RED, _(u'Error: OpenMW Profile path MUST contain "openmw.cfg"!'), False])
+                [self.openmw2_Text2, wx.RED, _('Error: OpenMW Profile path MUST contain "openmw.cfg"!'), False])
             return show(
-                [self.openmw2_Text2, wx.RED, _(u'Invalid path: OpenMW Profile folder MUST contain "openmw.cfg" file!'),
+                [self.openmw2_Text2, wx.RED, _('Invalid path: OpenMW Profile folder MUST contain "openmw.cfg" file!'),
                  False])
 
     def detect_openmwcfg(self, event):
@@ -667,7 +667,7 @@ class WizardDialog(wx.Dialog):
             if os.path.exists(openmwcfg):
                 self.fldOpenMWConf.SetValue(openmwcfg)
                 self.openmwcfg_detect = True
-                self.openmw2_Text2.SetLabel(u"")
+                self.openmw2_Text2.SetLabel("")
             else:
                 self.openmwcfg_detect = False
         except:
@@ -678,7 +678,7 @@ class WizardDialog(wx.Dialog):
         """Try to detect mlox dir."""
 
         def fail():
-            self.detect_Mlox_button.SetLabel(_(u'Failed to detect Mlox.exe'))
+            self.detect_Mlox_button.SetLabel(_('Failed to detect Mlox.exe'))
             self.detect_Mlox_button.SetForegroundColour(wx.RED)
 
         if self.check_folders('fldMw'):
@@ -693,7 +693,7 @@ class WizardDialog(wx.Dialog):
             result = Mlox_The_Path('mlox.exe', avoid, MWdir)
             if os.path.isfile(result):
                 self.fldmlox.SetValue(result)
-                self.detect_Mlox_button.SetLabel(_(u'Success!'))
+                self.detect_Mlox_button.SetLabel(_('Success!'))
                 self.detect_Mlox_button.SetForegroundColour(wx.BLUE)
             else:
                 fail()
@@ -706,7 +706,7 @@ class WizardDialog(wx.Dialog):
         if any((conf.dataMap[name].endswith(x) for x in ['.exe', '.cfg', '.py', '.json', '.ini', 'pl'])):
             for x in ['.exe', '.cfg', '.py', '.json', '.ini', 'pl']:
                 if conf.dataMap[name].endswith(x): ext = x
-            dialog = wx.FileDialog(self, _(u'Select %s file location:') % conf.dataMap[name].capitalize(),
+            dialog = wx.FileDialog(self, _('Select %s file location:') % conf.dataMap[name].capitalize(),
                                    '', '%s' % conf.dataMap[name], u'Files (*%s)|*%s' % (ext, ext),
                                    style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST)
             if dialog.ShowModal() != wx.ID_OK:
@@ -716,7 +716,7 @@ class WizardDialog(wx.Dialog):
                 path = dialog.GetPath()
                 dialog.Destroy()
         else:
-            dialog = wx.DirDialog(self, _(u'%s directory selection') % conf.dataMap[name].capitalize())
+            dialog = wx.DirDialog(self, _('%s directory selection') % conf.dataMap[name].capitalize())
             if dialog.ShowModal() != wx.ID_OK:
                 dialog.Destroy()
                 return
@@ -732,8 +732,8 @@ class WizardDialog(wx.Dialog):
         NextPanel = self.PanelData[self.PanelID + 1][0]
         if self.PanelID == 0:
             self.back_button.Disable()
-            self.cancel_Quit__button.SetLabel(u'Quit')
-        if self.next_Fin_button.GetLabel() != u'Next>': self.next_Fin_button.SetLabel(u'Next>')
+            self.cancel_Quit__button.SetLabel('Quit')
+        if self.next_Fin_button.GetLabel() != u'Next>': self.next_Fin_button.SetLabel('Next>')
         NextPanel.Hide()
         CurPanel.Show()
         self.Layout()
@@ -745,9 +745,9 @@ class WizardDialog(wx.Dialog):
             self.PanelID += 1
             CurPanel = self.PanelData[self.PanelID][0]
             PrevPanel = self.PanelData[self.PanelID - 1][0]
-            if self.PanelID == maxPanel: self.next_Fin_button.SetLabel(u'Finish')
+            if self.PanelID == maxPanel: self.next_Fin_button.SetLabel('Finish')
             if not self.back_button.IsEnabled(): self.back_button.Enable()
-            if self.cancel_Quit__button.GetLabel() != u'Cancel': self.cancel_Quit__button.SetLabel(u'Cancel')
+            if self.cancel_Quit__button.GetLabel() != u'Cancel': self.cancel_Quit__button.SetLabel('Cancel')
             PrevPanel.Hide()
             CurPanel.Show()
             self.Layout()
@@ -788,8 +788,8 @@ class WizardDialog(wx.Dialog):
         self.EndModal(result)
 
     def OnCancel(self, event):
-        warning = _(u'Are you sure you wish to Quit?\n\nAll your changes will be lost!!!')
-        if gui.WarningQuery(self, warning, _(u'Are you sure?')) == wx.ID_YES:
+        warning = _('Are you sure you wish to Quit?\n\nAll your changes will be lost!!!')
+        if gui.WarningQuery(self, warning, _('Are you sure?')) == wx.ID_YES:
             self.OnClose(False)
         else:
             return

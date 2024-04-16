@@ -150,7 +150,7 @@ class Image(object):
         self.bitmap = None
         self.icon = None
         if not GPath(self.file).exists():
-            raise ArgumentError(_(u'Missing resource file: %s.') % (self.file,))
+            raise ArgumentError(_('Missing resource file: %s.') % (self.file,))
 
     def GetBitmap(self):
         """Return bitmap."""
@@ -383,7 +383,7 @@ def vsbSizer(boxArgs, *elements):
 
 # Modal Dialogs ---------------------------------------------------------------
 
-def askDirectory(parent, message=_(u'Choose a directory.'), defaultPath=''):
+def askDirectory(parent, message=_('Choose a directory.'), defaultPath=''):
     """Shows a modal directory dialog and return the resulting path, or None if canceled."""
     dialog = wx.DirDialog(parent, message, GPath(defaultPath).s, style=wx.DD_NEW_DIR_BUTTON)
     if dialog.ShowModal() != wx.ID_OK:
@@ -397,7 +397,7 @@ def askDirectory(parent, message=_(u'Choose a directory.'), defaultPath=''):
 
 # ------------------------------------------------------------------------------
 
-def askContinue(parent, message, continueKey, title=_(u'Warning')):
+def askContinue(parent, message, continueKey, title=_('Warning')):
     """Shows a modal continue query if value of continueKey is false. Returns True to continue.
     Also provides checkbox "Don't show this in future." to set continueKey to true."""
     # --ContinueKey set?
@@ -406,7 +406,7 @@ def askContinue(parent, message, continueKey, title=_(u'Warning')):
     dialog = wx.Dialog(parent, defId, title, size=(350, 200), style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
     icon = wx.StaticBitmap(dialog, defId,
                            wx.ArtProvider_GetBitmap(wx.ART_WARNING, wx.ART_MESSAGE_BOX, (32, 32)))
-    gCheckBox = checkBox(dialog, _(u"Don't show this in the future."))
+    gCheckBox = checkBox(dialog, _("Don't show this in the future."))
     # --Layout
     sizer = vSizer(
         (hSizer(
@@ -490,7 +490,7 @@ def askYes(parent, message, title='', default=True):
     return askStyled(parent, message, title, style)
 
 
-def askWarning(parent, message, title=_(u'Warning')):
+def askWarning(parent, message, title=_('Warning')):
     """Shows a modal warning message."""
     return askStyled(parent, message, title, wx.OK | wx.CANCEL | wx.ICON_EXCLAMATION)
 
@@ -500,17 +500,17 @@ def showOk(parent, message, title=''):
     return askStyled(parent, message, title, wx.OK)
 
 
-def showError(parent, message, title=_(u'Error')):
+def showError(parent, message, title=_('Error')):
     """Shows a modal error message."""
     return askStyled(parent, message, title, wx.OK | wx.ICON_HAND)
 
 
-def showWarning(parent, message, title=_(u'Warning')):
+def showWarning(parent, message, title=_('Warning')):
     """Shows a modal warning message."""
     return askStyled(parent, message, title, wx.OK | wx.ICON_EXCLAMATION)
 
 
-def showInfo(parent, message, title=_(u'Information')):
+def showInfo(parent, message, title=_('Information')):
     """Shows a modal information message."""
     return askStyled(parent, message, title, wx.OK | wx.ICON_INFORMATION)
 
@@ -522,7 +522,7 @@ def showList(parent, header, items, maxItems=0, title=''):
     message = string.Template(header).substitute(count=numItems)
     message += '\n* ' + '\n* '.join(items[:min(numItems, maxItems)])
     if numItems > maxItems:
-        message += _(u'\n(And %d others.)') % (numItems - maxItems,)
+        message += _('\n(And %d others.)') % (numItems - maxItems,)
     return askStyled(parent, message, title, wx.OK)
 
 
@@ -771,13 +771,13 @@ class ListEditor(wx.Dialog):
             self.gInfoBox = None
         # --Buttons
         buttonSet = (
-            (data.showAction, _(u'Action'), self.DoAction),
-            (data.showAdd, _(u'Add'), self.DoAdd),
-            (data.showEdit, _(u'Edit'), self.DoEdit),
-            (data.showRename, _(u'Rename'), self.DoRename),
-            (data.showRemove, _(u'Remove'), self.DoRemove),
-            (data.showSave, _(u'Save'), self.DoSave),
-            (data.showCancel, _(u'Cancel'), self.DoCancel),
+            (data.showAction, _('Action'), self.DoAction),
+            (data.showAdd, _('Add'), self.DoAdd),
+            (data.showEdit, _('Edit'), self.DoEdit),
+            (data.showRename, _('Rename'), self.DoRename),
+            (data.showRemove, _('Remove'), self.DoRemove),
+            (data.showSave, _('Save'), self.DoSave),
+            (data.showCancel, _('Cancel'), self.DoCancel),
         )
         if sum(bool(x[0]) for x in buttonSet):
             buttons = vSizer()
@@ -846,11 +846,11 @@ class ListEditor(wx.Dialog):
         itemDex = selections[0]
         curName = self.list.GetString(itemDex)
         # --Dialog
-        newName = askText(self, _(u'Rename to:'), _(u'Rename'), curName)
+        newName = askText(self, _('Rename to:'), _('Rename'), curName)
         if not newName or newName == curName:
             return
         elif newName in self.items:
-            showError(self, _(u'Name must be unique.'))
+            showError(self, _('Name must be unique.'))
         elif self.data.rename(curName, newName):
             self.items[itemDex] = newName
             self.list.SetString(itemDex, newName)
@@ -970,7 +970,7 @@ class Picture(wx.Window):
 class Progress(bolt.Progress):
     """Progress as progress dialog."""
 
-    def __init__(self, title=_(u'Progress'), message=' ' * 60, parent=None,
+    def __init__(self, title=_('Progress'), message=' ' * 60, parent=None,
                  style=wx.PD_APP_MODAL | wx.PD_ELAPSED_TIME | wx.PD_AUTO_HIDE):
         """Init."""
         if sys.version[:3] != '2.4': style |= wx.PD_SMOOTH
@@ -984,7 +984,7 @@ class Progress(bolt.Progress):
 
     def doProgress(self, state, message):  # Polemos: bug fix.
         if not self.dialog:
-            raise StateError(_(u'Dialog already destroyed.'))
+            raise StateError(_('Dialog already destroyed.'))
         elif (state == 0 or state == 1 or (message != self.prevMessage) or
               (state - self.prevState) > 0.05 or (time.time() - self.prevTime) > 0.5):
             if message != self.prevMessage:
@@ -1348,9 +1348,9 @@ class Tank(wx.Panel):  # Polemos: Edits
         """Deletes selected items."""
         items = self.GetSelected()
         if not items: return
-        message = _(u'Delete these items? This operation cannot be undone.')
+        message = _('Delete these items? This operation cannot be undone.')
         message += '\n* ' + '\n* '.join([self.data.getName(x) for x in items])
-        if not askYes(self, message, _(u'Delete Items')): return
+        if not askYes(self, message, _('Delete Items')): return
         for item in items: del self.data[item]
         self.RefreshUI()
         self.data.setChanged()
@@ -1459,7 +1459,7 @@ class Tanks_Open(Link):
 
     def AppendToMenu(self, menu, window, data):
         Link.AppendToMenu(self, menu, window, data)
-        menuItem = wx.MenuItem(menu, self.id, _(u'Open...'))
+        menuItem = wx.MenuItem(menu, self.id, _('Open...'))
         menu.AppendItem(menuItem)
 
     def Execute(self, event):
@@ -1476,7 +1476,7 @@ class Tank_Delete(Link):
 
     def AppendToMenu(self, menu, window, data):
         Link.AppendToMenu(self, menu, window, data)
-        menu.AppendItem(wx.MenuItem(menu, self.id, _(u'Delete')))
+        menu.AppendItem(wx.MenuItem(menu, self.id, _('Delete')))
 
     def Execute(self, event):
         try:
@@ -1493,7 +1493,7 @@ class Tank_Open(Link):
 
     def AppendToMenu(self, menu, window, data):
         Link.AppendToMenu(self, menu, window, data)
-        menuItem = wx.MenuItem(menu, self.id, _(u'Open...'))
+        menuItem = wx.MenuItem(menu, self.id, _('Open...'))
         menu.AppendItem(menuItem)
         menuItem.Enable(bool(self.selected))
 
@@ -1511,7 +1511,7 @@ class Tank_Duplicate(Link):  # Polemos fixes
 
     def AppendToMenu(self, menu, window, data):
         Link.AppendToMenu(self, menu, window, data)
-        menuItem = wx.MenuItem(menu, self.id, _(u'Duplicate...'))
+        menuItem = wx.MenuItem(menu, self.id, _('Duplicate...'))
         menu.AppendItem(menuItem)
         menuItem.Enable(len(self.selected) == 1)
 
@@ -1520,11 +1520,11 @@ class Tank_Duplicate(Link):  # Polemos fixes
         srcName = self.selected[0]
         (root, ext) = srcName.rootExt
         (destDir, destName, wildcard) = (srcDir, root + ' Copy' + ext, '*' + ext)
-        destPath = askSave(self.gTank, _(u'Duplicate as:'), destDir, destName, wildcard)
+        destPath = askSave(self.gTank, _('Duplicate as:'), destDir, destName, wildcard)
         if not destPath: return
         destDir, destName = destPath.headTail
         if (destDir == srcDir) and (destName == srcName):
-            showError(self.window, _(u"Files cannot be duplicated to themselves!"))
+            showError(self.window, _("Files cannot be duplicated to themselves!"))
             return
         self.data.copy(srcName, destName, destDir)
         if destDir == srcDir: self.gTank.RefreshUI()

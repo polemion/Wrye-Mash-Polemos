@@ -113,10 +113,10 @@ class SysTray(adv.TaskBarIcon):
         """Systray context menu."""
         # Menu items
         menu = wx.Menu()
-        runGame = menu.AppendCheckItem(wx.NewId(), _(u'Launch %s') % (u'Morrowind' if not self.openmw else u'OpenMW'))
+        runGame = menu.AppendCheckItem(wx.NewId(), _('Launch %s') % ('Morrowind' if not self.openmw else u'OpenMW'))
         menu.AppendSeparator()
-        openApp = menu.Append(wx.NewId(), _(u'Open Wrye Mash'))
-        exit = menu.Append(wx.NewId(), _(u'Exit'))
+        openApp = menu.Append(wx.NewId(), _('Open Wrye Mash'))
+        exit = menu.Append(wx.NewId(), _('Exit'))
 
         # Menu actions
         def runGameDef(event): self.mainFrame.systrayRun(None)

@@ -53,23 +53,23 @@ class cleanop(wx.Dialog):  # Polemos: This is not implemented.
 
     def __init__(self, parent, style=wx.DEFAULT_DIALOG_STYLE | wx.STAY_ON_TOP):
         """Init."""
-        wx.Dialog.__init__(self, parent, id=wx.ID_ANY, title=_(u'tes3cmd Clean'), pos=dPos, size=wx.Size(429, 217),
+        wx.Dialog.__init__(self, parent, id=wx.ID_ANY, title=_('tes3cmd Clean'), pos=dPos, size=wx.Size(429, 217),
                            style=style)
         self.SetSizeHintsSz(dSize, dSize)
         if True:  # Content
-            self.clean_box0 = wx.CheckBox(self, wx.ID_ANY, _(u'clean cell subrecords AMBI,WHGT duped from masters'),
+            self.clean_box0 = wx.CheckBox(self, wx.ID_ANY, _('clean cell subrecords AMBI,WHGT duped from masters'),
                                           dPos, dSize, 0)
-            self.clean_box1 = wx.CheckBox(self, wx.ID_ANY, _(u'clean other complete records duped from masters'), dPos,
+            self.clean_box1 = wx.CheckBox(self, wx.ID_ANY, _('clean other complete records duped from masters'), dPos,
                                           dSize, 0)
-            self.clean_box2 = wx.CheckBox(self, wx.ID_ANY, _(u'clean Evil GMSTs'), dPos, dSize, 0)
+            self.clean_box2 = wx.CheckBox(self, wx.ID_ANY, _('clean Evil GMSTs'), dPos, dSize, 0)
             self.clean_box3 = wx.CheckBox(self, wx.ID_ANY,
-                                          _(u'clean object instances from cells when duped from masters'), dPos, dSize,
+                                          _('clean object instances from cells when duped from masters'), dPos, dSize,
                                           0)
             self.clean_box4 = wx.CheckBox(self, wx.ID_ANY,
-                                          _(u'clean junk cells (no new info from definition in masters)'), dPos, dSize,
+                                          _('clean junk cells (no new info from definition in masters)'), dPos, dSize,
                                           0)
-            self.cancel_btn = wx.Button(self, wx.ID_CANCEL, _(u'Cancel'), dPos, dSize, 0)
-            self.clean_selected_btn = wx.Button(self, wx.ID_ANY, _(u'Clean Selected'), dPos, dSize, 0)
+            self.cancel_btn = wx.Button(self, wx.ID_CANCEL, _('Cancel'), dPos, dSize, 0)
+            self.clean_selected_btn = wx.Button(self, wx.ID_ANY, _('Clean Selected'), dPos, dSize, 0)
             [x.SetValue(True) for x in
              (self.clean_box0, self.clean_box1, self.clean_box2, self.clean_box3, self.clean_box4)]
         if True:  # Sizers
@@ -102,7 +102,7 @@ class cleaner(wx.Frame):  # Polemos
     def __init__(self, parent,
                  style=wx.CAPTION | wx.CLOSE_BOX | wx.FRAME_FLOAT_ON_PARENT | wx.SYSTEM_MENU | wx.TAB_TRAVERSAL):
         """Init."""
-        wx.Frame.__init__(self, parent, id=wx.ID_ANY, title=_(u'tes3cmd Cleaner'), pos=dPos, size=wx.Size(530, 350),
+        wx.Frame.__init__(self, parent, id=wx.ID_ANY, title=_('tes3cmd Cleaner'), pos=dPos, size=wx.Size(530, 350),
                           style=style)
         mCleanedModsChoices = []
         self.SetSizeHintsSz(dSize, dSize)
@@ -110,10 +110,10 @@ class cleaner(wx.Frame):  # Polemos
             self.main_panel = wx.Panel(self, wx.ID_ANY, dPos, dSize, 0)
             self.details_book = wx.Notebook(self.main_panel, wx.ID_ANY, dPos, dSize, 0)
             # Buttons
-            self.mSkip = wx.Button(self.main_panel, wx.ID_ANY, _(u'Skip'), dPos, (70, 26), 0)
-            self.mStop = wx.Button(self.main_panel, wx.ID_ANY, _(u'Stop'), dPos, (70, 26), 0)
-            self.save_log_btn = wx.Button(self.main_panel, wx.ID_ANY, _(u'Save Log'), dPos, dSize, 0)
-            self.ok_btn = wx.Button(self.main_panel, wx.ID_OK, _(u'OK'), dPos, dSize, 0)
+            self.mSkip = wx.Button(self.main_panel, wx.ID_ANY, _('Skip'), dPos, (70, 26), 0)
+            self.mStop = wx.Button(self.main_panel, wx.ID_ANY, _('Stop'), dPos, (70, 26), 0)
+            self.save_log_btn = wx.Button(self.main_panel, wx.ID_ANY, _('Save Log'), dPos, dSize, 0)
+            self.ok_btn = wx.Button(self.main_panel, wx.ID_OK, _('OK'), dPos, dSize, 0)
             # Def buttons state
             [x.Disable() for x in (self.ok_btn, self.save_log_btn)]
             self.EnableCloseButton(False)
@@ -121,15 +121,15 @@ class cleaner(wx.Frame):  # Polemos
             self.mProgress = wx.Gauge(self.main_panel, wx.ID_ANY, 100, dPos, dSize, wx.GA_HORIZONTAL | wx.GA_SMOOTH)
             # Mod list/actions
             self.mCleanedMods = wx.ListBox(self.main_panel, wx.ID_ANY, dPos, dSize, mCleanedModsChoices, 0)
-            self.clean_mod_info_text = wx.StaticText(self.main_panel, wx.ID_ANY, _(u'Cleaning...'), dPos, dSize, 0)
+            self.clean_mod_info_text = wx.StaticText(self.main_panel, wx.ID_ANY, _('Cleaning...'), dPos, dSize, 0)
             self.mStats = wx.StaticText(self.main_panel, wx.ID_ANY, u'', dPos, dSize, 0)
             # Output
             self.output_panel = wx.Panel(self.details_book, wx.ID_ANY, dPos, dSize, wx.TAB_TRAVERSAL)
-            self.details_book.AddPage(self.output_panel, _(u'Output'), True)
+            self.details_book.AddPage(self.output_panel, _('Output'), True)
             self.mLog = wx.TextCtrl(self.output_panel, wx.ID_ANY, u'', dPos, dSize, wx.TE_MULTILINE | wx.TE_READONLY)
             # Errors
             self.errors_panel = wx.Panel(self.details_book, wx.ID_ANY, dPos, dSize, wx.TAB_TRAVERSAL)
-            self.details_book.AddPage(self.errors_panel, _(u'Errors'), False)
+            self.details_book.AddPage(self.errors_panel, _('Errors'), False)
             self.mErrors = wx.TextCtrl(self.errors_panel, wx.ID_ANY, u'', dPos, dSize, wx.TE_MULTILINE | wx.TE_READONLY)
         if True:  # Layout
             self.mCleanedMods.SetMinSize(wx.Size(150, -1))
