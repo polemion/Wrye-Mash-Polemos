@@ -2104,7 +2104,7 @@ class Tes3_Gmdt(SubRecord):
 class Tes3(Record):
     """TES3 Record. File header."""
 
-    def __init__(self, name='TES3'.encode('utf-8)'), size=0, delFlag=0, recFlag=0, ins=None, unpack=False):
+    def __init__(self, name='TES3', size=0, delFlag=0, recFlag=0, ins=None, unpack=False):
         """Initialize."""
         self.hedr = None
         self.masters = []  # --(fileName,fileSize)
