@@ -2129,7 +2129,7 @@ class Tes3(Record):
                 bytesRead += 8 + size
                 # --FileSize
                 (name, size) = ins.unpackSubHeader(b'TES3', b'DATA', 8)
-                fileSize = ins.unpack(b'Q', 8, b'TES3.DATA')[0]
+                fileSize = ins.unpack('Q', 8, b'TES3.DATA')[0]
                 self.masters.append((fileName, fileSize))
                 bytesRead += 16
             # --Game Data
@@ -2147,8 +2147,8 @@ class Tes3(Record):
         self.hedr.getSize()
         self.hedr.dump(out)
         for (name, size) in self.masters:
-            out.packSub0('MAST', name)
-            out.packSub('DATA', 'Q', size)
+            out.packSub0(b'MAST', name)
+            out.packSub(b'DATA', 'Q', size)
         if self.gmdt:
             self.gmdt.getSize()
             self.gmdt.dump(out)

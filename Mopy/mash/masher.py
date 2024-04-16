@@ -1226,7 +1226,7 @@ class MasterList(gui.List):
                 value = repr(self.allMasters.index(masterName) + 1)
             # --Insert/Set Value
             if mode and (colDex == 0):
-                self.list.InsertStringItem(itemDex, value)
+                    self.list.InsertStringItem(itemDex, value)
             else:
                 self.list.SetStringItem(itemDex, colDex, value)
         # --Text BG

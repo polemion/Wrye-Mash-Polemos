@@ -42,122 +42,122 @@ openmw = os.path.exists(os.path.join(appinfo.MashDir, 'openmw.dat'))
 
 # Version details
 ver = 101
-extraVerInfo = u'beta9' if not openmw else u'Alpha for OpenMW'
+extraVerInfo = 'beta9' if not openmw else 'Alpha for OpenMW'
 # This updates the date of the fork in the credits (brutally below). You will need to change it below for your fork. Respect the dates.
-date = u'2/2024'
-author = u'Polemos fork'
+date = '2/2024'
+author = 'Polemos fork'
 
 
 def protoLicence():
     """License factory."""
     return (
-        (u'Wrye Mash Polemos fork\r\n', 'b'),
-        (u'Copyright (C) 2017-%s Polemos\r\n' % date.split('/')[1], 'b'),  # Sets fork's last manipulation date.
-        (u'* based on code by Yacoby copyright (C) 2011-2016 Wrye Mash Fork Python version\r\n', 'i'),
-        (u'* based on code by Melchor copyright (C) 2009-2011 Wrye Mash WMSA\r\n', 'i'),
-        (u'* based on code by Wrye copyright (C) 2005-2009 Wrye Mash\r\n', 'i'),
+        ('Wrye Mash Polemos fork\r\n', 'b'),
+        ('Copyright (C) 2017-%s Polemos\r\n' % date.split('/')[1], 'b'),  # Sets fork's last manipulation date.
+        ('* based on code by Yacoby copyright (C) 2011-2016 Wrye Mash Fork Python version\r\n', 'i'),
+        ('* based on code by Melchor copyright (C) 2009-2011 Wrye Mash WMSA\r\n', 'i'),
+        ('* based on code by Wrye copyright (C) 2005-2009 Wrye Mash\r\n', 'i'),
 
-        (u'License: GPL version 2 or higher\r\n', 'b'),
-        (u'GPL: http://www.gnu.org/licenses/gpl.html\r\n', 'b'),
-        (u'\r\n', ''),
+        ('License: GPL version 2 or higher\r\n', 'b'),
+        ('GPL: http://www.gnu.org/licenses/gpl.html\r\n', 'b'),
+        ('\r\n', ''),
 
-        (u'Copyright on the original code:\r\n', 'b'),
-        (u'2005-2009 Wrye\r\n', 'i'),
-        (u'Copyright on any non trivial code modifications or substantial code additions:\r\n', 'b'),
-        (u'2009-2011 Melchor\r\n', 'i'),
-        (u'2011-2016 Yacoby\r\n', 'i'),
-        (u'2017-%s Polemos\r\n' % date.split('/')[1], 'i'),  # Sets the fork's last manipulation date.
-        (u'\r\n', ''),
+        ('Copyright on the original code:\r\n', 'b'),
+        ('2005-2009 Wrye\r\n', 'i'),
+        ('Copyright on any non trivial code modifications or substantial code additions:\r\n', 'b'),
+        ('2009-2011 Melchor\r\n', 'i'),
+        ('2011-2016 Yacoby\r\n', 'i'),
+        ('2017-%s Polemos\r\n' % date.split('/')[1], 'i'),  # Sets the fork's last manipulation date.
+        ('\r\n', ''),
 
-        (u'Original Wrye Mash License and Copyright:\r\n', 'b'),
-        (u'Wrye Mash is free software; you can redistribute it and/or ', ''),
-        (u'modify it under the terms of the GNU General Public License ', ''),
-        (u'as published by the Free Software Foundation; either version 2 ', ''),
-        (u'of the License, or (at your option) any later version.\r\n', ''),
-        (u'Wrye Bolt is distributed in the hope that it will be useful,\r\n', 'b'),
-        (u'but WITHOUT ANY WARRANTY; without even the implied warranty of ', ''),
-        (u'MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the ', ''),
-        (u'GNU General Public License for more details.\r\n', ''),
-        (u'You should have received a copy of the GNU General Public License ', ''),
-        (u'along with Wrye Mash; if not, write to the Free Software Foundation, ', ''),
-        (u'Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. ', 'i'),
-        (u'Wrye Mash copyright (C) 2005, 2006, 2007, 2008, 2009 Wrye\r\n\r\n', ''),
-        (u'\r\n', ''),
+        ('Original Wrye Mash License and Copyright:\r\n', 'b'),
+        ('Wrye Mash is free software; you can redistribute it and/or ', ''),
+        ('modify it under the terms of the GNU General Public License ', ''),
+        ('as published by the Free Software Foundation; either version 2 ', ''),
+        ('of the License, or (at your option) any later version.\r\n', ''),
+        ('Wrye Bolt is distributed in the hope that it will be useful,\r\n', 'b'),
+        ('but WITHOUT ANY WARRANTY; without even the implied warranty of ', ''),
+        ('MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the ', ''),
+        ('GNU General Public License for more details.\r\n', ''),
+        ('You should have received a copy of the GNU General Public License ', ''),
+        ('along with Wrye Mash; if not, write to the Free Software Foundation, ', ''),
+        ('Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. ', 'i'),
+        ('Wrye Mash copyright (C) 2005, 2006, 2007, 2008, 2009 Wrye\r\n\r\n', ''),
+        ('\r\n', ''),
 
-        (u'This software contains other softwares which fall under different Licenses:\r\n', 'b'),
-        (u'7zip ', 'b'),
+        ('This software contains other softwares which fall under different Licenses:\r\n', 'b'),
+        ('7zip ', 'b'),
 
-        (u'is licenced under LGPL\r\n', 'i'),
-        (u'Python License:\r\n', 'b'),
-        (u'https://www.python.org/download/releases/2.7/license/\r\n', 'i'),
-        (u'wxPython License:\r\n', 'b'),
-        (u'https://wxpython.org/pages/license/\r\n', 'i'),
-        (u'Cole Bemis for icon Pack Feather:\r\n', 'b'),
-        (u'CC BY 3.0, https://creativecommons.org/licenses/by/3.0/\r\n', 'i'),
-        (u'Rafiqul Hassan for Blogger Iconset:\r\n', 'b'),
-        (u'Freeware, http://www.iconarchive.com/show/blogger-icons-by-rafiqul-hassan.html\r\n', 'i'),
-        (u'bobsobol for TES3 - Morrowind icon on DeviantArt:\r\n', 'b'),
-        (u'CC Share Alike 3.0 License, https://www.deviantart.com/bobsobol/art/TES3-Morrowind-209901409\r\n', 'i')
+        ('is licenced under LGPL\r\n', 'i'),
+        ('Python License:\r\n', 'b'),
+        ('https://www.python.org/download/releases/2.7/license/\r\n', 'i'),
+        ('wxPython License:\r\n', 'b'),
+        ('https://wxpython.org/pages/license/\r\n', 'i'),
+        ('Cole Bemis for icon Pack Feather:\r\n', 'b'),
+        ('CC BY 3.0, https://creativecommons.org/licenses/by/3.0/\r\n', 'i'),
+        ('Rafiqul Hassan for Blogger Iconset:\r\n', 'b'),
+        ('Freeware, http://www.iconarchive.com/show/blogger-icons-by-rafiqul-hassan.html\r\n', 'i'),
+        ('bobsobol for TES3 - Morrowind icon on DeviantArt:\r\n', 'b'),
+        ('CC Share Alike 3.0 License, https://www.deviantart.com/bobsobol/art/TES3-Morrowind-209901409\r\n', 'i')
     )
 
 
 def protoSource():
     """Dev factory."""
     newline = (('\r\n', ''),)
-    source = [(u'"Every modder and utility developer in the Morrowind community stands on the collective'
-               u' shoulders of everyone who preceded them, contributing time, talent, and inspiration.\r\n'
-               u'So, thanks to all the past developers and folks in the forums!", Wrye.\r\n', 'b')]
+    source = [('"Every modder and utility developer in the Morrowind community stands on the collective'
+               ' shoulders of everyone who preceded them, contributing time, talent, and inspiration.\r\n'
+               'So, thanks to all the past developers and folks in the forums!", Wrye.\r\n', 'b')]
     source.extend(newline)
     source.extend((
-        (u'Wrye: ', 'b'),
-        (u'the original creator of Wrye everything,\r\n', 'i'),
-        (u'Melchor: ', 'b'),
-        (u'New help interface, Utilities tab and settings window,\r\n', 'i'),
-        (u'Yacoby: ', 'b'),
-        (u'drag and drop functionality, mlox - TES3cmd support, fixes, refactoring and more,\r\n', 'i'),
-        (u'Polemos: ', 'b'),
+        ('Wrye: ', 'b'),
+        ('the original creator of Wrye everything,\r\n', 'i'),
+        ('Melchor: ', 'b'),
+        ('New help interface, Utilities tab and settings window,\r\n', 'i'),
+        ('Yacoby: ', 'b'),
+        ('drag and drop functionality, mlox - TES3cmd support, fixes, refactoring and more,\r\n', 'i'),
+        ('Polemos: ', 'b'),
         (
-        u'Toolbar menu, mod order snapshots, better Unicode support, fixes, BSA Archives implementation, OpenMW/TES3mp compatibility,'
-        u' TES3lint support, Custom Commands support, new dialogs, theming options, store/restore mod order buttons, interface'
-        u' modernization and streamlining, speed improvements, update notifications, support for people with weak vision, higher'
-        u' icon res for the status bar, extra functionalities, multi-language Morrowind support, Animation packages support, MWSE'
-        u' support and much much more.\r\n', 'i'),
+        'Toolbar menu, mod order snapshots, better Unicode support, fixes, BSA Archives implementation, OpenMW/TES3mp compatibility,'
+        ' TES3lint support, Custom Commands support, new dialogs, theming options, store/restore mod order buttons, interface'
+        ' modernization and streamlining, speed improvements, update notifications, support for people with weak vision, higher'
+        ' icon res for the status bar, extra functionalities, multi-language Morrowind support, Animation packages support, MWSE'
+        ' support and much much more.\r\n', 'i'),
     ))
     source.extend(newline)
     source.extend((
-        (u'ManaUser: ', 'b'),
-        (u'Coding (a lot).\r\n', 'i'),
-        (u'Argent: ', 'b'),
-        (u'Java code and technical insights into Morrowind files.\r\n', 'i'),
-        (u'FallenWizard: ', 'b'),
-        (u'Key shortcut for deletion in mods and saves tabs from Mash.\r\n', 'i'),
-        (u'Abot: ', 'b'),
-        (u'Translations, ideas and coding (like TES3CMD merge, advanced sorting and more).\r\n', 'i'),
-        (u'NullCascade, Greatness7: ', 'b'),
-        (u'For working/extending the maximum plugins that Wrye Mash can handle (up to 1024 from 256).\r\n', 'i'),
+        ('ManaUser: ', 'b'),
+        ('Coding (a lot).\r\n', 'i'),
+        ('Argent: ', 'b'),
+        ('Java code and technical insights into Morrowind files.\r\n', 'i'),
+        ('FallenWizard: ', 'b'),
+        ('Key shortcut for deletion in mods and saves tabs from Mash.\r\n', 'i'),
+        ('Abot: ', 'b'),
+        ('Translations, ideas and coding (like TES3CMD merge, advanced sorting and more).\r\n', 'i'),
+        ('NullCascade, Greatness7: ', 'b'),
+        ('For working/extending the maximum plugins that Wrye Mash can handle (up to 1024 from 256).\r\n', 'i'),
     ))
     source.extend(newline)
     source.extend((
-        (u'Beryllium: ', 'b'),
-        (u'EE templates, bug reports and feedback.\r\n', 'i'),
-        (u'Dragon32, Shasta Thorne: ', 'b'),
-        (u'Ref Removers.\r\n', 'i'),
-        (u'Oooiii, Stahpk, Abot, calemcc, Zikerocks, wildbane and Pherim: ', 'b'),
-        (u'Vital bug reports and ideas.\r\n', 'i'),
-        (u'StaticNation, KarmicKid and Valascon: ', 'b'),
-        (u'The Wrye Mash bug finder champions.\r\n', 'i'),
-        (u'KOYK_GR: ', 'b'),
-        (u'New icon and Bug testing.', 'i')
+        ('Beryllium: ', 'b'),
+        ('EE templates, bug reports and feedback.\r\n', 'i'),
+        ('Dragon32, Shasta Thorne: ', 'b'),
+        ('Ref Removers.\r\n', 'i'),
+        ('Oooiii, Stahpk, Abot, calemcc, Zikerocks, wildbane and Pherim: ', 'b'),
+        ('Vital bug reports and ideas.\r\n', 'i'),
+        ('StaticNation, KarmicKid and Valascon: ', 'b'),
+        ('The Wrye Mash bug finder champions.\r\n', 'i'),
+        ('KOYK_GR: ', 'b'),
+        ('New icon and Bug testing.', 'i')
     ))
     return source
 
 
 def Current_Version():
     """The Data here feeds all of Wrye Mash."""
-    extraVerInf = u' ' + extraVerInfo
+    extraVerInf = ' ' + extraVerInfo
     # Setup.py or setupx64.py imports version info (for compiling) from the lines below. It is brutal so keep the formatting.
-    return (ver, u'%sv%s%s - %s - %s' % (
-        bit, ver, extraVerInf, author, date), u'%s - %s' % (ver, date), u'%s' % date[-4:], u'%s' % author)
+    return (ver, '%sv%s%s - %s - %s' % (
+        bit, ver, extraVerInf, author, date), '%s - %s' % (ver, date), '%s' % date[-4:], '%s' % author)
 
 
 class About(object):  # Polemos: a much needed "About".
@@ -165,9 +165,9 @@ class About(object):  # Polemos: a much needed "About".
 
     def __init__(self, mode):
         """Init."""
-        self.name = u'Wrye Mash %s %s' % (Current_Version()[4], u'for OpenMW' if openmw else u'')
-        self.version = u'Version: %s' % (Current_Version()[2])
-        self.website = (u'Nexus Homepage', wrye_download_site('home', mode))
+        self.name = 'Wrye Mash %s %s' % (Current_Version()[4], 'for OpenMW' if openmw else '')
+        self.version = 'Version: %s' % (Current_Version()[2])
+        self.website = ('Nexus Homepage', wrye_download_site('home', mode))
 
     def getData(self):
         """Return the credits data to the caller."""
@@ -184,7 +184,7 @@ class About(object):  # Polemos: a much needed "About".
 
 def protoGNU():
     """Returns GNU license:"""
-    return u'''GNU GENERAL PUBLIC LICENSE
+    return '''GNU GENERAL PUBLIC LICENSE
 Version 3, 29 June 2007
 
 Copyright © 2007 Free Software Foundation, Inc. <https://fsf.org/>

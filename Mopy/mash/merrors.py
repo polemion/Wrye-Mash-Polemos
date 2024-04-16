@@ -63,28 +63,28 @@ class mError(Exception):
 class AbstractError(mError):
     """Coding Error: Abstract code section called."""
 
-    def __init__(self, message=_(u'Abstract section called.')):
+    def __init__(self, message=_('Abstract section called.')):
         mError.__init__(self, message)
 
 
 class ArgumentError(mError):
     """Coding Error: Argument out of allowed range of values."""
 
-    def __init__(self, message=_(u'Argument is out of allowed ranged of values.')):
+    def __init__(self, message=_('Argument is out of allowed ranged of values.')):
         mError.__init__(self, message)
 
 
 class StateError(mError):
     """Error: Object is corrupted."""
 
-    def __init__(self, message=_(u'Object is in a bad state.')):
+    def __init__(self, message=_('Object is in a bad state.')):
         mError.__init__(self, message)
 
 
 class UncodedError(mError):
     """Coding Error: Call to section of code that hasn't been written."""
 
-    def __init__(self, message=_(u'Section is not coded yet.')):
+    def __init__(self, message=_('Section is not coded yet.')):
         mError.__init__(self, message)
 
 
