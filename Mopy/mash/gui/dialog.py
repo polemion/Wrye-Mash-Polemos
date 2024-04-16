@@ -1796,8 +1796,7 @@ class HelpDialog(wx.Dialog):  # Polemos
         anchor = href[1:]
         if not href.startswith('#'):
             wx.LaunchDefaultBrowser(href)
-        elif self.help.HasAnchor(anchor):
-            self.help.ScrollToAnchor(anchor)
+        else: self.help.ScrollToAnchor(anchor)
 
     def OnClose(self, event):
         """Exit..."""

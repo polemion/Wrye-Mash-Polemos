@@ -939,6 +939,7 @@ class Picture(wx.Window):
         bitmap = self.scaled = self.bitmap
         if not bitmap: return
         imgWidth, imgHeight = bitmap.GetWidth(), bitmap.GetHeight()
+        # todo: polemos: add option to rescale image to fit window
         if self.scaling == 2 or (self.scaling == 1 and (imgWidth > picWidth or imgHeight > picHeight)):
             image = bitmap.ConvertToImage()
             factor = min(picWidth / imgWidth, picHeight / imgHeight)
