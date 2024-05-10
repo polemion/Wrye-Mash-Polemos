@@ -65,7 +65,7 @@ class user_profile(object):  # Polemos
             if 'profver=' in line:
                 if line != mashVer: line = mashVer
             if line: updPrVer.append(line.rstrip())
-            self.create(self.profile, text=u'\n'.join(updPrVer))
+            self.create(self.profile, text='\n'.join(updPrVer))
         if not self.getdata('profile'):  # Recreate profile.ini if it is missing
             self.create(self.profile, text=self.defaultini())
 
@@ -111,12 +111,12 @@ class user_profile(object):  # Polemos
 
     def create(self, data, text=''):
         """Create method."""
-        with io.open(data, 'w', encoding='utf-8') as f:
+        with io.open(data, 'w') as f:
             f.write(text)
 
     def read(self, data):
         """Read method."""
-        with io.open(data, 'r', encoding='utf-8') as f:
+        with io.open(data, 'r') as f:
             data = f.readlines()
         return [x.strip() for x in data]
 
@@ -134,4 +134,4 @@ class user_profile(object):  # Polemos
                 '[General]',
                 'profver=%s' % (self.mashVer),
                 'engine=%s' % (engine))
-        return u'\n'.join(text)
+        return '\n'.join(text)

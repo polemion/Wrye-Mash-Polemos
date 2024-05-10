@@ -122,15 +122,15 @@ class cleaner(wx.Frame):  # Polemos
             # Mod list/actions
             self.mCleanedMods = wx.ListBox(self.main_panel, wx.ID_ANY, dPos, dSize, mCleanedModsChoices, 0)
             self.clean_mod_info_text = wx.StaticText(self.main_panel, wx.ID_ANY, _('Cleaning...'), dPos, dSize, 0)
-            self.mStats = wx.StaticText(self.main_panel, wx.ID_ANY, u'', dPos, dSize, 0)
+            self.mStats = wx.StaticText(self.main_panel, wx.ID_ANY, '', dPos, dSize, 0)
             # Output
             self.output_panel = wx.Panel(self.details_book, wx.ID_ANY, dPos, dSize, wx.TAB_TRAVERSAL)
             self.details_book.AddPage(self.output_panel, _('Output'), True)
-            self.mLog = wx.TextCtrl(self.output_panel, wx.ID_ANY, u'', dPos, dSize, wx.TE_MULTILINE | wx.TE_READONLY)
+            self.mLog = wx.TextCtrl(self.output_panel, wx.ID_ANY, '', dPos, dSize, wx.TE_MULTILINE | wx.TE_READONLY)
             # Errors
             self.errors_panel = wx.Panel(self.details_book, wx.ID_ANY, dPos, dSize, wx.TAB_TRAVERSAL)
             self.details_book.AddPage(self.errors_panel, _('Errors'), False)
-            self.mErrors = wx.TextCtrl(self.errors_panel, wx.ID_ANY, u'', dPos, dSize, wx.TE_MULTILINE | wx.TE_READONLY)
+            self.mErrors = wx.TextCtrl(self.errors_panel, wx.ID_ANY, '', dPos, dSize, wx.TE_MULTILINE | wx.TE_READONLY)
         if True:  # Layout
             self.mCleanedMods.SetMinSize(wx.Size(150, -1))
             self.clean_mod_info_text.Wrap(-1)

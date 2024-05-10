@@ -643,9 +643,9 @@ def temp(fileName):
                         pass
                     elif test.text.lower() == 'modder':
                         if test.value == 0 and test.oper == 0:
-                            test.text = 'menu'
+                            test.text = 'men'
                             test.value = -1
-                            print(' modder >> menu')
+                            print(' modder >> men')
                         else:
                             info.tests[index] = 0
                             print(' modder X')

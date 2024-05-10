@@ -275,15 +275,15 @@ def genHtml(srcFile, outFile=None, cssDir=''):
         cssSrcFile = os.path.join(os.path.dirname(srcFile), cssBaseName)
         cssDirFile = os.path.join(cssDir, cssBaseName)
         if os.path.splitext(cssBaseName)[-1].lower() != '.css':
-            raise u"Invalid css file: " + cssFile
+            raise "Invalid css file: " + cssFile
         elif os.path.exists(cssSrcFile):
             cssFile = cssSrcFile
         elif os.path.exists(cssDirFile):
             cssFile = cssDirFile
         else:
-            raise u'Css file not found: ' + cssFile
+            raise 'Css file not found: ' + cssFile
         css = ''.join(open(cssFile).readlines())
-        if '<' in css: raise u"Non css tag in css file: " + cssFile
+        if '<' in css: raise "Non css tag in css file: " + cssFile
     # --Write Output ------------------------------------------------------ #
     with open(outFile, 'w') as out:
         out.write(htmlHead % (title, css))

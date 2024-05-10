@@ -79,14 +79,14 @@ class SettingsTabs(object):
         MenuBox = wx.StaticBox(self.general_panel, wx.ID_ANY, _('Main Menu Settings:'))
         Menu_Sizer = wx.StaticBoxSizer(MenuBox, wx.HORIZONTAL)
         self.Menubar_po = wx.CheckBox(MenuBox, wx.ID_ANY, _('Enable Menubar'), dPos, dSize, 0)
-        self.Columns_Menu_po = wx.CheckBox(MenuBox, wx.ID_ANY, _('Enable Columns Menu'), dPos, dSize, 0)
+        self.Columns_Menu_po = wx.CheckBox(MenuBox, wx.ID_ANY, _('Enable Columns Men'), dPos, dSize, 0)
         # Update Settings
         UpdateBox = wx.StaticBox(self.general_panel, wx.ID_ANY, _('Update Settings:'))
         Update_Sizer = wx.StaticBoxSizer(UpdateBox, wx.HORIZONTAL)
         self.Update_po = wx.CheckBox(UpdateBox, wx.ID_ANY, _('Enable Notifications'), dPos, dSize, 0)
         self.Update_staticText = wx.StaticText(UpdateBox, wx.ID_ANY, _('Frequency in Days (0=Everyday):'), dPos, dSize,
                                                0)
-        self.fldUpdate = wx.SpinCtrl(UpdateBox, wx.ID_ANY, u'', dPos, size=(45, -1),
+        self.fldUpdate = wx.SpinCtrl(UpdateBox, wx.ID_ANY, '', dPos, size=(45, -1),
                                      style=wx.SP_ARROW_KEYS | wx.SP_WRAP | wx.ALIGN_CENTER_HORIZONTAL, max=365, min=0)
         # Interface Settings
         InterfaceBox = wx.StaticBox(self.general_panel, wx.ID_ANY, _('Interface Settings:'))
@@ -132,30 +132,30 @@ class SettingsTabs(object):
 
         if not self.openmw:  # Regular Morrowind support
             # Main Paths: Morrowind
-            self.Morrowind_static = wx.StaticText(MainPathsBox, wx.ID_ANY, u'Morrowind:', dPos, dSize, 0)
-            uns = rtc.RichTextCtrl(MainPathsBox, wx.ID_ANY, u'', dPos, size=(1, 1))  # Ugly unselect hack...
-            self.fldMw = wx.TextCtrl(MainPathsBox, wx.ID_ANY, u'', dPos, name='fldMw', size=(-1, 20), style=wx.TE_RICH)
-            self.btnBrowseMw = wx.Button(MainPathsBox, wx.ID_OPEN, u'...', dPos, size=(30, 24), name='btnBrowseMw')
+            self.Morrowind_static = wx.StaticText(MainPathsBox, wx.ID_ANY, 'Morrowind:', dPos, dSize, 0)
+            uns = rtc.RichTextCtrl(MainPathsBox, wx.ID_ANY, '', dPos, size=(1, 1))  # Ugly unselect hack...
+            self.fldMw = wx.TextCtrl(MainPathsBox, wx.ID_ANY, '', dPos, name='fldMw', size=(-1, 20), style=wx.TE_RICH)
+            self.btnBrowseMw = wx.Button(MainPathsBox, wx.ID_OPEN, '...', dPos, size=(30, 24), name='btnBrowseMw')
             # Main Paths: Installers
             self.Installers_static = wx.StaticText(MainPathsBox, wx.ID_ANY, _('Installers:'), dPos, dSize, 0)
-            self.fldInst = wx.TextCtrl(MainPathsBox, wx.ID_ANY, u'', dPos, name='fldInst', size=(-1, 20),
+            self.fldInst = wx.TextCtrl(MainPathsBox, wx.ID_ANY, '', dPos, name='fldInst', size=(-1, 20),
                                        style=wx.TE_RICH)
-            self.btnBrowseInst = wx.Button(MainPathsBox, wx.ID_OPEN, u'...', dPos, size=(30, 24), name='btnBrowseInst')
+            self.btnBrowseInst = wx.Button(MainPathsBox, wx.ID_OPEN, '...', dPos, size=(30, 24), name='btnBrowseInst')
             # Optional Paths: MGE XE
-            self.MGEXE_static = wx.StaticText(OptionalPathsBox, wx.ID_ANY, u'MGE XE:', dPos, dSize, 0)
-            self.fldMGEXE = wx.TextCtrl(OptionalPathsBox, wx.ID_ANY, u'', dPos, name='fldMGEXE', size=(-1, 20),
+            self.MGEXE_static = wx.StaticText(OptionalPathsBox, wx.ID_ANY, 'MGE XE:', dPos, dSize, 0)
+            self.fldMGEXE = wx.TextCtrl(OptionalPathsBox, wx.ID_ANY, '', dPos, name='fldMGEXE', size=(-1, 20),
                                         style=wx.TE_RICH)
-            self.btnBrowseMGEXE = wx.Button(OptionalPathsBox, wx.ID_OPEN, u'...', dPos, size=(30, 24),
+            self.btnBrowseMGEXE = wx.Button(OptionalPathsBox, wx.ID_OPEN, '...', dPos, size=(30, 24),
                                             name='btnBrowseMGEXE')
             # Optional Paths: Mlox
-            self.Mlox_static = wx.StaticText(OptionalPathsBox, wx.ID_ANY, u'Mlox:', dPos, dSize, 0)
-            self.fldmlox = wx.TextCtrl(OptionalPathsBox, wx.ID_ANY, u'', dPos, name='fldmlox', size=(-1, 20),
+            self.Mlox_static = wx.StaticText(OptionalPathsBox, wx.ID_ANY, 'Mlox:', dPos, dSize, 0)
+            self.fldmlox = wx.TextCtrl(OptionalPathsBox, wx.ID_ANY, '', dPos, name='fldmlox', size=(-1, 20),
                                        style=wx.TE_RICH)
-            self.btnBrowsemlox = wx.Button(OptionalPathsBox, wx.ID_OPEN, u'...', dPos, size=(30, 24),
+            self.btnBrowsemlox = wx.Button(OptionalPathsBox, wx.ID_OPEN, '...', dPos, size=(30, 24),
                                            name='btnBrowsemlox')
             # Optional Paths: TES3cmd
-            self.TES3cmd_static0 = wx.StaticText(OptionalPathsBox, wx.ID_ANY, u'TES3cmd:', dPos, dSize, 0)
-            self.TES3cmd_static1 = wx.StaticText(OptionalPathsBox, wx.ID_ANY, u'', size=(-1, -1), style=0)
+            self.TES3cmd_static0 = wx.StaticText(OptionalPathsBox, wx.ID_ANY, 'TES3cmd:', dPos, dSize, 0)
+            self.TES3cmd_static1 = wx.StaticText(OptionalPathsBox, wx.ID_ANY, '', size=(-1, -1), style=0)
             self.btnRechkT3cmd = wx.Button(OptionalPathsBox, wx.ID_ANY, _('Re-Check'), dPos, size=(70, 24))
             # Layout
             Morrowind_Sizer, Installers_Sizer, Mlox_Sizer, MGEXE_Sizer, TES3cmd_Sizer = SizerMany(5, wx.HORIZONTAL)
@@ -183,48 +183,48 @@ class SettingsTabs(object):
         if self.openmw:  # OpenMW/TES3mp support
             # Main Paths: OpenMW/TES3mp
             self.OpenMWTES3mp_static = wx.StaticText(MainPathsBox, wx.ID_ANY, _('OpenMW/TES3mp:'), dPos, dSize, 0)
-            uns = rtc.RichTextCtrl(MainPathsBox, wx.ID_ANY, u'', dPos, size=(1, 1))  # Ugly unselect hack...
-            self.fldOpenMWloc = wx.TextCtrl(MainPathsBox, wx.ID_ANY, u'', dPos, name='fldOpenMWloc', size=(-1, 20),
+            uns = rtc.RichTextCtrl(MainPathsBox, wx.ID_ANY, '', dPos, size=(1, 1))  # Ugly unselect hack...
+            self.fldOpenMWloc = wx.TextCtrl(MainPathsBox, wx.ID_ANY, '', dPos, name='fldOpenMWloc', size=(-1, 20),
                                             style=wx.TE_RICH)
-            self.btnBrowseOpenMWloc = wx.Button(MainPathsBox, wx.ID_OPEN, u'...', dPos, size=(30, 24),
+            self.btnBrowseOpenMWloc = wx.Button(MainPathsBox, wx.ID_OPEN, '...', dPos, size=(30, 24),
                                                 name='btnBrowseOpenMWloc')
             # Main Paths: Downloads
             self.Downloads_static = wx.StaticText(MainPathsBox, wx.ID_ANY, _('Downloads:'), dPos, dSize, 0)
-            self.fldDownloads = wx.TextCtrl(MainPathsBox, wx.ID_ANY, u'', dPos, name='fldDownloads', size=(-1, 20),
+            self.fldDownloads = wx.TextCtrl(MainPathsBox, wx.ID_ANY, '', dPos, name='fldDownloads', size=(-1, 20),
                                             style=wx.TE_RICH)
-            self.btnBrowseDownloads = wx.Button(MainPathsBox, wx.ID_OPEN, u'...', dPos, size=(30, 24),
+            self.btnBrowseDownloads = wx.Button(MainPathsBox, wx.ID_OPEN, '...', dPos, size=(30, 24),
                                                 name='btnBrowseDownloads')
             # Main Paths: DataMods
             self.Mods_static = wx.StaticText(MainPathsBox, wx.ID_ANY, _('Mods:'), dPos, dSize, 0)
-            self.flddatamods = wx.TextCtrl(MainPathsBox, wx.ID_ANY, u'', dPos, name='flddatamods', size=(-1, 20),
+            self.flddatamods = wx.TextCtrl(MainPathsBox, wx.ID_ANY, '', dPos, name='flddatamods', size=(-1, 20),
                                            style=wx.TE_RICH)
-            self.btnBrowsedatamods = wx.Button(MainPathsBox, wx.ID_OPEN, u'...', dPos, size=(30, 24),
+            self.btnBrowsedatamods = wx.Button(MainPathsBox, wx.ID_OPEN, '...', dPos, size=(30, 24),
                                                name='btnBrowsedatamods')
             # Main Paths: openmw.cfg
-            self.OpenMWConfigs_static = wx.StaticText(MainPathsBox, wx.ID_ANY, u'openmw.cfg:', dPos, dSize, 0)
-            self.fldOpenMWConf = wx.TextCtrl(MainPathsBox, wx.ID_ANY, u'', dPos, name='fldOpenMWConf', size=(-1, 20),
+            self.OpenMWConfigs_static = wx.StaticText(MainPathsBox, wx.ID_ANY, 'openmw.cfg:', dPos, dSize, 0)
+            self.fldOpenMWConf = wx.TextCtrl(MainPathsBox, wx.ID_ANY, '', dPos, name='fldOpenMWConf', size=(-1, 20),
                                              style=wx.TE_RICH)
-            self.btnBrowseOpenMWConf = wx.Button(MainPathsBox, wx.ID_OPEN, u'...', dPos, size=(30, 24),
+            self.btnBrowseOpenMWConf = wx.Button(MainPathsBox, wx.ID_OPEN, '...', dPos, size=(30, 24),
                                                  name='btnBrowseOpenMWConf')
             # Optional Paths: Morrowind Data Files
             self.DataFiles_static = wx.StaticText(OptionalPathsBox, wx.ID_ANY, _('Morrowind Data Files:'), dPos, dSize,
                                                   0)
-            self.fldDataFiles = wx.TextCtrl(OptionalPathsBox, wx.ID_ANY, u'', dPos, name='fldDataFiles', size=(-1, 20),
+            self.fldDataFiles = wx.TextCtrl(OptionalPathsBox, wx.ID_ANY, '', dPos, name='fldDataFiles', size=(-1, 20),
                                             style=wx.TE_RICH)
-            self.btnBrowseDataFiles = wx.Button(OptionalPathsBox, wx.ID_OPEN, u"...", dPos, size=(30, 24),
+            self.btnBrowseDataFiles = wx.Button(OptionalPathsBox, wx.ID_OPEN, "...", dPos, size=(30, 24),
                                                 name='btnBrowseDataFiles')
             # Optional Paths: TES3mp pluginlist.json
-            self.TES3mpConfigs_static = wx.StaticText(OptionalPathsBox, wx.ID_ANY, u'TES3mp pluginlist.json:', dPos,
+            self.TES3mpConfigs_static = wx.StaticText(OptionalPathsBox, wx.ID_ANY, 'TES3mp pluginlist.json:', dPos,
                                                       dSize, 0)
-            self.fldTES3mpConf = wx.TextCtrl(OptionalPathsBox, wx.ID_ANY, u'', dPos, name='fldTES3mpConf',
+            self.fldTES3mpConf = wx.TextCtrl(OptionalPathsBox, wx.ID_ANY, '', dPos, name='fldTES3mpConf',
                                              size=(-1, 20), style=wx.TE_RICH)
-            self.btnBrowseTES3mpConf = wx.Button(OptionalPathsBox, wx.ID_OPEN, u'...', dPos, size=(30, 24),
+            self.btnBrowseTES3mpConf = wx.Button(OptionalPathsBox, wx.ID_OPEN, '...', dPos, size=(30, 24),
                                                  name='btnBrowseTES3mpConf')
             # Optional Paths: Mlox64
-            self.Mlox64_static = wx.StaticText(OptionalPathsBox, wx.ID_ANY, u'Mlox:', dPos, dSize, 0)
-            self.fldmlox64 = wx.TextCtrl(OptionalPathsBox, wx.ID_ANY, u'', dPos, name='fldmlox64', size=(-1, 20),
+            self.Mlox64_static = wx.StaticText(OptionalPathsBox, wx.ID_ANY, 'Mlox:', dPos, dSize, 0)
+            self.fldmlox64 = wx.TextCtrl(OptionalPathsBox, wx.ID_ANY, '', dPos, name='fldmlox64', size=(-1, 20),
                                          style=wx.TE_RICH)
-            self.btnBrowsemlox64 = wx.Button(OptionalPathsBox, wx.ID_OPEN, u'...', dPos, size=(30, 24),
+            self.btnBrowsemlox64 = wx.Button(OptionalPathsBox, wx.ID_OPEN, '...', dPos, size=(30, 24),
                                              name='btnBrowsemlox64')
             # Layout
             OpenMWTES3mp_Sizer, Downloads_Sizer, Mods_Sizer, OpenMWconf_Sizer = SizerMany(4, wx.HORIZONTAL)
@@ -274,7 +274,7 @@ class SettingsTabs(object):
         Col_Sizer = wx.StaticBoxSizer(ColBox, wx.VERTICAL)
         self.Col_staticText = wx.StaticText(ColBox, wx.ID_ANY,
                                             _('If you wish to reset all the columns widths of Wrye Mash displayed lists\n'
-                                              u'(e.g.: Mod Lists) to their default settings check the box below and then\nclick the OK button:'),
+                                              '(e.g.: Mod Lists) to their default settings check the box below and then\nclick the OK button:'),
                                             dPos, dSize, 0)
         self.colReset = wx.CheckBox(ColBox, wx.ID_ANY, _('Reset All Of Wrye Mash Columns Widths?') + ' ' * 5, dPos,
                                     dSize, wx.ALIGN_RIGHT)
@@ -289,24 +289,24 @@ class SettingsTabs(object):
     def advancedTab(self):
         """Advanced Panel."""
         # Common
-        advitmsBox = wx.StaticBox(self.adv_panel, wx.ID_ANY, u'Advanced Settings:')
+        advitmsBox = wx.StaticBox(self.adv_panel, wx.ID_ANY, 'Advanced Settings:')
         advitms_Sizer = wx.StaticBoxSizer(advitmsBox, wx.VERTICAL)
 
         if not self.openmw:  # Regular Morrowind support
             self.a7zcrcOn = wx.CheckBox(advitmsBox, wx.ID_ANY,
-                                        u'  Use 7zip to calculate crc32 for large files (experimental)', dPos, dSize, 0)
+                                        '  Use 7zip to calculate crc32 for large files (experimental)', dPos, dSize, 0)
             self.modIntervTxt = wx.StaticText(advitmsBox, wx.ID_ANY,
-                                              u'Mod redating time interval, in seconds (Default: 60):', dPos, dSize, 0)
-            self.modIntervFld = wx.SpinCtrl(advitmsBox, wx.ID_ANY, u'', dPos,
+                                              'Mod redating time interval, in seconds (Default: 60):', dPos, dSize, 0)
+            self.modIntervFld = wx.SpinCtrl(advitmsBox, wx.ID_ANY, '', dPos,
                                             (65, 20), wx.SP_ARROW_KEYS | wx.SP_WRAP | wx.ALIGN_CENTER_HORIZONTAL, 1,
                                             999, 0)
             intervSizer = wx.BoxSizer(wx.HORIZONTAL)
             intervSizer.AddMany([(self.modIntervTxt, 1, 0, 5), (self.modIntervFld, 0, 0, 5)])
             self.plugMore = wx.CheckBox(advitmsBox, wx.ID_ANY,
-                                        u'  Add support for up to 1024 plugins (default is 256 - MWSE required - beta).',
+                                        '  Add support for up to 1024 plugins (default is 256 - MWSE required - beta).',
                                         dPos, dSize, 0)
             self.mapMore = wx.CheckBox(advitmsBox, wx.ID_ANY,
-                                       u'  Add support for MCP extended map, (replaces regular "Update Map" - MCP required - beta).',
+                                       '  Add support for MCP extended map, (replaces regular "Update Map" - MCP required - beta).',
                                        dPos, dSize, 0)
             advitms_Sizer.AddMany(
                 [(self.a7zcrcOn, 0, wx.DOWN, 5), (intervSizer, 0, wx.EXPAND | wx.RIGHT | wx.DOWN | wx.UP, 5),
@@ -333,7 +333,7 @@ class SettingsTabs(object):
         self.license_button = wx.Button(self.about_panel, wx.ID_ANY, _('License'), dPos, size=(60, 22))
         self.credits_button = wx.Button(self.about_panel, wx.ID_ANY, _('Credits'), dPos, size=(60, 22))
         # Contents
-        self.contents = rtc.RichTextCtrl(self.about_panel, wx.ID_ANY, u'', dPos, size=(-1, 166),
+        self.contents = rtc.RichTextCtrl(self.about_panel, wx.ID_ANY, '', dPos, size=(-1, 166),
                                          style=wx.TE_READONLY | wx.VSCROLL | wx.HSCROLL | wx.NO_BORDER | wx.WANTS_CHARS)
         self.contents.SetFocus()
         # URL
@@ -392,7 +392,7 @@ class SettingsWindow(wx.Dialog, SettingsTabs):  # Polemos: Total reconstruction.
             self.aboutTab()
         if True:  # Footer
             # Error/Status Messages
-            self.Settingstext = wx.StaticText(self, wx.ID_ANY, u'', dPos, dSize, 0)
+            self.Settingstext = wx.StaticText(self, wx.ID_ANY, '', dPos, dSize, 0)
             # OK/Cancel Buttons
             self.btnOK = wx.Button(self, wx.ID_OK, _('OK'), dPos, size=(35, 22), name='btnOK')
             self.btnCancel = wx.Button(self, wx.ID_CANCEL, _('Cancel'), dPos, size=(60, 22), name='btnCancel')
@@ -445,7 +445,7 @@ class SettingsWindow(wx.Dialog, SettingsTabs):  # Polemos: Total reconstruction.
             self.settings_notebook.AddPage(self.general_panel, _('General'), True)
             self.settings_notebook.AddPage(self.paths_panel, _('Paths'), False)
             self.settings_notebook.AddPage(self.defaults_panel, _('Defaults'), False)
-            self.settings_notebook.AddPage(self.adv_panel, u"Advanced", False)
+            self.settings_notebook.AddPage(self.adv_panel, "Advanced", False)
             self.settings_notebook.AddPage(self.about_panel, _('About'), False)
             main_Sizer = wx.BoxSizer(wx.VERTICAL)
             main_Sizer.AddMany([(self.settings_notebook, 1, wx.EXPAND | wx.ALL, 5),
@@ -497,7 +497,7 @@ class SettingsWindow(wx.Dialog, SettingsTabs):  # Polemos: Total reconstruction.
         themeData = [] * (len(themeList) + 1)
         for theme in themeList:
             themePath = os.path.join(themedir, theme)
-            with io.open(themePath, 'r', encoding='utf-8') as rawTheme:
+            with io.open(themePath, 'r') as rawTheme:
                 themeRaw = json.load(rawTheme)
                 themeData.append((themeRaw['theme.info'], theme))
         if not [name for name in themeData if name[0] == 'Default theme']: themeData.append(('Default theme', None))
@@ -556,7 +556,7 @@ class SettingsWindow(wx.Dialog, SettingsTabs):  # Polemos: Total reconstruction.
                 field.BeginItalic()
                 field.WriteText(txt)
                 field.EndItalic()
-            elif atr == 'u':
+            elif atr == '':
                 field.BeginUnderline()
                 field.WriteText(txt)
                 field.EndUnderline()
@@ -597,7 +597,7 @@ class SettingsWindow(wx.Dialog, SettingsTabs):  # Polemos: Total reconstruction.
         if any((conf.dataMap[name].endswith(x) for x in ['.exe', '.cfg', '.py', '.json', '.ini', 'pl'])):
             ext = [x for x in ['.exe', '.cfg', '.py', '.json', '.ini', 'pl'] if conf.dataMap[name].endswith(x)][0]
             dialog = wx.FileDialog(self, _('Select %s file location:') % conf.dataMap[name].capitalize(),
-                                   '', '%s' % conf.dataMap[name], u'Files (*%s)|*%s' % (ext, ext),
+                                   '', '%s' % conf.dataMap[name], 'Files (*%s)|*%s' % (ext, ext),
                                    style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST)
         else:
             dialog = wx.DirDialog(self, _('%s directory selection') % conf.dataMap[name].capitalize())

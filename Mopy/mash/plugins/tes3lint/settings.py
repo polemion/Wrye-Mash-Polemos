@@ -54,22 +54,22 @@ class TES3lint_Settings(
 
         if True:  # Content
             # Perl Field/Button:
-            self.perl_field = wx.TextCtrl(perl_sizer.GetStaticBox(), wx.ID_ANY, u'', dPos, dSize, wx.TE_NO_VSCROLL)
-            self.browse_perl_btn = wx.Button(perl_sizer.GetStaticBox(), wx.ID_ANY, u'...', dPos, dSize, 0)
+            self.perl_field = wx.TextCtrl(perl_sizer.GetStaticBox(), wx.ID_ANY, '', dPos, dSize, wx.TE_NO_VSCROLL)
+            self.browse_perl_btn = wx.Button(perl_sizer.GetStaticBox(), wx.ID_ANY, '...', dPos, dSize, 0)
             # TES3lint Field/Button:
-            self.tes3lint_field = wx.TextCtrl(tesl3int_sizer.GetStaticBox(), wx.ID_ANY, u'', dPos, dSize,
+            self.tes3lint_field = wx.TextCtrl(tesl3int_sizer.GetStaticBox(), wx.ID_ANY, '', dPos, dSize,
                                               wx.TE_NO_VSCROLL)
-            self.browse_teslint_btn = wx.Button(tesl3int_sizer.GetStaticBox(), wx.ID_ANY, u'...', dPos, dSize, 0)
+            self.browse_teslint_btn = wx.Button(tesl3int_sizer.GetStaticBox(), wx.ID_ANY, '...', dPos, dSize, 0)
             # Recommended Flags:
             flags_radio_boxChoices = [_('-n  "normal" output flags on (fastest)'),
                                       _(' -r  "recommended" output flags on (slow)'),
                                       _('-a  all output flags on. (slowest)'),
                                       _(' -f "flags" specify flags below (separated by comma):')]
-            self.flags_radio_box = wx.RadioBox(self, wx.ID_ANY, u'Recommended Lists of Flags:', dPos, dSize,
+            self.flags_radio_box = wx.RadioBox(self, wx.ID_ANY, 'Recommended Lists of Flags:', dPos, dSize,
                                                flags_radio_boxChoices, 1, 0)
             self.flags_radio_box.SetSelection(0)
             # Custom Flags:
-            self.custom_flags_text = wx.TextCtrl(custom_flags_teslint_sizer.GetStaticBox(), wx.ID_ANY, u'', dPos, dSize,
+            self.custom_flags_text = wx.TextCtrl(custom_flags_teslint_sizer.GetStaticBox(), wx.ID_ANY, '', dPos, dSize,
                                                  0)
             # Extra Options:
             self.debug_checkBox = wx.CheckBox(extras_teslint_sizer.GetStaticBox(), wx.ID_ANY,
@@ -77,7 +77,7 @@ class TES3lint_Settings(
             self.verbose_checkBox = wx.CheckBox(extras_teslint_sizer.GetStaticBox(), wx.ID_ANY,
                                                 _(' -v  "verbose" (possibly more output)'), dPos, dSize, 0)
             # TES3lint result:
-            self.final_static = wx.StaticText(result_sizer.GetStaticBox(), wx.ID_ANY, u'', dPos, dSize, 0)
+            self.final_static = wx.StaticText(result_sizer.GetStaticBox(), wx.ID_ANY, '', dPos, dSize, 0)
             self.final_static.Wrap(-1)
             # Buttons
             self.ok_btn = wx.Button(self, wx.ID_OK, _('OK'), dPos, dSize, 0)
@@ -165,22 +165,22 @@ class TES3lint_Settings(
     def cmd_factory(self):
         """Construct the command status text."""
         conf.settings['tes3lint.refresh'] = False
-        radio_box = [u'-n', u'-r', u'-a']
+        radio_box = ['-n', '-r', '-a']
         path = os.path.basename(self.tes3lint_field.GetValue())
-        if not path: path = u'tes3lint'
+        if not path: path = 'tes3lint'
         if self.flags_radio_box.GetSelection() != 3:
-            flags = u'%s' % radio_box[self.flags_radio_box.GetSelection()]
+            flags = '%s' % radio_box[self.flags_radio_box.GetSelection()]
         else:
-            flags = u'-f %s' % u', '.join(self.getFlags())
+            flags = '-f %s' % ', '.join(self.getFlags())
         if self.debug_checkBox.GetValue():
-            extra0 = u'-D'
+            extra0 = '-D'
         else:
-            extra0 = u''
+            extra0 = ''
         if self.verbose_checkBox.GetValue():
-            extra1 = u'-v'
+            extra1 = '-v'
         else:
-            extra1 = u''
-        return u' '.join([path, flags, extra0, extra1])
+            extra1 = ''
+        return ' '.join([path, flags, extra0, extra1])
 
     def switch(self, state):
         """Color switch for flags field (ON/OFF)."""
@@ -198,15 +198,15 @@ class TES3lint_Settings(
         else:
             self.switch(False)
         if conf.settings['tes3lint.refresh']: self.final_static.SetLabelText(
-            u'%s %s' % (self.cmd_factory(), _('"target_file"')))
+            '%s %s' % (self.cmd_factory(), _('"target_file"')))
 
     def perl_dir(self, event):
         """..."""
-        self.perl_field.SetValue(self.FileDialog('Perl', u'Executable files (*.exe)|*.exe', 'perl.exe'))
+        self.perl_field.SetValue(self.FileDialog('Perl', 'Executable files (*.exe)|*.exe', 'perl.exe'))
 
     def tes3lint_dir(self, event):
         """..."""
-        self.tes3lint_field.SetValue(self.FileDialog('TES3lint', u'All files (*.*)|*.*', 'tes3lint'))
+        self.tes3lint_field.SetValue(self.FileDialog('TES3lint', 'All files (*.*)|*.*', 'tes3lint'))
 
     def FileDialog(self, name, wildcard, defaultfile):
         """Filepaths for Perl and TES3lint."""
@@ -214,7 +214,7 @@ class TES3lint_Settings(
         dialog = wx.FileDialog(self, message, '', defaultfile, wildcard, style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST)
         if dialog.ShowModal() != wx.ID_OK:
             dialog.Destroy()
-            return u''
+            return ''
         else:
             path = dialog.GetPath()
             dialog.Destroy()

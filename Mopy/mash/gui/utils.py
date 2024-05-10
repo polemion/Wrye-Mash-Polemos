@@ -175,18 +175,18 @@ class UtilsList(gui.List):  # Polemos: Changes and optimizations.
                 try:
                     self.list.InsertItem(itemDex, value)
                 except:
-                    self.list.InsertItem(itemDex, value.decode('utf-8', errors='ignore'))
+                    self.list.InsertItem(itemDex, value)
             else:
                 try:
                     self.list.SetItem(itemDex, colDex, value)
                 except:
                     try:
-                        self.list.SetItem(itemDex, colDex, value.decode('utf-8'))
+                        self.list.SetItem(itemDex, colDex, value)
                     except:
                         try:
                             self.list.SetItem(itemDex, colDex, str(value))
                         except:
-                            self.list.SetItem(itemDex, colDex, value.encode('utf-8'))
+                            self.list.SetItem(itemDex, colDex, value)
         # --Selection State
         if item in selected:
             self.list.SetItemState(itemDex, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
@@ -259,17 +259,17 @@ class UtilsList(gui.List):  # Polemos: Changes and optimizations.
 
                 try:
                     command = 'start "Launching..." /D "%s" "%s"%s' % (
-                        cwd_po.decode('utf-8'), u.decode('utf-8'), args_po.decode('utf-8'))
+                        cwd_po, u, args_po)
                     Popen(command, shell=True, stdin=PIPE, stdout=PIPE)
 
                 except:
                     command = ('start "Launching..." /D "%s" "%s"%s' % (
-                        cwd_po.encode('utf-8').decode('utf-8'), u.encode('utf-8').decode('utf-8'),
-                        args_po.encode('utf-8').decode('utf-8')))
+                        cwd_po, u,
+                        args_po))
                     Popen(command, shell=True, stdin=PIPE, stdout=PIPE)
             except:
                 gui.dialog.WarningMessage(self, _("A problem "
-                                                  u"has occurred while opening '%s'.\nYou should edit 'utils.dcg' and update the corresponding line." % u))
+                                                  "has occurred while opening '%s'.\nYou should edit 'utils.dcg' and update the corresponding line." % u))
 
     def NewItem(self):
         """Adds a new utility to the list."""
@@ -295,7 +295,7 @@ class UtilsList(gui.List):  # Polemos: Changes and optimizations.
             try:
                 dialog = gui.dialog.UtilsDialog(self, new=False, data=((name,) + self.data[name]))
             except:
-                dialog = gui.dialog.UtilsDialog(self, new=False, data=((name.decode('utf-8'),) + self.data[name]))
+                dialog = gui.dialog.UtilsDialog(self, new=False, data=((name,) + self.data[name]))
             if dialog.ShowModal() != wx.ID_OK:
                 dialog.Destroy()
                 return

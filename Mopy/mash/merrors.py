@@ -104,7 +104,7 @@ class Tes3Error(mError):
         self.inName = inName
 
     def __str__(self):
-        return u'%s -> %s' % (self.inName or _('Unknown File'), self.message)
+        return '%s -> %s' % (self.inName or _('Unknown File'), self.message)
 
 
 class Tes3ReadError(Tes3Error):
@@ -131,7 +131,7 @@ class Tes3RefError(Tes3Error):
         self.objId = objId
         self.masterName = masterName
         message = (_('%s: Bad Ref: %s: objId: %s iObj: %d') % (inName, cellId, objId, iObj))
-        if iMod: message += u' iMod: %d [%s]' % (iMod, masterName)
+        if iMod: message += ' iMod: %d [%s]' % (iMod, masterName)
         Tes3Error.__init__(self, inName, message)
 
 
@@ -177,9 +177,9 @@ class SortKeyError(mError):
 class MashError(mError):
     """Mash Error: Unrecognized sort key."""
 
-    def __init__(self, col=u'', message=_('Unrecognized sort key')):
-        if col is None: col = u''
-        mError.__init__(self, u'%s%s%s' % (message, u': ' if col or col is None else u'.', col))
+    def __init__(self, col='', message=_('Unrecognized sort key')):
+        if col is None: col = ''
+        mError.__init__(self, '%s%s%s' % (message, ': ' if col or col is None else '.', col))
 
 
 class InterfaceError(mError):

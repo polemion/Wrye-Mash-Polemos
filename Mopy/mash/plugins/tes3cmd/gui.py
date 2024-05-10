@@ -242,21 +242,21 @@ class Cleaner(tes3cmdgui.cleaner, OutputParserMixin):
     # Log functions and save log button event
     def GetLog(self, fileName):  # Polemos fix.
         """Gets the log text for the given file name."""
-        log = u''
+        log = ''
         try:
             o = self.output[fileName]
         except:
             o = {
-                u'output': u'tes3cmd clean skipping Morrowind.esm: Bethesda Master.\r\n Morrowind.esm was not modified\r\n',
-                u'error': u'', u'stats': u'Morrowind.esm was not modified\n', u'cleaned': ''}
+                'output': 'tes3cmd clean skipping Morrowind.esm: Bethesda Master.\r\n Morrowind.esm was not modified\r\n',
+                'error': '', 'stats': 'Morrowind.esm was not modified\n', 'cleaned': ''}
         try:
-            if o[u'error']: log += o[u'error'] + '\r\n'
+            if o['error']: log += o['error'] + '\r\n'
         except:
-            if o[u'error']: log += o[u'error'].decode('utf-8', errors='ignore') + '\r\n'
+            if o['error']: log += o['error'] + '\r\n'
         try:
-            if o[u'output']: log += o[u'output'] + '\r\n'
+            if o['output']: log += o['output'] + '\r\n'
         except:
-            if o[u'output']: log += o[u'output'].decode('utf-8', errors='ignore') + u'\r\n'
+            if o['output']: log += o['output'] + '\r\n'
         return log
 
     def SaveLog(self, fileName):  # Polemos fixes.
@@ -267,10 +267,10 @@ class Cleaner(tes3cmdgui.cleaner, OutputParserMixin):
                     log.write('--%s--\r\n' % fn)
                     log.write(self.GetLog(fn))
         except:
-            with io.open(fileName, 'w', encoding='utf-8', errors='replace') as log:
+            with io.open(fileName, 'w') as log:
                 for fn in self.output.keys():
                     log.write('--%s--\r\n' % fn)
-                    log.write((self.GetLog(fn)).decode('utf-8', errors='ignore').replace(
+                    log.write((self.GetLog(fn)).replace(
                         '.esp"', '%s"' % fn).replace('.esm"', '%s"' % fn).replace('.esp w', '%s w' % fn).replace(
                         '.esm w', '%s w' % fn))
 

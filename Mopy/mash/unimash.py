@@ -29,15 +29,6 @@ import os, time, chardet, locale, re, pickle
 from io import open
 from . import singletons
 
-# Enrich these...
-usualEncodings = (
-    ('utf-8', 'Strict'),  # The Messiah
-    ('cp1251', 'replace'),  # Windows Slavic
-    ('cp1252', 'replace'),  # Western Europe
-    ('cp1250', 'replace'),  # Central Europe
-    None,  # Default
-)
-
 profileEncodings = {
     'cp1250': 'Central European Latin (Polish)',
     'cp1251': 'Cyrillic alphabets (Slavic)',
@@ -111,7 +102,6 @@ if os.path.exists(languagePkl):
     with open(languagePkl, 'rb') as pklFile:
         _translator = pickle.load(pklFile)
 
-
     def _(text):
         return _translator.get(text, text)
 else:
@@ -127,18 +117,6 @@ def encChk(value):
     return enc['encoding']
 
 
-def uniChk(value):
-    """UniGate for values check."""
-    try:
-        return value.decode(encChk(value))
-    except:
-        for enc in usualEncodings:
-            try:
-                return value if enc is None else value.decode(enc[0], enc[1])
-            except:
-                continue
-
-
 def fChk(data):
     """Safety check."""
     cwd = singletons.MashDir
@@ -151,6 +129,7 @@ def fChk(data):
 def n_path(path):  # Goofy but it works.
     """Returns a normalized bolt path when everything else fails."""
     return str(path).replace("bolt.Path('", "").replace('bolt.Path("', '').replace("')", "").replace('")', '')
+
 
 def uniformatDate(value):
     """Convert time to string formatted to a locale neutral date/time."""

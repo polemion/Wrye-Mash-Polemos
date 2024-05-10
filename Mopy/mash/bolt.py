@@ -154,7 +154,7 @@ class Path(object):  # Polemos: Unicode fixes.
     @staticmethod
     def get(name):
         """Returns path object for specified name/path."""
-        name.encode('utf-8')
+        name
         if isinstance(name, Path):
             norm = name._s
         else:
@@ -182,12 +182,12 @@ class Path(object):  # Polemos: Unicode fixes.
 
     @staticmethod
     def getcwd():
-        return Path(os.getcwd().encode('utf-8'))
+        return Path(os.getcwd())
 
     def setcwd(self):
         """Set cwd. Works as either instance or class method."""
         if isinstance(self, Path):
-            dir = self._s.encode('utf-8')
+            dir = self._s
         else:
             dir = self
         os.chdir(dir)
@@ -413,7 +413,7 @@ class Path(object):  # Polemos: Unicode fixes.
         """Open a unicode file function."""
         if self._shead and not os.path.exists(self._shead):
             os.makedirs(self._shead)
-        return io.open(self._s, *args, encoding="utf-8")
+        return io.open(self._s, *args)
 
     def makedirs(self):
         """Create dir function."""
@@ -842,18 +842,18 @@ class MetaStamp(object):  # Polemos
     def MetaCreate(self):
         """Create mod metafile."""
         metatext = ('[General]',
-                    u'Installer=%s' % self.Installer,
-                    u'Version=%s' % self.Version,
-                    u'NoUpdateVer=',
-                    u'NewVersion=',
-                    u'Category=',
-                    u'Repo=%s' % self.Repo,
-                    u'ID=%s' % self.ID)
+                    'Installer=%s' % self.Installer,
+                    'Version=%s' % self.Version,
+                    'NoUpdateVer=',
+                    'NewVersion=',
+                    'Category=',
+                    'Repo=%s' % self.Repo,
+                    'ID=%s' % self.ID)
         tries = 0
         while tries != 3:
             if os.path.isfile(self.metafile): break
             try:
-                with io.open(self.metafile, 'w', encoding='utf-8') as f:
+                with io.open(self.metafile, 'w') as f:
                     f.write('\r\n'.join(metatext))
             except:
                 tries += 1
@@ -874,18 +874,18 @@ class MetaParse(object):  # Polemos
 
     def metaScan(self, metafile):
         """Read metafile contents."""
-        with io.open(metafile, 'r', encoding='utf-8') as f:
+        with io.open(metafile, 'r') as f:
             return f.readlines()
 
     def MetaRead(self, metafile):
         """Parse mod metafile."""
-        data = {u'Installer': '',
-                u'Version': '',
-                u'NoUpdateVer': '',
-                u'NewVersion': '',
-                u'Category': '',
-                u'Repo': '',
-                u'ID': ''}
+        data = {'Installer': '',
+                'Version': '',
+                'NoUpdateVer': '',
+                'NewVersion': '',
+                'Category': '',
+                'Repo': '',
+                'ID': ''}
         reList = re.compile('(Installer|Version|NoUpdateVer|NewVersion|Category|Repo|ID)=(.+)')
         metadata = self.metaScan(metafile)[:]
         # Main
@@ -894,19 +894,19 @@ class MetaParse(object):  # Polemos
             maList = reList.match(x)
             if maList:
                 key, value = maList.groups()
-                if key == u'Installer':
+                if key == 'Installer':
                     data[key] = value
-                elif key == u'Version':
+                elif key == 'Version':
                     data[key] = value
-                elif key == u'NoUpdateVer':
+                elif key == 'NoUpdateVer':
                     data[key] = value
-                elif key == u'NewVersion':
+                elif key == 'NewVersion':
                     data[key] = value
-                elif key == u'Category':
+                elif key == 'Category':
                     data[key] = value
-                elif key == u'Repo':
+                elif key == 'Repo':
                     data[key] = value
-                elif key == u'ID':
+                elif key == 'ID':
                     data[key] = value
         return data
 
@@ -947,7 +947,7 @@ class ModInstall(object):  # Polemos
         from .gui import dialog
         if error == 'backup':
             msg = _(
-                u'Error: Unable to backup existing mod folder!!!\n\nInstallation was aborted, no actions were taken.')
+                'Error: Unable to backup existing mod folder!!!\n\nInstallation was aborted, no actions were taken.')
         elif error == 'install':
             msg = _('Error: Could not finish installation!!!\n\nInstallation was aborted.')
         elif error == 'rename':
@@ -1195,7 +1195,7 @@ class CleanJunkTemp(object):  # Polemos
     """Simple junk files cleaning."""
     junklist = ('thumbs.db', 'desktop.ini')
     try:
-        tempdir = os.path.join(MashDir, u'Temp')
+        tempdir = os.path.join(MashDir, 'Temp')
     except:
         tempdir = os.path.join(MashDir, 'Temp')
     junk_files = []
@@ -1249,16 +1249,16 @@ class ArchiveInfo(object):  # Polemos
         virgin = True
         for entry in self.archive(cmd):
             if virgin:
-                if entry[:7] == u'Path = ':
+                if entry[:7] == 'Path = ':
                     virgin = False
                     continue
-            if entry[:7] == u'Path = ':
+            if entry[:7] == 'Path = ':
                 parsed_data.append(entry[7:].strip())
         return parsed_data
 
     def parseArchiveFiles(self):
         """Get Package special files data."""
-        cmd = u'7z.exe l -slt -sccUTF-8 "%s" *.esp *.esm *.bsa *.omwgame *.omwaddon *.ttf *.fnt -r' % self.package_path
+        cmd = '7z.exe l -slt -sccUTF-8 "%s" *.esp *.esm *.bsa *.omwgame *.omwaddon *.ttf *.fnt -r' % self.package_path
         files_path = self.parser(cmd)
         self.mwfiles = self.dataFactory(files_path, tree=False)
 
@@ -1360,7 +1360,7 @@ class MultiThreadGauge(object):  # Polemos
         time.sleep(1)
         self.dialog.Destroy()
 
-    def update(self, num, msg=u''):
+    def update(self, num, msg=''):
         """Update GaugeDialog."""
         self.dialog.set_msg(msg)
         self.dialog.update(num)
@@ -2350,14 +2350,14 @@ class WryeText(object):
         if not cssName:
             css = WryeText.defaultCss
         else:
-            if cssName.ext != '.css': raise u"Invalid Css file: %dsS" % cssName.s
+            if cssName.ext != '.css': raise "Invalid Css file: %dsS" % cssName.s
             for dir in cssDirs:
                 cssPath = GPath(dir).join(cssName)
                 if cssPath.exists(): break
             else:
-                raise u'Css file not found: %s' % cssName.s
+                raise 'Css file not found: %s' % cssName.s
             css = ''.join(cssPath.open().readlines())
-            if '<' in css: raise u"Non css tag in %s" % cssPath.s
+            if '<' in css: raise "Non css tag in %s" % cssPath.s
         # --Write Output ------------------------------------------------------ #
         out.write(WryeText.htmlHead % (title, css))
         didContents = False

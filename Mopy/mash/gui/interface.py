@@ -53,7 +53,7 @@ def setIcon(parent, icon=None, text='', type=wx.BITMAP_TYPE_ANY):
             return
         except:
             pass  # If for a reason the image is missing.
-    parent.SetIcon(wx.Icon(os.path.join('images', 'Wrye Mash.ico'), wx.BITMAP_TYPE_ICO), u'Wrye Mash')
+    parent.SetIcon(wx.Icon(os.path.join('images', 'Wrye Mash.ico'), wx.BITMAP_TYPE_ICO), 'Wrye Mash')
 
 
 class ThemeEngine(object):
@@ -113,7 +113,7 @@ class SysTray(adv.TaskBarIcon):
         """Systray context menu."""
         # Menu items
         menu = wx.Menu()
-        runGame = menu.AppendCheckItem(wx.NewId(), _('Launch %s') % ('Morrowind' if not self.openmw else u'OpenMW'))
+        runGame = menu.AppendCheckItem(wx.NewId(), _('Launch %s') % ('Morrowind' if not self.openmw else 'OpenMW'))
         menu.AppendSeparator()
         openApp = menu.Append(wx.NewId(), _('Open Wrye Mash'))
         exit = menu.Append(wx.NewId(), _('Exit'))

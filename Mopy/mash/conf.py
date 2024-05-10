@@ -188,7 +188,7 @@ settingDefaults = {
     'tes3lint.location': '',
     'tes3lint.perl': '',
     'tes3lint.last': [1, [], False, False],
-    'tes3lint.command.result': u'',
+    'tes3lint.command.result': '',
     'tes3lint.refresh': True,
 
     # --Polemos: Added for Utilities page.

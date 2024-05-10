@@ -42,7 +42,7 @@ The startup code redirects stdin/stderr to a file, so this class allows provides
 """
 
 import sys, wx, os, io
-from .unimash import _, uniChk as uniChk
+from .unimash import _
 from . import conf, singletons
 from .gui import dialog as gui
 from . import appinfo
@@ -64,10 +64,7 @@ class WxOutputRedirect(object):
         """Return error msgs."""
         wx.CallAfter(self.frame.Show)
         wx.CallAfter(self.frame.Raise)
-        try:
-            wx.CallAfter(self.log.WriteText, message)  # Polemos: Korean fix (possibly more)
-        except UnicodeDecodeError:
-            wx.CallAfter(self.log.WriteText, uniChk(message))
+        wx.CallAfter(self.log.WriteText, message)
         wx.CallAfter(self.std.write, message)
 
 
@@ -106,7 +103,7 @@ class ErrorLog(wx.Dialog):  # Polemos
     def forceClose(self, event):
         """Force close Wrye Mash."""
         warning = _(
-            u'Really force Wrye Mash to quit?\n\nDo this only if Wrye Mash is stuck ad infinitum in the debug log!!!')
+            'Really force Wrye Mash to quit?\n\nDo this only if Wrye Mash is stuck ad infinitum in the debug log!!!')
         if gui.WarningQuery(self, warning, _('Are you sure?')) == wx.ID_NO: return
         self.Destroy()
         try:
@@ -123,7 +120,7 @@ class ErrorLog(wx.Dialog):  # Polemos
                                wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT)
         if dialog.ShowModal() == wx.ID_OK:
             fileName = os.path.join(dialog.GetDirectory(), dialog.GetFilename())
-            with io.open(fileName, 'w', encoding='utf-8', errors='replace') as fl:
+            with io.open(fileName, 'w') as fl:
                 fl.write(self.text_log.GetValue())
 
     def OnClose(self, event):
